@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — เข้าสู่ระบบ</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --cyan-dim: #00a8b5;
+    --gold: #ffd700;
+    --red: #ff003c;
+    --bg: #010a0f;
+    --bg2: #020d14;
+    --panel: rgba(0,245,255,0.04);
+    --border: rgba(0,245,255,0.15);
+    --text: #c8f0f5;
+    --text-dim: #5a8a90;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s;
+    box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,245,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all 0.15s ease;
+  }
+
+  /* SCANLINE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* GRID BG */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+
+  /* ORBS */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width:500px; height:500px; background:rgba(0,245,255,0.05); top:-150px; right:-150px; animation: orbFloat 8s ease-in-out infinite; }
+  .orb-2 { width:350px; height:350px; background:rgba(255,0,60,0.04); bottom:50px; left:-100px; animation: orbFloat 10s ease-in-out infinite reverse; }
+  .orb-3 { width:250px; height:250px; background:rgba(255,215,0,0.03); top:40%; left:40%; animation: orbFloat 12s ease-in-out infinite 2s; }
+
+  @keyframes orbFloat {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-30px); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(1,10,15,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-dot {
+    width: 8px; height: 8px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 8px var(--cyan); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  .nav-back {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s;
+  }
+  .nav-back:hover { color: var(--cyan); }
+  .nav-back svg { transition: transform 0.3s; }
+  .nav-back:hover svg { transform: translateX(-4px); }
+
+  /* MAIN LAYOUT */
+  .main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px 60px;
+    gap: 80px;
+  }
+
+  /* LEFT PANEL — CLASS SHOWCASE */
+  .left-panel {
+    flex: 1;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: fadeInLeft 0.8s ease both;
+  }
+
+  @keyframes fadeInLeft {
+    from { opacity:0; transform: translateX(-30px); }
+    to { opacity:1; transform: translateX(0); }
+  }
+
+  .left-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(28px, 4vw, 48px);
+    line-height: 1.1;
+    color: #fff;
+  }
+  .left-title span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cyan);
+    position: relative;
+  }
+  .left-title span::after {
+    content: 'NEXUS LIFE';
+    position: absolute;
+    left:0; right:0;
+    color: var(--cyan);
+    filter: blur(10px);
+    opacity: 0.35;
+  }
+
+  .left-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+  .left-desc b { color: var(--cyan); font-weight: 600; }
+
+  /* MINI CLASS CARDS */
+  .mini-classes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .mini-class {
+    padding: 14px 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    text-align: center;
+    cursor: default;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .mini-class::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--cc), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .mini-class:hover { border-color: var(--cc); transform: translateY(-2px); }
+  .mini-class:hover::before { opacity: 1; }
+
+  .mini-class.warrior  { --cc: rgba(255,68,68,0.15); }
+  .mini-class.mage     { --cc: rgba(170,68,255,0.15); }
+  .mini-class.explorer { --cc: rgba(68,255,136,0.15); }
+  .mini-class.merchant { --cc: rgba(255,170,0,0.15); }
+  .mini-class.artist   { --cc: rgba(255,102,170,0.15); }
+  .mini-class.diplomat { --cc: rgba(0,204,255,0.15); }
+
+  .mini-class-emoji { font-size: 22px; display: block; margin-bottom: 4px; }
+  .mini-class-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+
+  /* STATS MINI */
+  .left-stats {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .left-stat {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .left-stat:last-child { border-right: none; }
+  .left-stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--cyan);
+    display: block;
+    text-shadow: 0 0 15px rgba(0,245,255,0.5);
+  }
+  .left-stat-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* RIGHT PANEL — LOGIN FORM */
+  .right-panel {
+    width: 100%;
+    max-width: 420px;
+    animation: fadeInRight 0.8s 0.1s ease both;
+  }
+
+  @keyframes fadeInRight {
+    from { opacity:0; transform: translateX(30px); }
+    to { opacity:1; transform: translateX(0); }
+  }
+
+  .login-box {
+    background: rgba(0,245,255,0.02);
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    position: relative;
+  }
+
+  /* corner accents */
+  .login-box::before,
+  .login-box::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+  }
+  .login-box::before {
+    top: -1px; left: -1px;
+    border-top: 2px solid var(--cyan);
+    border-left: 2px solid var(--cyan);
+  }
+  .login-box::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid var(--cyan);
+    border-right: 2px solid var(--cyan);
+  }
+  .corner-tr, .corner-bl {
+    position: absolute;
+    width: 20px; height: 20px;
+  }
+  .corner-tr { top:-1px; right:-1px; border-top:2px solid var(--cyan); border-right:2px solid var(--cyan); }
+  .corner-bl { bottom:-1px; left:-1px; border-bottom:2px solid var(--cyan); border-left:2px solid var(--cyan); }
+
+  .box-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .box-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .box-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+  .box-sub a {
+    color: var(--cyan);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .box-sub a:hover { opacity: 0.7; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 12px 20px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.3s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .tab.active {
+    color: var(--cyan);
+    border-bottom-color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0,245,255,0.4);
+  }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* FORM */
+  .form-panel { display: none; }
+  .form-panel.active { display: block; }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .field-wrap {
+    position: relative;
+  }
+
+  .field-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .field-input {
+    width: 100%;
+    background: rgba(0,245,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    padding: 14px 14px 14px 44px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .field-input::placeholder { color: var(--text-dim); }
+  .field-input:focus {
+    border-color: var(--cyan);
+    background: rgba(0,245,255,0.06);
+    box-shadow: 0 0 20px rgba(0,245,255,0.08);
+  }
+  .field-input:focus + svg,
+  .field-wrap:focus-within svg { opacity: 0.8; }
+
+  /* password toggle */
+  .toggle-pw {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    padding: 4px;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+  }
+  .toggle-pw:hover { color: var(--cyan); }
+
+  /* ERROR / SUCCESS MSG */
+  .msg {
+    font-size: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-left: 3px solid;
+    display: none;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+  .msg.error { border-color: var(--red); color: #ff6680; background: rgba(255,0,60,0.08); }
+  .msg.success { border-color: var(--cyan); color: var(--cyan); background: rgba(0,245,255,0.06); }
+  .msg.show { display: block; }
+
+  /* SUBMIT BTN */
+  .btn-submit {
+    width: 100%;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 16px;
+    background: var(--cyan);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    margin-bottom: 16px;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .btn-submit:hover::before { transform: translateX(100%); }
+  .btn-submit:hover { box-shadow: 0 0 30px rgba(0,245,255,0.5); transform: translateY(-1px); }
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* LOADING SPINNER inside btn */
+  .btn-submit .spinner {
+    display: none;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(1,10,15,0.3);
+    border-top-color: var(--bg);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-submit.loading .btn-text { display: none; }
+  .btn-submit.loading .spinner { display: block; }
+
+  .divider-or {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .divider-or-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-or-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+  }
+
+  .btn-register {
+    width: 100%;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 14px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-register:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* FORGOT */
+  .forgot {
+    display: block;
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-top: -12px;
+    margin-bottom: 24px;
+    transition: color 0.3s;
+  }
+  .forgot:hover { color: var(--cyan); }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeInUp {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  /* GLITCH effect on title */
+  @keyframes glitch {
+    0%,100% { text-shadow: 0 0 20px var(--cyan); }
+    20% { text-shadow: -2px 0 #ff003c, 2px 0 var(--cyan); }
+    40% { text-shadow: 2px 0 #ff003c, -2px 0 var(--cyan); }
+    60% { text-shadow: 0 0 20px var(--cyan); }
+  }
+  .box-title { animation: glitch 6s ease-in-out infinite; }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    .left-panel { display: none; }
+    .main { padding: 80px 16px 40px; justify-content: center; }
+    .right-panel { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    NEXUS LIFE
+  </a>
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    BACK TO BASE
+  </a>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div>
+      <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;color:var(--cyan);margin-bottom:16px;">// WELCOME BACK</div>
+      <h1 class="left-title">
+        ENTER THE<br>
+        <span>NEXUS LIFE</span>
+      </h1>
+    </div>
+
+    <p class="left-desc">
+      เปลี่ยนทุกกิจกรรมในชีวิตจริงให้กลายเป็น <b>Quest</b> — รับ XP, Level Up
+      และแข่งกับผู้เล่นทั่วประเทศบน <b>Real Life MMO</b>
+    </p>
+
+    <!-- MINI CLASS SHOWCASE -->
+    <div class="mini-classes">
+      <div class="mini-class warrior">
+        <span class="mini-class-emoji">⚔️</span>
+        <div class="mini-class-name">WARRIOR</div>
+      </div>
+      <div class="mini-class mage">
+        <span class="mini-class-emoji">🔮</span>
+        <div class="mini-class-name">MAGE</div>
+      </div>
+      <div class="mini-class explorer">
+        <span class="mini-class-emoji">🗺️</span>
+        <div class="mini-class-name">EXPLORER</div>
+      </div>
+      <div class="mini-class merchant">
+        <span class="mini-class-emoji">💰</span>
+        <div class="mini-class-name">MERCHANT</div>
+      </div>
+      <div class="mini-class artist">
+        <span class="mini-class-emoji">🎨</span>
+        <div class="mini-class-name">ARTIST</div>
+      </div>
+      <div class="mini-class diplomat">
+        <span class="mini-class-emoji">🤝</span>
+        <div class="mini-class-name">DIPLOMAT</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="left-stats">
+      <div class="left-stat">
+        <span class="left-stat-num" id="sc-players">1,247</span>
+        <span class="left-stat-label">PLAYERS</span>
+      </div>
+      <div class="left-stat">
+        <span class="left-stat-num" id="sc-quests">8,932</span>
+        <span class="left-stat-label">QUESTS</span>
+      </div>
+      <div class="left-stat">
+        <span class="left-stat-num" id="sc-guilds">143</span>
+        <span class="left-stat-label">GUILDS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="login-box">
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+
+      <span class="box-tag">// AUTHENTICATION</span>
+      <h2 class="box-title">เข้าสู่ระบบ</h2>
+      <p class="box-sub">ยังไม่มีบัญชี? <a href="#" id="go-register">สร้างตัวละครเลย →</a></p>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" id="tab-login" onclick="switchTab('login')">LOGIN</button>
+        <button class="tab" id="tab-register" onclick="switchTab('register')">REGISTER</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="form-panel active" id="panel-login">
+        <div class="msg" id="msg-login"></div>
+
+        <div class="field">
+          <label class="field-label">EMAIL หรือ USERNAME</label>
+          <div class="field-wrap">
+            <input type="text" class="field-input" id="login-email" placeholder="nexus@example.com หรือ username" autocomplete="username">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
+              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+              <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">PASSWORD</label>
+          <div class="field-wrap">
+            <input type="password" class="field-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
+              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
+              <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
+            </svg>
+            <button class="toggle-pw" type="button" onclick="togglePw('login-password', this)">
+              <svg id="eye-login" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/>
+                <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <a href="#" class="forgot" onclick="handleForgot(event)">ลืมรหัสผ่าน?</a>
+
+        <button class="btn-submit" id="btn-login" onclick="handleLogin()">
+          <span class="btn-text">ENTER THE NEXUS</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="divider-or">
+          <div class="divider-or-line"></div>
+          <div class="divider-or-text">OR</div>
+          <div class="divider-or-line"></div>
+        </div>
+
+        <button class="btn-register" onclick="switchTab('register')">
+          สร้างตัวละครใหม่ — REGISTER
+        </button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div class="form-panel" id="panel-register">
+        <div class="msg" id="msg-register"></div>
+
+        <div class="field">
+          <label class="field-label">EMAIL</label>
+          <div class="field-wrap">
+            <input type="email" class="field-input" id="reg-email" placeholder="nexus@example.com" autocomplete="email">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
+              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+              <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">USERNAME</label>
+          <div class="field-wrap">
+            <input type="text" class="field-input" id="reg-username" placeholder="ชื่อตัวละคร (ภาษาอังกฤษ)" autocomplete="username" maxlength="20">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
+              <circle cx="8" cy="5" r="3" stroke="#00f5ff" stroke-width="1.2"/>
+              <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">PASSWORD</label>
+          <div class="field-wrap">
+            <input type="password" class="field-input" id="reg-password" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
+              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
+              <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
+            </svg>
+            <button class="toggle-pw" type="button" onclick="togglePw('reg-password', this)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/>
+                <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSWORD STRENGTH -->
+        <div style="margin-top:-12px; margin-bottom:20px;">
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <div class="pw-bar" id="pb1" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
+            <div class="pw-bar" id="pb2" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
+            <div class="pw-bar" id="pb3" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
+            <div class="pw-bar" id="pb4" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
+          </div>
+          <span id="pw-label" style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);">PASSWORD STRENGTH</span>
+        </div>
+
+        <button class="btn-submit" id="btn-register" onclick="handleRegister()">
+          <span class="btn-text">CREATE CHARACTER</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="divider-or">
+          <div class="divider-or-line"></div>
+          <div class="divider-or-text">OR</div>
+          <div class="divider-or-line"></div>
+        </div>
+
+        <button class="btn-register" onclick="switchTab('login')">
+          มีบัญชีแล้ว — LOGIN
+        </button>
+      </div>
+
+    </div><!-- /.login-box -->
+  </div><!-- /.right-panel -->
+
+</div><!-- /.main -->
+
+<footer>
+  <div class="footer-text">NEXUS LIFE © 2026 — REAL LIFE MMO</div>
+</footer>
+
+<script type="module">
+  import { supabase, signIn, signUp, redirectIfLoggedIn } from './supabase.js'
+
+  // ถ้า login แล้วให้ redirect ไป dashboard ทันที
+  redirectIfLoggedIn('./dashboard.html')
+
+  // ====== CURSOR ======
+  const cursor = document.getElementById('cursor')
+  const ring   = document.getElementById('cursorRing')
+  let mx=0, my=0, rx=0, ry=0
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY
+    cursor.style.left = mx + 'px'
+    cursor.style.top  = my + 'px'
+  })
+  function animRing() {
+    rx += (mx - rx) * 0.12
+    ry += (my - ry) * 0.12
+    ring.style.left = rx + 'px'
+    ring.style.top  = ry + 'px'
+    requestAnimationFrame(animRing)
+  }
+  animRing()
+
+  document.querySelectorAll('button, a, .mini-class').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '56px'; ring.style.height = '56px'
+      ring.style.borderColor = 'rgba(0,245,255,0.8)'
+    })
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px'; ring.style.height = '36px'
+      ring.style.borderColor = 'rgba(0,245,255,0.5)'
+    })
+  })
+
+  // ====== TABS ======
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'))
+    document.getElementById('tab-' + tab).classList.add('active')
+    document.getElementById('panel-' + tab).classList.add('active')
+    clearMsgs()
+  }
+
+  document.getElementById('go-register').addEventListener('click', e => {
+    e.preventDefault()
+    switchTab('register')
+  })
+
+  function clearMsgs() {
+    document.querySelectorAll('.msg').forEach(m => {
+      m.className = 'msg'; m.textContent = ''
+    })
+  }
+
+  function showMsg(id, type, text) {
+    const el = document.getElementById(id)
+    el.className = `msg ${type} show`
+    el.textContent = text
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId)
+    if (loading) btn.classList.add('loading'), btn.disabled = true
+    else btn.classList.remove('loading'), btn.disabled = false
+  }
+
+  // ====== PASSWORD TOGGLE ======
+  window.togglePw = function(inputId, btn) {
+    const inp = document.getElementById(inputId)
+    const isHidden = inp.type === 'password'
+    inp.type = isHidden ? 'text' : 'password'
+    btn.querySelector('svg').style.opacity = isHidden ? '1' : '0.5'
+  }
+
+  // ====== PASSWORD STRENGTH ======
+  document.getElementById('reg-password').addEventListener('input', function() {
+    const pw = this.value
+    let score = 0
+    if (pw.length >= 6)  score++
+    if (pw.length >= 10) score++
+    if (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) score++
+    if (/[^A-Za-z0-9]/.test(pw)) score++
+
+    const colors = ['', '#ff003c', '#ffaa00', '#00f5ff', '#44ff88']
+    const labels = ['', 'WEAK', 'FAIR', 'GOOD', 'STRONG']
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('pb' + i).style.background = i <= score ? colors[score] : 'var(--border)'
+    }
+    document.getElementById('pw-label').textContent = pw.length > 0 ? labels[score] : 'PASSWORD STRENGTH'
+    document.getElementById('pw-label').style.color = pw.length > 0 ? colors[score] : 'var(--text-dim)'
+  })
+
+  // ====== LOGIN ======
+  window.handleLogin = async function() {
+    let identifier = document.getElementById('login-email').value.trim()
+    const password = document.getElementById('login-password').value
+    clearMsgs()
+
+    if (!identifier || !password) return showMsg('msg-login', 'error', 'กรอกอีเมล/username และรหัสผ่านด้วย')
+
+    setLoading('btn-login', true)
+
+    let email = identifier
+
+    // ถ้าไม่มี @ = username → query email จาก users table
+    if (!identifier.includes('@')) {
+      const { data: userData, error: userErr } = await supabase
+        .from('users')
+        .select('email')
+        .eq('username', identifier.toLowerCase())
+        .single()
+
+      if (userErr || !userData?.email) {
+        setLoading('btn-login', false)
+        return showMsg('msg-login', 'error', 'ไม่พบ username นี้ในระบบ')
+      }
+      email = userData.email
+    }
+
+    const { data, error } = await signIn(email, password)
+    setLoading('btn-login', false)
+
+    if (error) {
+      const errMap = {
+        'Invalid login credentials': 'อีเมล/username หรือรหัสผ่านไม่ถูกต้อง',
+        'Email not confirmed': 'กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ',
+      }
+      showMsg('msg-login', 'error', errMap[error.message] || error.message)
+      return
+    }
+
+    showMsg('msg-login', 'success', 'LOGIN สำเร็จ — กำลังเข้าสู่ระบบ...')
+    setTimeout(() => { window.location.href = './dashboard.html' }, 1000)
+  }
+
+  // enter key on login fields
+  document.getElementById('login-email').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
+  document.getElementById('login-password').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
+
+  // ====== REGISTER ======
+  window.handleRegister = async function() {
+    const email    = document.getElementById('reg-email').value.trim()
+    const username = document.getElementById('reg-username').value.trim()
+    const password = document.getElementById('reg-password').value
+    clearMsgs()
+
+    if (!email || !username || !password) return showMsg('msg-register', 'error', 'กรอกข้อมูลให้ครบก่อนนะ')
+    if (username.length < 3) return showMsg('msg-register', 'error', 'Username ต้องมีอย่างน้อย 3 ตัวอักษร')
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) return showMsg('msg-register', 'error', 'Username ใช้ได้แค่ a-z 0-9 และ _')
+    if (password.length < 6) return showMsg('msg-register', 'error', 'Password ต้องมีอย่างน้อย 6 ตัวอักษร')
+
+    setLoading('btn-register', true)
+
+    // Sign up via Supabase Auth
+    const { data, error } = await signUp(email, password)
+    if (error) {
+      setLoading('btn-register', false)
+      const errMap = {
+        'User already registered': 'อีเมลนี้มีบัญชีอยู่แล้ว',
+        'Password should be at least 6 characters': 'Password ต้องมีอย่างน้อย 6 ตัวอักษร',
+      }
+      showMsg('msg-register', 'error', errMap[error.message] || error.message)
+      return
+    }
+
+    // Insert user profile (เก็บ email ไว้ด้วยเพื่อ login ด้วย username ได้)
+    if (data.user) {
+      await supabase.from('users').insert({
+        id: data.user.id,
+        username: username.toLowerCase(),
+        display_name: username,
+        email: email,
+      })
+    }
+
+    setLoading('btn-register', false)
+    showMsg('msg-register', 'success', 'สร้างตัวละครสำเร็จ! ตรวจสอบอีเมลเพื่อยืนยันบัญชี แล้วกลับมา Login')
+  }
+
+  // ====== FORGOT PASSWORD ======
+  window.handleForgot = async function(e) {
+    e.preventDefault()
+    let identifier = document.getElementById('login-email').value.trim()
+    if (!identifier) {
+      showMsg('msg-login', 'error', 'กรอกอีเมลหรือ username ก่อน แล้วกด "ลืมรหัสผ่าน" อีกครั้ง')
+      return
+    }
+
+    let email = identifier
+    if (!identifier.includes('@')) {
+      const { data: userData } = await supabase
+        .from('users').select('email').eq('username', identifier.toLowerCase()).single()
+      if (!userData?.email) {
+        showMsg('msg-login', 'error', 'ไม่พบ username นี้ในระบบ')
+        return
+      }
+      email = userData.email
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    if (error) showMsg('msg-login', 'error', error.message)
+    else showMsg('msg-login', 'success', 'ส่งลิงก์รีเซ็ตรหัสผ่านไปที่อีเมลแล้ว')
+  }
+</script>
+</body>
+</html>

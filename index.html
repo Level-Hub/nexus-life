@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Real Life MMO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --cyan-dim: #00a8b5;
+    --gold: #ffd700;
+    --red: #ff003c;
+    --bg: #010a0f;
+    --bg2: #020d14;
+    --panel: rgba(0,245,255,0.04);
+    --border: rgba(0,245,255,0.15);
+    --text: #c8f0f5;
+    --text-dim: #5a8a90;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s;
+    box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,245,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all 0.15s ease;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* GRID BG */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+
+  /* GLOW ORBS */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width:400px; height:400px; background:rgba(0,245,255,0.06); top:-100px; right:-100px; }
+  .orb-2 { width:300px; height:300px; background:rgba(255,0,60,0.04); bottom:100px; left:-50px; }
+  .orb-3 { width:200px; height:200px; background:rgba(255,215,0,0.03); top:50%; left:50%; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(1,10,15,0.8);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .nav-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: -1;
+  }
+  .nav-btn:hover::before { transform: translateX(0); }
+  .nav-btn:hover { color: var(--bg); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px 60px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid rgba(0,245,255,0.3);
+    background: rgba(0,245,255,0.05);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    margin-bottom: 32px;
+    animation: fadeInDown 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(36px, 8vw, 88px);
+    line-height: 1;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+    animation: fadeInUp 0.8s 0.1s ease both;
+  }
+
+  .hero-title .line-1 { color: #fff; display: block; }
+  .hero-title .line-2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cyan);
+    text-shadow: none;
+    position: relative;
+  }
+  .hero-title .line-2::after {
+    content: 'LIFE MMO';
+    position: absolute;
+    left: 0; right: 0;
+    color: var(--cyan);
+    filter: blur(12px);
+    opacity: 0.4;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 48px;
+    animation: fadeInUp 0.8s 0.2s ease both;
+  }
+
+  .hero-sub span { color: var(--cyan); }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeInUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 16px 40px;
+    background: var(--cyan);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,245,255,0.4);
+  }
+
+  .btn-secondary {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 16px 40px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 0 24px 80px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.8s 0.4s ease both;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 24px 16px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--cyan);
+    display: block;
+    text-shadow: 0 0 20px rgba(0,245,255,0.5);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* CLASS SECTION */
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  /* CLASS CARDS */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--border);
+  }
+
+  .class-card {
+    background: var(--bg2);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s;
+    border: 1px solid transparent;
+  }
+
+  .class-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .class-card:hover {
+    border-color: var(--class-color);
+    transform: translateY(-4px);
+    z-index: 2;
+  }
+  .class-card:hover::before { opacity: 1; }
+  .class-card:hover .class-icon-wrap { box-shadow: 0 0 30px var(--class-color); }
+
+  /* Warrior */
+  .class-card.warrior { --class-color: #ff4444; }
+  .class-card.warrior::before { background: radial-gradient(circle at 50% 0%, rgba(255,68,68,0.08), transparent 70%); }
+
+  /* Mage */
+  .class-card.mage { --class-color: #aa44ff; }
+  .class-card.mage::before { background: radial-gradient(circle at 50% 0%, rgba(170,68,255,0.08), transparent 70%); }
+
+  /* Explorer */
+  .class-card.explorer { --class-color: #44ff88; }
+  .class-card.explorer::before { background: radial-gradient(circle at 50% 0%, rgba(68,255,136,0.08), transparent 70%); }
+
+  /* Merchant */
+  .class-card.merchant { --class-color: #ffaa00; }
+  .class-card.merchant::before { background: radial-gradient(circle at 50% 0%, rgba(255,170,0,0.08), transparent 70%); }
+
+  /* Artist */
+  .class-card.artist { --class-color: #ff66aa; }
+  .class-card.artist::before { background: radial-gradient(circle at 50% 0%, rgba(255,102,170,0.08), transparent 70%); }
+
+  /* Diplomat */
+  .class-card.diplomat { --class-color: #00ccff; }
+  .class-card.diplomat::before { background: radial-gradient(circle at 50% 0%, rgba(0,204,255,0.08), transparent 70%); }
+
+  .class-icon-wrap {
+    width: 64px; height: 64px;
+    border: 1px solid var(--class-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    transition: box-shadow 0.4s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .class-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--class-color);
+    margin-bottom: 8px;
+  }
+
+  .class-th {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .class-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .class-bonus {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--class-color);
+    padding: 6px 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    display: inline-block;
+  }
+
+  /* RANK SECTION */
+  .rank-section {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    background: linear-gradient(180deg, transparent, rgba(0,245,255,0.02), transparent);
+  }
+
+  .rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .rank-item:hover {
+    border-color: var(--rank-color);
+    background: rgba(0,245,255,0.03);
+  }
+
+  .rank-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--rank-color);
+  }
+
+  .rank-icon {
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rank-info { flex: 1; }
+
+  .rank-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--rank-color);
+    margin-bottom: 2px;
+  }
+
+  .rank-xp {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .rank-bar-wrap {
+    width: 120px;
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rank-bar {
+    height: 100%;
+    background: var(--rank-color);
+    box-shadow: 0 0 8px var(--rank-color);
+  }
+
+  /* FEATURE SECTION */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .feature-card {
+    padding: 32px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(0,245,255,0.3);
+    transform: translateY(-4px);
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover::after { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    margin-bottom: 20px;
+  }
+
+  .feature-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    padding: 120px 24px;
+    text-align: center;
+  }
+
+  .cta-box {
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    padding: 60px 40px;
+    background: var(--panel);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 100%, rgba(0,245,255,0.06), transparent 70%);
+  }
+
+  .cta-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .cta-sub {
+    color: var(--text-dim);
+    margin-bottom: 40px;
+    line-height: 1.8;
+    position: relative;
+  }
+
+  /* LOGIN FORM */
+  .form-group {
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .form-input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 1px var(--cyan), 0 0 20px rgba(0,245,255,0.1);
+  }
+
+  .form-input::placeholder { color: var(--text-dim); }
+
+  /* CORNER DECORATIONS */
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    position: absolute;
+    width: 16px; height: 16px;
+    border-color: var(--cyan);
+    border-style: solid;
+  }
+  .corner-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+  .corner-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    margin-bottom: 8px;
+  }
+
+  .footer-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeInDown {
+    from { opacity:0; transform:translateY(-20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  @keyframes glitch {
+    0%,100% { clip-path: inset(0 0 100% 0); }
+    5% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
+    10% { clip-path: inset(50% 0 30% 0); transform: translateX(4px); }
+    15% { clip-path: inset(80% 0 0% 0); transform: translateX(-2px); }
+    20% { clip-path: inset(0 0 100% 0); }
+  }
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 10px var(--cyan), 0 0 20px rgba(0,245,255,0.3); }
+    50% { box-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(0,245,255,0.5); }
+  }
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  .scan-line {
+    position: fixed;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,245,255,0.1), transparent);
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* GLITCH TEXT */
+  .glitch {
+    position: relative;
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+  }
+  .glitch::before {
+    color: var(--red);
+    animation: glitch 4s infinite;
+    clip-path: inset(0 0 100% 0);
+  }
+  .glitch::after {
+    color: var(--cyan);
+    animation: glitch 4s 0.1s infinite;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    nav { padding: 14px 16px; }
+    .nav-links { display: none; }
+    .class-grid { grid-template-columns: 1fr; gap: 1px; }
+    .stat-num { font-size: 20px; }
+    .cta-box { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scan-line"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <polygon points="10,1 19,6 19,14 10,19 1,14 1,6" fill="none" stroke="#00f5ff" stroke-width="1.5"/>
+      <polygon points="10,5 15,8 15,13 10,16 5,13 5,8" fill="rgba(0,245,255,0.15)" stroke="#00f5ff" stroke-width="0.5"/>
+      <circle cx="10" cy="10" r="2" fill="#00f5ff"/>
+    </svg>
+    NEXUS LIFE
+  </div>
+  <ul class="nav-links">
+    <li><a href="#classes">CLASSES</a></li>
+    <li><a href="#ranks">RANKS</a></li>
+    <li><a href="#features">FEATURES</a></li>
+  </ul>
+  <button class="nav-btn" onclick="document.getElementById('login-section').scrollIntoView({behavior:'smooth'})">ENTER NEXUS</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="#00f5ff"/></svg>
+    REAL LIFE MMO — VERSION 0.1 ALPHA
+  </div>
+  <h1 class="hero-title">
+    <span class="line-1">REAL</span>
+    <span class="line-2 glitch" data-text="LIFE MMO">LIFE MMO</span>
+  </h1>
+  <p class="hero-sub">
+    ชีวิตจริงของนายคือเกม — ทุก Quest ที่ทำสำเร็จในโลกจริง<br>
+    ทำให้ตัวละครของนาย<span> แข็งแกร่งขึ้น</span>
+  </p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="document.getElementById('login-section').scrollIntoView({behavior:'smooth'})">เริ่มเล่นเลย</button>
+    <button class="btn-secondary" onclick="document.getElementById('classes').scrollIntoView({behavior:'smooth'})">เลือกอาชีพ</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" id="counter-players">0</span>
+    <span class="stat-label">ผู้เล่น</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" id="counter-quests">0</span>
+    <span class="stat-label">Quest สำเร็จ</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" id="counter-guilds">0</span>
+    <span class="stat-label">Guild</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" id="counter-cities">0</span>
+    <span class="stat-label">เมือง</span>
+  </div>
+</div>
+
+<!-- CLASSES -->
+<section class="section" id="classes">
+  <div class="section-header">
+    <span class="section-tag">// CHOOSE YOUR PATH</span>
+    <h2 class="section-title">เลือกอาชีพของนาย</h2>
+    <p class="section-desc">อาชีพที่เลือกจะกำหนดประเภท Quest และ Bonus XP ที่นายจะได้รับ</p>
+  </div>
+
+  <div class="class-grid">
+    <!-- Warrior -->
+    <div class="class-card warrior">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M16 4 L20 12 L28 12 L22 18 L24 26 L16 22 L8 26 L10 18 L4 12 L12 12 Z" stroke="#ff4444" stroke-width="1.5" fill="rgba(255,68,68,0.1)"/>
+          <line x1="16" y1="8" x2="16" y2="24" stroke="#ff4444" stroke-width="1" opacity="0.5"/>
+          <line x1="8" y1="16" x2="24" y2="16" stroke="#ff4444" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="class-name">WARRIOR</div>
+      <div class="class-th">นักรบ</div>
+      <div class="class-desc">เส้นทางของผู้พิชิตร่างกาย — ออกกำลังกาย วิ่ง ต่อสู้ และฝึกฝนสุขภาพทุกวัน</div>
+      <span class="class-bonus">+2x XP สุขภาพ</span>
+    </div>
+
+    <!-- Mage -->
+    <div class="class-card mage">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="10" stroke="#aa44ff" stroke-width="1.5" fill="rgba(170,68,255,0.1)"/>
+          <circle cx="16" cy="16" r="4" fill="#aa44ff" opacity="0.6"/>
+          <line x1="16" y1="4" x2="16" y2="8" stroke="#aa44ff" stroke-width="1.5"/>
+          <line x1="16" y1="24" x2="16" y2="28" stroke="#aa44ff" stroke-width="1.5"/>
+          <line x1="4" y1="16" x2="8" y2="16" stroke="#aa44ff" stroke-width="1.5"/>
+          <line x1="24" y1="16" x2="28" y2="16" stroke="#aa44ff" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="class-name">MAGE</div>
+      <div class="class-th">นักเวทย์</div>
+      <div class="class-desc">เส้นทางของผู้แสวงหาความรู้ — อ่านหนังสือ เรียนทักษะใหม่ และพัฒนาสมองทุกวัน</div>
+      <span class="class-bonus">+2x XP ความรู้</span>
+    </div>
+
+    <!-- Explorer -->
+    <div class="class-card explorer">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <polygon points="16,4 28,22 4,22" stroke="#44ff88" stroke-width="1.5" fill="rgba(68,255,136,0.1)"/>
+          <circle cx="16" cy="14" r="3" fill="#44ff88" opacity="0.7"/>
+          <line x1="16" y1="17" x2="16" y2="22" stroke="#44ff88" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="class-name">EXPLORER</div>
+      <div class="class-th">นักสำรวจ</div>
+      <div class="class-desc">เส้นทางของผู้พิชิตแผนที่ — ออกไปสถานที่ใหม่ เดินทาง และ check-in ทุกวัน</div>
+      <span class="class-bonus">+2x XP สถานที่</span>
+    </div>
+
+    <!-- Merchant -->
+    <div class="class-card merchant">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="6" y="10" width="20" height="14" stroke="#ffaa00" stroke-width="1.5" fill="rgba(255,170,0,0.1)" rx="1"/>
+          <path d="M10 10 V8 C10 6 12 4 16 4 C20 4 22 6 22 8 V10" stroke="#ffaa00" stroke-width="1.5"/>
+          <line x1="6" y1="16" x2="26" y2="16" stroke="#ffaa00" stroke-width="1" opacity="0.5"/>
+          <rect x="13" y="16" width="6" height="4" stroke="#ffaa00" stroke-width="1" fill="rgba(255,170,0,0.2)"/>
+        </svg>
+      </div>
+      <div class="class-name">MERCHANT</div>
+      <div class="class-th">นักธุรกิจ</div>
+      <div class="class-desc">เส้นทางของผู้สร้างความมั่งคั่ง — บันทึกรายรับรายจ่าย เรียนการเงิน และพัฒนาทักษะอาชีพ</div>
+      <span class="class-bonus">+2x XP การเงิน</span>
+    </div>
+
+    <!-- Artist -->
+    <div class="class-card artist">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="11" stroke="#ff66aa" stroke-width="1.5" fill="rgba(255,102,170,0.1)"/>
+          <path d="M10 20 Q12 12 16 10 Q20 12 22 20" stroke="#ff66aa" stroke-width="1.5" fill="none"/>
+          <circle cx="16" cy="10" r="2" fill="#ff66aa"/>
+        </svg>
+      </div>
+      <div class="class-name">ARTIST</div>
+      <div class="class-th">ศิลปิน</div>
+      <div class="class-desc">เส้นทางของผู้สร้างสรรค์ — วาดรูป ทำดนตรี เขียน และแสดงออกทางศิลปะทุกวัน</div>
+      <span class="class-bonus">+2x XP สร้างสรรค์</span>
+    </div>
+
+    <!-- Diplomat -->
+    <div class="class-card diplomat">
+      <div class="class-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="10" cy="12" r="4" stroke="#00ccff" stroke-width="1.5" fill="rgba(0,204,255,0.1)"/>
+          <circle cx="22" cy="12" r="4" stroke="#00ccff" stroke-width="1.5" fill="rgba(0,204,255,0.1)"/>
+          <path d="M6 26 C6 20 14 18 16 18 C18 18 26 20 26 26" stroke="#00ccff" stroke-width="1.5" fill="none"/>
+          <line x1="16" y1="10" x2="16" y2="18" stroke="#00ccff" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="class-name">DIPLOMAT</div>
+      <div class="class-th">นักการทูต</div>
+      <div class="class-desc">เส้นทางของผู้เชื่อมโลก — ช่วยเหลือผู้อื่น สร้างมิตรภาพ และพัฒนาทักษะสังคม</div>
+      <span class="class-bonus">+2x XP สังคม</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">// RANK SYSTEM</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- RANKS -->
+<section class="rank-section" id="ranks">
+  <div class="section-header">
+    <span class="section-tag">// PROGRESSION</span>
+    <h2 class="section-title">ระบบ Rank</h2>
+    <p class="section-desc">สะสม XP จาก Quest จริงๆ ในชีวิต — ไต่ระดับจาก Bronze สู่ Legendary</p>
+  </div>
+
+  <div class="rank-list">
+    <div class="rank-item" style="--rank-color:#cd7f32">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#cd7f32" stroke-width="1.5" fill="rgba(205,127,50,0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="#cd7f32" font-size="12" font-family="Orbitron">B</text>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">BRONZE</div>
+        <div class="rank-xp">0 — 999 XP</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:15%"></div>
+      </div>
+    </div>
+
+    <div class="rank-item" style="--rank-color:#aaaaaa">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#aaa" stroke-width="1.5" fill="rgba(170,170,170,0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="#aaa" font-size="12" font-family="Orbitron">S</text>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">SILVER</div>
+        <div class="rank-xp">1,000 — 4,999 XP</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:30%"></div>
+      </div>
+    </div>
+
+    <div class="rank-item" style="--rank-color:#ffd700">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#ffd700" stroke-width="1.5" fill="rgba(255,215,0,0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="#ffd700" font-size="12" font-family="Orbitron">G</text>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">GOLD</div>
+        <div class="rank-xp">5,000 — 14,999 XP</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:50%"></div>
+      </div>
+    </div>
+
+    <div class="rank-item" style="--rank-color:#00f5ff">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#00f5ff" stroke-width="1.5" fill="rgba(0,245,255,0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="#00f5ff" font-size="10" font-family="Orbitron">PL</text>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">PLATINUM</div>
+        <div class="rank-xp">15,000 — 39,999 XP</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:70%"></div>
+      </div>
+    </div>
+
+    <div class="rank-item" style="--rank-color:#b044ff">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#b044ff" stroke-width="1.5" fill="rgba(176,68,255,0.15)"/>
+          <text x="18" y="22" text-anchor="middle" fill="#b044ff" font-size="10" font-family="Orbitron">DM</text>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">DIAMOND</div>
+        <div class="rank-xp">40,000+ XP</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:90%"></div>
+      </div>
+    </div>
+
+    <div class="rank-item" style="--rank-color:#ff9500">
+      <div class="rank-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,2 34,11 34,25 18,34 2,25 2,11" stroke="#ff9500" stroke-width="1.5" fill="rgba(255,149,0,0.1)"/>
+          <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" stroke="#ff9500" stroke-width="0.5" fill="rgba(255,149,0,0.05)"/>
+          <circle cx="18" cy="18" r="3" fill="#ff9500"/>
+        </svg>
+      </div>
+      <div class="rank-info">
+        <div class="rank-name">LEGENDARY</div>
+        <div class="rank-xp">Top 100 ของประเทศ</div>
+      </div>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:100%; box-shadow:0 0 12px #ff9500;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">// FEATURES</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-header">
+    <span class="section-tag">// SYSTEM MODULES</span>
+    <h2 class="section-title">ระบบในเกม</h2>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="4" y="8" width="40" height="32" stroke="#00f5ff" stroke-width="1.5" fill="rgba(0,245,255,0.05)" rx="2"/>
+        <line x1="4" y1="16" x2="44" y2="16" stroke="#00f5ff" stroke-width="1" opacity="0.4"/>
+        <rect x="10" y="22" width="12" height="2" fill="#00f5ff" opacity="0.6"/>
+        <rect x="10" y="28" width="20" height="2" fill="#00f5ff" opacity="0.3"/>
+        <rect x="10" y="34" width="8" height="2" fill="#00f5ff" opacity="0.2"/>
+        <circle cx="38" cy="12" r="3" fill="#00f5ff" opacity="0.8"/>
+      </svg>
+      <div class="feature-title">QUEST SYSTEM</div>
+      <div class="feature-desc">Daily, Weekly, Challenge และ Guild Quest — ทำในชีวิตจริง อัพรูปเป็นหลักฐาน รับ XP</div>
+    </div>
+
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="18" stroke="#44ff88" stroke-width="1.5" fill="rgba(68,255,136,0.05)"/>
+        <circle cx="24" cy="24" r="2" fill="#44ff88"/>
+        <line x1="24" y1="6" x2="24" y2="14" stroke="#44ff88" stroke-width="1.5"/>
+        <circle cx="30" cy="15" r="2" fill="#44ff88" opacity="0.6"/>
+        <circle cx="18" cy="32" r="2" fill="#44ff88" opacity="0.4"/>
+        <circle cx="36" cy="28" r="2" fill="#44ff88" opacity="0.5"/>
+      </svg>
+      <div class="feature-title">WORLD MAP</div>
+      <div class="feature-desc">แผนที่ live แสดงผู้เล่นในเมืองเดียวกัน — เห็นว่าใครอยู่ใกล้ อยู่ Guild ไหน</div>
+    </div>
+
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <circle cx="16" cy="18" r="7" stroke="#ffaa00" stroke-width="1.5" fill="rgba(255,170,0,0.05)"/>
+        <circle cx="32" cy="18" r="7" stroke="#ffaa00" stroke-width="1.5" fill="rgba(255,170,0,0.05)"/>
+        <path d="M8 40 C8 32 20 28 24 28 C28 28 40 32 40 40" stroke="#ffaa00" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div class="feature-title">GUILD SYSTEM</div>
+      <div class="feature-desc">สร้างหรือเข้าร่วม Guild — ทำ Quest ร่วมกัน แข่งชิง Territory ของเมือง</div>
+    </div>
+
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="8" y="12" width="24" height="16" stroke="#ff66aa" stroke-width="1.5" fill="rgba(255,102,170,0.05)" rx="2"/>
+        <path d="M32 20 L40 16 L40 32 L32 28" stroke="#ff66aa" stroke-width="1.5" fill="rgba(255,102,170,0.05)"/>
+        <rect x="14" y="18" width="6" height="4" fill="#ff66aa" opacity="0.3"/>
+        <line x1="8" y1="36" x2="32" y2="36" stroke="#ff66aa" stroke-width="1" opacity="0.3"/>
+      </svg>
+      <div class="feature-title">LIVE CHAT</div>
+      <div class="feature-desc">Global, City, Guild และ DM — คุยกับผู้เล่นคนอื่น แบบ realtime</div>
+    </div>
+
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <polygon points="24,6 44,18 44,30 24,42 4,30 4,18" stroke="#b044ff" stroke-width="1.5" fill="rgba(176,68,255,0.05)"/>
+        <polygon points="24,14 36,21 36,27 24,34 12,27 12,21" stroke="#b044ff" stroke-width="0.5" fill="rgba(176,68,255,0.05)"/>
+        <circle cx="24" cy="24" r="4" fill="#b044ff" opacity="0.6"/>
+      </svg>
+      <div class="feature-title">RANK & LEADERBOARD</div>
+      <div class="feature-desc">อันดับระดับเมือง, ประเทศ และโลก — แข่งกับทุกคนบนโลกใบเดียวกัน</div>
+    </div>
+
+    <div class="feature-card">
+      <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
+        <rect x="10" y="8" width="28" height="32" stroke="#00f5ff" stroke-width="1.5" fill="rgba(0,245,255,0.05)" rx="1"/>
+        <circle cx="24" cy="20" r="7" stroke="#00f5ff" stroke-width="1" fill="rgba(0,245,255,0.1)"/>
+        <rect x="16" y="30" width="16" height="2" fill="#00f5ff" opacity="0.4"/>
+        <rect x="18" y="34" width="12" height="2" fill="#00f5ff" opacity="0.2"/>
+      </svg>
+      <div class="feature-title">PIXEL AVATAR</div>
+      <div class="feature-desc">สร้างตัวละครของนายเอง — ปลดล็อค avatar พิเศษและกรอบ rank เมื่อ level สูงขึ้น</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / LOGIN -->
+<section class="cta-section" id="login-section">
+  <div class="cta-box">
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+
+    <span class="section-tag" style="position:relative">// INITIALIZE CHARACTER</span>
+    <h2 class="cta-title">เริ่มต้นการเดินทาง</h2>
+    <p class="cta-sub">สร้างบัญชีฟรี — ไม่มีค่าใช้จ่าย ไม่ต้องดาวน์โหลด เล่นได้เลยผ่านเบราว์เซอร์</p>
+
+    <div style="position:relative">
+      <div class="form-group">
+        <input type="email" class="form-input" placeholder="อีเมล">
+      </div>
+      <div class="form-group">
+        <input type="password" class="form-input" placeholder="รหัสผ่าน">
+      </div>
+      <button class="btn-primary" style="width:100%; margin-bottom:12px" onclick="alert('ระบบกำลังพัฒนา — เร็วๆ นี้!')">
+        สร้างตัวละคร
+      </button>
+      <button class="btn-secondary" style="width:100%" onclick="alert('ระบบกำลังพัฒนา — เร็วๆ นี้!')">
+        มีบัญชีแล้ว — เข้าสู่ระบบ
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">NEXUS LIFE</div>
+  <div class="footer-text">REAL LIFE MMO — เปลี่ยนชีวิตจริงให้เป็นเกม</div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0, my=0, rx=0, ry=0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('button, a, .class-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+      ring.style.borderColor = 'rgba(0,245,255,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.borderColor = 'rgba(0,245,255,0.5)';
+    });
+  });
+
+  // COUNTER ANIMATION
+  function animCounter(el, target, suffix='') {
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current).toLocaleString() + suffix;
+      if (current >= target) clearInterval(timer);
+    }, 20);
+  }
+
+  // Trigger when stats visible
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animCounter(document.getElementById('counter-players'), 1247);
+        animCounter(document.getElementById('counter-quests'), 8932);
+        animCounter(document.getElementById('counter-guilds'), 143);
+        animCounter(document.getElementById('counter-cities'), 77);
+        observer.disconnect();
+      }
+    });
+  });
+  observer.observe(document.querySelector('.stats-bar'));
+
+  // SCROLL REVEAL
+  const revealEls = document.querySelectorAll('.class-card, .feature-card, .rank-item');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, i * 60);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  revealEls.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.4s';
+    revealObs.observe(el);
+  });
+</script>
+</body>
+</html>

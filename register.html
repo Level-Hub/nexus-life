@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — สร้างตัวละคร</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --gold: #ffd700;
+    --red: #ff003c;
+    --bg: #010a0f;
+    --bg2: #020d14;
+    --panel: rgba(0,245,255,0.04);
+    --border: rgba(0,245,255,0.15);
+    --text: #c8f0f5;
+    --text-dim: #5a8a90;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+    min-height: 100vh;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position:fixed; width:12px; height:12px;
+    background:var(--cyan); border-radius:50%;
+    pointer-events:none; z-index:9999;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan);
+  }
+  .cursor-ring {
+    position:fixed; width:36px; height:36px;
+    border:1px solid rgba(0,245,255,0.5); border-radius:50%;
+    pointer-events:none; z-index:9998;
+    transform:translate(-50%,-50%);
+    transition:all 0.15s ease;
+  }
+
+  /* SCANLINE */
+  body::before {
+    content:''; position:fixed; inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+    pointer-events:none; z-index:1000;
+  }
+
+  .grid-bg {
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,255,0.03) 1px,transparent 1px);
+    background-size:60px 60px; z-index:0;
+  }
+
+  .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+  .orb-1 { width:500px;height:500px;background:rgba(0,245,255,0.05);top:-150px;right:-100px; }
+  .orb-2 { width:350px;height:350px;background:rgba(255,0,60,0.04);bottom:0;left:-100px; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    background:rgba(1,10,15,0.85);
+    backdrop-filter:blur(20px);
+  }
+  .nav-logo {
+    font-family:'Orbitron',monospace; font-weight:900; font-size:18px;
+    letter-spacing:4px; color:var(--cyan); text-shadow:0 0 20px var(--cyan);
+    text-decoration:none; display:flex; align-items:center; gap:10px;
+  }
+  .nav-logo-dot { width:8px;height:8px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:0.4;box-shadow:none;} }
+
+  .nav-right {
+    font-family:'Orbitron',monospace; font-size:10px; letter-spacing:2px;
+    color:var(--text-dim); display:flex; align-items:center; gap:6px;
+  }
+  .nav-right a { color:var(--cyan); text-decoration:none; }
+  .nav-right a:hover { opacity:0.7; }
+
+  /* WRAPPER */
+  .wrapper {
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding:100px 24px 60px;
+  }
+
+  /* STEP INDICATOR */
+  .steps {
+    display:flex; align-items:center; gap:0;
+    margin-bottom:56px;
+    animation:fadeInDown 0.6s ease both;
+  }
+  @keyframes fadeInDown { from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);} }
+
+  .step-item {
+    display:flex; align-items:center; gap:12px;
+  }
+  .step-num {
+    width:36px; height:36px;
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Orbitron',monospace; font-size:12px; font-weight:700;
+    color:var(--text-dim);
+    clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+    transition:all 0.4s;
+  }
+  .step-num.active { border-color:var(--cyan); color:var(--cyan); background:rgba(0,245,255,0.08); box-shadow:0 0 20px rgba(0,245,255,0.2); }
+  .step-num.done { border-color:var(--cyan); background:var(--cyan); color:var(--bg); }
+
+  .step-label {
+    font-family:'Orbitron',monospace; font-size:9px; letter-spacing:2px;
+    color:var(--text-dim); transition:color 0.4s;
+  }
+  .step-label.active { color:var(--cyan); }
+
+  .step-line {
+    width:60px; height:1px; background:var(--border); margin:0 8px;
+    transition:background 0.4s;
+  }
+  .step-line.done { background:var(--cyan); }
+
+  /* PANEL */
+  .panel {
+    width:100%; max-width:640px;
+    display:none; animation:fadeInUp 0.5s ease both;
+  }
+  .panel.active { display:block; }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+
+  .panel-box {
+    background:rgba(0,245,255,0.02);
+    border:1px solid var(--border);
+    padding:48px 40px;
+    position:relative;
+  }
+  .panel-box::before { content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+  .panel-box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+  .corner-tr { position:absolute;top:-1px;right:-1px;width:20px;height:20px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+  .corner-bl { position:absolute;bottom:-1px;left:-1px;width:20px;height:20px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+
+  .panel-tag { font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;color:var(--cyan);display:block;margin-bottom:8px; }
+  .panel-title { font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff;margin-bottom:8px; }
+  .panel-sub { font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:36px; }
+
+  /* FORM FIELDS */
+  .field { margin-bottom:20px; }
+  .field-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:8px;text-transform:uppercase; }
+  .field-wrap { position:relative; }
+  .field-wrap svg.icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;transition:opacity 0.3s; }
+  .field-input {
+    width:100%; background:rgba(0,245,255,0.03);
+    border:1px solid var(--border); color:var(--text);
+    font-family:'Sarabun',sans-serif; font-size:14px;
+    padding:14px 14px 14px 44px; outline:none; transition:all 0.3s;
+  }
+  .field-input::placeholder { color:var(--text-dim); }
+  .field-input:focus { border-color:var(--cyan);background:rgba(0,245,255,0.06);box-shadow:0 0 20px rgba(0,245,255,0.08); }
+  .field-input:focus ~ svg.icon { opacity:0.8; }
+
+  /* USERNAME CHECK */
+  .username-status {
+    font-family:'Orbitron',monospace; font-size:9px; letter-spacing:1px;
+    margin-top:6px; display:none; padding-left:2px;
+  }
+  .username-status.ok  { color:#44ff88; display:block; }
+  .username-status.err { color:var(--red); display:block; }
+  .username-status.checking { color:var(--text-dim); display:block; }
+
+  /* PW TOGGLE */
+  .toggle-pw { position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-dim);padding:4px;transition:color 0.3s;display:flex;align-items:center; }
+  .toggle-pw:hover { color:var(--cyan); }
+
+  /* PW STRENGTH */
+  .pw-bars { display:flex;gap:4px;margin-top:8px; }
+  .pw-bar { height:3px;flex:1;background:var(--border);transition:background 0.3s; }
+  .pw-strength-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);margin-top:4px;display:block; }
+
+  /* MSG */
+  .msg { font-size:12px;padding:12px 16px;margin-bottom:20px;border-left:3px solid;display:none;font-family:'Orbitron',monospace;letter-spacing:1px;line-height:1.5; }
+  .msg.error  { border-color:var(--red);color:#ff6680;background:rgba(255,0,60,0.08); }
+  .msg.success{ border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+  .msg.show   { display:block; }
+
+  /* BUTTONS */
+  .btn-primary {
+    font-family:'Orbitron',monospace; font-size:12px; letter-spacing:3px;
+    padding:16px 32px; background:var(--cyan); color:var(--bg);
+    border:none; cursor:pointer; font-weight:700;
+    clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    position:relative; overflow:hidden; transition:all 0.3s;
+  }
+  .btn-primary::before { content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.5s; }
+  .btn-primary:hover::before { transform:translateX(100%); }
+  .btn-primary:hover { box-shadow:0 0 30px rgba(0,245,255,0.5);transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none; }
+  .btn-primary .spinner { display:none;width:14px;height:14px;border:2px solid rgba(1,10,15,0.3);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto; }
+  .btn-primary.loading .btn-text { display:none; }
+  .btn-primary.loading .spinner { display:block; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+
+  .btn-row { display:flex;gap:12px;margin-top:8px; }
+  .btn-row .btn-primary { flex:1; }
+
+  .btn-ghost {
+    font-family:'Orbitron',monospace; font-size:11px; letter-spacing:2px;
+    padding:16px 24px; background:transparent; color:var(--text-dim);
+    border:1px solid var(--border); cursor:pointer; transition:all 0.3s;
+    clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  }
+  .btn-ghost:hover { border-color:var(--cyan);color:var(--cyan); }
+
+  /* ==================== STEP 2 — CLASS ==================== */
+  .class-grid {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:8px;
+    margin-bottom:32px;
+  }
+
+  .class-card {
+    padding:24px 20px; background:var(--panel);
+    border:1px solid var(--border);
+    cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
+  }
+  .class-card::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 0%,var(--cc),transparent 70%);
+    opacity:0; transition:opacity 0.3s;
+  }
+  .class-card:hover { border-color:var(--cc-solid); transform:translateY(-2px); }
+  .class-card:hover::before { opacity:1; }
+  .class-card.selected { border-color:var(--cc-solid) !important; }
+  .class-card.selected::before { opacity:1 !important; }
+  .class-card.selected::after { content:'✓';position:absolute;top:10px;right:12px;font-size:12px;color:var(--cc-solid);font-weight:700; }
+
+  .class-card.warrior  { --cc:rgba(255,68,68,0.12);  --cc-solid:#ff4444; }
+  .class-card.mage     { --cc:rgba(170,68,255,0.12); --cc-solid:#aa44ff; }
+  .class-card.explorer { --cc:rgba(68,255,136,0.12); --cc-solid:#44ff88; }
+  .class-card.merchant { --cc:rgba(255,170,0,0.12);  --cc-solid:#ffaa00; }
+  .class-card.artist   { --cc:rgba(255,102,170,0.12);--cc-solid:#ff66aa; }
+  .class-card.diplomat { --cc:rgba(0,204,255,0.12);  --cc-solid:#00ccff; }
+
+  .class-emoji { font-size:28px; display:block; margin-bottom:10px; }
+  .class-name  { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--cc-solid);margin-bottom:4px; }
+  .class-th    { font-size:15px;font-weight:600;color:#fff;margin-bottom:6px; }
+  .class-desc  { font-size:12px;color:var(--text-dim);line-height:1.6; }
+  .class-bonus { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--cc-solid);margin-top:10px;padding:4px 8px;border:1px solid rgba(255,255,255,0.06);display:inline-block; }
+
+  /* CLASS PREVIEW BANNER */
+  .class-preview {
+    padding:20px; border:1px solid var(--border);
+    background:var(--panel); margin-bottom:24px; display:none;
+  }
+  .class-preview.show { display:block; animation:fadeInUp 0.3s ease both; }
+  .cp-title { font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;margin-bottom:8px; }
+  .cp-skill  { font-size:13px;color:var(--text-dim);line-height:1.7; }
+  .cp-skill b { color:var(--cyan); }
+
+  /* ==================== STEP 3 — AVATAR ==================== */
+  .avatar-center {
+    display:flex; flex-direction:column; align-items:center;
+    margin-bottom:36px;
+  }
+  .avatar-frame {
+    width:140px; height:140px;
+    border:2px solid var(--cyan);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; margin-bottom:20px;
+    clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+    background:rgba(0,245,255,0.04);
+    box-shadow:0 0 30px rgba(0,245,255,0.15);
+  }
+  .avatar-frame img { width:110px;height:110px;image-rendering:pixelated; }
+  .avatar-frame-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim); }
+
+  .avatar-controls { width:100%; }
+
+  .avatar-section-title {
+    font-family:'Orbitron',monospace; font-size:9px; letter-spacing:3px;
+    color:var(--text-dim); margin-bottom:12px; display:block;
+  }
+
+  /* STYLE PICKER */
+  .style-grid {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:24px;
+  }
+  .style-btn {
+    padding:10px 4px; background:var(--panel);
+    border:1px solid var(--border); cursor:pointer; transition:all 0.25s;
+    font-family:'Orbitron',monospace; font-size:8px; letter-spacing:1px;
+    color:var(--text-dim); text-align:center;
+  }
+  .style-btn:hover { border-color:var(--cyan);color:var(--cyan); }
+  .style-btn.active { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08); }
+  .style-btn .style-preview { width:32px;height:32px;margin:0 auto 6px;display:block;image-rendering:pixelated; }
+
+  /* COLOR PICKER */
+  .color-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px; }
+  .color-dot {
+    width:28px; height:28px; border-radius:50%; cursor:pointer;
+    border:2px solid transparent; transition:all 0.2s;
+  }
+  .color-dot:hover { transform:scale(1.2); }
+  .color-dot.active { border-color:#fff; box-shadow:0 0 10px currentColor; transform:scale(1.15); }
+
+  /* SEED INPUT */
+  .seed-row { display:flex;gap:8px;margin-bottom:24px; }
+  .seed-input {
+    flex:1; background:rgba(0,245,255,0.03); border:1px solid var(--border);
+    color:var(--text); font-family:'Sarabun',sans-serif; font-size:14px;
+    padding:12px 16px; outline:none; transition:all 0.3s;
+  }
+  .seed-input:focus { border-color:var(--cyan);background:rgba(0,245,255,0.06); }
+  .seed-input::placeholder { color:var(--text-dim); }
+  .btn-random {
+    padding:12px 16px; background:var(--panel); border:1px solid var(--border);
+    color:var(--cyan); cursor:pointer; font-size:18px; transition:all 0.25s;
+  }
+  .btn-random:hover { border-color:var(--cyan);background:rgba(0,245,255,0.08); }
+
+  /* DISPLAY NAME */
+  .display-name-preview {
+    font-family:'Orbitron',monospace; font-size:14px; font-weight:700;
+    color:#fff; text-align:center; margin-top:4px;
+  }
+
+  @media (max-width:600px) {
+    .class-grid { grid-template-columns:1fr; }
+    .panel-box { padding:32px 20px; }
+    .step-label { display:none; }
+    .step-line { width:30px; }
+    .style-grid { grid-template-columns:repeat(4,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    NEXUS LIFE
+  </a>
+  <div class="nav-right">
+    มีบัญชีแล้ว? <a href="login.html">LOGIN →</a>
+  </div>
+</nav>
+
+<div class="wrapper">
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step-item">
+      <div class="step-num active" id="sn1">1</div>
+      <div class="step-label active" id="sl1">ACCOUNT</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-item">
+      <div class="step-num" id="sn2">2</div>
+      <div class="step-label" id="sl2">CLASS</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-item">
+      <div class="step-num" id="sn3">3</div>
+      <div class="step-label" id="sl3">AVATAR</div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 1: ACCOUNT ===== -->
+  <div class="panel active" id="step1">
+    <div class="panel-box">
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <span class="panel-tag">// STEP 01 — INITIALIZE</span>
+      <h2 class="panel-title">สร้างบัญชี</h2>
+      <p class="panel-sub">กรอกข้อมูลเพื่อเริ่มต้นการเดินทางใน NEXUS LIFE</p>
+
+      <div class="msg" id="msg1"></div>
+
+      <div class="field">
+        <label class="field-label">EMAIL</label>
+        <div class="field-wrap">
+          <input type="email" class="field-input" id="s1-email" placeholder="nexus@example.com" autocomplete="email">
+          <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+            <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">USERNAME <span style="color:var(--text-dim);font-size:8px;">(ใช้ a-z, 0-9, _ เท่านั้น)</span></label>
+        <div class="field-wrap">
+          <input type="text" class="field-input" id="s1-username" placeholder="ชื่อตัวละครของคุณ" autocomplete="username" maxlength="20">
+          <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="5" r="3" stroke="#00f5ff" stroke-width="1.2"/>
+            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="username-status" id="username-status"></div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">DISPLAY NAME <span style="color:var(--text-dim);font-size:8px;">(ชื่อที่แสดงในเกม)</span></label>
+        <div class="field-wrap">
+          <input type="text" class="field-input" id="s1-displayname" placeholder="ชื่อที่คนอื่นเห็น" maxlength="30" style="padding-left:16px;">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">PASSWORD</label>
+        <div class="field-wrap">
+          <input type="password" class="field-input" id="s1-password" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password">
+          <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
+            <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
+            <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
+          </svg>
+          <button class="toggle-pw" type="button" onclick="togglePw('s1-password',this)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/>
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="pw-bars">
+          <div class="pw-bar" id="pb1"></div>
+          <div class="pw-bar" id="pb2"></div>
+          <div class="pw-bar" id="pb3"></div>
+          <div class="pw-bar" id="pb4"></div>
+        </div>
+        <span class="pw-strength-label" id="pw-label">PASSWORD STRENGTH</span>
+      </div>
+
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn-primary" id="btn-next1" onclick="goStep2()">
+          <span class="btn-text">ถัดไป — เลือกอาชีพ →</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+      <div style="text-align:center;margin-top:16px;">
+        <a href="login.html" style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-dim)'">มีบัญชีแล้ว — LOGIN</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: CLASS ===== -->
+  <div class="panel" id="step2" style="max-width:760px;">
+    <div class="panel-box">
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <span class="panel-tag">// STEP 02 — SELECT CLASS</span>
+      <h2 class="panel-title">เลือกอาชีพ</h2>
+      <p class="panel-sub">อาชีพกำหนด Quest ที่คุณได้ bonus XP — เปลี่ยนได้ทุก 90 วัน</p>
+
+      <div class="msg" id="msg2"></div>
+
+      <div class="class-grid">
+        <div class="class-card warrior" onclick="selectClass('warrior',this)">
+          <span class="class-emoji">⚔️</span>
+          <div class="class-name">WARRIOR</div>
+          <div class="class-th">นักรบ</div>
+          <div class="class-desc">ออกกำลังกาย วิ่ง เล่นกีฬา — ชนะด้วยร่างกาย</div>
+          <div class="class-bonus">💪 STR +15% XP</div>
+        </div>
+        <div class="class-card mage" onclick="selectClass('mage',this)">
+          <span class="class-emoji">🔮</span>
+          <div class="class-name">MAGE</div>
+          <div class="class-th">จอมเวท</div>
+          <div class="class-desc">อ่านหนังสือ เรียน บันทึก — เติบโตด้วยความรู้</div>
+          <div class="class-bonus">🧠 INT +15% XP</div>
+        </div>
+        <div class="class-card explorer" onclick="selectClass('explorer',this)">
+          <span class="class-emoji">🗺️</span>
+          <div class="class-name">EXPLORER</div>
+          <div class="class-th">นักสำรวจ</div>
+          <div class="class-desc">เดินทาง Check-in สถานที่ใหม่ — ยิ่งออกไปยิ่งแกร่ง</div>
+          <div class="class-bonus">🗺️ EXP +15% XP</div>
+        </div>
+        <div class="class-card merchant" onclick="selectClass('merchant',this)">
+          <span class="class-emoji">💰</span>
+          <div class="class-name">MERCHANT</div>
+          <div class="class-th">พ่อค้า</div>
+          <div class="class-desc">ออมเงิน ทำธุรกิจ Networking — สร้าง value จากทุกการกระทำ</div>
+          <div class="class-bonus">💼 BIZ +15% XP</div>
+        </div>
+        <div class="class-card artist" onclick="selectClass('artist',this)">
+          <span class="class-emoji">🎨</span>
+          <div class="class-name">ARTIST</div>
+          <div class="class-th">ศิลปิน</div>
+          <div class="class-desc">วาด เขียน ถ่ายรูป ดนตรี — สร้างสรรค์สิ่งใหม่ทุกวัน</div>
+          <div class="class-bonus">🎨 CRE +15% XP</div>
+        </div>
+        <div class="class-card diplomat" onclick="selectClass('diplomat',this)">
+          <span class="class-emoji">🤝</span>
+          <div class="class-name">DIPLOMAT</div>
+          <div class="class-th">นักการทูต</div>
+          <div class="class-desc">ช่วยเหลือ Guild Referral — ยิ่งมีคนรู้จักมากยิ่งแกร่ง</div>
+          <div class="class-bonus">🤝 SOC +15% XP</div>
+        </div>
+      </div>
+
+      <!-- CLASS SKILL PREVIEW -->
+      <div class="class-preview" id="class-preview">
+        <div class="cp-title" id="cp-title"></div>
+        <div class="cp-skill" id="cp-skill"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goStep(1)">← BACK</button>
+        <button class="btn-primary" id="btn-next2" onclick="goStep3()">
+          <span class="btn-text">ถัดไป — สร้าง Avatar →</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: AVATAR ===== -->
+  <div class="panel" id="step3" style="max-width:640px;">
+    <div class="panel-box">
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <span class="panel-tag">// STEP 03 — CREATE AVATAR</span>
+      <h2 class="panel-title">สร้าง Avatar</h2>
+      <p class="panel-sub">ปรับแต่งตัวละครของคุณ — ปลดล็อค style พิเศษเมื่อ level สูงขึ้น</p>
+
+      <div class="msg" id="msg3"></div>
+
+      <!-- AVATAR PREVIEW -->
+      <div class="avatar-center">
+        <div class="avatar-frame">
+          <img id="avatar-img" src="" alt="avatar">
+        </div>
+        <div class="display-name-preview" id="avatar-name-preview">USERNAME</div>
+        <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px;" id="avatar-class-preview">— CLASS —</div>
+      </div>
+
+      <div class="avatar-controls">
+
+        <!-- STYLE -->
+        <span class="avatar-section-title">// AVATAR STYLE</span>
+        <div class="style-grid">
+          <button class="style-btn active" data-style="pixel-art" onclick="setStyle('pixel-art',this)">
+            <img class="style-preview" src="https://api.dicebear.com/9.x/pixel-art/svg?seed=preview&size=32" alt="">
+            PIXEL ART
+          </button>
+          <button class="style-btn" data-style="adventurer" onclick="setStyle('adventurer',this)">
+            <img class="style-preview" src="https://api.dicebear.com/9.x/adventurer/svg?seed=preview&size=32" alt="">
+            ADVENTURER
+          </button>
+          <button class="style-btn" data-style="bottts" onclick="setStyle('bottts',this)">
+            <img class="style-preview" src="https://api.dicebear.com/9.x/bottts/svg?seed=preview&size=32" alt="">
+            ROBOT
+          </button>
+          <button class="style-btn" data-style="lorelei" onclick="setStyle('lorelei',this)">
+            <img class="style-preview" src="https://api.dicebear.com/9.x/lorelei/svg?seed=preview&size=32" alt="">
+            LORELEI
+          </button>
+        </div>
+
+        <!-- SEED / RANDOMIZE -->
+        <span class="avatar-section-title">// AVATAR SEED</span>
+        <div class="seed-row">
+          <input type="text" class="seed-input" id="avatar-seed" placeholder="พิมพ์ seed หรือกด 🎲 เพื่อสุ่ม">
+          <button class="btn-random" onclick="randomSeed()" title="สุ่ม Avatar">🎲</button>
+        </div>
+
+        <!-- BG COLOR -->
+        <span class="avatar-section-title">// BACKGROUND COLOR</span>
+        <div class="color-row" id="bg-colors">
+          <div class="color-dot active" style="background:#0a2a2e" data-color="0a2a2e" onclick="setBgColor('0a2a2e',this)" title="Dark Teal"></div>
+          <div class="color-dot" style="background:#1a0a2e" data-color="1a0a2e" onclick="setBgColor('1a0a2e',this)" title="Dark Purple"></div>
+          <div class="color-dot" style="background:#2a0a0a" data-color="2a0a0a" onclick="setBgColor('2a0a0a',this)" title="Dark Red"></div>
+          <div class="color-dot" style="background:#0a1a0a" data-color="0a1a0a" onclick="setBgColor('0a1a0a',this)" title="Dark Green"></div>
+          <div class="color-dot" style="background:#1a1a0a" data-color="1a1a0a" onclick="setBgColor('1a1a0a',this)" title="Dark Gold"></div>
+          <div class="color-dot" style="background:#010a0f" data-color="010a0f" onclick="setBgColor('010a0f',this)" title="Void Black"></div>
+          <div class="color-dot" style="background:#0d0d0d" data-color="0d0d0d" onclick="setBgColor('0d0d0d',this)" title="Pure Dark"></div>
+          <div class="color-dot" style="background:#1c1c2e" data-color="1c1c2e" onclick="setBgColor('1c1c2e',this)" title="Navy"></div>
+        </div>
+
+      </div>
+
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn-ghost" onclick="goStep(2)">← BACK</button>
+        <button class="btn-primary" id="btn-finish" onclick="handleFinish()">
+          <span class="btn-text">⚡ ENTER THE NEXUS</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.wrapper -->
+
+<script type="module">
+import { supabase, signUp, redirectIfLoggedIn } from './supabase.js'
+
+// redirect ถ้า login แล้ว
+redirectIfLoggedIn('./dashboard.html')
+
+// ==================== STATE ====================
+const state = {
+  email: '', username: '', displayName: '', password: '',
+  class: '',
+  avatarStyle: 'pixel-art', avatarSeed: '', avatarBg: '0a2a2e',
+  usernameOk: false,
+}
+
+// ==================== CURSOR ====================
+const cursor = document.getElementById('cursor')
+const ring   = document.getElementById('cursorRing')
+let mx=0,my=0,rx=0,ry=0
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px'
+})
+;(function animRing(){
+  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12
+  ring.style.left=rx+'px'; ring.style.top=ry+'px'
+  requestAnimationFrame(animRing)
+})()
+document.querySelectorAll('button,a,.class-card,.color-dot').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(0,245,255,0.8)' })
+  el.addEventListener('mouseleave',()=>{ ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(0,245,255,0.5)' })
+})
+
+// ==================== HELPERS ====================
+function showMsg(id, type, text){
+  const el=document.getElementById(id)
+  el.className=`msg ${type} show`; el.textContent=text
+}
+function clearMsg(id){ const el=document.getElementById(id); el.className='msg'; el.textContent='' }
+function setLoading(id, on){
+  const b=document.getElementById(id)
+  on ? b.classList.add('loading')||((b.disabled=true)) : b.classList.remove('loading')||((b.disabled=false))
+}
+
+// ==================== PW TOGGLE ====================
+window.togglePw = (id,btn) => {
+  const inp=document.getElementById(id)
+  inp.type = inp.type==='password' ? 'text' : 'password'
+  btn.querySelector('svg').style.opacity = inp.type==='text' ? '1' : '0.5'
+}
+
+// ==================== PW STRENGTH ====================
+document.getElementById('s1-password').addEventListener('input', function(){
+  const pw=this.value; let s=0
+  if(pw.length>=6) s++
+  if(pw.length>=10) s++
+  if(/[A-Z]/.test(pw)||/[0-9]/.test(pw)) s++
+  if(/[^A-Za-z0-9]/.test(pw)) s++
+  const cols=['','#ff003c','#ffaa00','#00f5ff','#44ff88']
+  const labs=['','WEAK','FAIR','GOOD','STRONG']
+  for(let i=1;i<=4;i++) document.getElementById('pb'+i).style.background = i<=s ? cols[s] : 'var(--border)'
+  const lbl=document.getElementById('pw-label')
+  lbl.textContent = pw.length>0 ? labs[s] : 'PASSWORD STRENGTH'
+  lbl.style.color = pw.length>0 ? cols[s] : 'var(--text-dim)'
+})
+
+// ==================== USERNAME CHECK ====================
+let usernameTimer
+document.getElementById('s1-username').addEventListener('input', function(){
+  const val=this.value.trim()
+  const st=document.getElementById('username-status')
+  clearTimeout(usernameTimer)
+  state.usernameOk=false
+
+  if(!val){ st.className='username-status'; return }
+  if(!/^[a-zA-Z0-9_]+$/.test(val)){ st.className='username-status err'; st.textContent='ใช้ได้แค่ a-z, 0-9, _'; return }
+  if(val.length<3){ st.className='username-status err'; st.textContent='ต้องมีอย่างน้อย 3 ตัวอักษร'; return }
+
+  st.className='username-status checking'; st.textContent='กำลังตรวจสอบ...'
+
+  usernameTimer=setTimeout(async()=>{
+    const { data } = await supabase.from('users').select('id').eq('username',val.toLowerCase()).single()
+    if(data){ st.className='username-status err'; st.textContent='Username นี้ถูกใช้ไปแล้ว' }
+    else { st.className='username-status ok'; st.textContent='✓ Username ว่างอยู่'; state.usernameOk=true }
+  }, 500)
+})
+
+// display name auto-fill from username
+document.getElementById('s1-username').addEventListener('input', function(){
+  const dn=document.getElementById('s1-displayname')
+  if(!dn.value || dn.dataset.manual!=='1') dn.value=this.value
+})
+document.getElementById('s1-displayname').addEventListener('input', function(){ this.dataset.manual='1' })
+
+// ==================== STEP NAVIGATION ====================
+function goStep(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'))
+  document.getElementById('step'+n).classList.add('active')
+  window.scrollTo({top:0,behavior:'smooth'})
+
+  // update step indicators
+  for(let i=1;i<=3;i++){
+    const sn=document.getElementById('sn'+i)
+    const sl=document.getElementById('sl'+i)
+    sn.classList.remove('active','done')
+    sl.classList.remove('active')
+    if(i<n){ sn.classList.add('done'); sn.textContent='✓' }
+    else if(i===n){ sn.classList.add('active'); sn.textContent=i; sl.classList.add('active') }
+    else { sn.textContent=i }
+  }
+  for(let i=1;i<=2;i++){
+    document.getElementById('line'+i).classList.toggle('done', i<n)
+  }
+}
+
+window.goStep = goStep
+
+// ==================== STEP 1 → 2 ====================
+window.goStep2 = async function(){
+  clearMsg('msg1')
+  const email   = document.getElementById('s1-email').value.trim()
+  const username= document.getElementById('s1-username').value.trim()
+  const dispname= document.getElementById('s1-displayname').value.trim()
+  const password= document.getElementById('s1-password').value
+
+  if(!email||!username||!password) return showMsg('msg1','error','กรอกข้อมูลให้ครบก่อนนะ')
+  if(!email.includes('@')) return showMsg('msg1','error','อีเมลไม่ถูกต้อง')
+  if(!state.usernameOk){
+    // ถ้ายังไม่ได้ check ให้ check ใหม่
+    const { data } = await supabase.from('users').select('id').eq('username',username.toLowerCase()).single()
+    if(data) return showMsg('msg1','error','Username นี้ถูกใช้ไปแล้ว')
+    state.usernameOk=true
+  }
+  if(password.length<6) return showMsg('msg1','error','Password ต้องมีอย่างน้อย 6 ตัวอักษร')
+
+  state.email=email; state.username=username
+  state.displayName=dispname||username; state.password=password
+
+  goStep(2)
+}
+
+// ==================== STEP 2 — CLASS ====================
+const classSkills = {
+  warrior:  { title:'⚔️ WARRIOR — Class Skill', skill:'<b>Grace Day</b> — Streak ไม่ขาดแม้ข้ามวัน 1 ครั้ง/เดือน<br>ได้ <b>+15% XP</b> จากทุก Physical Quest' },
+  mage:     { title:'🔮 MAGE — Class Skill', skill:'<b>Scholar\'s Flow</b> — อ่านหนังสือติดกัน 7 วันได้ Bonus XP <b>+20%</b><br>ได้ <b>+15% XP</b> จากทุก Knowledge Quest' },
+  explorer: { title:'🗺️ EXPLORER — Class Skill', skill:'<b>Pioneer</b> — Check-in สถานที่ใหม่คนแรกได้ Pioneer Badge ทันที<br>ได้ <b>+15% XP</b> จากทุก Exploration Quest' },
+  merchant: { title:'💰 MERCHANT — Class Skill', skill:'<b>Gold Rush</b> — ทุก 10,000 บาทที่ออมได้ Bonus XP พิเศษ<br>ได้ <b>+15% XP</b> จากทุก Business Quest' },
+  artist:   { title:'🎨 ARTIST — Class Skill', skill:'<b>Crowd Favorite</b> — ผลงานที่ได้ Like จากคนอื่นได้ Bonus XP เพิ่ม<br>ได้ <b>+15% XP</b> จากทุก Creative Quest' },
+  diplomat: { title:'🤝 DIPLOMAT — Class Skill', skill:'<b>Guild Bond</b> — ทุกคนใน Guild ที่ชวนมา Level Up → ได้ XP ด้วย<br>ได้ <b>+15% XP</b> จากทุก Social Quest' },
+}
+
+window.selectClass = function(cls, el){
+  document.querySelectorAll('.class-card').forEach(c=>c.classList.remove('selected'))
+  el.classList.add('selected')
+  state.class=cls
+
+  const sk=classSkills[cls]
+  const preview=document.getElementById('class-preview')
+  document.getElementById('cp-title').textContent=sk.title
+  document.getElementById('cp-skill').innerHTML=sk.skill
+  preview.classList.add('show')
+
+  clearMsg('msg2')
+}
+
+window.goStep3 = function(){
+  clearMsg('msg2')
+  if(!state.class) return showMsg('msg2','error','เลือกอาชีพก่อนนะ')
+  // init avatar
+  state.avatarSeed = state.username || 'nexus'+Date.now()
+  document.getElementById('avatar-seed').value=state.avatarSeed
+  document.getElementById('avatar-name-preview').textContent=state.displayName||state.username
+  document.getElementById('avatar-class-preview').textContent='— '+state.class.toUpperCase()+' —'
+  updateAvatar()
+  goStep(3)
+}
+
+// ==================== STEP 3 — AVATAR ====================
+function updateAvatar(){
+  const url=`https://api.dicebear.com/9.x/${state.avatarStyle}/svg?seed=${encodeURIComponent(state.avatarSeed)}&backgroundColor=${state.avatarBg}&size=110`
+  document.getElementById('avatar-img').src=url
+}
+
+window.setStyle = function(style, btn){
+  document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  state.avatarStyle=style
+  updateAvatar()
+}
+
+window.setBgColor = function(color, el){
+  document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'))
+  el.classList.add('active')
+  state.avatarBg=color
+  updateAvatar()
+}
+
+window.randomSeed = function(){
+  const words=['nexus','pixel','cyber','void','storm','blade','echo','nova','ghost','flux']
+  const seed=words[Math.floor(Math.random()*words.length)]+(Math.floor(Math.random()*9999))
+  state.avatarSeed=seed
+  document.getElementById('avatar-seed').value=seed
+  updateAvatar()
+}
+
+document.getElementById('avatar-seed').addEventListener('input', function(){
+  state.avatarSeed=this.value||'nexus'
+  updateAvatar()
+})
+
+// ==================== FINISH — CREATE ACCOUNT ====================
+window.handleFinish = async function(){
+  clearMsg('msg3')
+  setLoading('btn-finish',true)
+
+  // 1. Sign up
+  const { data, error } = await signUp(state.email, state.password)
+  if(error){
+    setLoading('btn-finish',false)
+    const errMap={
+      'User already registered':'อีเมลนี้มีบัญชีอยู่แล้ว',
+      'Password should be at least 6 characters':'Password ต้องมีอย่างน้อย 6 ตัวอักษร',
+    }
+    return showMsg('msg3','error',errMap[error.message]||error.message)
+  }
+
+  // 2. Insert user profile
+  if(data.user){
+    const avatarSeed=`${state.avatarStyle}:${state.avatarSeed}:${state.avatarBg}`
+    const { error: dbErr } = await supabase.from('users').insert({
+      id: data.user.id,
+      email: state.email,
+      username: state.username.toLowerCase(),
+      display_name: state.displayName,
+      class: state.class,
+      avatar_seed: avatarSeed,
+      level: 1,
+      xp_total: 0,
+      xp_this_month: 0,
+      rank: 'bronze',
+      gold: 0,
+      crystal: 0,
+    })
+
+    // 3. Insert user_stats
+    await supabase.from('user_stats').insert({ user_id: data.user.id })
+
+    if(dbErr){ console.error(dbErr) }
+  }
+
+  setLoading('btn-finish',false)
+  showMsg('msg3','success','🎉 ยินดีต้อนรับสู่ NEXUS LIFE — กำลังเข้าสู่โลก...')
+  setTimeout(()=>{ window.location.href='./dashboard.html' }, 1500)
+}
+</script>
+</body>
+</html>
