@@ -371,7 +371,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   display:flex;align-items:center;gap:8px;
 }
 .lb-xp-bar-wrap { flex:1;height:4px;background:rgba(0,245,255,0.08);position:relative;overflow:hidden; }
-.lb-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:var(--bar-w,0%); animation:barFill 1s 0.5s ease both; }
+.lb-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
 .lb-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);white-space:nowrap; }
 
 .lb-row-level { display:flex;align-items:center;justify-content:center; }
@@ -426,10 +426,57 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .city-stat-lbl { font-size:9px;color:var(--text-dim);margin-top:2px; }
 
 .city-xp-bar-wrap { height:4px;background:rgba(0,245,255,0.08);overflow:hidden;margin-bottom:8px; }
-.city-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:var(--bar-w,0%);transition:width 1s ease; }
+.city-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
 .city-xp-label { display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim); }
 
 .city-buff { display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border:1px solid rgba(68,255,136,0.2);font-family:'Orbitron',monospace;font-size:8px;color:var(--green);margin-top:8px; }
+
+/* ===================== CITY MODAL ===================== */
+.modal-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+  z-index:600;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.modal-overlay.open { opacity:1;pointer-events:all; }
+.modal-box {
+  background:#010d14;border:1px solid var(--border);
+  width:min(520px,94vw);max-height:80vh;display:flex;flex-direction:column;
+  position:relative;
+  transform:translateY(20px);transition:transform 0.3s;
+}
+.modal-overlay.open .modal-box { transform:translateY(0); }
+.modal-box::before { content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+.modal-box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+.modal-header {
+  padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.modal-title { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#fff; }
+.modal-subtitle { font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-top:3px; }
+.modal-close {
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  cursor:pointer;font-size:16px;transition:all 0.2s;
+}
+.modal-close:hover { border-color:var(--red);color:var(--red); }
+.modal-body { overflow-y:auto;flex:1;padding:16px 24px; }
+.modal-player-row {
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(0,245,255,0.05);
+  cursor:pointer;transition:background 0.15s;
+}
+.modal-player-row:hover { padding-left:8px; }
+.modal-player-rank { width:28px;font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:var(--text-dim);flex-shrink:0; }
+.modal-player-rank.r1 { color:var(--gold); }
+.modal-player-rank.r2 { color:#c0c0c0; }
+.modal-player-rank.r3 { color:#cd7f32; }
+.modal-player-avatar { width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--border));flex-shrink:0; }
+.modal-player-avatar img { width:100%;height:100%;object-fit:cover; }
+.modal-player-info { flex:1;overflow:hidden; }
+.modal-player-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.modal-player-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--text-dim));letter-spacing:1px;margin-top:2px; }
+.modal-player-xp { font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--cyan);flex-shrink:0; }
+
 
 /* ===================== GUILD TAB ===================== */
 .guild-lb-list { animation:fadeInUp 0.5s 0.2s ease both; }
@@ -459,7 +506,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .guild-tag { font-family:'Orbitron',monospace;font-size:8px;color:var(--cyan);letter-spacing:1px;margin-top:2px; }
 .guild-xp-col { display:flex;align-items:center;gap:8px; }
 .guild-xp-bar-wrap { flex:1;height:4px;background:rgba(0,245,255,0.08);overflow:hidden; }
-.guild-xp-bar { height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));animation:barFill 1s 0.5s ease both; }
+.guild-xp-bar { height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
 .guild-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--purple);white-space:nowrap; }
 .guild-members { display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim); }
 .guild-level { display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--gold); }
@@ -769,6 +816,26 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 </main>
 
+<!-- CITY PLAYERS MODAL -->
+<div class="modal-overlay" id="cityModal" onclick="closeCityModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="cityModalTitle">—</div>
+        <div class="modal-subtitle" id="cityModalSub">TOP PLAYERS IN CITY</div>
+      </div>
+      <button class="modal-close" onclick="closeCityModal()">✕</button>
+    </div>
+    <div class="modal-body" id="cityModalBody">
+      <div class="lb-loading">
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -922,6 +989,7 @@ function renderGlobal(data) {
     const cls = u.class||'warrior'
     const rankClass = rank<=3 ? `r${rank}` : 'rother'
     const delay = (i*0.04).toFixed(2)
+    const streakBadge = (u.streak_current||0) >= 7 ? `<span style="color:var(--gold);font-size:9px;margin-left:4px">🔥${u.streak_current}</span>` : ''
     return `
       <div class="lb-row ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="goProfile('${u.id}')">
         <div class="lb-row-rank ${rankClass}">${rank}</div>
@@ -930,12 +998,12 @@ function renderGlobal(data) {
             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
           </div>
           <div class="lb-user-info">
-            <div class="lb-username">${esc(u.display_name||u.username)}</div>
+            <div class="lb-username">${esc(u.display_name||u.username)}${streakBadge}</div>
             <div class="lb-title">Lv.${u.level||1} · ${(u.rank||'bronze').toUpperCase()}</div>
           </div>
         </div>
         <div class="lb-row-xp">
-          <div class="lb-xp-bar-wrap"><div class="lb-xp-bar" style="--bar-w:${pct}%"></div></div>
+          <div class="lb-xp-bar-wrap"><div class="lb-xp-bar" data-pct="${pct}"></div></div>
           <div class="lb-xp-val">${fmtNum(xp)}</div>
         </div>
         <div class="lb-row-level">
@@ -946,6 +1014,13 @@ function renderGlobal(data) {
         </div>
       </div>`
   }).join('')
+
+  // Animate XP bars after DOM paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#globalList .lb-xp-bar').forEach(el => {
+      el.style.width = (el.dataset.pct || 0) + '%'
+    })
+  })
 }
 
 // ============================================================
@@ -989,10 +1064,10 @@ function renderCities(cities) {
     const buff = c.active_buffs?.xp_bonus ? `+${Math.round(c.active_buffs.xp_bonus*100)}% XP BUFF` : ''
     const isMyCity = userProfile?.city === c.city_name
     return `
-      <div class="city-card" style="${isMyCity?'border-color:rgba(0,245,255,0.3);':''}" onclick="filterCityPlayers('${c.city_name}')">
+      <div class="city-card" style="${isMyCity?'border-color:rgba(0,245,255,0.3);':''}" onclick="filterCityPlayers('${esc(c.city_name)}')">
         <div class="city-rank-badge ${rankClass}">#${rank}</div>
-        <div class="city-name">${c.city_name}${isMyCity?' 📍':''}</div>
-        <div class="city-province">${c.province||''}</div>
+        <div class="city-name">${esc(c.city_name)}${isMyCity?' 📍':''}</div>
+        <div class="city-province">${esc(c.province||'')}</div>
         <div class="city-prosperity">
           <span class="prosperity-label">PROSPERITY</span>
           <div class="prosperity-stars">${stars}</div>
@@ -1011,14 +1086,23 @@ function renderCities(cities) {
             <div class="city-stat-lbl">Streak</div>
           </div>
         </div>
-        <div class="city-xp-bar-wrap"><div class="city-xp-bar" style="--bar-w:${pct}%"></div></div>
+        <div class="city-xp-bar-wrap">
+          <div class="city-xp-bar" data-pct="${pct}"></div>
+        </div>
         <div class="city-xp-label">
           <span>0</span>
           <span>${fmtNum(c.xp_threshold_next||1000)} target</span>
         </div>
         ${buff ? `<div class="city-buff">⚡ ${buff}</div>` : ''}
       </div>`
-  }).join('')
+  }).join('') || `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌆</div><div class="empty-title">ยังไม่มีข้อมูลเมือง</div></div>`
+
+  // Animate bars after DOM paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.city-xp-bar').forEach(el => {
+      el.style.width = (el.dataset.pct || 0) + '%'
+    })
+  })
 }
 
 // ============================================================
@@ -1063,13 +1147,19 @@ function renderGuilds(guilds) {
           </div>
         </div>
         <div class="guild-xp-col">
-          <div class="guild-xp-bar-wrap"><div class="guild-xp-bar" style="--bar-w:${pct}%"></div></div>
+          <div class="guild-xp-bar-wrap"><div class="guild-xp-bar" data-pct="${pct}"></div></div>
           <div class="guild-xp-val">${fmtNum(g.guild_xp)}</div>
         </div>
         <div class="guild-members">${g.member_count} คน</div>
         <div class="guild-level">LV ${g.guild_level||1}</div>
       </div>`
   }).join('') || `<div class="empty-state"><div class="empty-icon">🏰</div><div class="empty-title">ยังไม่มี Guild</div><div class="empty-sub">สร้าง Guild เป็นคนแรก!</div></div>`
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#guildList .guild-xp-bar').forEach(el => {
+      el.style.width = (el.dataset.pct || 0) + '%'
+    })
+  })
 }
 
 // ============================================================
@@ -1109,6 +1199,14 @@ window.switchTab = function(tab) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'))
   document.getElementById(`tab-${tab}`).classList.add('active')
   document.getElementById(`content-${tab}`).classList.add('active')
+
+  // Re-trigger bar animations for newly visible tab
+  requestAnimationFrame(() => {
+    document.querySelectorAll(`#content-${tab} [data-pct]`).forEach(el => {
+      el.style.width = '0%'
+      requestAnimationFrame(() => { el.style.width = (el.dataset.pct || 0) + '%' })
+    })
+  })
 }
 
 // ============================================================
@@ -1139,9 +1237,56 @@ window.goProfile = function(uid) {
   window.location.href = `./profile.html?id=${uid}`
 }
 
-window.filterCityPlayers = function(city) {
-  showToast(`🏙️ ${city}`, 'success')
+// ============================================================
+// CITY PLAYERS MODAL
+// ============================================================
+window.filterCityPlayers = async function(cityName) {
+  document.getElementById('cityModalTitle').textContent = cityName
+  document.getElementById('cityModalSub').textContent = 'TOP PLAYERS IN CITY'
+  document.getElementById('cityModalBody').innerHTML = `
+    <div class="lb-loading">
+      <div class="lb-skel"></div><div class="lb-skel"></div><div class="lb-skel"></div>
+    </div>`
+  document.getElementById('cityModal').classList.add('open')
+
+  const { data, error } = await supabase.from('users')
+    .select('id,username,display_name,class,level,xp_this_month,xp_total,avatar_seed')
+    .eq('city', cityName)
+    .eq('profile_public', true)
+    .order('xp_this_month', { ascending: false })
+    .limit(20)
+
+  if (error || !data?.length) {
+    document.getElementById('cityModalBody').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">ยังไม่มีผู้เล่นในเมืองนี้</div></div>`
+    return
+  }
+
+  document.getElementById('cityModalSub').textContent = `${data.length} ผู้เล่น · เรียงตาม XP เดือนนี้`
+  document.getElementById('cityModalBody').innerHTML = data.map((u, i) => {
+    const rank = i + 1
+    const rankClass = rank <= 3 ? `r${rank}` : ''
+    const cls = u.class || 'warrior'
+    return `
+      <div class="modal-player-row cls-${cls}" onclick="goProfile('${u.id}')">
+        <div class="modal-player-rank ${rankClass}">${rank}</div>
+        <div class="modal-player-avatar cls-${cls}">
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+        </div>
+        <div class="modal-player-info">
+          <div class="modal-player-name">${esc(u.display_name||u.username)}</div>
+          <div class="modal-player-class">${cls.toUpperCase()} · LV ${u.level||1}</div>
+        </div>
+        <div class="modal-player-xp">${fmtNum(u.xp_this_month)} XP</div>
+      </div>`
+  }).join('')
 }
+
+window.closeCityModal = function(e) {
+  if (e && e.target !== document.getElementById('cityModal')) return
+  document.getElementById('cityModal').classList.remove('open')
+}
+
 
 // ============================================================
 // HELPERS

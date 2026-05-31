@@ -598,6 +598,25 @@
 
       </div>
 
+      <!-- CITY -->
+      <span class="avatar-section-title">// เลือกเมืองที่อยู่</span>
+      <div class="field-wrap" style="margin-bottom:16px;">
+        <select class="field-input" id="s3-city" style="padding-left:14px;cursor:pointer;">
+          <option value="กรุงเทพมหานคร">🏙️ กรุงเทพมหานคร</option>
+          <option value="เชียงใหม่">🌿 เชียงใหม่</option>
+          <option value="ขอนแก่น">⚡ ขอนแก่น</option>
+          <option value="ชลบุรี">🌊 ชลบุรี</option>
+          <option value="ภูเก็ต">🏝️ ภูเก็ต</option>
+          <option value="นครราชสีมา">🔥 นครราชสีมา</option>
+          <option value="หาดใหญ่">🌞 หาดใหญ่</option>
+          <option value="อุดรธานี">💫 อุดรธานี</option>
+          <option value="เชียงราย">❄️ เชียงราย</option>
+          <option value="นนทบุรี">🏯 นนทบุรี</option>
+          <option value="ปทุมธานี">🌆 ปทุมธานี</option>
+          <option value="สมุทรปราการ">⚓ สมุทรปราการ</option>
+        </select>
+      </div>
+
       <div class="btn-row" style="margin-top:8px;">
         <button class="btn-ghost" onclick="goStep(2)">← BACK</button>
         <button class="btn-primary" id="btn-finish" onclick="handleFinish()">
@@ -622,6 +641,7 @@ const state = {
   class: '',
   avatarStyle: 'pixel-art', avatarSeed: '', avatarBg: '0a2a2e',
   usernameOk: false,
+  city: 'กรุงเทพมหานคร',
 }
 
 // ==================== CURSOR ====================
@@ -702,6 +722,7 @@ document.getElementById('s1-username').addEventListener('input', function(){
   if(!dn.value || dn.dataset.manual!=='1') dn.value=this.value
 })
 document.getElementById('s1-displayname').addEventListener('input', function(){ this.dataset.manual='1' })
+document.getElementById('s3-city').addEventListener('change', function(){ state.city = this.value })
 
 // ==================== STEP NAVIGATION ====================
 function goStep(n){
@@ -845,6 +866,7 @@ window.handleFinish = async function(){
       display_name: state.displayName,
       class: state.class,
       avatar_seed: avatarSeed,
+      city: state.city,
       level: 1,
       xp_total: 0,
       xp_this_month: 0,
