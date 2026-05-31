@@ -136,6 +136,8 @@
   .nav-links a:hover { color: var(--cyan); }
 
   .nav-btn {
+    display: inline-block;
+    text-decoration: none;
     font-family: 'Orbitron', monospace;
     font-size: 11px;
     letter-spacing: 2px;
@@ -801,7 +803,7 @@
     <li><a href="#ranks">RANKS</a></li>
     <li><a href="#features">FEATURES</a></li>
   </ul>
-  <button class="nav-btn" onclick="document.getElementById('login-section').scrollIntoView({behavior:'smooth'})">ENTER NEXUS</button>
+  <a href="login.html" class="nav-btn">ENTER NEXUS</a>
 </nav>
 
 <!-- HERO -->
@@ -819,7 +821,7 @@
     ทำให้ตัวละครของนาย<span> แข็งแกร่งขึ้น</span>
   </p>
   <div class="hero-cta">
-    <button class="btn-primary" onclick="document.getElementById('login-section').scrollIntoView({behavior:'smooth'})">เริ่มเล่นเลย</button>
+    <a href="register.html" class="btn-primary" style="text-decoration:none">เริ่มเล่นเลย</a>
     <button class="btn-secondary" onclick="document.getElementById('classes').scrollIntoView({behavior:'smooth'})">เลือกอาชีพ</button>
   </div>
 </section>
@@ -1161,18 +1163,12 @@
     <p class="cta-sub">สร้างบัญชีฟรี — ไม่มีค่าใช้จ่าย ไม่ต้องดาวน์โหลด เล่นได้เลยผ่านเบราว์เซอร์</p>
 
     <div style="position:relative">
-      <div class="form-group">
-        <input type="email" class="form-input" placeholder="อีเมล">
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-input" placeholder="รหัสผ่าน">
-      </div>
-   <button class="btn-primary" style="width:100%; margin-bottom:12px" onclick="window.location.href='./register.html'">
-    สร้างตัวละคร
-</button>
-<button class="btn-secondary" style="width:100%" onclick="window.location.href='./login.html'">
-    มีบัญชีแล้ว — เข้าสู่ระบบ
-</button>
+      <a href="register.html" class="btn-primary" style="width:100%; margin-bottom:12px; display:block; text-align:center; text-decoration:none;">
+        สร้างตัวละคร
+      </a>
+      <a href="login.html" class="btn-secondary" style="width:100%; display:block; text-align:center; text-decoration:none;">
+        มีบัญชีแล้ว — เข้าสู่ระบบ
+      </a>
     </div>
   </div>
 </section>
@@ -1183,6 +1179,15 @@
   <div class="footer-text">REAL LIFE MMO — เปลี่ยนชีวิตจริงให้เป็นเกม</div>
 </footer>
 
+<script type="module">
+  import { supabase } from './supabase.js'
+
+  // ถ้า login อยู่แล้ว → redirect dashboard ทันที
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    window.location.href = 'dashboard.html'
+  }
+</script>
 <script>
   // CURSOR
   const cursor = document.getElementById('cursor');
