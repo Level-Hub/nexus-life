@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Quests</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+
+*{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
+.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
+.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
+.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
+.nav-item:hover svg,.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace}
+.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
+.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
+.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+
+/* TOPBAR MOBILE */
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 80px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both;flex-wrap:wrap;gap:12px}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--cyan)}
+.page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.reset-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--border);color:var(--text-dim);background:var(--panel)}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--border);animation:fadeInUp 0.5s 0.05s ease both}
+.tab-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:12px 20px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.25s;display:flex;align-items:center;gap:8px}
+.tab-btn:hover{color:var(--cyan)}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-count{font-size:8px;padding:2px 7px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:10px}
+.tab-count.red{background:rgba(255,0,60,0.1);border-color:rgba(255,0,60,0.2);color:var(--red)}
+.tab-count.gold{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.2);color:var(--gold)}
+.tab-count.green{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.2);color:var(--green)}
+
+/* PROGRESS BAR */
+.progress-banner{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:20px;animation:fadeInUp 0.5s 0.08s ease both}
+.pb-left{flex-shrink:0;text-align:center}
+.pb-circle{width:56px;height:56px;position:relative}
+.pb-circle svg{transform:rotate(-90deg)}
+.pb-circle-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--cyan)}
+.pb-info{flex:1}
+.pb-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px}
+.pb-track{height:4px;background:rgba(0,245,255,0.08);margin-bottom:4px;overflow:hidden}
+.pb-fill{height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:width 1s ease}
+.pb-stats{display:flex;gap:16px}
+.pb-stat{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)}
+.pb-stat span{color:var(--cyan)}
+.pb-xp{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.1s ease both}
+.filter-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.filter-btn.active,.filter-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06)}
+.filter-btn.cls-active{border-color:var(--cls);color:var(--cls);background:rgba(0,245,255,0.04)}
+
+/* QUEST GRID */
+.quest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;animation:fadeInUp 0.5s 0.12s ease both}
+
+/* QUEST CARD */
+.qcard{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:0;position:relative;overflow:hidden;transition:all 0.25s;cursor:pointer}
+.qcard:hover{border-color:rgba(0,245,255,0.28);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,245,255,0.06)}
+.qcard.done{opacity:0.55}
+.qcard.pending{opacity:0.75}
+.qcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cls,var(--cyan))}
+.qcard-body{padding:16px 16px 16px 20px;display:flex;align-items:flex-start;gap:14px}
+.qcard-icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid var(--border);font-size:22px;flex-shrink:0}
+.qcard-info{flex:1;min-width:0}
+.qcard-type-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.qcard-type{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:2px 8px;border:1px solid;opacity:0.8}
+.qcard-type.daily{color:var(--cyan);border-color:rgba(0,245,255,0.3)}
+.qcard-type.weekly{color:var(--orange);border-color:rgba(255,149,0,0.3)}
+.qcard-type.challenge{color:var(--purple);border-color:rgba(176,68,255,0.3)}
+.qcard-type.guild{color:var(--green);border-color:rgba(68,255,136,0.3)}
+.qcard-cls-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--cyan))}
+.qcard-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.4}
+.qcard-desc{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:10px}
+.qcard-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.qtag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid}
+.qtag.xp{color:var(--gold);border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.06)}
+.qtag.gold{color:#ffaa00;border-color:rgba(255,170,0,0.25);background:rgba(255,170,0,0.06)}
+.qtag.stat{color:var(--green);border-color:rgba(68,255,136,0.25);background:rgba(68,255,136,0.06)}
+.qtag.proof{color:var(--text-dim);border-color:var(--border)}
+
+.qcard-footer{border-top:1px solid var(--border);padding:10px 16px 10px 20px;display:flex;align-items:center;justify-content:space-between}
+.qstatus{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px}
+.qstatus.todo{color:var(--text-dim)}
+.qstatus.pending{color:var(--gold)}
+.qstatus.approved{color:var(--green)}
+.qstatus.rejected{color:var(--red)}
+
+.qbtn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 16px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.qbtn:hover{background:var(--cyan);color:var(--bg)}
+.qbtn.done-btn{border-color:var(--green);color:var(--green);cursor:default}
+.qbtn.done-btn:hover{background:transparent;color:var(--green)}
+.qbtn.pending-btn{border-color:var(--gold);color:var(--gold);cursor:default}
+.qbtn.pending-btn:hover{background:transparent;color:var(--gold)}
+.qbtn.rejected-btn{border-color:var(--red);color:var(--red)}
+.qbtn.rejected-btn:hover{background:var(--red);color:#fff}
+
+/* WEEKLY QUEST SPECIAL */
+.qcard.weekly-card{background:rgba(255,149,0,0.03);border-color:rgba(255,149,0,0.2)}
+.qcard.weekly-card:hover{border-color:rgba(255,149,0,0.4)}
+.weekly-progress{padding:0 16px 12px 20px}
+.weekly-track{height:3px;background:rgba(255,149,0,0.1);overflow:hidden}
+.weekly-fill{height:100%;background:linear-gradient(90deg,#ff6600,var(--orange));transition:width 0.8s ease}
+.weekly-label{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px}
+
+/* EMPTY */
+.empty-state{grid-column:1/-1;text-align:center;padding:64px 20px}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.3}
+.empty-txt{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--text-dim);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--text-dim);opacity:0.6}
+
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:500;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);width:100%;max-width:500px;position:relative;animation:fadeInUp 0.3s ease both;max-height:90vh;overflow-y:auto}
+.modal::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:10}
+.modal-title{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;color:var(--cyan)}
+.modal-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:20px;line-height:1;transition:color 0.2s;padding:4px}
+.modal-close:hover{color:var(--red)}
+.modal-body{padding:24px}
+
+.modal-cls-bar{height:3px;width:100%;margin-bottom:20px}
+.modal-quest-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:#fff;margin-bottom:6px;line-height:1.3}
+.modal-quest-desc{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:16px}
+.modal-reward-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.mreward{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;border:1px solid}
+.mreward.xp{color:var(--gold);border-color:rgba(255,215,0,0.3);background:rgba(255,215,0,0.06)}
+.mreward.gold{color:#ffaa00;border-color:rgba(255,170,0,0.3);background:rgba(255,170,0,0.06)}
+.mreward.stat{color:var(--green);border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.06)}
+
+.proof-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px;display:block}
+
+.upload-zone{border:2px dashed rgba(0,245,255,0.18);padding:36px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:16px;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--cyan);background:rgba(0,245,255,0.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone-icon{font-size:36px;margin-bottom:10px}
+.upload-zone-txt{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim)}
+.upload-zone-sub{font-size:11px;color:var(--text-dim);opacity:0.6;margin-top:4px}
+.preview-img{width:100%;max-height:220px;object-fit:cover;display:none;margin-bottom:12px;border:1px solid var(--border)}
+
+.text-area{width:100%;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:12px;outline:none;resize:vertical;min-height:100px;transition:border-color 0.3s;line-height:1.6}
+.text-area:focus{border-color:var(--cyan)}
+.text-area-count{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);text-align:right;margin-top:4px;margin-bottom:16px}
+
+.modal-msg{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;margin-bottom:14px;border-left:3px solid;display:none;line-height:1.5}
+.modal-msg.error{border-color:var(--red);color:#ff6680;background:rgba(255,0,60,0.08)}
+.modal-msg.success{border-color:var(--green);color:var(--green);background:rgba(68,255,136,0.06)}
+.modal-msg.show{display:block}
+
+.submit-btn{width:100%;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;padding:14px;background:var(--cyan);color:var(--bg);border:none;cursor:pointer;font-weight:700;transition:all 0.3s}
+.submit-btn:hover{background:#00d4e0}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--cyan);background:rgba(1,10,15,0.97);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--cyan);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:300px;line-height:1.5}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left-color:var(--green);color:var(--green)}
+.toast.error{border-left-color:var(--red);color:#ff6680}
+.toast.gold{border-left-color:var(--gold);color:var(--gold)}
+
+/* BOX */
+.box{background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative}
+.box::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:80px 16px 80px}
+  .quest-grid{grid-template-columns:1fr}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab-btn{white-space:nowrap}
+}
+@media(max-width:1100px){
+  .quest-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING QUESTS...</div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
+    <div>
+      <div class="su-name" id="suName">—</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      DASHBOARD
+    </a>
+    <a class="nav-item active" href="./quests.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      QUESTS
+    </a>
+    <a class="nav-item" href="./leaderboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      LEADERBOARD
+    </a>
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./map.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>WORLD MAP</a>
+    <a class="nav-item" href="./guild.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>GUILD</a>
+    <a class="nav-item" href="./pvp.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>PVP DUEL</a>
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item" href="./profile.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>PROFILE</a>
+    <a class="nav-item" href="./achievements.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>ACHIEVEMENTS</a>
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>SHOP</a>
+    <a class="nav-item" href="./wallet.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>WALLET</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</aside>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">// <span>QUESTS</span></div>
+      <div class="page-sub" id="pageSub">—</div>
+    </div>
+    <div class="reset-badge" id="resetBadge">⏱ รีเซ็ตใน —</div>
+  </div>
+
+  <!-- PROGRESS BANNER -->
+  <div class="progress-banner">
+    <div class="pb-left">
+      <div class="pb-circle">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" stroke="rgba(0,245,255,0.08)" stroke-width="4" fill="none"/>
+          <circle cx="28" cy="28" r="22" stroke="var(--cyan)" stroke-width="4" fill="none"
+            stroke-dasharray="138.2" id="progressCircle" stroke-dashoffset="138.2"
+            stroke-linecap="butt" style="transition:stroke-dashoffset 1s ease"/>
+        </svg>
+        <div class="pb-circle-num" id="progressPct">0%</div>
+      </div>
+    </div>
+    <div class="pb-info">
+      <div class="pb-label">ความคืบหน้าวันนี้</div>
+      <div class="pb-track"><div class="pb-fill" id="pbFill" style="width:0%"></div></div>
+      <div class="pb-stats">
+        <div class="pb-stat">สำเร็จ <span id="pbDone">0</span></div>
+        <div class="pb-stat">รอ Review <span id="pbPending">0</span></div>
+        <div class="pb-stat">ทั้งหมด <span id="pbTotal">0</span></div>
+      </div>
+    </div>
+    <div class="pb-xp" id="pbXP">+0 XP วันนี้</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('daily',this)">
+      DAILY <span class="tab-count" id="tcDaily">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('weekly',this)">
+      WEEKLY <span class="tab-count gold" id="tcWeekly">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('challenge',this)">
+      CHALLENGE <span class="tab-count red" id="tcChallenge">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('history',this)">
+      HISTORY <span class="tab-count green" id="tcHistory">0</span>
+    </button>
+  </div>
+
+  <!-- CLASS FILTER -->
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" onclick="filterClass('all',this)">ทั้งหมด</button>
+    <button class="filter-btn cls-warrior" onclick="filterClass('warrior',this)">⚔️ Warrior</button>
+    <button class="filter-btn cls-mage" onclick="filterClass('mage',this)">🔮 Mage</button>
+    <button class="filter-btn cls-explorer" onclick="filterClass('explorer',this)">🗺️ Explorer</button>
+    <button class="filter-btn cls-merchant" onclick="filterClass('merchant',this)">💰 Merchant</button>
+    <button class="filter-btn cls-artist" onclick="filterClass('artist',this)">🎨 Artist</button>
+    <button class="filter-btn cls-diplomat" onclick="filterClass('diplomat',this)">🤝 Diplomat</button>
+  </div>
+
+  <!-- QUEST GRID -->
+  <div class="quest-grid" id="questGrid">
+    <div class="empty-state">
+      <div class="empty-icon">⏳</div>
+      <div class="empty-txt">กำลังโหลด Quest...</div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="proofModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalType">📸 ส่งหลักฐาน Quest</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-cls-bar" id="modalClsBar"></div>
+      <div class="modal-quest-title" id="modalTitle">—</div>
+      <div class="modal-quest-desc" id="modalDesc">—</div>
+      <div class="modal-reward-row" id="modalRewards"></div>
+      <div class="modal-msg" id="modalMsg"></div>
+      <span class="proof-label" id="proofLabel">หลักฐาน</span>
+      <!-- image -->
+      <div id="imageProof">
+        <img class="preview-img" id="previewImg">
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="proofFile" accept="image/*" onchange="handleFileChange(this)">
+          <div class="upload-zone-icon">📷</div>
+          <div class="upload-zone-txt">แตะเพื่อเลือกรูปภาพ</div>
+          <div class="upload-zone-sub">รองรับ JPG, PNG, WEBP</div>
+        </div>
+      </div>
+      <!-- text -->
+      <div id="textProof" style="display:none">
+        <textarea class="text-area" id="proofText" placeholder="เขียนรายละเอียดสิ่งที่ทำวันนี้..." maxlength="500" oninput="updateCount()"></textarea>
+        <div class="text-area-count"><span id="charCount">0</span>/500</div>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitProof()">ส่งหลักฐาน →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ── STATE ──
+let currentUser = null
+let userProfile  = null
+let allQuests    = []   // { quest, userQuest|null }
+let currentTab   = 'daily'
+let currentClass = 'all'
+let activeQuest  = null
+
+const CLASS_EMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+
+function getAvatarUrl(seed, size=40) {
+  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const [style, s, bg] = seed.split(':')
+  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+
+// ── INIT ──
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  await loadProfile()
+  await loadAllQuests()
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  updateResetTimer()
+  setInterval(updateResetTimer, 60000)
+  initCursor()
+}
+
+// ── PROFILE ──
+async function loadProfile() {
+  const { data } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  userProfile = data
+  if (!data) return
+
+  const cls = data.class || 'warrior'
+  document.getElementById('suAvatar').src = getAvatarUrl(data.avatar_seed)
+  document.getElementById('sidebarUser').className = 'sidebar-user cls-' + cls
+  document.getElementById('suAvatarWrap').className = 'su-avatar cls-' + cls
+  document.getElementById('suName').textContent = data.display_name || data.username
+  document.getElementById('suClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
+  document.getElementById('suLv').textContent = 'LV.' + data.level
+  document.getElementById('pageSub').textContent = `${CLASS_EMOJI[cls]||''} ${(data.display_name||data.username).toUpperCase()} · LV.${data.level} · ${cls.toUpperCase()}`
+}
+
+// ── LOAD ALL QUESTS ──
+async function loadAllQuests() {
+  // ดึง quest ทั้งหมด
+  const { data: quests } = await supabase.from('quests').select('*').eq('is_active', true).order('type').order('id')
+
+  // ดึง user_quests ของวันนี้ (daily) + ทั้งหมด (weekly/challenge)
+  const today = new Date().toISOString().split('T')[0]
+  const { data: uqToday } = await supabase
+    .from('user_quests').select('*')
+    .eq('user_id', currentUser.id)
+    .gte('created_at', today)
+
+  // history ทั้งหมด
+  const { data: uqAll } = await supabase
+    .from('user_quests').select('*,quests(*)')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false })
+    .limit(30)
+
+  const uqMap = {}
+  ;(uqToday || []).forEach(uq => { uqMap[uq.quest_id] = uq })
+
+  allQuests = (quests || []).map(q => ({ quest: q, userQuest: uqMap[q.id] || null }))
+
+  // store history
+  window._historyQuests = uqAll || []
+
+  updateTabCounts()
+  updateProgressBanner()
+  renderQuests()
+}
+
+// ── TAB COUNTS ──
+function updateTabCounts() {
+  const daily     = allQuests.filter(q => q.quest.type === 'daily')
+  const weekly    = allQuests.filter(q => q.quest.type === 'weekly')
+  const challenge = allQuests.filter(q => q.quest.type === 'challenge' || q.quest.type === 'story')
+
+  document.getElementById('tcDaily').textContent     = daily.length
+  document.getElementById('tcWeekly').textContent    = weekly.length
+  document.getElementById('tcChallenge').textContent = challenge.length
+  document.getElementById('tcHistory').textContent   = (window._historyQuests||[]).filter(h => h.status === 'approved').length
+}
+
+// ── PROGRESS BANNER ──
+function updateProgressBanner() {
+  const daily  = allQuests.filter(q => q.quest.type === 'daily')
+  const done   = daily.filter(q => q.userQuest?.status === 'approved').length
+  const pend   = daily.filter(q => q.userQuest?.status === 'pending_review').length
+  const total  = daily.length
+  const pct    = total > 0 ? Math.round((done / total) * 100) : 0
+  const todayXP = daily
+    .filter(q => q.userQuest?.status === 'approved' && q.userQuest?.xp_granted)
+    .reduce((s, q) => s + (q.quest.xp_reward || 0), 0)
+
+  document.getElementById('pbDone').textContent    = done
+  document.getElementById('pbPending').textContent = pend
+  document.getElementById('pbTotal').textContent   = total
+  document.getElementById('pbXP').textContent      = `+${todayXP} XP วันนี้`
+  document.getElementById('progressPct').textContent = pct + '%'
+
+  setTimeout(() => {
+    document.getElementById('pbFill').style.width = pct + '%'
+    const circumference = 138.2
+    document.getElementById('progressCircle').style.strokeDashoffset = circumference - (circumference * pct / 100)
+  }, 300)
+}
+
+// ── RENDER ──
+function renderQuests() {
+  const grid = document.getElementById('questGrid')
+
+  if (currentTab === 'history') {
+    renderHistory(grid); return
+  }
+
+  let filtered = allQuests.filter(q => {
+    if (currentTab === 'daily') return q.quest.type === 'daily'
+    if (currentTab === 'weekly') return q.quest.type === 'weekly'
+    if (currentTab === 'challenge') return q.quest.type === 'challenge' || q.quest.type === 'story'
+    return true
+  })
+
+  if (currentClass !== 'all') {
+    filtered = filtered.filter(q => !q.quest.class_target || q.quest.class_target === currentClass)
+  }
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-txt">ไม่มี Quest ในหมวดนี้</div><div class="empty-sub">ลองเปลี่ยน Class Filter ดู</div></div>`
+    return
+  }
+
+  grid.innerHTML = filtered.map(({quest: q, userQuest: uq}) => renderQuestCard(q, uq)).join('')
+}
+
+function renderQuestCard(q, uq) {
+  const st = uq?.status || 'in_progress'
+  const isDone = st === 'approved'
+  const isPend = st === 'pending_review'
+  const isRej  = st === 'rejected'
+  const cls    = q.class_target || 'warrior'
+  const isWeekly = q.type === 'weekly'
+
+  let btnHtml = ''
+  if (isDone)    btnHtml = `<button class="qbtn done-btn">✓ สำเร็จ</button>`
+  else if (isPend) btnHtml = `<button class="qbtn pending-btn">⏳ รอ Review</button>`
+  else if (isRej)  btnHtml = `<button class="qbtn rejected-btn" onclick="openModal(${q.id})">↩ ส่งใหม่</button>`
+  else             btnHtml = `<button class="qbtn" onclick="openModal(${q.id})">ส่งหลักฐาน →</button>`
+
+  const statusLabel = isDone ? '✓ สำเร็จแล้ว' : isPend ? '⏳ รอตรวจสอบ' : isRej ? '✗ ถูกปฏิเสธ' : '○ รอดำเนินการ'
+  const statusCls   = isDone ? 'approved' : isPend ? 'pending' : isRej ? 'rejected' : 'todo'
+
+  const weeklyProgress = isWeekly ? `
+    <div class="weekly-progress">
+      <div class="weekly-track"><div class="weekly-fill" style="width:${isDone?100:isPend?60:0}%"></div></div>
+      <div class="weekly-label">${isDone ? 'ครบแล้ว' : '0 / 1 สัปดาห์'}</div>
+    </div>` : ''
+
+  return `
+  <div class="qcard cls-${cls} ${isDone?'done':''} ${isPend?'pending':''} ${isWeekly?'weekly-card':''}">
+    <div class="qcard-accent"></div>
+    <div class="qcard-body">
+      <div class="qcard-icon">${CLASS_EMOJI[cls]||'🎯'}</div>
+      <div class="qcard-info">
+        <div class="qcard-type-row">
+          <span class="qcard-type ${q.type}">${q.type.toUpperCase()}</span>
+          ${q.class_target ? `<span class="qcard-cls-badge">${CLASS_EMOJI[cls]} ${cls.toUpperCase()}</span>` : ''}
+        </div>
+        <div class="qcard-title">${q.title}</div>
+        <div class="qcard-desc">${q.description||''}</div>
+        <div class="qcard-tags">
+          <span class="qtag xp">+${q.xp_reward} XP</span>
+          ${q.gold_reward ? `<span class="qtag gold">+${q.gold_reward} Gold</span>` : ''}
+          ${q.stat_type ? `<span class="qtag stat">+${q.stat_points} ${q.stat_type.toUpperCase()}</span>` : ''}
+          <span class="qtag proof">${(q.proof_type||'TEXT').toUpperCase()}</span>
+        </div>
+      </div>
+    </div>
+    ${weeklyProgress}
+    <div class="qcard-footer">
+      <div class="qstatus ${statusCls}">${statusLabel}</div>
+      ${btnHtml}
+    </div>
+  </div>`
+}
+
+function renderHistory(grid) {
+  const history = window._historyQuests || []
+  if (!history.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-txt">ยังไม่มีประวัติ</div><div class="empty-sub">ทำ Quest สำเร็จแล้วจะปรากฏที่นี่</div></div>`
+    return
+  }
+
+  grid.innerHTML = history.map(uq => {
+    const q = uq.quests
+    if (!q) return ''
+    const dateStr = new Date(uq.created_at).toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'2-digit' })
+    const statusColor = uq.status === 'approved' ? 'var(--green)' : uq.status === 'pending_review' ? 'var(--gold)' : 'var(--red)'
+    return `
+    <div class="qcard cls-${q.class_target||'warrior'}">
+      <div class="qcard-accent"></div>
+      <div class="qcard-body">
+        <div class="qcard-icon">${CLASS_EMOJI[q.class_target]||'🎯'}</div>
+        <div class="qcard-info">
+          <div class="qcard-type-row">
+            <span class="qcard-type ${q.type}">${q.type.toUpperCase()}</span>
+          </div>
+          <div class="qcard-title">${q.title}</div>
+          <div class="qcard-tags">
+            <span class="qtag xp">+${q.xp_reward} XP</span>
+            ${q.gold_reward ? `<span class="qtag gold">+${q.gold_reward} Gold</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="qcard-footer">
+        <span style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)">${dateStr}</span>
+        <span style="font-family:'Orbitron',monospace;font-size:9px;color:${statusColor}">${uq.status === 'approved' ? '✓ สำเร็จ' : uq.status === 'pending_review' ? '⏳ รอ Review' : '✗ ปฏิเสธ'}</span>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ── MODAL ──
+window.openModal = function(questId) {
+  const found = allQuests.find(q => q.quest.id === questId)
+  if (!found) return
+  activeQuest = found.quest
+  const q = activeQuest
+
+  document.getElementById('modalTitle').textContent = q.title
+  document.getElementById('modalDesc').textContent  = q.description || ''
+  document.getElementById('modalClsBar').style.background = getCssColor(q.class_target)
+
+  document.getElementById('modalRewards').innerHTML = `
+    <span class="mreward xp">+${q.xp_reward} XP</span>
+    ${q.gold_reward ? `<span class="mreward gold">+${q.gold_reward} Gold</span>` : ''}
+    ${q.stat_type ? `<span class="mreward stat">+${q.stat_points} ${q.stat_type.toUpperCase()}</span>` : ''}
+  `
+
+  const isImage = q.proof_type === 'image' || q.proof_type === 'screenshot'
+  document.getElementById('imageProof').style.display = isImage ? '' : 'none'
+  document.getElementById('textProof').style.display  = isImage ? 'none' : ''
+  document.getElementById('proofLabel').textContent   = isImage ? '📷 รูปหลักฐาน' : '📝 บันทึกสิ่งที่ทำ'
+
+  // reset
+  document.getElementById('previewImg').style.display = 'none'
+  document.getElementById('previewImg').src = ''
+  document.getElementById('uploadZone').style.display = ''
+  document.getElementById('proofFile').value = ''
+  document.getElementById('proofText').value = ''
+  document.getElementById('charCount').textContent = '0'
+  clearModalMsg()
+
+  document.getElementById('proofModal').classList.add('open')
+}
+
+window.closeModal = function() {
+  document.getElementById('proofModal').classList.remove('open')
+  activeQuest = null
+}
+
+window.handleFileChange = function(input) {
+  const file = input.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = document.getElementById('previewImg')
+    img.src = e.target.result
+    img.style.display = 'block'
+    document.getElementById('uploadZone').style.display = 'none'
+  }
+  reader.readAsDataURL(file)
+}
+
+window.updateCount = function() {
+  document.getElementById('charCount').textContent = document.getElementById('proofText').value.length
+}
+
+window.submitProof = async function() {
+  if (!activeQuest) return
+  const btn = document.getElementById('submitBtn')
+  btn.disabled = true; btn.textContent = 'กำลังส่ง...'
+  clearModalMsg()
+
+  try {
+    const q = activeQuest
+    const isImage = q.proof_type === 'image' || q.proof_type === 'screenshot'
+    let proofUrl = null, proofText = null
+
+    if (isImage) {
+      const file = document.getElementById('proofFile').files[0]
+      if (!file) { showModalMsg('error','กรุณาเลือกรูปภาพก่อน'); return }
+      const ext  = file.name.split('.').pop()
+      const path = `proofs/${currentUser.id}/${q.id}_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('nexuslife').upload(path, file, { upsert:true })
+      if (upErr) throw upErr
+      const { data: { publicUrl } } = supabase.storage.from('nexuslife').getPublicUrl(path)
+      proofUrl = publicUrl
+    } else {
+      proofText = document.getElementById('proofText').value.trim()
+      if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
+    }
+
+    const { error } = await supabase.from('user_quests').upsert({
+      user_id: currentUser.id,
+      quest_id: q.id,
+      status: 'pending_review',
+      proof_url: proofUrl,
+      proof_text: proofText,
+      submitted_at: new Date().toISOString()
+    }, { onConflict: 'user_id,quest_id' })
+
+    if (error) throw error
+
+    // text quest → auto approve
+    if (!isImage) {
+      const newXP   = (userProfile.xp_total || 0) + q.xp_reward
+      const newXPMo = (userProfile.xp_this_month || 0) + q.xp_reward
+      const newGold = (userProfile.gold || 0) + (q.gold_reward || 0)
+      await supabase.from('users').update({ xp_total:newXP, xp_this_month:newXPMo, gold:newGold }).eq('id', currentUser.id)
+      await supabase.from('user_quests').update({ status:'approved', xp_granted:true }).eq('user_id', currentUser.id).eq('quest_id', q.id)
+      await supabase.from('activity_feed').insert({ user_id:currentUser.id, type:'quest_complete', data:{ title:q.title, xp:q.xp_reward } })
+
+      // update stat
+      if (q.stat_type) {
+        const stMap = { str:'str_points', int:'int_points', exp:'exp_points', biz:'biz_points', cre:'cre_points', soc:'soc_points' }
+        const col = stMap[q.stat_type]
+        if (col) await supabase.rpc('increment_stat', { p_user_id: currentUser.id, p_col: col, p_amount: q.stat_points || 0 }).catch(()=>{})
+      }
+
+      showToast(`🎉 +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'gold')
+    } else {
+      showToast('📸 ส่งหลักฐานแล้ว — รอ Admin Review', 'success')
+    }
+
+    window.closeModal()
+    await loadAllQuests()
+    await loadProfile()
+
+  } catch(e) {
+    showModalMsg('error', e.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
+  } finally {
+    btn.disabled = false; btn.textContent = 'ส่งหลักฐาน →'
+  }
+}
+
+// ── TAB + FILTER ──
+window.switchTab = function(tab, btn) {
+  currentTab = tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  // ซ่อน class filter ใน history
+  document.getElementById('filterRow').style.display = tab === 'history' ? 'none' : ''
+  renderQuests()
+}
+
+window.filterClass = function(cls, btn) {
+  currentClass = cls
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active','cls-active'))
+  btn.classList.add(cls === 'all' ? 'active' : 'cls-active')
+  renderQuests()
+}
+
+// ── HELPERS ──
+function getCssColor(cls) {
+  const map = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+  return map[cls] || 'var(--cyan)'
+}
+
+function updateResetTimer() {
+  const next = new Date(); next.setHours(24,0,0,0)
+  const diff = next - Date.now()
+  const h = Math.floor(diff/3600000)
+  const m = Math.floor((diff%3600000)/60000)
+  document.getElementById('resetBadge').textContent = `⏱ รีเซ็ตใน ${h} ชม. ${m} นาที`
+}
+
+function showModalMsg(type, msg) {
+  const el = document.getElementById('modalMsg')
+  el.className = `modal-msg ${type} show`
+  el.textContent = msg
+  document.getElementById('submitBtn').disabled = false
+  document.getElementById('submitBtn').textContent = 'ส่งหลักฐาน →'
+}
+function clearModalMsg() {
+  const el = document.getElementById('modalMsg')
+  el.className = 'modal-msg'; el.textContent = ''
+}
+
+window.showToast = function(msg, type='success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3500)
+}
+
+window.handleSignOut = async function() {
+  await supabase.auth.signOut()
+  window.location.href = './login.html'
+}
+
+window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function loop(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop) })()
+  document.querySelectorAll('button,a,.qcard').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px' })
+  })
+}
+
+document.getElementById('proofModal').addEventListener('click', e => { if (e.target === document.getElementById('proofModal')) closeModal() })
+
+init()
+</script>
+</body>
+</html>
