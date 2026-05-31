@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan: #00f5ff;
+  --cyan-dim: #00a8b5;
+  --gold: #ffd700;
+  --red: #ff003c;
+  --green: #44ff88;
+  --purple: #b044ff;
+  --bg: #010a0f;
+  --bg2: #020d14;
+  --panel: rgba(0,245,255,0.04);
+  --border: rgba(0,245,255,0.12);
+  --text: #c8f0f5;
+  --text-dim: #5a8a90;
+}
+
+.cls-warrior  { --cls:#ff4444; }
+.cls-mage     { --cls:#aa44ff; }
+.cls-explorer { --cls:#44ff88; }
+.cls-merchant { --cls:#ffaa00; }
+.cls-artist   { --cls:#ff66aa; }
+.cls-diplomat { --cls:#00ccff; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Sarabun',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+  min-height:100vh;
+}
+
+/* CURSOR */
+.cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
+.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
+
+/* SCANLINE */
+body::before { content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000; }
+
+/* GRID BG */
+.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
+
+.orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
+.orb-1 { width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px; }
+.orb-2 { width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px; }
+.orb-3 { width:200px;height:200px;background:rgba(255,215,0,0.03);top:40%;left:40%; }
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  position:fixed;top:0;left:0;bottom:0;width:220px;
+  background:rgba(1,10,15,0.95);
+  border-right:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  z-index:200;
+  display:flex;flex-direction:column;
+  transition:transform 0.3s ease;
+}
+
+.sidebar-logo {
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo-text {
+  font-family:'Orbitron',monospace;font-weight:900;font-size:14px;
+  letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);
+  display:flex;align-items:center;gap:8px;
+}
+.logo-dot { width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:0.3;box-shadow:none;} }
+.sidebar-tagline { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
+
+.sidebar-user {
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+}
+.su-avatar {
+  width:40px;height:40px;border-radius:50%;
+  border:2px solid var(--cls, var(--cyan));
+  overflow:hidden;background:var(--panel);flex-shrink:0;
+}
+.su-avatar img { width:100%;height:100%;object-fit:cover; }
+.su-info { overflow:hidden; }
+.su-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.su-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls, var(--cyan));letter-spacing:1px; }
+.su-lv { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px; }
+
+.nav-menu { flex:1;padding:12px 0;overflow-y:auto; }
+.nav-item {
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;
+  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;
+  color:var(--text-dim);text-decoration:none;
+  border-left:2px solid transparent;
+  transition:all 0.2s;cursor:pointer;
+}
+.nav-item:hover { color:var(--cyan);background:rgba(0,245,255,0.04); }
+.nav-item.active { color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06); }
+.nav-item svg { flex-shrink:0;opacity:0.6;transition:opacity 0.2s; }
+.nav-item:hover svg,.nav-item.active svg { opacity:1; }
+.nav-badge { margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace; }
+.nav-section-label { padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5; }
+
+.sidebar-bottom { padding:16px 20px;border-top:1px solid var(--border); }
+.signout-btn {
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  color:var(--text-dim);background:transparent;border:1px solid var(--border);
+  cursor:pointer;transition:all 0.3s;
+}
+.signout-btn:hover { color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06); }
+
+/* ===================== TOPBAR (mobile) ===================== */
+.topbar {
+  display:none;position:fixed;top:0;left:0;right:0;z-index:150;
+  padding:14px 20px;
+  background:rgba(1,10,15,0.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  align-items:center;justify-content:space-between;
+}
+.topbar-logo { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan); }
+.burger { width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer; }
+.burger span { display:block;width:18px;height:1px;background:var(--cyan); }
+.sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190; }
+
+/* ===================== MAIN ===================== */
+.main {
+  margin-left:220px;
+  min-height:100vh;
+  position:relative;z-index:1;
+  padding:32px 28px 60px;
+}
+
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+@keyframes slideIn { from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);} }
+@keyframes shimmer { 0%{background-position:-200% center;} 100%{background-position:200% center;} }
+@keyframes rankGlow { 0%,100%{box-shadow:0 0 12px rgba(255,215,0,0.3);}50%{box-shadow:0 0 28px rgba(255,215,0,0.7);} }
+@keyframes countUp { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+@keyframes barFill { from{width:0;} to{width:var(--bar-w); } }
+@keyframes flicker { 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:0.7;} 94%{opacity:1;} 97%{opacity:0.85;} }
+
+/* PAGE HEADER */
+.page-header {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px;
+  animation:fadeInDown 0.5s ease both;
+}
+.page-title {
+  font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;
+  display:flex;align-items:center;gap:12px;
+}
+.page-title span { color:var(--gold);text-shadow:0 0 16px var(--gold); }
+.page-date { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
+
+.notif-btn {
+  position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:var(--panel);border:1px solid var(--border);cursor:pointer;transition:all 0.3s;
+}
+.notif-btn:hover { border-color:var(--cyan); }
+.notif-dot { position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.5s infinite; }
+
+/* ===================== SEASON BANNER ===================== */
+.season-banner {
+  background:linear-gradient(135deg, rgba(255,215,0,0.06) 0%, rgba(176,68,255,0.06) 50%, rgba(0,245,255,0.06) 100%);
+  border:1px solid rgba(255,215,0,0.2);
+  padding:20px 24px;
+  margin-bottom:24px;
+  position:relative;overflow:hidden;
+  animation:fadeInUp 0.5s 0.05s ease both;
+}
+.season-banner::before { content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--gold);border-left:2px solid var(--gold); }
+.season-banner::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold); }
+.season-banner-inner { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px; }
+.season-info { display:flex;align-items:center;gap:16px; }
+.season-icon { font-size:28px;animation:flicker 4s infinite; }
+.season-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--gold);margin-bottom:4px; }
+.season-title { font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:#fff;text-shadow:0 0 12px rgba(255,215,0,0.4); }
+.season-sub { font-size:12px;color:var(--text-dim);margin-top:2px; }
+.season-timer { text-align:right; }
+.season-timer-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim); }
+.season-timer-value { font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--gold);text-shadow:0 0 12px var(--gold);margin-top:4px; }
+
+/* ===================== MY RANK CARD ===================== */
+.my-rank-card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:20px 24px;
+  margin-bottom:24px;
+  display:flex;align-items:center;gap:20px;
+  position:relative;overflow:hidden;
+  animation:fadeInUp 0.5s 0.1s ease both;
+}
+.my-rank-card::before { content:'MY RANK';position:absolute;top:10px;right:16px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.4; }
+.my-rank-badge {
+  width:56px;height:56px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+  background:rgba(255,215,0,0.08);border:2px solid var(--gold);
+  color:var(--gold);flex-shrink:0;
+  position:relative;
+}
+.my-rank-avatar { width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--cyan));flex-shrink:0; }
+.my-rank-avatar img { width:100%;height:100%;object-fit:cover; }
+.my-rank-info { flex:1; }
+.my-rank-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#fff; }
+.my-rank-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:2px;margin-top:2px; }
+.my-rank-xp { display:flex;align-items:center;gap:8px;margin-top:8px; }
+.my-rank-xp-val { font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--cyan); }
+.my-rank-xp-label { font-size:11px;color:var(--text-dim); }
+.my-rank-stats { display:flex;gap:20px; }
+.my-stat { text-align:center; }
+.my-stat-val { font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#fff; }
+.my-stat-label { font-size:10px;color:var(--text-dim);margin-top:2px; }
+
+/* ===================== TABS ===================== */
+.tab-row {
+  display:flex;align-items:center;gap:0;
+  margin-bottom:24px;
+  border-bottom:1px solid var(--border);
+  animation:fadeInUp 0.5s 0.15s ease both;
+}
+.tab-btn {
+  display:flex;align-items:center;gap:8px;
+  padding:14px 24px;
+  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;
+  color:var(--text-dim);background:transparent;border:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  cursor:pointer;transition:all 0.25s;position:relative;
+}
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--gold);border-bottom-color:var(--gold); }
+.tab-btn.active svg { opacity:1; }
+.tab-btn svg { opacity:0.5;transition:opacity 0.25s; }
+.tab-btn:hover svg { opacity:0.8; }
+
+/* filters */
+.filter-row {
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;
+  animation:fadeInUp 0.5s 0.2s ease both;
+}
+.filter-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim); }
+.filter-chip {
+  padding:6px 14px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
+  background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  cursor:pointer;transition:all 0.2s;
+}
+.filter-chip:hover { border-color:var(--cyan-dim);color:var(--text); }
+.filter-chip.active { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+.filter-right { margin-left:auto;display:flex;align-items:center;gap:8px; }
+.class-filter {
+  padding:6px 12px;font-family:'Orbitron',monospace;font-size:9px;
+  background:var(--panel);border:1px solid var(--border);color:var(--text-dim);
+  cursor:pointer;transition:all 0.2s;
+}
+.class-filter:focus { outline:none;border-color:var(--cyan); }
+.class-filter option { background:#010a0f; }
+
+/* ===================== PODIUM ===================== */
+.podium-section {
+  display:flex;align-items:flex-end;justify-content:center;gap:16px;
+  margin-bottom:32px;padding:0 20px;
+  animation:fadeInUp 0.6s 0.2s ease both;
+}
+.podium-item { display:flex;flex-direction:column;align-items:center;gap:10px; }
+.podium-rank-1 { order:2; }
+.podium-rank-2 { order:1; }
+.podium-rank-3 { order:3; }
+
+.podium-avatar-wrap { position:relative; }
+.podium-avatar {
+  border-radius:50%;overflow:hidden;border:3px solid;
+  background:var(--panel);
+}
+.podium-rank-1 .podium-avatar { width:88px;height:88px;border-color:var(--gold);box-shadow:0 0 24px rgba(255,215,0,0.5);animation:rankGlow 2s ease infinite; }
+.podium-rank-2 .podium-avatar { width:72px;height:72px;border-color:#c0c0c0;box-shadow:0 0 14px rgba(192,192,192,0.3); }
+.podium-rank-3 .podium-avatar { width:64px;height:64px;border-color:#cd7f32;box-shadow:0 0 10px rgba(205,127,50,0.3); }
+.podium-avatar img { width:100%;height:100%;object-fit:cover; }
+
+.podium-crown { position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:20px;filter:drop-shadow(0 0 6px var(--gold)); }
+.podium-rank-num {
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:900;
+  padding:2px 8px;border-radius:10px;
+}
+.podium-rank-1 .podium-rank-num { background:var(--gold);color:#000; }
+.podium-rank-2 .podium-rank-num { background:#c0c0c0;color:#000; }
+.podium-rank-3 .podium-rank-num { background:#cd7f32;color:#000; }
+
+.podium-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;text-align:center;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.podium-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;text-align:center; }
+.podium-xp { font-family:'Orbitron',monospace;font-size:12px;font-weight:700;text-align:center; }
+.podium-rank-1 .podium-xp { color:var(--gold); }
+.podium-rank-2 .podium-xp { color:#c0c0c0; }
+.podium-rank-3 .podium-xp { color:#cd7f32; }
+
+.podium-stand { width:100%; border-top:2px solid; }
+.podium-rank-1 .podium-stand { height:80px;background:linear-gradient(180deg,rgba(255,215,0,0.12),rgba(255,215,0,0.02));border-color:var(--gold); }
+.podium-rank-2 .podium-stand { height:56px;background:linear-gradient(180deg,rgba(192,192,192,0.1),rgba(192,192,192,0.02));border-color:#c0c0c0; }
+.podium-rank-3 .podium-stand { height:40px;background:linear-gradient(180deg,rgba(205,127,50,0.1),rgba(205,127,50,0.02));border-color:#cd7f32; }
+
+/* ===================== LEADERBOARD TABLE ===================== */
+.lb-table-wrap {
+  position:relative;
+  animation:fadeInUp 0.5s 0.25s ease both;
+}
+.lb-table-header {
+  display:grid;
+  grid-template-columns: 48px 1fr 120px 100px 80px;
+  gap:12px;
+  padding:10px 20px;
+  background:rgba(0,245,255,0.02);
+  border:1px solid var(--border);
+  border-bottom:2px solid var(--border);
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);
+  margin-bottom:4px;
+}
+.lb-row {
+  display:grid;
+  grid-template-columns: 48px 1fr 120px 100px 80px;
+  gap:12px;
+  padding:12px 20px;
+  border:1px solid transparent;
+  border-bottom:1px solid rgba(0,245,255,0.05);
+  transition:all 0.2s;
+  position:relative;
+  cursor:pointer;
+  animation:slideIn 0.4s both;
+}
+.lb-row:hover {
+  background:rgba(0,245,255,0.04);
+  border-color:var(--border);
+}
+.lb-row.me {
+  background:rgba(0,245,255,0.06);
+  border-color:rgba(0,245,255,0.2);
+}
+.lb-row.me::before {
+  content:'YOU';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;
+  color:var(--cyan);opacity:0.5;
+}
+.lb-row-rank {
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:13px;font-weight:900;
+}
+.lb-row-rank.r1 { color:var(--gold);text-shadow:0 0 10px var(--gold); }
+.lb-row-rank.r2 { color:#c0c0c0;text-shadow:0 0 8px #c0c0c0; }
+.lb-row-rank.r3 { color:#cd7f32;text-shadow:0 0 8px #cd7f32; }
+.lb-row-rank.rother { color:var(--text-dim); }
+
+.lb-row-user { display:flex;align-items:center;gap:12px;overflow:hidden; }
+.lb-avatar { width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--border));flex-shrink:0; }
+.lb-avatar img { width:100%;height:100%;object-fit:cover; }
+.lb-user-info { overflow:hidden; }
+.lb-username { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.lb-title { font-size:10px;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+
+.lb-row-xp {
+  display:flex;align-items:center;gap:8px;
+}
+.lb-xp-bar-wrap { flex:1;height:4px;background:rgba(0,245,255,0.08);position:relative;overflow:hidden; }
+.lb-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:var(--bar-w,0%); animation:barFill 1s 0.5s ease both; }
+.lb-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);white-space:nowrap; }
+
+.lb-row-level { display:flex;align-items:center;justify-content:center; }
+.lb-level-badge {
+  font-family:'Orbitron',monospace;font-size:11px;font-weight:700;
+  padding:4px 10px;border:1px solid var(--cls,var(--border));
+  color:var(--cls,var(--text));background:rgba(var(--cls-rgb,0,245,255),0.08);
+}
+
+.lb-row-class { display:flex;align-items:center;justify-content:center; }
+.lb-class-tag {
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+  padding:3px 8px;border:1px solid var(--cls,var(--border));
+  color:var(--cls,var(--text-dim));
+  text-transform:uppercase;
+}
+
+/* ===================== CITY TAB ===================== */
+.city-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;
+  animation:fadeInUp 0.5s 0.2s ease both;
+}
+.city-card {
+  background:var(--panel);border:1px solid var(--border);
+  padding:20px;position:relative;overflow:hidden;
+  transition:all 0.3s;cursor:pointer;
+}
+.city-card:hover { border-color:var(--cyan-dim);transform:translateY(-2px); }
+.city-card::before { content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+.city-rank-badge {
+  position:absolute;top:16px;right:16px;
+  font-family:'Orbitron',monospace;font-size:20px;font-weight:900;
+}
+.city-rank-badge.r1 { color:var(--gold);text-shadow:0 0 12px var(--gold); }
+.city-rank-badge.r2 { color:#c0c0c0; }
+.city-rank-badge.r3 { color:#cd7f32; }
+.city-rank-badge.rother { color:var(--text-dim); }
+
+.city-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px; }
+.city-province { font-size:11px;color:var(--text-dim);margin-bottom:12px; }
+
+.city-prosperity { display:flex;align-items:center;gap:8px;margin-bottom:10px; }
+.prosperity-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim); }
+.prosperity-stars { display:flex;gap:3px; }
+.pstar { font-size:10px; }
+.pstar.on { color:var(--gold);text-shadow:0 0 6px var(--gold); }
+.pstar.off { color:var(--text-dim);opacity:0.3; }
+
+.city-stat-row { display:flex;gap:16px;margin-bottom:12px; }
+.city-stat { text-align:center;flex:1; }
+.city-stat-val { font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--cyan); }
+.city-stat-lbl { font-size:9px;color:var(--text-dim);margin-top:2px; }
+
+.city-xp-bar-wrap { height:4px;background:rgba(0,245,255,0.08);overflow:hidden;margin-bottom:8px; }
+.city-xp-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:var(--bar-w,0%);transition:width 1s ease; }
+.city-xp-label { display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim); }
+
+.city-buff { display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border:1px solid rgba(68,255,136,0.2);font-family:'Orbitron',monospace;font-size:8px;color:var(--green);margin-top:8px; }
+
+/* ===================== GUILD TAB ===================== */
+.guild-lb-list { animation:fadeInUp 0.5s 0.2s ease both; }
+.guild-row {
+  display:grid;
+  grid-template-columns: 48px 1fr 120px 100px 80px;
+  gap:12px;
+  padding:14px 20px;
+  border:1px solid transparent;
+  border-bottom:1px solid rgba(0,245,255,0.05);
+  transition:all 0.2s;cursor:pointer;
+  animation:slideIn 0.4s both;
+}
+.guild-row:hover { background:rgba(0,245,255,0.04);border-color:var(--border); }
+.guild-rank-num { display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:13px;font-weight:900; }
+.guild-rank-num.r1 { color:var(--gold);text-shadow:0 0 10px var(--gold); }
+.guild-rank-num.r2 { color:#c0c0c0; }
+.guild-rank-num.r3 { color:#cd7f32; }
+.guild-rank-num.rother { color:var(--text-dim); }
+.guild-info { display:flex;align-items:center;gap:12px;overflow:hidden; }
+.guild-emblem {
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:2px solid var(--border);background:var(--panel);flex-shrink:0;
+}
+.guild-texts { overflow:hidden; }
+.guild-name { font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.guild-tag { font-family:'Orbitron',monospace;font-size:8px;color:var(--cyan);letter-spacing:1px;margin-top:2px; }
+.guild-xp-col { display:flex;align-items:center;gap:8px; }
+.guild-xp-bar-wrap { flex:1;height:4px;background:rgba(0,245,255,0.08);overflow:hidden; }
+.guild-xp-bar { height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));animation:barFill 1s 0.5s ease both; }
+.guild-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--purple);white-space:nowrap; }
+.guild-members { display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim); }
+.guild-level { display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--gold); }
+
+/* ===================== SKELETON / LOADING ===================== */
+.lb-loading {
+  display:flex;flex-direction:column;gap:8px;padding:16px 0;
+}
+.lb-skel {
+  height:56px;background:linear-gradient(90deg,var(--panel) 25%,rgba(0,245,255,0.08) 50%,var(--panel) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;
+}
+
+/* ===================== EMPTY STATE ===================== */
+.empty-state {
+  text-align:center;padding:60px 20px;
+}
+.empty-icon { font-size:48px;margin-bottom:16px;opacity:0.4; }
+.empty-title { font-family:'Orbitron',monospace;font-size:14px;color:var(--text-dim);margin-bottom:8px; }
+.empty-sub { font-size:12px;color:var(--text-dim);opacity:0.6; }
+
+/* ===================== TAB CONTENT ===================== */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ===================== TOAST ===================== */
+.toast {
+  position:fixed;bottom:24px;right:24px;z-index:500;
+  font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;
+  padding:14px 20px;border:1px solid var(--border);
+  background:rgba(1,10,15,0.96);color:var(--text);
+  transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  backdrop-filter:blur(20px);pointer-events:none;
+}
+.toast.show { transform:translateY(0);opacity:1; }
+.toast.success { border-color:var(--green);color:var(--green); }
+.toast.error { border-color:var(--red);color:var(--red); }
+
+/* ===================== RESPONSIVE ===================== */
+@media(max-width:900px){
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-overlay.open { display:block; }
+  .topbar { display:flex; }
+  .main { margin-left:0;padding:90px 16px 60px; }
+  .lb-table-header { display:none; }
+  .lb-row { grid-template-columns:40px 1fr auto;gap:8px; }
+  .lb-row-xp { display:none; }
+  .lb-row-class { display:none; }
+  .guild-row { grid-template-columns:40px 1fr auto; }
+  .guild-xp-col { display:none; }
+  .guild-members { display:none; }
+  .podium-section { gap:8px; }
+  .podium-rank-1 .podium-avatar { width:72px;height:72px; }
+  .podium-rank-2 .podium-avatar { width:60px;height:60px; }
+  .podium-rank-3 .podium-avatar { width:52px;height:52px; }
+  .my-rank-stats { display:none; }
+  .filter-right { display:none; }
+  .season-timer { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">LEVEL UP YOUR REALITY</div>
+  </div>
+
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar"><img id="sidebarAvatar" src="" alt=""></div>
+    <div class="su-info">
+      <div class="su-name" id="sidebarName">—</div>
+      <div class="su-class" id="sidebarClass">—</div>
+      <div class="su-lv" id="sidebarLv">LV —</div>
+    </div>
+  </div>
+
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a href="./dashboard.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      DASHBOARD
+    </a>
+    <a href="./quests.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      QUESTS
+    </a>
+    <a href="./feed.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      FEED
+    </a>
+    <a href="./leaderboard.html" class="nav-item active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      LEADERBOARD
+    </a>
+
+    <div class="nav-section-label">SOCIAL</div>
+    <a href="./profile.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      PROFILE
+    </a>
+    <a href="#" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      GUILDS
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        LEADER<span>BOARD</span>
+      </div>
+      <div class="page-date" id="pageDate"></div>
+    </div>
+    <button class="notif-btn" id="notifBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-dot" id="notifDot" style="display:none"></div>
+    </button>
+  </div>
+
+  <!-- SEASON BANNER -->
+  <div class="season-banner">
+    <div class="season-banner-inner">
+      <div class="season-info">
+        <div class="season-icon">🏆</div>
+        <div>
+          <div class="season-label">SEASON 1 — THE AWAKENING</div>
+          <div class="season-title">MONTHLY LEADERBOARD</div>
+          <div class="season-sub">XP สะสมเดือนนี้ — Top 10 รับรางวัล Crystal พิเศษ</div>
+        </div>
+      </div>
+      <div class="season-timer">
+        <div class="season-timer-label">RESETS IN</div>
+        <div class="season-timer-value" id="seasonTimer">--D --H</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY RANK CARD -->
+  <div class="my-rank-card" id="myRankCard" style="display:none">
+    <div class="my-rank-badge" id="myRankNum">#—</div>
+    <div class="my-rank-avatar cls-warrior" id="myRankAvatarWrap">
+      <img id="myRankAvatar" src="" alt="">
+    </div>
+    <div class="my-rank-info">
+      <div class="my-rank-name" id="myRankName">—</div>
+      <div class="my-rank-class" id="myRankClass">—</div>
+      <div class="my-rank-xp">
+        <div class="my-rank-xp-val" id="myRankXP">0</div>
+        <div class="my-rank-xp-label">XP เดือนนี้</div>
+      </div>
+    </div>
+    <div class="my-rank-stats">
+      <div class="my-stat">
+        <div class="my-stat-val" id="myRankLv">—</div>
+        <div class="my-stat-label">LEVEL</div>
+      </div>
+      <div class="my-stat">
+        <div class="my-stat-val" id="myRankStreak">—</div>
+        <div class="my-stat-label">STREAK</div>
+      </div>
+      <div class="my-stat">
+        <div class="my-stat-val" id="myRankTotal">—</div>
+        <div class="my-stat-label">XP TOTAL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('global')" id="tab-global">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      GLOBAL
+    </button>
+    <button class="tab-btn" onclick="switchTab('city')" id="tab-city">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      CITY RANK
+    </button>
+    <button class="tab-btn" onclick="switchTab('guild')" id="tab-guild">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      GUILD RANK
+    </button>
+  </div>
+
+  <!-- ==================== GLOBAL TAB ==================== -->
+  <div class="tab-content active" id="content-global">
+    <!-- FILTERS -->
+    <div class="filter-row">
+      <span class="filter-label">PERIOD:</span>
+      <button class="filter-chip active" onclick="setFilter('period','monthly',this)">เดือนนี้</button>
+      <button class="filter-chip" onclick="setFilter('period','alltime',this)">All Time</button>
+      <div class="filter-right">
+        <span class="filter-label">CLASS:</span>
+        <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
+          <option value="all">ทุก Class</option>
+          <option value="warrior">⚔️ Warrior</option>
+          <option value="mage">🧙 Mage</option>
+          <option value="explorer">🗺️ Explorer</option>
+          <option value="merchant">💰 Merchant</option>
+          <option value="artist">🎨 Artist</option>
+          <option value="diplomat">🤝 Diplomat</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PODIUM TOP 3 -->
+    <div class="podium-section" id="podiumSection">
+      <div class="lb-loading" style="width:100%">
+        <div class="lb-skel" style="height:160px"></div>
+      </div>
+    </div>
+
+    <!-- TABLE HEADER -->
+    <div class="lb-table-header">
+      <div>#</div>
+      <div>PLAYER</div>
+      <div>XP</div>
+      <div>LEVEL</div>
+      <div>CLASS</div>
+    </div>
+
+    <!-- TABLE ROWS (rank 4+) -->
+    <div id="globalList">
+      <div class="lb-loading">
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CITY TAB ==================== -->
+  <div class="tab-content" id="content-city">
+    <div class="filter-row">
+      <span class="filter-label">เรียงตาม:</span>
+      <button class="filter-chip active" onclick="setCitySort('xp',this)">XP สะสม</button>
+      <button class="filter-chip" onclick="setCitySort('prosperity',this)">Prosperity</button>
+      <button class="filter-chip" onclick="setCitySort('population',this)">ผู้เล่น</button>
+    </div>
+    <div class="city-grid" id="cityGrid">
+      <div class="lb-loading" style="grid-column:1/-1">
+        <div class="lb-skel" style="height:140px"></div>
+        <div class="lb-skel" style="height:140px"></div>
+        <div class="lb-skel" style="height:140px"></div>
+        <div class="lb-skel" style="height:140px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GUILD TAB ==================== -->
+  <div class="tab-content" id="content-guild">
+    <div class="filter-row">
+      <span class="filter-label">PERIOD:</span>
+      <button class="filter-chip active" onclick="setFilter('guild_period','monthly',this)">เดือนนี้</button>
+      <button class="filter-chip" onclick="setFilter('guild_period','alltime',this)">All Time</button>
+    </div>
+
+    <div class="lb-table-header">
+      <div>#</div>
+      <div>GUILD</div>
+      <div>GUILD XP</div>
+      <div>MEMBERS</div>
+      <div>LEVEL</div>
+    </div>
+    <div id="guildList">
+      <div class="lb-loading">
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+        <div class="lb-skel"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null
+let userProfile = null
+let allGlobalData = []
+let citySortKey = 'xp'
+let globalPeriod = 'monthly'
+let selectedClass = 'all'
+let activeTab = 'global'
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  initCursor()
+  updateDate()
+  startSeasonTimer()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  userProfile = profile
+
+  if (profile) {
+    renderSidebar(profile)
+    renderMyRankCard(profile)
+  }
+
+  await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
+  checkNotifications()
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function renderSidebar(p) {
+  document.getElementById('sidebarAvatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${p.avatar_seed||p.username}&backgroundColor=0a0a0a`
+  document.getElementById('sidebarName').textContent = p.display_name || p.username
+  document.getElementById('sidebarClass').textContent = (p.class||'').toUpperCase()
+  document.getElementById('sidebarLv').textContent = `LV ${p.level||1}`
+  document.getElementById('sidebarUser').className = `sidebar-user cls-${p.class||'warrior'}`
+}
+
+// ============================================================
+// MY RANK CARD
+// ============================================================
+function renderMyRankCard(p) {
+  document.getElementById('myRankCard').style.display = 'flex'
+  document.getElementById('myRankAvatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${p.avatar_seed||p.username}&backgroundColor=0a0a0a`
+  document.getElementById('myRankAvatarWrap').className = `my-rank-avatar cls-${p.class||'warrior'}`
+  document.getElementById('myRankName').textContent = p.display_name || p.username
+  document.getElementById('myRankClass').textContent = (p.class||'—').toUpperCase()
+  document.getElementById('myRankXP').textContent = fmtNum(p.xp_this_month||0)
+  document.getElementById('myRankLv').textContent = p.level||1
+  document.getElementById('myRankStreak').textContent = (p.streak_current||0) + '🔥'
+  document.getElementById('myRankTotal').textContent = fmtNum(p.xp_total||0)
+}
+
+function updateMyRankPosition(data) {
+  const idx = data.findIndex(u => u.id === currentUser.id)
+  if (idx >= 0) {
+    document.getElementById('myRankNum').textContent = `#${idx+1}`
+  } else {
+    document.getElementById('myRankNum').textContent = '#—'
+  }
+}
+
+// ============================================================
+// GLOBAL LEADERBOARD
+// ============================================================
+async function loadGlobal() {
+  const orderCol = globalPeriod === 'monthly' ? 'xp_this_month' : 'xp_total'
+  let query = supabase.from('users')
+    .select('id,username,display_name,class,level,rank,xp_this_month,xp_total,avatar_seed,streak_current,equipped_title_id')
+    .eq('profile_public', true)
+    .order(orderCol, { ascending: false })
+    .limit(50)
+
+  const { data, error } = await query
+  if (error) { console.error(error); return }
+
+  allGlobalData = data || []
+  renderGlobal(allGlobalData)
+  updateMyRankPosition(allGlobalData)
+}
+
+function renderGlobal(data) {
+  const filtered = selectedClass === 'all' ? data : data.filter(u => u.class === selectedClass)
+  const maxXP = filtered[0] ? (globalPeriod==='monthly' ? filtered[0].xp_this_month : filtered[0].xp_total) : 1
+
+  // PODIUM (top 3)
+  const podium = document.getElementById('podiumSection')
+  if (filtered.length === 0) {
+    podium.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">ยังไม่มีข้อมูล</div></div>'
+  } else {
+    const top3 = filtered.slice(0,3)
+    // reorder: 2nd, 1st, 3rd
+    const order = [top3[1], top3[0], top3[2]].filter(Boolean)
+    const ranks = top3[1] ? [2,1,3] : [1,3]
+    podium.innerHTML = order.map((u,i) => {
+      const rank = top3[1] ? [2,1,3][i] : i+1
+      const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
+      const cls = u.class||'warrior'
+      const crown = rank===1 ? '<div class="podium-crown">👑</div>' : ''
+      return `
+        <div class="podium-item podium-rank-${rank}">
+          <div class="podium-name">${esc(u.display_name||u.username)}</div>
+          <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
+          <div class="podium-avatar-wrap">
+            ${crown}
+            <div class="podium-avatar cls-${cls}">
+              <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+            </div>
+            <div class="podium-rank-num">#${rank}</div>
+          </div>
+          <div class="podium-xp">${fmtNum(xp)} XP</div>
+          <div class="podium-stand"></div>
+        </div>`
+    }).join('')
+  }
+
+  // LIST (rank 4+)
+  const list = document.getElementById('globalList')
+  const rest = filtered.slice(3)
+  if (rest.length === 0 && filtered.length > 0) {
+    list.innerHTML = ''
+    return
+  }
+  if (rest.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
+    return
+  }
+
+  list.innerHTML = rest.map((u, i) => {
+    const rank = i + 4
+    const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
+    const pct = Math.round((xp/maxXP)*100)
+    const isMe = u.id === currentUser?.id
+    const cls = u.class||'warrior'
+    const rankClass = rank<=3 ? `r${rank}` : 'rother'
+    const delay = (i*0.04).toFixed(2)
+    return `
+      <div class="lb-row ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="goProfile('${u.id}')">
+        <div class="lb-row-rank ${rankClass}">${rank}</div>
+        <div class="lb-row-user">
+          <div class="lb-avatar cls-${cls}">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+          </div>
+          <div class="lb-user-info">
+            <div class="lb-username">${esc(u.display_name||u.username)}</div>
+            <div class="lb-title">Lv.${u.level||1} · ${(u.rank||'bronze').toUpperCase()}</div>
+          </div>
+        </div>
+        <div class="lb-row-xp">
+          <div class="lb-xp-bar-wrap"><div class="lb-xp-bar" style="--bar-w:${pct}%"></div></div>
+          <div class="lb-xp-val">${fmtNum(xp)}</div>
+        </div>
+        <div class="lb-row-level">
+          <div class="lb-level-badge cls-${cls}">LV ${u.level||1}</div>
+        </div>
+        <div class="lb-row-class">
+          <div class="lb-class-tag cls-${cls}">${cls.toUpperCase()}</div>
+        </div>
+      </div>`
+  }).join('')
+}
+
+// ============================================================
+// CITY LEADERBOARD
+// ============================================================
+async function loadCities() {
+  const { data, error } = await supabase.from('city_stats')
+    .select('*')
+    .order('xp_contributed_weekly', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  // get user counts per city
+  const { data: userCounts } = await supabase.from('users')
+    .select('city')
+
+  const countMap = {}
+  ;(userCounts||[]).forEach(u => {
+    if (u.city) countMap[u.city] = (countMap[u.city]||0) + 1
+  })
+
+  const cities = (data||[]).map(c => ({ ...c, population: countMap[c.city_name]||0 }))
+  renderCities(cities)
+}
+
+function renderCities(cities) {
+  let sorted = [...cities]
+  if (citySortKey === 'prosperity') sorted.sort((a,b) => b.prosperity_level - a.prosperity_level)
+  else if (citySortKey === 'population') sorted.sort((a,b) => b.population - a.population)
+  else sorted.sort((a,b) => b.xp_contributed_weekly - a.xp_contributed_weekly)
+
+  const maxXP = sorted[0]?.xp_contributed_weekly || 1
+
+  document.getElementById('cityGrid').innerHTML = sorted.map((c, i) => {
+    const rank = i + 1
+    const rankClass = rank <= 3 ? `r${rank}` : 'rother'
+    const pct = Math.round((c.xp_contributed_weekly / maxXP)*100)
+    const stars = Array.from({length:10}, (_,si) =>
+      `<span class="pstar ${si < (c.prosperity_level||1) ? 'on' : 'off'}">★</span>`
+    ).join('')
+    const buff = c.active_buffs?.xp_bonus ? `+${Math.round(c.active_buffs.xp_bonus*100)}% XP BUFF` : ''
+    const isMyCity = userProfile?.city === c.city_name
+    return `
+      <div class="city-card" style="${isMyCity?'border-color:rgba(0,245,255,0.3);':''}" onclick="filterCityPlayers('${c.city_name}')">
+        <div class="city-rank-badge ${rankClass}">#${rank}</div>
+        <div class="city-name">${c.city_name}${isMyCity?' 📍':''}</div>
+        <div class="city-province">${c.province||''}</div>
+        <div class="city-prosperity">
+          <span class="prosperity-label">PROSPERITY</span>
+          <div class="prosperity-stars">${stars}</div>
+        </div>
+        <div class="city-stat-row">
+          <div class="city-stat">
+            <div class="city-stat-val">${fmtNum(c.xp_contributed_weekly)}</div>
+            <div class="city-stat-lbl">XP สัปดาห์นี้</div>
+          </div>
+          <div class="city-stat">
+            <div class="city-stat-val">${c.population||0}</div>
+            <div class="city-stat-lbl">ผู้เล่น</div>
+          </div>
+          <div class="city-stat">
+            <div class="city-stat-val">${c.city_streak_days||0}</div>
+            <div class="city-stat-lbl">Streak</div>
+          </div>
+        </div>
+        <div class="city-xp-bar-wrap"><div class="city-xp-bar" style="--bar-w:${pct}%"></div></div>
+        <div class="city-xp-label">
+          <span>0</span>
+          <span>${fmtNum(c.xp_threshold_next||1000)} target</span>
+        </div>
+        ${buff ? `<div class="city-buff">⚡ ${buff}</div>` : ''}
+      </div>`
+  }).join('')
+}
+
+// ============================================================
+// GUILD LEADERBOARD
+// ============================================================
+async function loadGuilds() {
+  const { data, error } = await supabase.from('guilds')
+    .select('id,name,tag,guild_xp,guild_level,is_public')
+    .eq('is_public', true)
+    .order('guild_xp', { ascending: false })
+    .limit(50)
+
+  if (error) { console.error(error); return }
+
+  // get member counts
+  const { data: members } = await supabase.from('guild_members').select('guild_id')
+  const memberMap = {}
+  ;(members||[]).forEach(m => { memberMap[m.guild_id] = (memberMap[m.guild_id]||0) + 1 })
+
+  const guilds = (data||[]).map(g => ({ ...g, member_count: memberMap[g.id]||0 }))
+  renderGuilds(guilds)
+}
+
+function renderGuilds(guilds) {
+  const maxXP = guilds[0]?.guild_xp || 1
+  const emojis = ['⚔️','🔥','🌙','⚡','🌊','🐉','🦅','💎','🌟','🎯']
+
+  document.getElementById('guildList').innerHTML = guilds.map((g, i) => {
+    const rank = i + 1
+    const rankClass = rank <= 3 ? `r${rank}` : 'rother'
+    const pct = Math.round((g.guild_xp/maxXP)*100)
+    const emoji = emojis[i % emojis.length]
+    const delay = (i*0.04).toFixed(2)
+    return `
+      <div class="guild-row" style="animation-delay:${delay}s">
+        <div class="guild-rank-num ${rankClass}">${rank}</div>
+        <div class="guild-info">
+          <div class="guild-emblem">${emoji}</div>
+          <div class="guild-texts">
+            <div class="guild-name">${esc(g.name)}</div>
+            <div class="guild-tag">[${esc(g.tag)}]</div>
+          </div>
+        </div>
+        <div class="guild-xp-col">
+          <div class="guild-xp-bar-wrap"><div class="guild-xp-bar" style="--bar-w:${pct}%"></div></div>
+          <div class="guild-xp-val">${fmtNum(g.guild_xp)}</div>
+        </div>
+        <div class="guild-members">${g.member_count} คน</div>
+        <div class="guild-level">LV ${g.guild_level||1}</div>
+      </div>`
+  }).join('') || `<div class="empty-state"><div class="empty-icon">🏰</div><div class="empty-title">ยังไม่มี Guild</div><div class="empty-sub">สร้าง Guild เป็นคนแรก!</div></div>`
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+async function checkNotifications() {
+  const { count } = await supabase.from('notifications')
+    .select('id', { count:'exact',head:true })
+    .eq('user_id', currentUser.id)
+    .eq('is_read', false)
+  if (count > 0) document.getElementById('notifDot').style.display = 'block'
+}
+
+// ============================================================
+// SEASON TIMER
+// ============================================================
+function startSeasonTimer() {
+  function update() {
+    const now = new Date()
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0)
+    const diff = endOfMonth - now
+    const days = Math.floor(diff/86400000)
+    const hrs  = Math.floor((diff%86400000)/3600000)
+    const mins = Math.floor((diff%3600000)/60000)
+    document.getElementById('seasonTimer').textContent = `${days}D ${hrs}H ${mins}M`
+  }
+  update()
+  setInterval(update, 60000)
+}
+
+// ============================================================
+// TABS
+// ============================================================
+window.switchTab = function(tab) {
+  activeTab = tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'))
+  document.getElementById(`tab-${tab}`).classList.add('active')
+  document.getElementById(`content-${tab}`).classList.add('active')
+}
+
+// ============================================================
+// FILTERS
+// ============================================================
+window.setFilter = function(key, val, btn) {
+  btn.closest('.filter-row').querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  if (key === 'period') { globalPeriod = val; renderGlobal(allGlobalData) }
+}
+
+window.applyClassFilter = function(val) {
+  selectedClass = val
+  renderGlobal(allGlobalData)
+}
+
+window.setCitySort = function(key, btn) {
+  citySortKey = key
+  btn.closest('.filter-row').querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  loadCities()
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+window.goProfile = function(uid) {
+  window.location.href = `./profile.html?id=${uid}`
+}
+
+window.filterCityPlayers = function(city) {
+  showToast(`🏙️ ${city}`, 'success')
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmtNum(n) { return (n||0).toLocaleString() }
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+function updateDate() {
+  const d = new Date()
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`
+}
+
+window.showToast = function(msg, type='success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3500)
+}
+
+// ============================================================
+// SIDEBAR MOBILE
+// ============================================================
+window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+window.handleSignOut = async function() {
+  await supabase.auth.signOut()
+  window.location.href = './login.html'
+}
+
+// ============================================================
+// CURSOR
+// ============================================================
+function initCursor() {
+  const cur = document.getElementById('cursor')
+  const ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
+  document.querySelectorAll('button,a,.lb-row,.guild-row,.city-card,.nav-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(255,215,0,0.6)' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
+  })
+}
+
+// ============================================================
+// START
+// ============================================================
+init()
+</script>
+</body>
+</html>
