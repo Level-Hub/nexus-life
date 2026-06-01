@@ -142,6 +142,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .qbtn.done-btn:hover{background:transparent;color:var(--green)}
 .qbtn.pending-btn{border-color:var(--gold);color:var(--gold);cursor:default}
 .qbtn.pending-btn:hover{background:transparent;color:var(--gold)}
+
+/* VOTE COUNT */
+.vote-bar{display:flex;align-items:center;gap:8px;padding:6px 16px 10px 20px;border-top:1px solid var(--border)}
+.vote-pips{display:flex;gap:4px}
+.vote-pip{width:18px;height:18px;border-radius:50%;border:1px solid rgba(68,255,136,0.3);background:transparent;transition:all 0.3s;display:flex;align-items:center;justify-content:center;font-size:9px}
+.vote-pip.filled{background:rgba(68,255,136,0.2);border-color:var(--green)}
+.vote-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim)}
+.vote-label span{color:var(--green)}
 .qbtn.rejected-btn{border-color:var(--red);color:var(--red)}
 .qbtn.rejected-btn:hover{background:var(--red);color:#fff}
 
@@ -399,10 +407,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div id="imageProof">
         <img class="preview-img" id="previewImg">
         <div class="upload-zone" id="uploadZone">
-          <input type="file" id="proofFile" accept="image/*" onchange="handleFileChange(this)">
+          <input type="file" id="proofFile" accept="image/*" capture="environment" onchange="handleFileChange(this)">
           <div class="upload-zone-icon">📷</div>
-          <div class="upload-zone-txt">แตะเพื่อเลือกรูปภาพ</div>
-          <div class="upload-zone-sub">รองรับ JPG, PNG, WEBP</div>
+          <div class="upload-zone-txt">แตะเพื่อถ่ายรูปหลักฐาน</div>
+          <div class="upload-zone-sub">ต้องถ่ายสด — ระบบจะประทับ timestamp อัตโนมัติ</div>
         </div>
       </div>
       <!-- text -->
@@ -498,6 +506,27 @@ async function loadAllQuests() {
   // store history
   window._historyQuests = uqAll || []
 
+  // ดึง vote counts สำหรับ quest ที่ pending_review
+  const pendingUQIds = (uqToday || [])
+    .filter(uq => uq.status === 'pending_review')
+    .map(uq => uq.id)
+
+  window._voteCounts = {}
+  if (pendingUQIds.length > 0) {
+    const { data: votes } = await supabase
+      .from('quest_verifications')
+      .select('user_quest_id, vote')
+      .in('user_quest_id', pendingUQIds)
+
+    ;(votes || []).forEach(v => {
+      if (!window._voteCounts[v.user_quest_id]) {
+        window._voteCounts[v.user_quest_id] = { approve: 0, reject: 0 }
+      }
+      if (v.vote === 'approve') window._voteCounts[v.user_quest_id].approve++
+      else window._voteCounts[v.user_quest_id].reject++
+    })
+  }
+
   updateTabCounts()
   updateProgressBanner()
   renderQuests()
@@ -574,13 +603,30 @@ function renderQuestCard(q, uq) {
   const cls    = q.class_target || 'warrior'
   const isWeekly = q.type === 'weekly'
 
+  // Vote count สำหรับ pending
+  let voteBarHtml = ''
+  if (isPend && uq?.id) {
+    const vc = (window._voteCounts || {})[uq.id] || { approve: 0, reject: 0 }
+    const approveCount = vc.approve
+    const pips = [0,1,2].map(i =>
+      `<div class="vote-pip ${i < approveCount ? 'filled' : ''}">
+        ${i < approveCount ? '✓' : ''}
+      </div>`
+    ).join('')
+    voteBarHtml = `
+    <div class="vote-bar">
+      <div class="vote-pips">${pips}</div>
+      <div class="vote-label"><span>${approveCount}/3</span> votes — รอชุมชนตรวจสอบ</div>
+    </div>`
+  }
+
   let btnHtml = ''
   if (isDone)    btnHtml = `<button class="qbtn done-btn">✓ สำเร็จ</button>`
-  else if (isPend) btnHtml = `<button class="qbtn pending-btn">⏳ รอ Review</button>`
+  else if (isPend) btnHtml = `<button class="qbtn pending-btn">⏳ รอ Vote</button>`
   else if (isRej)  btnHtml = `<button class="qbtn rejected-btn" onclick="openModal(${q.id})">↩ ส่งใหม่</button>`
   else             btnHtml = `<button class="qbtn" onclick="openModal(${q.id})">ส่งหลักฐาน →</button>`
 
-  const statusLabel = isDone ? '✓ สำเร็จแล้ว' : isPend ? '⏳ รอตรวจสอบ' : isRej ? '✗ ถูกปฏิเสธ' : '○ รอดำเนินการ'
+  const statusLabel = isDone ? '✓ สำเร็จแล้ว' : isPend ? '⏳ รอชุมชนตรวจสอบ' : isRej ? '✗ ถูกปฏิเสธ' : '○ รอดำเนินการ'
   const statusCls   = isDone ? 'approved' : isPend ? 'pending' : isRej ? 'rejected' : 'todo'
 
   const weeklyProgress = isWeekly ? `
@@ -610,6 +656,7 @@ function renderQuestCard(q, uq) {
       </div>
     </div>
     ${weeklyProgress}
+    ${voteBarHtml}
     <div class="qcard-footer">
       <div class="qstatus ${statusCls}">${statusLabel}</div>
       ${btnHtml}
@@ -682,6 +729,7 @@ window.openModal = function(questId) {
   document.getElementById('proofFile').value = ''
   document.getElementById('proofText').value = ''
   document.getElementById('charCount').textContent = '0'
+  window._stampedCanvas = null
   clearModalMsg()
 
   document.getElementById('proofModal').classList.add('open')
@@ -695,12 +743,48 @@ window.closeModal = function() {
 window.handleFileChange = function(input) {
   const file = input.files[0]
   if (!file) return
+
   const reader = new FileReader()
   reader.onload = e => {
-    const img = document.getElementById('previewImg')
-    img.src = e.target.result
-    img.style.display = 'block'
-    document.getElementById('uploadZone').style.display = 'none'
+    const image = new Image()
+    image.onload = () => {
+      // วาด timestamp + username ลงบนรูปด้วย canvas
+      const canvas = document.createElement('canvas')
+      canvas.width  = image.width
+      canvas.height = image.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(image, 0, 0)
+
+      // เตรียม timestamp
+      const now = new Date()
+      const dateStr = now.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' })
+      const timeStr = now.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' })
+      const username = userProfile?.username || userProfile?.display_name || 'NEXUS'
+      const stamp = `NEXUS LIFE · ${username.toUpperCase()} · ${dateStr} ${timeStr}`
+
+      // วาด background แถบดำโปร่งแสง
+      const fontSize = Math.max(16, Math.round(canvas.width * 0.028))
+      const padY = fontSize * 1.8
+      ctx.fillStyle = 'rgba(0,0,0,0.55)'
+      ctx.fillRect(0, canvas.height - padY, canvas.width, padY)
+
+      // วาดข้อความ
+      ctx.fillStyle = '#00f5ff'
+      ctx.font = `bold ${fontSize}px monospace`
+      ctx.textAlign = 'left'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(stamp, fontSize * 0.6, canvas.height - padY / 2)
+
+      // แสดง preview
+      const img = document.getElementById('previewImg')
+      img.src = canvas.toDataURL('image/jpeg', 0.92)
+      img.style.display = 'block'
+      document.getElementById('uploadZone').style.display = 'none'
+
+      // เก็บ canvas ไว้ใช้ตอน upload
+      window._stampedCanvas = canvas
+    }
+    image.src = e.target.result
   }
   reader.readAsDataURL(file)
 }
@@ -721,11 +805,11 @@ window.submitProof = async function() {
     let proofUrl = null, proofText = null
 
     if (isImage) {
-      const file = document.getElementById('proofFile').files[0]
-      if (!file) { showModalMsg('error','กรุณาเลือกรูปภาพก่อน'); return }
-      const ext  = file.name.split('.').pop()
-      const path = `proofs/${currentUser.id}/${q.id}_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('nexuslife').upload(path, file, { upsert:true })
+      if (!window._stampedCanvas) { showModalMsg('error','กรุณาถ่ายรูปก่อน'); return }
+      // แปลง canvas เป็น blob แล้ว upload
+      const blob = await new Promise(res => window._stampedCanvas.toBlob(res, 'image/jpeg', 0.92))
+      const path = `proofs/${currentUser.id}/${q.id}_${Date.now()}.jpg`
+      const { error: upErr } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert:true, contentType:'image/jpeg' })
       if (upErr) throw upErr
       const { data: { publicUrl } } = supabase.storage.from('nexuslife').getPublicUrl(path)
       proofUrl = publicUrl
@@ -763,7 +847,7 @@ window.submitProof = async function() {
 
       showToast(`🎉 +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'gold')
     } else {
-      showToast('📸 ส่งหลักฐานแล้ว — รอ Admin Review', 'success')
+      showToast('📸 ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')
     }
 
     window.closeModal()

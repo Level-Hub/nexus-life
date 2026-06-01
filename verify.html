@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Community Verify</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+
+*{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
+.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
+.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
+.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
+.nav-item:hover svg,.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace}
+.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
+.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
+.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+
+/* TOPBAR MOBILE */
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 80px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both;flex-wrap:wrap;gap:12px}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--green)}
+.page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.05s ease both}
+.sbar-item{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;flex:1;min-width:140px}
+.sbar-icon{font-size:20px}
+.sbar-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan)}
+.sbar-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);margin-top:2px}
+.sbar-item.green .sbar-val{color:var(--green)}
+.sbar-item.gold .sbar-val{color:var(--gold)}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--border);animation:fadeInUp 0.5s 0.08s ease both}
+.tab-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:12px 20px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.25s;display:flex;align-items:center;gap:8px}
+.tab-btn:hover{color:var(--cyan)}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-count{font-size:8px;padding:2px 7px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:10px}
+.tab-count.red{background:rgba(255,0,60,0.1);border-color:rgba(255,0,60,0.2);color:var(--red)}
+.tab-count.green{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.2);color:var(--green)}
+
+/* VERIFY GRID */
+.verify-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;animation:fadeInUp 0.5s 0.1s ease both}
+
+/* VERIFY CARD */
+.vcard{background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.25s}
+.vcard:hover{border-color:rgba(0,245,255,0.25);box-shadow:0 8px 32px rgba(0,245,255,0.06)}
+.vcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green)}
+
+/* CARD HEADER */
+.vcard-header{padding:14px 16px 12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.vcard-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);overflow:hidden;flex-shrink:0}
+.vcard-avatar img{width:100%;height:100%;object-fit:cover}
+.vcard-user-info{flex:1;min-width:0}
+.vcard-username{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcard-meta{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px}
+.vcard-class-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid var(--cls,var(--cyan));color:var(--cls,var(--cyan));flex-shrink:0}
+.vcard-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);flex-shrink:0}
+
+/* QUEST INFO */
+.vcard-quest{padding:12px 16px 12px 20px;border-bottom:1px solid var(--border)}
+.vcard-quest-type{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:2px 8px;border:1px solid;display:inline-block;margin-bottom:6px}
+.vcard-quest-type.daily{color:var(--cyan);border-color:rgba(0,245,255,0.3)}
+.vcard-quest-type.weekly{color:var(--orange);border-color:rgba(255,149,0,0.3)}
+.vcard-quest-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;line-height:1.4}
+.vcard-quest-reward{font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);margin-top:4px}
+
+/* PROOF IMAGE */
+.vcard-proof{position:relative;overflow:hidden;background:#000;cursor:pointer}
+.vcard-proof img{width:100%;max-height:240px;object-fit:cover;display:block;transition:transform 0.3s ease}
+.vcard-proof:hover img{transform:scale(1.02)}
+.vcard-proof-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);pointer-events:none}
+.vcard-proof-expand{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s}
+.vcard-proof-expand:hover{background:rgba(0,245,255,0.3);border-color:var(--cyan)}
+.vcard-no-proof{padding:20px;text-align:center;background:rgba(0,0,0,0.2);border-bottom:1px solid var(--border)}
+.vcard-no-proof-txt{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim)}
+
+/* VOTE SECTION */
+.vcard-vote{padding:14px 16px 14px 20px}
+.vote-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.vote-pips{display:flex;gap:5px}
+.vote-pip{width:22px;height:22px;border-radius:50%;border:1px solid rgba(68,255,136,0.25);background:transparent;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.3s}
+.vote-pip.approve{background:rgba(68,255,136,0.15);border-color:var(--green);color:var(--green)}
+.vote-pip.reject{background:rgba(255,0,60,0.15);border-color:var(--red);color:var(--red)}
+.vote-counts{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);flex:1}
+.vote-counts .approve-c{color:var(--green)}
+.vote-counts .reject-c{color:var(--red)}
+.vote-timer{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-left:auto}
+.vote-timer.urgent{color:var(--orange)}
+
+.vote-btns{display:flex;gap:8px}
+.vote-btn{flex:1;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:10px;border:1px solid;background:transparent;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:6px}
+.vote-btn.approve-btn{border-color:rgba(68,255,136,0.4);color:var(--green)}
+.vote-btn.approve-btn:hover{background:rgba(68,255,136,0.12);border-color:var(--green)}
+.vote-btn.reject-btn{border-color:rgba(255,0,60,0.3);color:var(--red)}
+.vote-btn.reject-btn:hover{background:rgba(255,0,60,0.08);border-color:var(--red)}
+.vote-btn:disabled{opacity:0.35;cursor:not-allowed}
+.vote-btn.voted-approve{background:rgba(68,255,136,0.12);border-color:var(--green);opacity:0.7;cursor:default}
+.vote-btn.voted-reject{background:rgba(255,0,60,0.08);border-color:var(--red);opacity:0.7;cursor:default}
+
+/* VOTED ALREADY */
+.already-voted-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:8px;text-align:center;border:1px solid var(--border);color:var(--text-dim);background:rgba(0,245,255,0.02)}
+
+/* HISTORY CARD (voted) */
+.hcard{background:rgba(0,245,255,0.01);border:1px solid var(--border);padding:14px 16px 14px 20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.hcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px}
+.hcard-accent.approve{background:var(--green)}
+.hcard-accent.reject{background:var(--red)}
+.hcard-img{width:48px;height:48px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.hcard-info{flex:1;min-width:0}
+.hcard-title{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard-meta{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+.hcard-vote{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;flex-shrink:0}
+.hcard-vote.approve{color:var(--green)}
+.hcard-vote.reject{color:var(--red)}
+
+/* EMPTY */
+.empty-state{grid-column:1/-1;text-align:center;padding:64px 20px}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.3}
+.empty-txt{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--text-dim);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--text-dim);opacity:0.6}
+
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.lightbox.open{display:flex}
+.lightbox img{max-width:100%;max-height:90vh;object-fit:contain;border:1px solid var(--border)}
+.lightbox-close{position:absolute;top:20px;right:20px;background:none;border:1px solid var(--border);color:var(--text-dim);width:40px;height:40px;font-size:18px;cursor:pointer;transition:all 0.2s}
+.lightbox-close:hover{border-color:var(--red);color:var(--red)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:3000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--cyan);background:rgba(1,10,15,0.97);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--cyan);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:300px;line-height:1.5}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left-color:var(--green);color:var(--green)}
+.toast.error{border-left-color:var(--red);color:#ff6680}
+.toast.gold{border-left-color:var(--gold);color:var(--gold)}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:80px 16px 80px}
+  .verify-grid{grid-template-columns:1fr}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab-btn{white-space:nowrap}
+  .stats-bar{gap:8px}
+  .sbar-item{min-width:120px}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING VERIFY...</div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
+    <div>
+      <div class="su-name" id="suName">—</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      DASHBOARD
+    </a>
+    <a class="nav-item" href="./quests.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      QUESTS
+    </a>
+    <a class="nav-item" href="./feed.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      FEED
+    </a>
+    <a class="nav-item active" href="./verify.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      VERIFY
+    </a>
+    <a class="nav-item" href="./leaderboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      LEADERBOARD
+    </a>
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./city.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
+      CITY
+    </a>
+    <a class="nav-item" href="./guild.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+      GUILD
+    </a>
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item" href="./profile.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+      PROFILE
+    </a>
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
+      SHOP
+    </a>
+    <a class="nav-item" href="./wallet.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
+      WALLET
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</aside>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">// <span>VERIFY</span></div>
+      <div class="page-sub" id="pageSub">COMMUNITY VERIFICATION SYSTEM</div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="sbar-item">
+      <div class="sbar-icon">⏳</div>
+      <div>
+        <div class="sbar-val" id="statPending">0</div>
+        <div class="sbar-label">รอ VERIFY</div>
+      </div>
+    </div>
+    <div class="sbar-item green">
+      <div class="sbar-icon">✅</div>
+      <div>
+        <div class="sbar-val" id="statVoted">0</div>
+        <div class="sbar-label">ที่ฉัน VOTE แล้ว</div>
+      </div>
+    </div>
+    <div class="sbar-item gold">
+      <div class="sbar-icon">⭐</div>
+      <div>
+        <div class="sbar-val" id="statXPEarned">+0</div>
+        <div class="sbar-label">XP จากการ VERIFY</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('pending',this)">
+      รอ VERIFY <span class="tab-count red" id="tcPending">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('history',this)">
+      ประวัติของฉัน <span class="tab-count green" id="tcHistory">0</span>
+    </button>
+  </div>
+
+  <!-- GRID -->
+  <div class="verify-grid" id="verifyGrid">
+    <div class="empty-state">
+      <div class="empty-icon">⏳</div>
+      <div class="empty-txt">กำลังโหลด...</div>
+    </div>
+  </div>
+</main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+const CLASS_EMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+
+let currentUser = null
+let userProfile = null
+let currentTab = 'pending'
+let pendingItems = []   // quests รอ verify
+let myVotes = {}        // { user_quest_id: 'approve'|'reject' }
+let myVoteHistory = []  // ประวัติที่เคย vote
+let totalXPEarned = 0
+
+function getAvatarUrl(seed, size=40) {
+  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const [style, s, bg] = seed.split(':')
+  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const m = Math.floor(diff / 60000)
+  const h = Math.floor(diff / 3600000)
+  if (m < 1) return 'เมื่อกี้'
+  if (m < 60) return `${m} นาทีที่แล้ว`
+  if (h < 24) return `${h} ชม.ที่แล้ว`
+  return `${Math.floor(h/24)} วันที่แล้ว`
+}
+
+function timeLeft(submittedAt) {
+  const deadline = new Date(submittedAt).getTime() + 24 * 3600000
+  const diff = deadline - Date.now()
+  if (diff <= 0) return { text: 'auto-approve แล้ว', urgent: false }
+  const h = Math.floor(diff / 3600000)
+  const m = Math.floor((diff % 3600000) / 60000)
+  return { text: `auto ใน ${h}ชม.${m}น.`, urgent: h < 6 }
+}
+
+// ── INIT ──
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  await loadProfile()
+  await loadData()
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  initCursor()
+}
+
+async function loadProfile() {
+  const { data } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  userProfile = data
+  if (!data) return
+
+  const cls = data.class || 'warrior'
+  document.getElementById('suAvatar').src = getAvatarUrl(data.avatar_seed)
+  document.getElementById('sidebarUser').className = 'sidebar-user cls-' + cls
+  document.getElementById('suAvatarWrap').className = 'su-avatar cls-' + cls
+  document.getElementById('suName').textContent = data.display_name || data.username
+  document.getElementById('suClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
+  document.getElementById('suLv').textContent = 'LV.' + data.level
+}
+
+async function loadData() {
+  const myCity = userProfile?.city || 'กรุงเทพมหานคร'
+
+  // ดึง user_quests ที่ pending_review ในเมืองเดียวกัน (ไม่ใช่ของตัวเอง)
+  const { data: pending } = await supabase
+    .from('user_quests')
+    .select(`
+      id, user_id, quest_id, status, proof_url, submitted_at,
+      quests(id, title, type, xp_reward, gold_reward, class_target),
+      users!user_quests_user_id_fkey(id, username, display_name, avatar_seed, class, city)
+    `)
+    .eq('status', 'pending_review')
+    .neq('user_id', currentUser.id)
+    .not('proof_url', 'is', null)
+    .order('submitted_at', { ascending: true })
+    .limit(50)
+
+  // กรองเฉพาะในเมืองเดียวกัน
+  const cityFiltered = (pending || []).filter(item =>
+    item.users?.city === myCity || !item.users?.city
+  )
+
+  // ดึง votes ทั้งหมดของ quests พวกนี้
+  const uqIds = cityFiltered.map(i => i.id)
+  let allVotes = []
+  if (uqIds.length > 0) {
+    const { data: votes } = await supabase
+      .from('quest_verifications')
+      .select('user_quest_id, voter_id, vote')
+      .in('user_quest_id', uqIds)
+    allVotes = votes || []
+  }
+
+  // map votes
+  const voteMap = {}
+  allVotes.forEach(v => {
+    if (!voteMap[v.user_quest_id]) voteMap[v.user_quest_id] = { approve: 0, reject: 0 }
+    if (v.vote === 'approve') voteMap[v.user_quest_id].approve++
+    else voteMap[v.user_quest_id].reject++
+  })
+
+  // votes ของตัวเอง
+  myVotes = {}
+  allVotes.filter(v => v.voter_id === currentUser.id).forEach(v => {
+    myVotes[v.user_quest_id] = v.vote
+  })
+
+  // ซ่อน quest ที่ตัวเองเคย vote แล้ว
+  pendingItems = cityFiltered
+    .filter(item => !myVotes[item.id])
+    .map(item => ({ ...item, votes: voteMap[item.id] || { approve: 0, reject: 0 } }))
+
+  // ประวัติที่เคย vote (ดึง quest ที่ myVotes มี)
+  const votedIds = Object.keys(myVotes).map(Number)
+  myVoteHistory = cityFiltered
+    .filter(item => myVotes[item.id])
+    .map(item => ({ ...item, votes: voteMap[item.id] || { approve: 0, reject: 0 }, myVote: myVotes[item.id] }))
+
+  // XP ที่ได้จากการ vote (10 XP ต่อ vote)
+  totalXPEarned = Object.keys(myVotes).length * 10
+
+  updateStats()
+  renderTab()
+}
+
+function updateStats() {
+  document.getElementById('statPending').textContent = pendingItems.length
+  document.getElementById('statVoted').textContent = Object.keys(myVotes).length
+  document.getElementById('statXPEarned').textContent = '+' + totalXPEarned
+  document.getElementById('tcPending').textContent = pendingItems.length
+  document.getElementById('tcHistory').textContent = myVoteHistory.length
+}
+
+// ── RENDER ──
+function renderTab() {
+  if (currentTab === 'pending') renderPending()
+  else renderHistory()
+}
+
+function renderPending() {
+  const grid = document.getElementById('verifyGrid')
+  if (!pendingItems.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-txt">ไม่มี Quest รอ Verify</div>
+        <div class="empty-sub">ในเมืองของคุณไม่มีหลักฐานรอตรวจสอบ หรือ vote ครบหมดแล้ว</div>
+      </div>`
+    return
+  }
+  grid.innerHTML = pendingItems.map(item => renderVerifyCard(item)).join('')
+}
+
+function renderVerifyCard(item) {
+  const q = item.quests
+  const u = item.users
+  if (!q || !u) return ''
+  const cls = u.class || 'warrior'
+  const av = getAvatarUrl(u.avatar_seed)
+  const { text: tLeft, urgent } = timeLeft(item.submitted_at)
+  const vc = item.votes
+  const approveCount = vc.approve
+  const rejectCount = vc.reject
+
+  const pips = [0,1,2].map(i => {
+    if (i < approveCount) return `<div class="vote-pip approve">✓</div>`
+    if (i < rejectCount) return `<div class="vote-pip reject">✗</div>`
+    return `<div class="vote-pip"></div>`
+  }).join('')
+
+  const proofHtml = item.proof_url
+    ? `<div class="vcard-proof" onclick="openLightbox('${item.proof_url}')">
+        <img src="${item.proof_url}" alt="proof" loading="lazy" onerror="this.parentElement.style.display='none'">
+        <div class="vcard-proof-overlay"></div>
+        <div class="vcard-proof-expand">🔍</div>
+       </div>`
+    : `<div class="vcard-no-proof"><div class="vcard-no-proof-txt">📝 หลักฐานข้อความ</div></div>`
+
+  return `
+  <div class="vcard cls-${cls}" id="vcard-${item.id}">
+    <div class="vcard-accent"></div>
+    <div class="vcard-header">
+      <div class="vcard-avatar"><img src="${av}" alt=""></div>
+      <div class="vcard-user-info">
+        <div class="vcard-username">${u.display_name || u.username}</div>
+        <div class="vcard-meta">${CLASS_EMOJI[cls]||''} ${cls.toUpperCase()} · ${u.city || myCity}</div>
+      </div>
+      <div class="vcard-time">${timeAgo(item.submitted_at)}</div>
+    </div>
+    <div class="vcard-quest">
+      <div class="vcard-quest-type ${q.type}">${q.type.toUpperCase()}</div>
+      <div class="vcard-quest-title">${q.title}</div>
+      <div class="vcard-quest-reward">+${q.xp_reward} XP ${q.gold_reward ? `· +${q.gold_reward} Gold` : ''}</div>
+    </div>
+    ${proofHtml}
+    <div class="vcard-vote">
+      <div class="vote-progress">
+        <div class="vote-pips">${pips}</div>
+        <div class="vote-counts">
+          <span class="approve-c">${approveCount} approve</span> · <span class="reject-c">${rejectCount} reject</span>
+        </div>
+        <div class="vote-timer ${urgent ? 'urgent' : ''}">${tLeft}</div>
+      </div>
+      <div class="vote-btns">
+        <button class="vote-btn approve-btn" onclick="castVote(${item.id},'approve',this)">
+          ✅ APPROVE
+        </button>
+        <button class="vote-btn reject-btn" onclick="castVote(${item.id},'reject',this)">
+          ❌ REJECT
+        </button>
+      </div>
+    </div>
+  </div>`
+}
+
+function renderHistory() {
+  const grid = document.getElementById('verifyGrid')
+  if (!myVoteHistory.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-txt">ยังไม่มีประวัติ</div>
+        <div class="empty-sub">Vote หลักฐาน Quest ของผู้เล่นคนอื่นเพื่อสะสม XP</div>
+      </div>`
+    return
+  }
+  grid.innerHTML = myVoteHistory.map(item => {
+    const q = item.quests
+    const u = item.users
+    if (!q || !u) return ''
+    const mv = item.myVote
+    return `
+    <div class="hcard">
+      <div class="hcard-accent ${mv}"></div>
+      ${item.proof_url ? `<img class="hcard-img" src="${item.proof_url}" alt="" onerror="this.style.display='none'">` : ''}
+      <div class="hcard-info">
+        <div class="hcard-title">${q.title}</div>
+        <div class="hcard-meta">${u.display_name || u.username} · ${timeAgo(item.submitted_at)}</div>
+        <div class="hcard-meta" style="margin-top:3px">${item.votes.approve}/3 approve · ${item.votes.reject}/3 reject</div>
+      </div>
+      <div class="hcard-vote ${mv}">${mv === 'approve' ? '✅ APPROVE' : '❌ REJECT'}</div>
+    </div>`
+  }).join('')
+}
+
+// ── CAST VOTE ──
+window.castVote = async function(uqId, vote, btn) {
+  const card = document.getElementById('vcard-' + uqId)
+  const btns = card.querySelectorAll('.vote-btn')
+  btns.forEach(b => b.disabled = true)
+
+  try {
+    const { data, error } = await supabase.rpc('cast_verification_vote', {
+      p_user_quest_id: uqId,
+      p_voter_id: currentUser.id,
+      p_vote: vote
+    })
+
+    if (error) throw error
+
+    const result = data
+    if (!result.success) {
+      if (result.error === 'already_voted') showToast('โหวตไปแล้ว', 'error')
+      else if (result.error === 'cannot_vote_own') showToast('ไม่สามารถโหวตตัวเองได้', 'error')
+      else showToast('เกิดข้อผิดพลาด', 'error')
+      btns.forEach(b => b.disabled = false)
+      return
+    }
+
+    // บันทึก vote ของตัวเอง
+    myVotes[uqId] = vote
+    totalXPEarned += 10
+
+    if (result.result === 'approved') {
+      showToast('✅ Quest ผ่านแล้ว! Community approved', 'success')
+    } else if (result.result === 'rejected') {
+      showToast('❌ Quest ถูก reject โดย Community', 'error')
+    } else {
+      showToast(vote === 'approve' ? '✅ Vote Approve! +10 XP' : '❌ Vote Reject! +10 XP', 'success')
+    }
+
+    // อนิเมชัน fade out การ์ด
+    card.style.transition = 'opacity 0.5s, transform 0.5s'
+    card.style.opacity = '0'
+    card.style.transform = 'scale(0.95)'
+    setTimeout(async () => {
+      await loadData()
+    }, 500)
+
+  } catch(e) {
+    showToast(e.message || 'เกิดข้อผิดพลาด', 'error')
+    btns.forEach(b => b.disabled = false)
+  }
+}
+
+// ── TAB ──
+window.switchTab = function(tab, btn) {
+  currentTab = tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  renderTab()
+}
+
+// ── LIGHTBOX ──
+window.openLightbox = function(url) {
+  document.getElementById('lightboxImg').src = url
+  document.getElementById('lightbox').classList.add('open')
+}
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open')
+}
+
+// ── HELPERS ──
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3500)
+}
+
+window.handleSignOut = async function() {
+  await supabase.auth.signOut()
+  window.location.href = './login.html'
+}
+
+window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function loop(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop) })()
+  document.querySelectorAll('button,a,.vcard,.vcard-proof').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px' })
+  })
+}
+
+init()
+</script>
+</body>
+</html>

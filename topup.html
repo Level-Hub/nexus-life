@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Top Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--cyan:#00f5ff;--cyan-dim:#00a8b5;--gold:#ffd700;--red:#ff003c;--green:#44ff88;--purple:#b044ff;--bg:#010a0f;--bg2:#020d14;--panel:rgba(0,245,255,0.04);--border:rgba(0,245,255,0.12);--text:#c8f0f5;--text-dim:#5a8a90}
+.cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}.cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
+.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
+.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
+.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
+.nav-item:hover svg,.nav-item.active svg{opacity:1}
+.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
+.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
+.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:28px;animation:fadeInDown 0.5s ease both}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--cyan)}
+.page-date{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+/* LAYOUT */
+.topup-layout{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
+/* STEP PANEL */
+.step-panel{background:var(--panel);border:1px solid var(--border);padding:28px;animation:fadeInUp 0.5s ease both}
+.step-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.step-num{width:24px;height:24px;background:var(--cyan);color:#000;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* AMOUNT GRID */
+.amount-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px}
+.amount-card{background:rgba(0,245,255,0.03);border:1px solid var(--border);padding:18px 16px;cursor:pointer;transition:all 0.25s;position:relative;text-align:center}
+.amount-card:hover{border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.06)}
+.amount-card.selected{border-color:var(--cyan);background:rgba(0,245,255,0.1);box-shadow:0 0 20px rgba(0,245,255,0.1)}
+.amount-thb{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;margin-bottom:4px}
+.amount-crystal{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);margin-bottom:2px}
+.amount-bonus{font-family:'Orbitron',monospace;font-size:8px;color:var(--green);letter-spacing:1px}
+.amount-badge{position:absolute;top:-8px;right:10px;background:var(--purple);color:#fff;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px}
+.amount-badge.best{background:var(--gold);color:#000}
+/* CUSTOM AMOUNT */
+.custom-amount-row{display:flex;gap:10px;margin-top:12px;align-items:center}
+.custom-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px;flex-shrink:0}
+.custom-input{flex:1;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Orbitron',monospace;font-size:14px;padding:10px 14px;outline:none;transition:border 0.2s}
+.custom-input:focus{border-color:var(--cyan)}
+.custom-input::placeholder{color:var(--text-dim);font-size:11px}
+/* DIVIDER */
+.step-divider{height:1px;background:var(--border);margin:24px 0}
+/* PAYMENT METHOD */
+.method-row{display:flex;gap:10px;margin-bottom:20px}
+.method-btn{flex:1;padding:14px;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.method-btn:hover{border-color:rgba(0,245,255,0.3);color:var(--cyan)}
+.method-btn.selected{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08)}
+.method-btn .method-icon{font-size:22px}
+/* QR SECTION */
+.qr-section{text-align:center;padding:24px;background:rgba(0,245,255,0.03);border:1px solid rgba(0,245,255,0.12);margin-bottom:20px}
+.qr-box{width:180px;height:180px;margin:0 auto 16px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+.qr-box img{width:160px;height:160px}
+.qr-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px}
+.qr-account{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);font-weight:700}
+.qr-name{font-size:12px;color:var(--text-dim);margin-top:4px}
+.qr-amount-show{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--gold);margin-top:10px}
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);padding:28px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--cyan);background:rgba(0,245,255,0.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:32px;margin-bottom:10px;opacity:0.6}
+.upload-text{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px}
+.upload-sub{font-size:11px;color:var(--text-dim)}
+.upload-preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-top:12px;border:1px solid var(--border)}
+/* SUBMIT */
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(176,68,255,0.1));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;font-weight:700}
+.btn-submit:hover{background:rgba(0,245,255,0.25);box-shadow:0 0 24px rgba(0,245,255,0.2)}
+.btn-submit:disabled{opacity:0.4;cursor:not-allowed;background:transparent}
+.submit-msg{font-family:'Orbitron',monospace;font-size:10px;margin-top:12px;text-align:center;display:none}
+.submit-msg.error{color:var(--red);display:block}
+.submit-msg.success{color:var(--green);display:block}
+/* SUMMARY PANEL */
+.summary-panel{background:var(--panel);border:1px solid var(--border);padding:24px;position:sticky;top:32px;animation:fadeInDown 0.6s ease both}
+.summary-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.summary-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:1px}
+.summary-value{font-family:'Orbitron',monospace;font-size:12px;color:#fff;font-weight:700}
+.summary-value.crystal{color:var(--cyan)}
+.summary-value.bonus{color:var(--green)}
+.summary-value.gold{color:var(--gold)}
+.summary-total{border-top:1px solid var(--border);padding-top:14px;margin-top:4px}
+.summary-total .summary-value{font-size:22px;color:var(--cyan);text-shadow:0 0 16px rgba(0,245,255,0.4)}
+/* BONUS TABLE */
+.bonus-table{background:rgba(0,245,255,0.03);border:1px solid rgba(0,245,255,0.08);padding:16px;margin-top:16px}
+.bonus-table-title{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);margin-bottom:12px}
+.bonus-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,245,255,0.05)}
+.bonus-row:last-child{border-bottom:none}
+.bonus-row-thb{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim)}
+.bonus-row-crystal{font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan)}
+.bonus-row-pct{font-family:'Orbitron',monospace;font-size:8px;color:var(--green)}
+/* POLICY NOTE */
+.policy-note{margin-top:16px;padding:12px 14px;background:rgba(255,0,60,0.04);border:1px solid rgba(255,0,60,0.15);font-size:11px;color:var(--text-dim);line-height:1.7}
+.policy-note strong{color:var(--red);font-family:'Orbitron',monospace;font-size:9px}
+/* SUCCESS STATE */
+.success-state{text-align:center;padding:40px 20px;display:none}
+.success-icon{font-size:56px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(68,255,136,0.5))}
+.success-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--green);margin-bottom:8px}
+.success-desc{font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:20px}
+.btn-back{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-decoration:none;transition:all 0.3s}
+.btn-back:hover{background:rgba(0,245,255,0.1)}
+/* PENDING NOTICE */
+.pending-notice{background:rgba(255,170,0,0.06);border:1px solid rgba(255,170,0,0.25);padding:14px 18px;margin-top:16px;display:flex;gap:12px;align-items:flex-start}
+.pending-notice-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.pending-notice-text{font-size:12px;color:var(--text-dim);line-height:1.7}
+.pending-notice-text strong{color:#ffaa00;font-family:'Orbitron',monospace;font-size:9px}
+@media(max-width:900px){
+  .topup-layout{grid-template-columns:1fr}
+  .summary-panel{position:static}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:80px 16px 60px}
+  .amount-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
+    <div class="su-info">
+      <div class="su-name" id="suName">—</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>DASHBOARD</a>
+    <a class="nav-item" href="./quests.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>QUESTS</a>
+    <a class="nav-item" href="./feed.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>FEED</a>
+    <a class="nav-item" href="./leaderboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>LEADERBOARD</a>
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./map.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>WORLD MAP</a>
+    <a class="nav-item" href="./guild.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>GUILD</a>
+    <a class="nav-item" href="./pvp.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>PVP DUEL</a>
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item" href="./profile.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>PROFILE</a>
+    <a class="nav-item" href="./achievements.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>ACHIEVEMENTS</a>
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>SHOP</a>
+    <a class="nav-item" href="./wallet.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>WALLET</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>SIGN OUT</button>
+  </div>
+</aside>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div class="page-title">💎 เติม <span>CRYSTAL</span></div>
+    <div class="page-date" id="pageDate">—</div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="success-state" id="successState">
+    <div class="success-icon">✅</div>
+    <div class="success-title">ส่งสลิปเรียบร้อย!</div>
+    <div class="success-desc">
+      รายการเติมเงินของคุณอยู่ระหว่างรอ Admin ตรวจสอบ<br>
+      โดยปกติใช้เวลาไม่เกิน <strong style="color:#ffaa00">30 นาที – 2 ชั่วโมง</strong><br>
+      ระบบจะแจ้งเตือนทันทีเมื่อ Crystal เข้า
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn-back" href="./wallet.html">← WALLET</a>
+      <a class="btn-back" href="./shop.html">🛒 SHOP</a>
+    </div>
+  </div>
+
+  <!-- TOPUP FORM -->
+  <div class="topup-layout" id="topupForm">
+
+    <!-- LEFT: STEPS -->
+    <div>
+
+      <!-- STEP 1: เลือกจำนวน -->
+      <div class="step-panel" style="margin-bottom:20px">
+        <div class="step-title"><div class="step-num">1</div>เลือกจำนวนเงิน</div>
+
+        <div class="amount-grid">
+          <div class="amount-card" data-thb="50" data-crystal="50" onclick="selectAmount(this)">
+            <div class="amount-thb">฿50</div>
+            <div class="amount-crystal">💎 50</div>
+            <div class="amount-bonus">&nbsp;</div>
+          </div>
+          <div class="amount-card" data-thb="100" data-crystal="110" onclick="selectAmount(this)">
+            <div class="amount-thb">฿100</div>
+            <div class="amount-crystal">💎 110</div>
+            <div class="amount-bonus">+10% BONUS</div>
+            <div class="amount-badge">POPULAR</div>
+          </div>
+          <div class="amount-card" data-thb="300" data-crystal="345" onclick="selectAmount(this)">
+            <div class="amount-thb">฿300</div>
+            <div class="amount-crystal">💎 345</div>
+            <div class="amount-bonus">+15% BONUS</div>
+          </div>
+          <div class="amount-card" data-thb="500" data-crystal="600" onclick="selectAmount(this)">
+            <div class="amount-thb">฿500</div>
+            <div class="amount-crystal">💎 600</div>
+            <div class="amount-bonus">+20% BONUS</div>
+            <div class="amount-badge best">BEST VALUE</div>
+          </div>
+        </div>
+
+        <div class="custom-amount-row">
+          <span class="custom-label">หรือระบุเอง:</span>
+          <input class="custom-input" id="customAmount" type="number" min="50" max="3000" placeholder="50 – 3,000 บาท" oninput="onCustomAmount(this.value)">
+        </div>
+
+        <div style="margin-top:10px;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)">
+          วงเงินสูงสุด 3,000 ฿/วัน | <span id="remainLimit" style="color:var(--cyan)">—</span> ฿ คงเหลือวันนี้
+        </div>
+      </div>
+
+      <!-- STEP 2: เลือกวิธีชำระ -->
+      <div class="step-panel" style="margin-bottom:20px">
+        <div class="step-title"><div class="step-num">2</div>วิธีชำระเงิน</div>
+        <div class="method-row">
+          <button class="method-btn selected" data-method="promptpay" onclick="selectMethod('promptpay',this)">
+            <span class="method-icon">📱</span>PROMPTPAY
+          </button>
+          <button class="method-btn" data-method="truemoney" onclick="selectMethod('truemoney',this)">
+            <span class="method-icon">💛</span>TRUEMONEY
+          </button>
+          <button class="method-btn" data-method="manual" onclick="selectMethod('manual',this)">
+            <span class="method-icon">🏦</span>โอนธนาคาร
+          </button>
+        </div>
+
+        <!-- QR / ACCOUNT INFO -->
+        <div class="qr-section" id="paymentInfo">
+          <div class="qr-label">// SCAN QR เพื่อโอนเงิน</div>
+          <div class="qr-box">
+            <!-- QR จาก promptpay.io API ใส่เบอร์จริงได้เลย -->
+            <img id="qrImg" src="" alt="QR Code">
+          </div>
+          <div class="qr-account" id="payAccount">—</div>
+          <div class="qr-name" id="payName">—</div>
+          <div class="qr-amount-show" id="payAmount">เลือกจำนวนก่อน</div>
+        </div>
+      </div>
+
+      <!-- STEP 3: อัปสลิป -->
+      <div class="step-panel">
+        <div class="step-title"><div class="step-num">3</div>อัปโหลดสลิป</div>
+
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="slipFile" accept="image/*" onchange="onFileSelect(this)">
+          <div class="upload-icon" id="uploadIcon">📄</div>
+          <div class="upload-text">คลิกหรือลากไฟล์สลิปมาวางที่นี่</div>
+          <div class="upload-sub">รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 10MB</div>
+          <img class="upload-preview" id="uploadPreview" src="" alt="">
+        </div>
+
+        <div class="pending-notice">
+          <div class="pending-notice-icon">⏳</div>
+          <div class="pending-notice-text">
+            <strong>หมายเหตุ</strong><br>
+            หลังส่งสลิป Admin จะตรวจสอบภายใน 30 นาที – 2 ชั่วโมง
+            Crystal จะเข้าบัญชีทันทีเมื่อยืนยันสำเร็จ
+            Crystal ที่ซื้อไม่สามารถคืนหรือโอนให้ผู้อื่นได้
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+        <button class="btn-submit" id="submitBtn" onclick="submitTopup()" disabled>ส่งสลิป & รอการยืนยัน →</button>
+        <div class="submit-msg" id="submitMsg"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SUMMARY -->
+    <div class="summary-panel">
+      <div class="summary-title">// ORDER SUMMARY</div>
+
+      <div class="summary-row">
+        <div class="summary-label">จำนวนเงิน</div>
+        <div class="summary-value gold" id="sumThb">— ฿</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">Crystal ฐาน</div>
+        <div class="summary-value crystal" id="sumBase">— 💎</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">โบนัส</div>
+        <div class="summary-value bonus" id="sumBonus">+0 💎</div>
+      </div>
+      <div class="summary-row summary-total">
+        <div class="summary-label">TOTAL CRYSTAL</div>
+        <div class="summary-value crystal" id="sumTotal">— 💎</div>
+      </div>
+
+      <div class="bonus-table">
+        <div class="bonus-table-title">// BONUS RATES</div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿50</span><span class="bonus-row-crystal">50 💎</span><span class="bonus-row-pct">—</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿100</span><span class="bonus-row-crystal">110 💎</span><span class="bonus-row-pct">+10%</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿300</span><span class="bonus-row-crystal">345 💎</span><span class="bonus-row-pct">+15%</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿500+</span><span class="bonus-row-crystal">×1.20</span><span class="bonus-row-pct">+20%</span></div>
+      </div>
+
+      <div class="policy-note">
+        <strong>⚠ POLICY</strong><br>
+        Crystal ที่ซื้อคืนไม่ได้<br>
+        วงเงินสูงสุด 3,000 ฿/วัน<br>
+        ห้ามโอน Crystal ให้ผู้อื่น
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ─── PAYMENT CONFIG — เปลี่ยนเป็นข้อมูลจริงของคุณ ───────
+const PAYMENT_CONFIG = {
+  promptpay: {
+    account: '0XX-XXX-XXXX',      // เบอร์โทรหรือเลขบัตรประชาชน
+    name: 'NEXUS LIFE',
+    qr: (amount) => `https://promptpay.io/0XXXXXXXXXX/${amount}.png`  // ← ใส่เบอร์จริง
+  },
+  truemoney: {
+    account: '0XX-XXX-XXXX',
+    name: 'NEXUS LIFE (TrueMoney)',
+    qr: () => ''
+  },
+  manual: {
+    account: 'ธนาคาร XXX เลขที่ XXX-X-XXXXX-X',
+    name: 'ชื่อบัญชี NEXUS LIFE',
+    qr: () => ''
+  }
+}
+
+// ─── STATE ────────────────────────────────────────────────
+let currentUser = null
+let selectedAmountThb = 0
+let selectedCrystal = 0
+let selectedMethod = 'promptpay'
+let slipFile = null
+let dailyUsed = 0
+
+// ─── AVATAR HELPER ────────────────────────────────────────
+function getAvatarUrl(avatarSeed, size = 80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length === 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+}
+
+// ─── CURSOR ───────────────────────────────────────────────
+function initCursor() {
+  const c = document.getElementById('cursor'), r = document.getElementById('cursorRing')
+  document.addEventListener('mousemove', e => {
+    c.style.left = e.clientX+'px'; c.style.top = e.clientY+'px'
+    r.style.left = e.clientX+'px'; r.style.top = e.clientY+'px'
+  })
+}
+
+function updateDate() {
+  const d = new Date()
+  document.getElementById('pageDate').textContent =
+    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
+}
+
+window.openSidebar = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+window.handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = './login.html' }
+
+function renderSidebar(p) {
+  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
+  document.getElementById('suName').textContent = p.display_name || p.username
+  document.getElementById('suClass').textContent = (p.class || '').toUpperCase()
+  document.getElementById('suLv').textContent = `LV.${p.level || 1}`
+  document.getElementById('suAvatarWrap').className = `su-avatar cls-${p.class || 'warrior'}`
+}
+
+// ─── CALC CRYSTAL ─────────────────────────────────────────
+function calcCrystal(thb) {
+  if (thb >= 500) return Math.round(thb * 1.20)
+  if (thb >= 300) return Math.round(thb * 1.15)
+  if (thb >= 100) return Math.round(thb * 1.10)
+  return thb
+}
+
+function updateSummary(thb, crystal) {
+  const bonus = crystal - thb
+  document.getElementById('sumThb').textContent = thb ? `${thb.toLocaleString()} ฿` : '— ฿'
+  document.getElementById('sumBase').textContent = thb ? `${thb} 💎` : '— 💎'
+  document.getElementById('sumBonus').textContent = bonus > 0 ? `+${bonus} 💎` : '+0 💎'
+  document.getElementById('sumTotal').textContent = crystal ? `${crystal} 💎` : '— 💎'
+}
+
+function updateQR() {
+  const cfg = PAYMENT_CONFIG[selectedMethod]
+  document.getElementById('payAccount').textContent = cfg.account
+  document.getElementById('payName').textContent = cfg.name
+  document.getElementById('payAmount').textContent = selectedAmountThb
+    ? `฿${selectedAmountThb.toLocaleString()}`
+    : 'เลือกจำนวนก่อน'
+  const qrUrl = cfg.qr(selectedAmountThb)
+  const qrImg = document.getElementById('qrImg')
+  qrImg.src = qrUrl
+  qrImg.style.display = qrUrl ? 'block' : 'none'
+}
+
+function checkSubmitReady() {
+  const ok = selectedAmountThb > 0 && slipFile !== null
+  document.getElementById('submitBtn').disabled = !ok
+}
+
+// ─── SELECT AMOUNT ────────────────────────────────────────
+window.selectAmount = function(card) {
+  document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'))
+  card.classList.add('selected')
+  document.getElementById('customAmount').value = ''
+  selectedAmountThb = parseInt(card.dataset.thb)
+  selectedCrystal = parseInt(card.dataset.crystal)
+  updateSummary(selectedAmountThb, selectedCrystal)
+  updateQR()
+  checkSubmitReady()
+}
+
+window.onCustomAmount = function(val) {
+  document.querySelectorAll('.amount-card').forEach(c => c.classList.remove('selected'))
+  const thb = Math.min(3000, Math.max(0, parseInt(val) || 0))
+  selectedAmountThb = thb
+  selectedCrystal = calcCrystal(thb)
+  updateSummary(thb, selectedCrystal)
+  updateQR()
+  checkSubmitReady()
+}
+
+// ─── SELECT METHOD ────────────────────────────────────────
+window.selectMethod = function(method, btn) {
+  selectedMethod = method
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'))
+  btn.classList.add('selected')
+  updateQR()
+}
+
+// ─── FILE UPLOAD ──────────────────────────────────────────
+window.onFileSelect = function(input) {
+  const file = input.files[0]
+  if (!file) return
+  slipFile = file
+  const preview = document.getElementById('uploadPreview')
+  const icon = document.getElementById('uploadIcon')
+  const reader = new FileReader()
+  reader.onload = e => {
+    preview.src = e.target.result
+    preview.style.display = 'block'
+    icon.textContent = '✅'
+  }
+  reader.readAsDataURL(file)
+  checkSubmitReady()
+}
+
+// drag & drop
+const zone = document.getElementById('uploadZone')
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
+zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('dragover')
+  const file = e.dataTransfer.files[0]
+  if (file && file.type.startsWith('image/')) {
+    slipFile = file
+    const preview = document.getElementById('uploadPreview')
+    const icon = document.getElementById('uploadIcon')
+    const reader = new FileReader()
+    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; icon.textContent = '✅' }
+    reader.readAsDataURL(file)
+    checkSubmitReady()
+  }
+})
+
+// ─── SUBMIT ───────────────────────────────────────────────
+window.submitTopup = async function() {
+  if (!currentUser || !slipFile || !selectedAmountThb) return
+
+  const btn = document.getElementById('submitBtn')
+  const msgEl = document.getElementById('submitMsg')
+  btn.disabled = true; btn.textContent = 'กำลังอัปโหลด...'
+  msgEl.className = 'submit-msg'; msgEl.textContent = ''
+
+  // ตรวจ daily limit
+  if (dailyUsed + selectedAmountThb > 3000) {
+    msgEl.className = 'submit-msg error'
+    msgEl.textContent = `เกินวงเงินรายวัน — คงเหลือ ${3000 - dailyUsed} ฿`
+    btn.disabled = false; btn.textContent = 'ส่งสลิป & รอการยืนยัน →'; return
+  }
+
+  try {
+    // 1. อัปโหลดสลิปไป Supabase Storage
+    const ext = slipFile.name.split('.').pop()
+    const path = `proofs/${currentUser.id}/slip_${Date.now()}.${ext}`
+    const { error: upErr } = await supabase.storage
+      .from('nexuslife')
+      .upload(path, slipFile, { upsert: false })
+
+    if (upErr) throw new Error('อัปโหลดสลิปไม่สำเร็จ: ' + upErr.message)
+
+    const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
+    const slipUrl = urlData.publicUrl
+
+    // 2. สร้าง transaction (status: pending)
+    const { error: txErr } = await supabase.from('transactions').insert({
+      user_id: currentUser.id,
+      type: 'topup',
+      amount_thb: selectedAmountThb,
+      crystal_amount: selectedCrystal,
+      payment_method: selectedMethod,
+      slip_url: slipUrl,
+      status: 'pending',
+      note: `เติมเงิน ${selectedAmountThb} บาท ผ่าน ${selectedMethod}`
+    })
+
+    if (txErr) throw new Error('บันทึกข้อมูลไม่สำเร็จ: ' + txErr.message)
+
+    // 3. แสดง success state
+    document.getElementById('topupForm').style.display = 'none'
+    document.getElementById('successState').style.display = 'block'
+
+  } catch (err) {
+    msgEl.className = 'submit-msg error'
+    msgEl.textContent = err.message || 'เกิดข้อผิดพลาด'
+    btn.disabled = false; btn.textContent = 'ส่งสลิป & รอการยืนยัน →'
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+async function init() {
+  initCursor()
+  updateDate()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  if (profile) renderSidebar(profile)
+
+  // คำนวณ daily used
+  const today = new Date().toISOString().slice(0, 10)
+  const { data: todayTx } = await supabase.from('transactions')
+    .select('amount_thb')
+    .eq('user_id', currentUser.id)
+    .eq('type', 'topup')
+    .eq('status', 'completed')
+    .gte('created_at', today + 'T00:00:00')
+
+  dailyUsed = (todayTx || []).reduce((s, t) => s + (t.amount_thb || 0), 0)
+  document.getElementById('remainLimit').textContent = (3000 - dailyUsed).toLocaleString()
+
+  // init QR
+  updateQR()
+}
+
+init()
+</script>
+</body>
+</html>

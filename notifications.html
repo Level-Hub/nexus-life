@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:400px;height:400px;background:rgba(0,245,255,0.04);top:-100px;right:-80px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:80px;left:-60px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.96);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
+.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
+.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
+.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
+.nav-item:hover svg,.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace}
+.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
+.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
+.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+
+/* TOPBAR MOBILE */
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.96);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
+
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--cyan);text-shadow:0 0 16px var(--cyan)}
+.page-date{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+
+/* ACTIONS */
+.header-actions{display:flex;align-items:center;gap:10px}
+.action-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.action-btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;animation:fadeInUp 0.5s 0.1s ease both}
+.filter-tab{padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.filter-tab:hover{color:var(--text)}
+.filter-tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-count{font-family:'Orbitron',monospace;font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(0,245,255,0.1);color:var(--cyan)}
+.tab-count.red{background:rgba(255,0,60,0.15);color:var(--red)}
+
+/* NOTIF LIST */
+.notif-list{display:flex;flex-direction:column;gap:4px;animation:fadeInUp 0.5s 0.15s ease both}
+
+.notif-item{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:16px 20px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+  animation:slideIn 0.4s both;
+}
+.notif-item:hover{background:rgba(0,245,255,0.06);border-color:rgba(0,245,255,0.2)}
+.notif-item.unread{border-left:3px solid var(--cyan);background:rgba(0,245,255,0.06)}
+.notif-item.unread::before{content:'';position:absolute;top:50%;right:16px;transform:translateY(-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan)}
+
+.notif-icon{
+  width:44px;height:44px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.3);
+}
+.notif-icon.type-quest{border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.06)}
+.notif-icon.type-level{border-color:rgba(255,215,0,0.3);background:rgba(255,215,0,0.06)}
+.notif-icon.type-badge{border-color:rgba(176,68,255,0.3);background:rgba(176,68,255,0.06)}
+.notif-icon.type-guild{border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.06)}
+.notif-icon.type-crystal{border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.08)}
+.notif-icon.type-system{border-color:rgba(255,170,0,0.3);background:rgba(255,170,0,0.06)}
+.notif-icon.type-social{border-color:rgba(255,102,170,0.3);background:rgba(255,102,170,0.06)}
+
+.notif-body{flex:1;min-width:0}
+.notif-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;margin-bottom:4px}
+.notif-item.unread .notif-title{color:var(--cyan)}
+.notif-text{font-size:13px;color:var(--text-dim);line-height:1.5}
+.notif-time{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);opacity:0.5;margin-top:6px}
+
+.notif-delete{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;
+  color:var(--text-dim);cursor:pointer;font-size:12px;
+  transition:all 0.2s;opacity:0;
+}
+.notif-item:hover .notif-delete{opacity:1}
+.notif-delete:hover{border-color:var(--red);color:var(--red)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:80px 20px;animation:fadeInUp 0.5s ease both}
+.empty-icon{font-size:56px;margin-bottom:20px;opacity:0.3}
+.empty-title{font-family:'Orbitron',monospace;font-size:14px;color:var(--text-dim);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--text-dim);opacity:0.6}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--panel) 25%,rgba(0,245,255,0.08) 50%,var(--panel) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;height:78px;margin-bottom:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:500;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;padding:14px 20px;border:1px solid var(--border);background:rgba(1,10,15,0.96);color:var(--text);transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);backdrop-filter:blur(20px);pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:90px 16px 60px}
+  .header-actions .action-btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
+    <div class="su-info">
+      <div class="su-name" id="suName">—</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      DASHBOARD
+    </a>
+    <a class="nav-item" href="./quests.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      QUESTS
+    </a>
+    <a class="nav-item" href="./feed.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      FEED
+    </a>
+    <a class="nav-item" href="./leaderboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      LEADERBOARD
+    </a>
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./map.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
+      WORLD MAP
+    </a>
+    <a class="nav-item" href="./guild.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+      GUILD
+    </a>
+    <a class="nav-item" href="./pvp.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      PVP DUEL
+    </a>
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item active" href="./notifications.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+      NOTIFICATIONS
+    </a>
+    <a class="nav-item" href="./profile.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+      PROFILE
+    </a>
+    <a class="nav-item" href="./achievements.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      ACHIEVEMENTS
+    </a>
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
+      SHOP
+    </a>
+    <a class="nav-item" href="./wallet.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
+      WALLET
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</aside>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>NOTIFI</span>CATIONS
+      </div>
+      <div class="page-date" id="pageDate"></div>
+    </div>
+    <div class="header-actions">
+      <button class="action-btn" onclick="markAllRead()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        <span>อ่านทั้งหมด</span>
+      </button>
+      <button class="action-btn danger" onclick="deleteAllRead()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+        <span>ลบที่อ่านแล้ว</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" id="tab-all" onclick="switchTab('all')">
+      ทั้งหมด
+      <span class="tab-count" id="countAll">0</span>
+    </button>
+    <button class="filter-tab" id="tab-unread" onclick="switchTab('unread')">
+      ยังไม่อ่าน
+      <span class="tab-count red" id="countUnread">0</span>
+    </button>
+    <button class="filter-tab" id="tab-quest" onclick="switchTab('quest')">
+      Quest
+    </button>
+    <button class="filter-tab" id="tab-system" onclick="switchTab('system')">
+      ระบบ
+    </button>
+  </div>
+
+  <!-- LIST -->
+  <div class="notif-list" id="notifList">
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+let currentUser = null
+let allNotifs = []
+let activeTab = 'all'
+let realtimeChannel = null
+
+// ============================================================
+// AVATAR URL HELPER
+// ============================================================
+function getAvatarUrl(avatarSeed, size = 80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length === 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  initCursor()
+  updateDate()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  if (profile) renderSidebar(profile)
+
+  await loadNotifications()
+  subscribeRealtime()
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function renderSidebar(p) {
+  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
+  document.getElementById('suName').textContent = p.display_name || p.username
+  document.getElementById('suClass').textContent = (p.class||'').toUpperCase()
+  document.getElementById('suLv').textContent = `LV.${p.level||1}`
+  document.getElementById('suAvatarWrap').className = `su-avatar cls-${p.class||'warrior'}`
+}
+
+// ============================================================
+// LOAD NOTIFICATIONS
+// ============================================================
+async function loadNotifications() {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false })
+    .limit(100)
+
+  if (error) { console.error(error); return }
+  allNotifs = data || []
+  renderNotifs()
+  updateCounts()
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+const TYPE_MAP = {
+  quest:   { icon:'⚔️', cls:'type-quest'   },
+  level:   { icon:'⬆️', cls:'type-level'   },
+  badge:   { icon:'🏅', cls:'type-badge'   },
+  title:   { icon:'📜', cls:'type-badge'   },
+  guild:   { icon:'⚔️', cls:'type-guild'   },
+  crystal: { icon:'💎', cls:'type-crystal' },
+  system:  { icon:'📡', cls:'type-system'  },
+  social:  { icon:'👤', cls:'type-social'  },
+  default: { icon:'🔔', cls:'type-system'  },
+}
+
+function detectType(notif) {
+  const t = (notif.title || '').toLowerCase() + (notif.body || '').toLowerCase()
+  if (t.includes('quest') || t.includes('เควส') || t.includes('หลักฐาน')) return 'quest'
+  if (t.includes('level') || t.includes('เลเวล') || t.includes('level up')) return 'level'
+  if (t.includes('badge') || t.includes('แบดจ์')) return 'badge'
+  if (t.includes('title') || t.includes('ฉายา')) return 'title'
+  if (t.includes('guild') || t.includes('กิลด์')) return 'guild'
+  if (t.includes('crystal') || t.includes('💎')) return 'crystal'
+  if (t.includes('ติดตาม') || t.includes('follow')) return 'social'
+  return 'default'
+}
+
+function filterByTab(notifs) {
+  if (activeTab === 'unread') return notifs.filter(n => !n.is_read)
+  if (activeTab === 'quest')  return notifs.filter(n => detectType(n) === 'quest')
+  if (activeTab === 'system') return notifs.filter(n => ['system','crystal','level','badge'].includes(detectType(n)))
+  return notifs
+}
+
+function renderNotifs() {
+  const filtered = filterByTab(allNotifs)
+  const list = document.getElementById('notifList')
+
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔕</div>
+        <div class="empty-title">ไม่มีการแจ้งเตือน</div>
+        <div class="empty-sub">ระบบจะแจ้งเตือนเมื่อมีอะไรใหม่</div>
+      </div>`
+    return
+  }
+
+  list.innerHTML = filtered.map((n, i) => {
+    const type = detectType(n)
+    const { icon, cls } = TYPE_MAP[type] || TYPE_MAP.default
+    const delay = (i * 0.03).toFixed(2)
+    return `
+      <div class="notif-item ${n.is_read ? '' : 'unread'}" style="animation-delay:${delay}s" id="notif-${n.id}" onclick="markRead(${n.id})">
+        <div class="notif-icon ${cls}">${icon}</div>
+        <div class="notif-body">
+          <div class="notif-title">${esc(n.title||'แจ้งเตือน')}</div>
+          <div class="notif-text">${esc(n.body||'')}</div>
+          <div class="notif-time">${timeAgo(n.created_at)}</div>
+        </div>
+        <button class="notif-delete" onclick="deleteNotif(event,${n.id})" title="ลบ">✕</button>
+      </div>`
+  }).join('')
+}
+
+function updateCounts() {
+  const unread = allNotifs.filter(n => !n.is_read).length
+  document.getElementById('countAll').textContent = allNotifs.length
+  document.getElementById('countUnread').textContent = unread
+  // update sidebar badge ถ้ามี
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+window.markRead = async function(id) {
+  const notif = allNotifs.find(n => n.id === id)
+  if (!notif || notif.is_read) return
+
+  await supabase.from('notifications').update({ is_read: true }).eq('id', id)
+  notif.is_read = true
+  const el = document.getElementById(`notif-${id}`)
+  if (el) { el.classList.remove('unread') }
+  updateCounts()
+}
+
+window.deleteNotif = async function(e, id) {
+  e.stopPropagation()
+  await supabase.from('notifications').delete().eq('id', id).eq('user_id', currentUser.id)
+  allNotifs = allNotifs.filter(n => n.id !== id)
+  renderNotifs()
+  updateCounts()
+  showToast('ลบแจ้งเตือนแล้ว', 'success')
+}
+
+window.markAllRead = async function() {
+  const unread = allNotifs.filter(n => !n.is_read)
+  if (!unread.length) { showToast('ไม่มีที่ยังไม่อ่าน', 'success'); return }
+  await supabase.from('notifications').update({ is_read: true })
+    .eq('user_id', currentUser.id).eq('is_read', false)
+  allNotifs.forEach(n => n.is_read = true)
+  renderNotifs()
+  updateCounts()
+  showToast(`อ่านแล้ว ${unread.length} รายการ`, 'success')
+}
+
+window.deleteAllRead = async function() {
+  const read = allNotifs.filter(n => n.is_read)
+  if (!read.length) { showToast('ไม่มีที่อ่านแล้ว', 'success'); return }
+  await supabase.from('notifications').delete()
+    .eq('user_id', currentUser.id).eq('is_read', true)
+  allNotifs = allNotifs.filter(n => !n.is_read)
+  renderNotifs()
+  updateCounts()
+  showToast(`ลบ ${read.length} รายการแล้ว`, 'success')
+}
+
+window.switchTab = function(tab) {
+  activeTab = tab
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'))
+  document.getElementById(`tab-${tab}`).classList.add('active')
+  renderNotifs()
+}
+
+// ============================================================
+// REALTIME
+// ============================================================
+function subscribeRealtime() {
+  realtimeChannel = supabase.channel('notif_realtime')
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'notifications',
+      filter: `user_id=eq.${currentUser.id}`
+    }, payload => {
+      allNotifs.unshift(payload.new)
+      renderNotifs()
+      updateCounts()
+      showToast(`🔔 ${payload.new.title}`, 'success')
+    })
+    .subscribe()
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function timeAgo(ts) {
+  if (!ts) return ''
+  const diff = Date.now() - new Date(ts).getTime()
+  const m = Math.floor(diff / 60000)
+  const h = Math.floor(diff / 3600000)
+  const d = Math.floor(diff / 86400000)
+  if (m < 1) return 'เมื่อกี้'
+  if (m < 60) return `${m} นาทีที่แล้ว`
+  if (h < 24) return `${h} ชั่วโมงที่แล้ว`
+  if (d < 7) return `${d} วันที่แล้ว`
+  return new Date(ts).toLocaleDateString('th-TH')
+}
+
+function updateDate() {
+  const d = new Date()
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`
+}
+
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+window.showToast = function(msg, type='success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3000)
+}
+
+window.handleSignOut = async function() {
+  await supabase.auth.signOut()
+  window.location.href = './login.html'
+}
+
+window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
+  document.querySelectorAll('button,a,.notif-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px'; ring.style.borderColor='rgba(0,245,255,0.7)' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
+  })
+}
+
+init()
+</script>
+</body>
+</html>

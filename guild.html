@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Guild</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+
+*{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
+.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
+.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
+.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
+.nav-item:hover svg,.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace}
+.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
+.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
+.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
+.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+
+/* TOPBAR MOBILE */
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 80px}
+
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both;flex-wrap:wrap;gap:12px}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--purple)}
+.page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+
+/* BOX */
+.box{background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden}
+.box::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.box-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.box-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--cyan)}
+.box-tag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim)}
+.box-body{padding:20px}
+
+/* TAB BAR (NO GUILD / HAS GUILD) */
+.view-tabs{display:flex;gap:8px;margin-bottom:24px;animation:fadeInUp 0.5s 0.05s ease both}
+.vtab{padding:9px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.vtab.active{color:var(--purple);border-color:var(--purple);background:rgba(176,68,255,0.08)}
+.vtab:hover:not(.active){color:var(--cyan);border-color:rgba(0,245,255,0.3)}
+
+/* GUILD BANNER (มี guild) */
+.guild-banner{
+  background:linear-gradient(135deg,rgba(176,68,255,0.08),rgba(0,245,255,0.04));
+  border:1px solid rgba(176,68,255,0.25);
+  padding:24px;margin-bottom:20px;position:relative;overflow:hidden;
+  animation:fadeInUp 0.5s ease both;
+}
+.guild-banner::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--purple);border-left:2px solid var(--purple)}
+.guild-banner::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--purple);border-right:2px solid var(--purple)}
+.guild-banner-inner{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.guild-icon{width:72px;height:72px;background:rgba(176,68,255,0.15);border:2px solid rgba(176,68,255,0.4);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.guild-info{flex:1;min-width:160px}
+.guild-name{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.guild-tag{font-family:'Orbitron',monospace;font-size:11px;color:var(--purple);letter-spacing:2px;margin-bottom:8px}
+.guild-desc{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:12px}
+.guild-meta{display:flex;gap:16px;flex-wrap:wrap}
+.guild-meta-item{display:flex;align-items:center;gap:6px}
+.guild-meta-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim)}
+.guild-meta-val{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan)}
+.guild-role-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:4px 12px;border:1px solid}
+.guild-role-badge.master{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,0.08)}
+.guild-role-badge.officer{color:var(--cyan);border-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.guild-role-badge.member{color:var(--text-dim);border-color:var(--border)}
+
+/* GUILD XP BAR */
+.guild-xp-bar{margin-top:16px;border-top:1px solid rgba(176,68,255,0.2);padding-top:16px}
+.guild-xp-top{display:flex;justify-content:space-between;margin-bottom:6px}
+.guild-xp-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim)}
+.guild-xp-nums{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple)}
+.guild-xp-track{height:4px;background:rgba(176,68,255,0.1);position:relative;overflow:hidden}
+.guild-xp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width 1.2s ease}
+
+/* TERRITORY BADGE */
+.territory-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border:1px solid rgba(255,215,0,0.4);
+  background:rgba(255,215,0,0.06);margin-top:10px;
+  font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);letter-spacing:1px;
+}
+
+/* MAIN GRID */
+.guild-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;animation:fadeInUp 0.5s 0.1s ease both}
+@media(max-width:900px){.guild-grid{grid-template-columns:1fr}}
+
+/* TABS (MEMBERS / QUEST / CHAT / FEED) */
+.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.itab{padding:10px 16px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s}
+.itab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.itab:hover:not(.active){color:var(--cyan)}
+.itab-count{font-size:8px;background:rgba(176,68,255,0.2);color:var(--purple);padding:1px 5px;border-radius:8px;margin-left:4px}
+
+/* MEMBER LIST */
+.member-list{display:flex;flex-direction:column;gap:0}
+.member-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);transition:background 0.2s}
+.member-item:last-child{border-bottom:none}
+.member-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cls,var(--border));background:var(--panel);flex-shrink:0}
+.member-avatar img{width:100%;height:100%;object-fit:cover}
+.member-info{flex:1;min-width:0}
+.member-name{font-family:'Orbitron',monospace;font-size:10px;color:#fff;display:flex;align-items:center;gap:6px}
+.member-cls{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+.member-xp{font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);flex-shrink:0}
+.member-role{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 7px;border:1px solid}
+.member-role.master{color:var(--gold);border-color:rgba(255,215,0,0.4)}
+.member-role.officer{color:var(--cyan);border-color:rgba(0,245,255,0.4)}
+.member-actions{display:flex;gap:6px}
+.member-action-btn{padding:5px 10px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.member-action-btn:hover{color:var(--red);border-color:var(--red)}
+.member-action-btn.promote:hover{color:var(--gold);border-color:var(--gold)}
+
+/* GUILD QUESTS */
+.gquest-list{display:flex;flex-direction:column;gap:12px}
+.gquest-card{background:rgba(176,68,255,0.04);border:1px solid rgba(176,68,255,0.15);padding:16px;position:relative;transition:border-color 0.2s}
+.gquest-card:hover{border-color:rgba(176,68,255,0.35)}
+.gquest-card::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--purple);border-left:2px solid var(--purple)}
+.gquest-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px}
+.gquest-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;line-height:1.4}
+.gquest-timer{font-family:'Orbitron',monospace;font-size:9px;color:var(--orange);flex-shrink:0}
+.gquest-desc{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:12px}
+.gquest-progress{margin-bottom:10px}
+.gquest-prog-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.gquest-prog-label{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+.gquest-prog-val{font-family:'Orbitron',monospace;font-size:8px;color:var(--purple)}
+.gquest-track{height:4px;background:rgba(176,68,255,0.1);overflow:hidden}
+.gquest-fill{height:100%;background:linear-gradient(90deg,var(--purple),#dd44ff);transition:width 0.8s ease}
+.gquest-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gquest-rewards{display:flex;gap:8px}
+.gquest-reward{font-family:'Orbitron',monospace;font-size:8px;padding:3px 8px;border:1px solid;letter-spacing:1px}
+.gquest-reward.xp{color:var(--green);border-color:rgba(68,255,136,0.3)}
+.gquest-reward.gold{color:var(--gold);border-color:rgba(255,215,0,0.3)}
+.gquest-join-btn{padding:8px 16px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;background:rgba(176,68,255,0.15);border:1px solid rgba(176,68,255,0.5);color:var(--purple);cursor:pointer;transition:all 0.2s}
+.gquest-join-btn:hover{background:rgba(176,68,255,0.25);border-color:var(--purple)}
+.gquest-join-btn.joined{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.4);color:var(--green);cursor:default}
+.gquest-participants{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+
+/* GUILD CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:420px}
+.chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:8px;padding-right:4px}
+.chat-messages::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border)}
+.chat-msg{display:flex;gap:10px;align-items:flex-start}
+.chat-msg.mine{flex-direction:row-reverse}
+.chat-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:var(--panel);flex-shrink:0}
+.chat-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-bubble{max-width:70%;background:rgba(0,245,255,0.05);border:1px solid var(--border);padding:8px 12px}
+.chat-msg.mine .chat-bubble{background:rgba(176,68,255,0.08);border-color:rgba(176,68,255,0.2)}
+.chat-sender{font-family:'Orbitron',monospace;font-size:8px;color:var(--cyan);margin-bottom:3px}
+.chat-msg.mine .chat-sender{color:var(--purple);text-align:right}
+.chat-text{font-size:12px;color:var(--text);line-height:1.5}
+.chat-time{font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim);margin-top:3px;text-align:right}
+.chat-input-row{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.chat-input{flex:1;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:10px 14px;outline:none;transition:border-color 0.3s}
+.chat-input:focus{border-color:var(--purple)}
+.chat-input::placeholder{color:var(--text-dim)}
+.chat-send-btn{padding:10px 16px;background:rgba(176,68,255,0.15);border:1px solid rgba(176,68,255,0.4);color:var(--purple);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.chat-send-btn:hover{background:rgba(176,68,255,0.3)}
+
+/* GUILD FEED */
+.gfeed-list{display:flex;flex-direction:column;gap:0}
+.gfeed-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.gfeed-item:last-child{border-bottom:none}
+.gfeed-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(176,68,255,0.08);border:1px solid rgba(176,68,255,0.2);font-size:12px;flex-shrink:0}
+.gfeed-text{flex:1}
+.gfeed-main{font-size:12px;color:var(--text);line-height:1.4}
+.gfeed-main strong{color:var(--purple)}
+.gfeed-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px}
+
+/* RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;gap:16px}
+
+/* RANKING CARD */
+.rank-list{display:flex;flex-direction:column;gap:0}
+.rank-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.rank-item:last-child{border-bottom:none}
+.rank-pos{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;width:22px;text-align:center;flex-shrink:0;color:var(--text-dim)}
+.rank-pos.top1{color:var(--gold)}
+.rank-pos.top2{color:#c0c0c0}
+.rank-pos.top3{color:#cd7f32}
+.rank-name{flex:1;min-width:0}
+.rank-uname{font-family:'Orbitron',monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-cls{font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim)}
+.rank-xp{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);flex-shrink:0}
+
+/* NO GUILD VIEW */
+.no-guild-view{display:none;animation:fadeInUp 0.5s ease both}
+.no-guild-hero{text-align:center;padding:40px 20px;background:rgba(176,68,255,0.03);border:1px solid rgba(176,68,255,0.15);margin-bottom:20px;position:relative}
+.no-guild-hero::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--purple);border-left:2px solid var(--purple)}
+.no-guild-hero::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--purple);border-right:2px solid var(--purple)}
+.no-guild-icon{font-size:56px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(176,68,255,0.4))}
+.no-guild-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:#fff;margin-bottom:8px}
+.no-guild-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:20px}
+.no-guild-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:12px 28px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;background:rgba(176,68,255,0.2);border:1px solid rgba(176,68,255,0.6);color:var(--purple);cursor:pointer;transition:all 0.3s}
+.btn-primary:hover{background:rgba(176,68,255,0.35);box-shadow:0 0 20px rgba(176,68,255,0.2)}
+.btn-secondary{padding:12px 28px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.3s}
+.btn-secondary:hover{color:var(--cyan);border-color:rgba(0,245,255,0.4)}
+
+/* GUILD BROWSE */
+.guild-search-row{display:flex;gap:8px;margin-bottom:16px}
+.guild-search{flex:1;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:10px 14px;outline:none;transition:border-color 0.3s}
+.guild-search:focus{border-color:var(--cyan)}
+.guild-search::placeholder{color:var(--text-dim)}
+.guild-browse-list{display:flex;flex-direction:column;gap:12px}
+.guild-browse-card{background:rgba(176,68,255,0.03);border:1px solid rgba(176,68,255,0.12);padding:16px;cursor:pointer;transition:all 0.2s;position:relative}
+.guild-browse-card::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:1.5px solid rgba(176,68,255,0.4);border-left:1.5px solid rgba(176,68,255,0.4)}
+.guild-browse-card:hover{border-color:rgba(176,68,255,0.35);background:rgba(176,68,255,0.06)}
+.gbc-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.gbc-icon{width:44px;height:44px;background:rgba(176,68,255,0.12);border:1px solid rgba(176,68,255,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.gbc-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff}
+.gbc-tag{font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);letter-spacing:1px}
+.gbc-desc{font-size:11px;color:var(--text-dim);margin-bottom:10px;line-height:1.5}
+.gbc-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gbc-meta{display:flex;gap:12px}
+.gbc-meta-item{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.gbc-meta-item span{color:var(--cyan)}
+.join-btn{padding:7px 16px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;background:rgba(176,68,255,0.12);border:1px solid rgba(176,68,255,0.4);color:var(--purple);cursor:pointer;transition:all 0.2s}
+.join-btn:hover{background:rgba(176,68,255,0.25)}
+.join-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* CREATE GUILD FORM */
+.create-form{display:flex;flex-direction:column;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim)}
+.form-input{background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:11px 14px;outline:none;transition:border-color 0.3s;width:100%}
+.form-input:focus{border-color:var(--purple)}
+.form-input::placeholder{color:var(--text-dim)}
+.form-textarea{resize:vertical;min-height:70px}
+.form-hint{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+.form-icon-row{display:flex;gap:8px;flex-wrap:wrap}
+.icon-opt{width:44px;height:44px;background:rgba(176,68,255,0.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all 0.2s}
+.icon-opt.selected,.icon-opt:hover{border-color:var(--purple);background:rgba(176,68,255,0.15)}
+.form-cost{display:flex;align-items:center;gap:8px;padding:12px;border:1px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.04)}
+.form-cost-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)}
+.form-cost-val{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--gold)}
+.form-cost-warn{font-size:11px;color:var(--text-dim);margin-left:auto}
+.create-submit-btn{padding:13px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;background:rgba(176,68,255,0.2);border:1px solid rgba(176,68,255,0.6);color:var(--purple);cursor:pointer;transition:all 0.3s;width:100%}
+.create-submit-btn:hover{background:rgba(176,68,255,0.35);box-shadow:0 0 20px rgba(176,68,255,0.2)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);width:100%;max-width:460px;position:relative;animation:fadeInUp 0.3s ease both}
+.modal::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--purple);border-left:2px solid var(--purple)}
+.modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--purple);border-right:2px solid var(--purple)}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:var(--purple)}
+.modal-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:20px;line-height:1;transition:color 0.2s}
+.modal-close:hover{color:var(--red)}
+.modal-body{padding:24px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:600;display:flex;flex-direction:column;gap:8px}
+.toast-item{padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;border:1px solid;animation:fadeInUp 0.3s ease both;min-width:200px}
+.toast-item.success{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.4);color:var(--green)}
+.toast-item.error{background:rgba(255,0,60,0.1);border-color:rgba(255,0,60,0.4);color:var(--red)}
+.toast-item.info{background:rgba(176,68,255,0.1);border-color:rgba(176,68,255,0.4);color:var(--purple)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px}
+.empty-state-icon{font-size:36px;margin-bottom:12px;opacity:0.5}
+.empty-state-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim)}
+
+/* LOADING SKELETON */
+.skel{background:linear-gradient(90deg,rgba(0,245,255,0.04) 25%,rgba(0,245,255,0.08) 50%,rgba(0,245,255,0.04) 75%);background-size:200px 100%;animation:shimmer 1.5s infinite;height:12px;border-radius:0}
+
+/* LEAVE BTN */
+.leave-btn{padding:8px 14px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;background:transparent;border:1px solid rgba(255,0,60,0.3);color:rgba(255,0,60,0.6);cursor:pointer;transition:all 0.2s}
+.leave-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:80px 16px 100px}
+  .guild-grid{grid-template-columns:1fr}
+  .right-panel{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO PLATFORM</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar"><img id="suAvatar" src="" alt=""></div>
+    <div>
+      <div class="su-name" id="suName">Loading...</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      DASHBOARD
+    </a>
+    <a class="nav-item" href="./quests.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      QUESTS
+    </a>
+    <a class="nav-item" href="./feed.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      FEED
+    </a>
+    <a class="nav-item" href="./verify.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      VERIFY
+    </a>
+    <a class="nav-item" href="./leaderboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      LEADERBOARD
+    </a>
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./map.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
+      WORLD MAP
+    </a>
+    <a class="nav-item active" href="./guild.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+      GUILD
+    </a>
+    <a class="nav-item" href="./pvp.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      PVP DUEL
+    </a>
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item" href="./profile.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+      PROFILE
+    </a>
+    <a class="nav-item" href="./achievements.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      ACHIEVEMENTS
+    </a>
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
+      SHOP
+    </a>
+    <a class="nav-item" href="./wallet.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
+      WALLET
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</aside>
+
+<!-- TOPBAR MOBILE -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">// <span>GUILD</span></div>
+      <div class="page-sub" id="guildStatusSub">// GUILD SYSTEM — กำลังโหลด...</div>
+    </div>
+    <div id="headerActions"></div>
+  </div>
+
+  <!-- ======= NO GUILD VIEW ======= -->
+  <div class="no-guild-view" id="noGuildView">
+    <div class="no-guild-hero">
+      <div class="no-guild-icon">⚔️</div>
+      <div class="no-guild-title">ยังไม่มี Guild</div>
+      <div class="no-guild-sub">// เข้าร่วมหรือสร้าง Guild เพื่อทำ Quest ร่วมกัน</div>
+      <div class="no-guild-btns">
+        <button class="btn-primary" onclick="showTab('browse')">🔍 ค้นหา Guild</button>
+        <button class="btn-secondary" onclick="showTab('create')">⚒️ สร้าง Guild ใหม่</button>
+      </div>
+    </div>
+
+    <!-- TABS: BROWSE / CREATE -->
+    <div class="view-tabs">
+      <button class="vtab active" id="tabBrowse" onclick="showTab('browse')">🔍 ค้นหา Guild</button>
+      <button class="vtab" id="tabCreate" onclick="showTab('create')">⚒️ สร้าง Guild</button>
+    </div>
+
+    <!-- BROWSE -->
+    <div id="panelBrowse">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-title">🔍 GUILD ทั้งหมด</div>
+          <div class="box-tag" id="guildCountTag">— guilds</div>
+        </div>
+        <div class="box-body">
+          <div class="guild-search-row">
+            <input class="guild-search" id="guildSearch" type="text" placeholder="ค้นหาชื่อ Guild..." oninput="filterGuilds(this.value)">
+          </div>
+          <div class="guild-browse-list" id="guildBrowseList">
+            <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด Guild...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE -->
+    <div id="panelCreate" style="display:none">
+      <div class="box">
+        <div class="box-header">
+          <div class="box-title">⚒️ สร้าง GUILD ใหม่</div>
+          <div class="box-tag">// LV.10+ เท่านั้น</div>
+        </div>
+        <div class="box-body">
+          <div class="create-form">
+            <div class="form-group">
+              <div class="form-label">ชื่อ Guild *</div>
+              <input class="form-input" id="createName" type="text" placeholder="ชื่อ Guild (3–20 ตัวอักษร)" maxlength="20">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Tag [TAG] *</div>
+              <input class="form-input" id="createTag" type="text" placeholder="TAG (3–4 ตัวอักษร)" maxlength="4" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+              <div class="form-hint">// ตัวอักษรภาษาอังกฤษ 3–4 ตัว ไม่ซ้ำกับ Guild อื่น</div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">คำอธิบาย</div>
+              <textarea class="form-input form-textarea" id="createDesc" placeholder="อธิบาย Guild ของคุณ (ไม่บังคับ)" maxlength="200"></textarea>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Icon Guild</div>
+              <div class="form-icon-row" id="iconRow">
+                <!-- filled by JS -->
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">สาธารณะ</div>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                <input type="checkbox" id="createPublic" checked style="accent-color:var(--purple);width:16px;height:16px">
+                <span style="font-size:12px;color:var(--text-dim)">ให้ทุกคนเห็นและสมัครเข้า Guild ได้</span>
+              </label>
+            </div>
+            <div class="form-cost">
+              <div>
+                <div class="form-cost-label">ค่าสร้าง Guild</div>
+                <div class="form-cost-val">500 ⭐ Gold</div>
+              </div>
+              <div class="form-cost-warn" id="goldBalance">คงเหลือ: — Gold</div>
+            </div>
+            <button class="create-submit-btn" onclick="createGuild()">⚒️ สร้าง GUILD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= HAS GUILD VIEW ======= -->
+  <div id="hasGuildView" style="display:none">
+
+    <!-- GUILD BANNER -->
+    <div class="guild-banner" id="guildBanner">
+      <div class="guild-banner-inner">
+        <div class="guild-icon" id="gBannerIcon">⚔️</div>
+        <div class="guild-info">
+          <div class="guild-name" id="gBannerName">—</div>
+          <div class="guild-tag" id="gBannerTag">[—]</div>
+          <div class="guild-desc" id="gBannerDesc">—</div>
+          <div class="guild-meta">
+            <div class="guild-meta-item"><span class="guild-meta-label">LV</span><span class="guild-meta-val" id="gBannerLv">1</span></div>
+            <div class="guild-meta-item"><span class="guild-meta-label">สมาชิก</span><span class="guild-meta-val" id="gBannerMembers">—</span></div>
+            <div class="guild-meta-item"><span class="guild-meta-label">Guild XP</span><span class="guild-meta-val" id="gBannerXP">0</span></div>
+            <div class="guild-role-badge" id="myRoleBadge">MEMBER</div>
+          </div>
+          <div id="territoryBadge" style="display:none">
+            <div class="territory-badge">👑 ครอง Territory: <span id="territoryCity">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="guild-xp-bar">
+        <div class="guild-xp-top">
+          <div class="guild-xp-label">GUILD XP — ความก้าวหน้า</div>
+          <div class="guild-xp-nums"><span id="gXpCurrent">0</span> / <span id="gXpNext">1000</span> XP</div>
+        </div>
+        <div class="guild-xp-track"><div class="guild-xp-fill" id="gXpFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="guild-grid">
+
+      <!-- LEFT: TABS -->
+      <div>
+        <div class="box">
+          <div class="inner-tabs">
+            <button class="itab active" onclick="switchInnerTab('members',this)">👥 สมาชิก <span class="itab-count" id="memberCount">0</span></button>
+            <button class="itab" onclick="switchInnerTab('quests',this)">⚔️ Guild Quest</button>
+            <button class="itab" onclick="switchInnerTab('chat',this)">💬 Chat</button>
+            <button class="itab" onclick="switchInnerTab('feed',this)">📡 Feed</button>
+          </div>
+
+          <!-- MEMBERS TAB -->
+          <div class="box-body" id="tabMembers">
+            <div class="member-list" id="memberList">
+              <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลดสมาชิก...</div></div>
+            </div>
+          </div>
+
+          <!-- QUESTS TAB -->
+          <div class="box-body" id="tabQuests" style="display:none">
+            <div class="gquest-list" id="guestList">
+              <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด Quest...</div></div>
+            </div>
+          </div>
+
+          <!-- CHAT TAB -->
+          <div class="box-body" id="tabChat" style="display:none">
+            <div class="chat-wrap">
+              <div class="chat-messages" id="chatMessages">
+                <div class="empty-state" style="margin:auto"><div class="empty-state-icon">💬</div><div class="empty-state-txt">ยังไม่มีข้อความ</div></div>
+              </div>
+              <div class="chat-input-row">
+                <input class="chat-input" id="chatInput" type="text" placeholder="พิมพ์ข้อความ..." maxlength="300" onkeydown="if(event.key==='Enter')sendChat()">
+                <button class="chat-send-btn" onclick="sendChat()">ส่ง</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FEED TAB -->
+          <div class="box-body" id="tabFeed" style="display:none">
+            <div class="gfeed-list" id="gfeedList">
+              <div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+
+        <!-- RANKING -->
+        <div class="box">
+          <div class="box-header">
+            <div class="box-title">🏆 RANKING ในเดือนนี้</div>
+            <div class="box-tag">// XP/MO</div>
+          </div>
+          <div class="box-body" style="padding:0 20px">
+            <div class="rank-list" id="rankList">
+              <div class="empty-state" style="padding:24px 0"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">โหลด...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEAVE GUILD -->
+        <div class="box">
+          <div class="box-header"><div class="box-title">⚙️ การจัดการ</div></div>
+          <div class="box-body" style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-bottom:4px">// MASTER สามารถแก้ไขข้อมูล Guild ได้</div>
+            <button class="btn-secondary" id="editGuildBtn" style="display:none;width:100%;padding:10px" onclick="openEditModal()">✏️ แก้ไข Guild</button>
+            <button class="leave-btn" id="leaveGuildBtn" onclick="confirmLeave()">🚪 ออกจาก Guild</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toastContainer"></div>
+
+<!-- EDIT GUILD MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ แก้ไข Guild</div>
+      <button class="modal-close" onclick="closeModal('editModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="create-form">
+        <div class="form-group">
+          <div class="form-label">คำอธิบาย</div>
+          <textarea class="form-input form-textarea" id="editDesc" maxlength="200"></textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-label">สาธารณะ</div>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" id="editPublic" style="accent-color:var(--purple);width:16px;height:16px">
+            <span style="font-size:12px;color:var(--text-dim)">ให้ทุกคนเห็นและสมัครเข้า Guild ได้</span>
+          </label>
+        </div>
+        <button class="create-submit-btn" onclick="saveGuildEdit()">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ============================================
+// STATE
+// ============================================
+let ME = null          // users row
+let MY_GUILD = null    // guilds row
+let MY_MEMBER = null   // guild_members row
+let ALL_GUILDS = []
+let CHAT_CHANNEL = null
+let SELECTED_ICON = '⚔️'
+
+const ICONS = ['⚔️','🔮','🗺️','💰','🎨','🤝','🐉','🦁','🦊','🌟','🔥','💎','🏰','⚡','🌙','🛡️','🗡️','👑']
+const GUILD_XP_PER_LEVEL = 1000
+
+// ============================================
+// INIT
+// ============================================
+async function init() {
+  const { data: { session } } = await sb.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+
+  const { data: me } = await sb.from('users').select('*').eq('id', session.user.id).single()
+  if (!me) { window.location.href = './login.html'; return }
+  ME = me
+
+  renderSidebarUser()
+  buildIconRow()
+
+  // ดึง gold balance สำหรับ form สร้าง guild
+  document.getElementById('goldBalance').textContent = `คงเหลือ: ${me.gold.toLocaleString()} Gold`
+
+  // เช็คว่าอยู่ guild ไหน
+  const { data: memberRow } = await sb.from('guild_members')
+    .select('*, guilds(*)').eq('user_id', me.id).maybeSingle()
+
+  if (memberRow) {
+    MY_MEMBER = memberRow
+    MY_GUILD = memberRow.guilds
+    showHasGuildView()
+  } else {
+    showNoGuildView()
+  }
+}
+
+// ============================================
+// SIDEBAR USER
+// ============================================
+function renderSidebarUser() {
+  document.getElementById('suName').textContent = ME.display_name || ME.username
+  document.getElementById('suClass').textContent = (ME.class || 'novice').toUpperCase()
+  document.getElementById('suLv').textContent = `LV.${ME.level}`
+  const avatarEl = document.getElementById('suAvatar')
+  avatarEl.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${ME.avatar_seed || ME.id}`
+  const sidebarUser = document.getElementById('sidebarUser')
+  sidebarUser.className = `sidebar-user cls-${ME.class || 'warrior'}`
+}
+
+// ============================================
+// NO GUILD VIEW
+// ============================================
+function showNoGuildView() {
+  document.getElementById('noGuildView').style.display = 'block'
+  document.getElementById('hasGuildView').style.display = 'none'
+  document.getElementById('guildStatusSub').textContent = '// ยังไม่ได้เข้าร่วม Guild ใด'
+  loadAllGuilds()
+}
+
+async function loadAllGuilds() {
+  const { data } = await sb.from('guilds')
+    .select('*, guild_members(count)')
+    .eq('is_public', true)
+    .order('guild_xp', { ascending: false })
+
+  ALL_GUILDS = data || []
+  document.getElementById('guildCountTag').textContent = `${ALL_GUILDS.length} guilds`
+  renderGuildBrowse(ALL_GUILDS)
+}
+
+function renderGuildBrowse(list) {
+  const el = document.getElementById('guildBrowseList')
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏰</div><div class="empty-state-txt">ไม่พบ Guild ที่ตรงกัน</div></div>`
+    return
+  }
+  el.innerHTML = list.map(g => {
+    const memberCount = g.guild_members?.[0]?.count ?? 0
+    const gLv = Math.max(1, Math.floor(g.guild_xp / GUILD_XP_PER_LEVEL) + 1)
+    return `
+    <div class="guild-browse-card">
+      <div class="gbc-top">
+        <div class="gbc-icon">${g.metadata?.icon || '⚔️'}</div>
+        <div>
+          <div class="gbc-name">${escHtml(g.name)}</div>
+          <div class="gbc-tag">[${escHtml(g.tag)}] · LV.${gLv}</div>
+        </div>
+      </div>
+      <div class="gbc-desc">${escHtml(g.description || 'ไม่มีคำอธิบาย')}</div>
+      <div class="gbc-bottom">
+        <div class="gbc-meta">
+          <div class="gbc-meta-item">👥 <span>${memberCount}/${g.member_limit}</span></div>
+          <div class="gbc-meta-item">⭐ XP <span>${g.guild_xp.toLocaleString()}</span></div>
+        </div>
+        <button class="join-btn" onclick="joinGuild(${g.id},'${escHtml(g.name)}')"
+          ${memberCount >= g.member_limit ? 'disabled' : ''}>
+          ${memberCount >= g.member_limit ? '🔒 เต็ม' : '➕ เข้าร่วม'}
+        </button>
+      </div>
+    </div>`
+  }).join('')
+}
+
+window.filterGuilds = (q) => {
+  const filtered = q ? ALL_GUILDS.filter(g =>
+    g.name.toLowerCase().includes(q.toLowerCase()) ||
+    g.tag.toLowerCase().includes(q.toLowerCase())
+  ) : ALL_GUILDS
+  renderGuildBrowse(filtered)
+}
+
+window.showTab = (tab) => {
+  document.getElementById('tabBrowse').classList.toggle('active', tab === 'browse')
+  document.getElementById('tabCreate').classList.toggle('active', tab === 'create')
+  document.getElementById('panelBrowse').style.display = tab === 'browse' ? 'block' : 'none'
+  document.getElementById('panelCreate').style.display = tab === 'create' ? 'block' : 'none'
+}
+
+// ============================================
+// JOIN GUILD
+// ============================================
+window.joinGuild = async (guildId, guildName) => {
+  // เช็ค unique constraint — user อยู่ได้แค่ 1 guild
+  const { error } = await sb.from('guild_members').insert({
+    guild_id: guildId,
+    user_id: ME.id,
+    role: 'member'
+  })
+  if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
+
+  // activity feed + notification
+  await sb.from('activity_feed').insert({ user_id: ME.id, type: 'guild_join', data: { guild_id: guildId, guild_name: guildName } })
+  await sb.from('notifications').insert({ user_id: ME.id, title: '🤝 เข้าร่วม Guild สำเร็จ!', body: `คุณได้เข้าร่วม Guild "${guildName}" แล้ว` })
+
+  toast(`เข้าร่วม ${guildName} สำเร็จ! `, 'success')
+  setTimeout(() => location.reload(), 1200)
+}
+
+// ============================================
+// CREATE GUILD
+// ============================================
+function buildIconRow() {
+  const row = document.getElementById('iconRow')
+  row.innerHTML = ICONS.map(ic => `<div class="icon-opt ${ic===SELECTED_ICON?'selected':''}" onclick="selectIcon('${ic}')">${ic}</div>`).join('')
+}
+
+window.selectIcon = (ic) => {
+  SELECTED_ICON = ic
+  document.querySelectorAll('.icon-opt').forEach(el => {
+    el.classList.toggle('selected', el.textContent === ic)
+  })
+}
+
+window.createGuild = async () => {
+  if (ME.level < 10) { toast('ต้องเป็น Level 10 ขึ้นไปเพื่อสร้าง Guild', 'error'); return }
+  if (ME.gold < 500) { toast('Gold ไม่พอ — ต้องการ 500 Gold', 'error'); return }
+
+  const name = document.getElementById('createName').value.trim()
+  const tag = document.getElementById('createTag').value.trim().toUpperCase()
+  const desc = document.getElementById('createDesc').value.trim()
+  const isPublic = document.getElementById('createPublic').checked
+
+  if (!name || name.length < 3) { toast('ชื่อ Guild ต้องมีอย่างน้อย 3 ตัวอักษร', 'error'); return }
+  if (!tag || tag.length < 3) { toast('Tag ต้องมี 3–4 ตัวอักษร', 'error'); return }
+
+  // Insert guild
+  const { data: newGuild, error: ge } = await sb.from('guilds').insert({
+    name, tag, description: desc, master_id: ME.id, is_public: isPublic,
+    metadata: { icon: SELECTED_ICON }
+  }).select().single()
+  if (ge) { toast(ge.message, 'error'); return }
+
+  // Insert master member
+  await sb.from('guild_members').insert({ guild_id: newGuild.id, user_id: ME.id, role: 'master' })
+
+  // หัก Gold
+  await sb.from('users').update({ gold: ME.gold - 500 }).eq('id', ME.id)
+
+  // Notification + activity
+  await sb.from('notifications').insert({ user_id: ME.id, title: '🏰 สร้าง Guild สำเร็จ!', body: `Guild "${name}" ถูกสร้างแล้ว` })
+
+  toast(`สร้าง Guild "${name}" สำเร็จ!`, 'success')
+  setTimeout(() => location.reload(), 1200)
+}
+
+// ============================================
+// HAS GUILD VIEW
+// ============================================
+async function showHasGuildView() {
+  document.getElementById('noGuildView').style.display = 'none'
+  document.getElementById('hasGuildView').style.display = 'block'
+  document.getElementById('guildStatusSub').textContent = `// ${MY_GUILD.name} [${MY_GUILD.tag}]`
+
+  // Banner
+  const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
+  const gXpPct = Math.min(100, ((MY_GUILD.guild_xp % GUILD_XP_PER_LEVEL) / GUILD_XP_PER_LEVEL) * 100)
+  document.getElementById('gBannerIcon').textContent = MY_GUILD.metadata?.icon || '⚔️'
+  document.getElementById('gBannerName').textContent = MY_GUILD.name
+  document.getElementById('gBannerTag').textContent = `[${MY_GUILD.tag}]`
+  document.getElementById('gBannerDesc').textContent = MY_GUILD.description || 'ไม่มีคำอธิบาย'
+  document.getElementById('gBannerLv').textContent = gLv
+  document.getElementById('gBannerXP').textContent = MY_GUILD.guild_xp.toLocaleString()
+  document.getElementById('gXpCurrent').textContent = MY_GUILD.guild_xp.toLocaleString()
+  document.getElementById('gXpNext').textContent = (gLv * GUILD_XP_PER_LEVEL).toLocaleString()
+  setTimeout(() => { document.getElementById('gXpFill').style.width = gXpPct + '%' }, 100)
+
+  // Role badge
+  const role = MY_MEMBER.role
+  const roleBadge = document.getElementById('myRoleBadge')
+  roleBadge.className = `guild-role-badge ${role}`
+  roleBadge.textContent = role === 'master' ? '👑 MASTER' : role === 'officer' ? '⭐ OFFICER' : '🤝 MEMBER'
+
+  // show edit / leave
+  if (role === 'master') {
+    document.getElementById('editGuildBtn').style.display = 'block'
+    document.getElementById('leaveGuildBtn').style.display = 'none'
+  }
+
+  // load data
+  await Promise.all([loadMembers(), loadGuildQuests(), loadGuildFeed()])
+  subscribeGuildChat()
+}
+
+// ============================================
+// MEMBERS
+// ============================================
+async function loadMembers() {
+  const { data } = await sb.from('guild_members')
+    .select('*, users(id,username,display_name,class,level,xp_this_month,avatar_seed)')
+    .eq('guild_id', MY_GUILD.id)
+    .order('role')
+
+  document.getElementById('memberCount').textContent = data?.length || 0
+  document.getElementById('gBannerMembers').textContent = `${data?.length || 0}/${MY_GUILD.member_limit}`
+
+  const el = document.getElementById('memberList')
+  if (!data?.length) { el.innerHTML = `<div class="empty-state"><div class="empty-state-txt">ไม่มีสมาชิก</div></div>`; return }
+
+  el.innerHTML = data.map(m => {
+    const u = m.users
+    const isMe = u.id === ME.id
+    const canManage = MY_MEMBER.role === 'master' && !isMe
+    return `
+    <div class="member-item cls-${u.class || 'warrior'}">
+      <div class="member-avatar"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.avatar_seed||u.id}" alt=""></div>
+      <div class="member-info">
+        <div class="member-name">
+          ${escHtml(u.display_name || u.username)}
+          ${isMe ? '<span style="font-family:Orbitron,monospace;font-size:7px;color:var(--cyan);padding:1px 6px;border:1px solid rgba(0,245,255,0.3)">YOU</span>' : ''}
+          <span class="member-role ${m.role}">${m.role === 'master' ? '👑' : m.role === 'officer' ? '⭐' : ''} ${m.role.toUpperCase()}</span>
+        </div>
+        <div class="member-cls">${(u.class||'novice').toUpperCase()} · LV.${u.level}</div>
+      </div>
+      <div class="member-xp">${(u.xp_this_month||0).toLocaleString()} XP</div>
+      ${canManage ? `
+        <div class="member-actions">
+          <button class="member-action-btn promote" onclick="promoteOfficer('${u.id}','${escHtml(u.username)}','${m.role}')">
+            ${m.role === 'officer' ? '⬇️' : '⬆️'}
+          </button>
+          <button class="member-action-btn" onclick="kickMember('${u.id}','${escHtml(u.username)}')">kick</button>
+        </div>
+      ` : ''}
+    </div>`
+  }).join('')
+
+  // Ranking right panel
+  const sorted = [...data].sort((a, b) => (b.users.xp_this_month||0) - (a.users.xp_this_month||0))
+  document.getElementById('rankList').innerHTML = sorted.slice(0,10).map((m, i) => {
+    const u = m.users
+    return `
+    <div class="rank-item">
+      <div class="rank-pos ${i===0?'top1':i===1?'top2':i===2?'top3':''}">${i+1}</div>
+      <div class="rank-name">
+        <div class="rank-uname">${escHtml(u.display_name||u.username)}</div>
+        <div class="rank-cls">${(u.class||'novice').toUpperCase()} · LV.${u.level}</div>
+      </div>
+      <div class="rank-xp">${(u.xp_this_month||0).toLocaleString()}</div>
+    </div>`
+  }).join('')
+}
+
+// ============================================
+// GUILD QUEST
+// ============================================
+async function loadGuildQuests() {
+  const { data } = await sb.from('quests')
+    .select('*')
+    .eq('type', 'guild')
+    .eq('is_active', true)
+
+  const el = document.getElementById('guestList')
+  if (!data?.length) {
+    el.innerHTML = `
+      <div class="gquest-card" style="text-align:center;padding:32px">
+        <div style="font-size:36px;margin-bottom:12px">⏰</div>
+        <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px">GUILD QUEST รีเซ็ตทุก 3 วัน</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:8px">ยังไม่มี Guild Quest ในขณะนี้</div>
+      </div>`
+    return
+  }
+
+  el.innerHTML = data.map(q => {
+    const timerH = 72 // 3 วัน
+    return `
+    <div class="gquest-card">
+      <div class="gquest-header">
+        <div class="gquest-name">${escHtml(q.title)}</div>
+        <div class="gquest-timer">⏱️ ${timerH}h</div>
+      </div>
+      <div class="gquest-desc">${escHtml(q.description || '')}</div>
+      <div class="gquest-progress">
+        <div class="gquest-prog-top">
+          <div class="gquest-prog-label">ความคืบหน้า</div>
+          <div class="gquest-prog-val">0 / 3 สมาชิก</div>
+        </div>
+        <div class="gquest-track"><div class="gquest-fill" style="width:0%"></div></div>
+      </div>
+      <div class="gquest-bottom">
+        <div class="gquest-rewards">
+          <div class="gquest-reward xp">+${q.xp_reward} XP</div>
+          <div class="gquest-reward gold">+${q.gold_reward||0} Gold</div>
+        </div>
+        <button class="gquest-join-btn" onclick="joinGuildQuest(${q.id},this)">เข้าร่วม Quest</button>
+      </div>
+      <div class="gquest-participants" style="margin-top:8px">// ต้องมีสมาชิกอย่างน้อย 3 คน</div>
+    </div>`
+  }).join('')
+}
+
+window.joinGuildQuest = async (questId, btn) => {
+  btn.disabled = true
+  btn.textContent = '⏳...'
+
+  // insert user_quest
+  const { error } = await sb.from('user_quests').insert({
+    user_id: ME.id, quest_id: questId, status: 'in_progress'
+  })
+  if (error && !error.message.includes('duplicate')) {
+    btn.disabled = false; btn.textContent = 'เข้าร่วม Quest'
+    toast('เกิดข้อผิดพลาด', 'error'); return
+  }
+
+  btn.classList.add('joined')
+  btn.textContent = '✅ เข้าร่วมแล้ว'
+  toast('เข้าร่วม Guild Quest แล้ว! ไปทำ Quest ที่หน้า Quests', 'success')
+}
+
+// ============================================
+// GUILD FEED
+// ============================================
+async function loadGuildFeed() {
+  const { data: members } = await sb.from('guild_members')
+    .select('user_id').eq('guild_id', MY_GUILD.id)
+
+  const userIds = members?.map(m => m.user_id) || []
+  if (!userIds.length) return
+
+  const { data } = await sb.from('activity_feed')
+    .select('*, users(username, display_name, avatar_seed, class)')
+    .in('user_id', userIds)
+    .order('created_at', { ascending: false })
+    .limit(30)
+
+  const el = document.getElementById('gfeedList')
+  if (!data?.length) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>`; return }
+
+  const icons = { quest_complete:'✅', level_up:'⬆️', badge_unlock:'🏅', title_unlock:'🎖️', checkin:'📍', guild_join:'🤝', pvp_win:'⚔️' }
+  const labels = { quest_complete:'ทำ Quest สำเร็จ', level_up:'Level Up!', badge_unlock:'ปลดล็อค Badge', title_unlock:'ได้รับ Title', checkin:'Check-in สถานที่ใหม่', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP!' }
+
+  el.innerHTML = data.map(a => {
+    const u = a.users
+    const t = relTime(a.created_at)
+    return `
+    <div class="gfeed-item">
+      <div class="gfeed-icon">${icons[a.type]||'📢'}</div>
+      <div class="gfeed-text">
+        <div class="gfeed-main"><strong>${escHtml(u.display_name||u.username)}</strong> ${labels[a.type]||a.type}</div>
+        <div class="gfeed-time">${t}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ============================================
+// GUILD CHAT (Realtime)
+// ============================================
+function subscribeGuildChat() {
+  const channel = `guild_${MY_GUILD.id}`
+  loadChatHistory(channel)
+
+  CHAT_CHANNEL = sb.channel(`chat:${channel}`)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages', filter:`channel=eq.${channel}` },
+      async (payload) => {
+        const msg = payload.new
+        // ดึง user info
+        const { data: u } = await sb.from('users').select('username,display_name,avatar_seed').eq('id', msg.sender_id).single()
+        appendChatMsg(msg, u)
+      })
+    .subscribe()
+}
+
+async function loadChatHistory(channel) {
+  const { data } = await sb.from('messages')
+    .select('*, users(username,display_name,avatar_seed)')
+    .eq('channel', channel)
+    .order('created_at', { ascending: true })
+    .limit(50)
+
+  const el = document.getElementById('chatMessages')
+  if (!data?.length) return
+
+  el.innerHTML = ''
+  data.forEach(m => appendChatMsg(m, m.users))
+  el.scrollTop = el.scrollHeight
+}
+
+function appendChatMsg(msg, u) {
+  const el = document.getElementById('chatMessages')
+  const isEmpty = el.querySelector('.empty-state')
+  if (isEmpty) el.innerHTML = ''
+
+  const isMe = msg.sender_id === ME.id
+  const div = document.createElement('div')
+  div.className = `chat-msg${isMe?' mine':''}`
+  div.innerHTML = `
+    <div class="chat-avatar"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${u?.avatar_seed||msg.sender_id}" alt=""></div>
+    <div class="chat-bubble">
+      <div class="chat-sender">${escHtml(u?.display_name||u?.username||'?')}</div>
+      <div class="chat-text">${escHtml(msg.content)}</div>
+      <div class="chat-time">${relTime(msg.created_at)}</div>
+    </div>`
+  el.appendChild(div)
+  el.scrollTop = el.scrollHeight
+}
+
+window.sendChat = async () => {
+  const input = document.getElementById('chatInput')
+  const content = input.value.trim()
+  if (!content) return
+  input.value = ''
+
+  await sb.from('messages').insert({
+    sender_id: ME.id,
+    channel: `guild_${MY_GUILD.id}`,
+    content
+  })
+}
+
+// ============================================
+// MANAGE MEMBERS (MASTER)
+// ============================================
+window.kickMember = async (userId, uname) => {
+  if (!confirm(`Kick ${uname} ออกจาก Guild?`)) return
+  await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  await sb.from('notifications').insert({ user_id: userId, title: '🚪 ถูก Kick', body: `คุณถูก Kick ออกจาก Guild "${MY_GUILD.name}"` })
+  toast(`Kick ${uname} ออกแล้ว`, 'info')
+  loadMembers()
+}
+
+window.promoteOfficer = async (userId, uname, currentRole) => {
+  const newRole = currentRole === 'officer' ? 'member' : 'officer'
+  await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  await sb.from('notifications').insert({
+    user_id: userId,
+    title: newRole === 'officer' ? '⭐ ได้รับตำแหน่ง Officer!' : '📝 ถูก Demote เป็น Member',
+    body: `สถานะของคุณใน Guild "${MY_GUILD.name}" เปลี่ยนแปลงแล้ว`
+  })
+  toast(`${uname} → ${newRole.toUpperCase()}`, 'success')
+  loadMembers()
+}
+
+// ============================================
+// LEAVE GUILD
+// ============================================
+window.confirmLeave = async () => {
+  if (!confirm(`ออกจาก Guild "${MY_GUILD.name}"?`)) return
+  await sb.from('guild_members').delete().eq('user_id', ME.id)
+  toast('ออกจาก Guild แล้ว', 'info')
+  setTimeout(() => location.reload(), 1000)
+}
+
+// ============================================
+// EDIT GUILD
+// ============================================
+window.openEditModal = () => {
+  document.getElementById('editDesc').value = MY_GUILD.description || ''
+  document.getElementById('editPublic').checked = MY_GUILD.is_public
+  openModal('editModal')
+}
+
+window.saveGuildEdit = async () => {
+  const desc = document.getElementById('editDesc').value.trim()
+  const isPublic = document.getElementById('editPublic').checked
+  const { error } = await sb.from('guilds').update({ description: desc, is_public: isPublic }).eq('id', MY_GUILD.id)
+  if (error) { toast(error.message, 'error'); return }
+  toast('บันทึกแล้ว', 'success')
+  closeModal('editModal')
+  setTimeout(() => location.reload(), 800)
+}
+
+// ============================================
+// INNER TABS
+// ============================================
+window.switchInnerTab = (tab, btn) => {
+  document.querySelectorAll('.itab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById('tabMembers').style.display = tab === 'members' ? 'block' : 'none'
+  document.getElementById('tabQuests').style.display = tab === 'quests' ? 'block' : 'none'
+  document.getElementById('tabChat').style.display = tab === 'chat' ? 'block' : 'none'
+  document.getElementById('tabFeed').style.display = tab === 'feed' ? 'block' : 'none'
+  if (tab === 'chat') {
+    setTimeout(() => {
+      const el = document.getElementById('chatMessages')
+      el.scrollTop = el.scrollHeight
+    }, 100)
+  }
+}
+
+// ============================================
+// MODAL HELPERS
+// ============================================
+window.openModal = id => document.getElementById(id).classList.add('open')
+window.closeModal = id => document.getElementById(id).classList.remove('open')
+
+// ============================================
+// SIGN OUT
+// ============================================
+window.handleSignOut = async () => {
+  await sb.auth.signOut()
+  window.location.href = './login.html'
+}
+
+// ============================================
+// SIDEBAR MOBILE
+// ============================================
+window.openSidebar = () => {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('sidebarOverlay').style.display = 'block'
+}
+window.closeSidebar = () => {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('sidebarOverlay').style.display = 'none'
+}
+
+// ============================================
+// CURSOR
+// ============================================
+const cursor = document.getElementById('cursor')
+const ring = document.getElementById('cursorRing')
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'
+  ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'
+})
+
+// ============================================
+// UTILS
+// ============================================
+function toast(msg, type = 'info') {
+  const el = document.createElement('div')
+  el.className = `toast-item ${type}`
+  el.textContent = msg
+  document.getElementById('toastContainer').appendChild(el)
+  setTimeout(() => el.remove(), 3000)
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function relTime(iso) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'เมื่อกี้'
+  if (m < 60) return `${m} นาทีที่แล้ว`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h} ชม.ที่แล้ว`
+  return `${Math.floor(h/24)} วันที่แล้ว`
+}
+
+init()
+</script>
+</body>
+</html>

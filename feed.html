@@ -432,6 +432,17 @@ let feedOffset = 0
 const PAGE_SIZE = 15
 let isLoading = false
 
+// ===== AVATAR URL HELPER =====
+function getAvatarUrl(avatarSeed, size = 80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length === 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+}
+
 // ===== LOAD USER PROFILE =====
 async function loadProfile() {
   const { data: u } = await supabase.from('users').select('*').eq('id', userId).single()
@@ -443,9 +454,7 @@ async function loadProfile() {
   document.getElementById('suName').textContent = u.username || '—'
   document.getElementById('suClass').textContent = (u.class || '—').toUpperCase()
   document.getElementById('suLv').textContent = `LV.${u.level || 1}`
-  document.getElementById('suAvatar').src = u.avatar_seed
-    ? `https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.avatar_seed}`
-    : ''
+  document.getElementById('suAvatar').src = getAvatarUrl(u.avatar_seed || u.username)
 
   document.getElementById('cityLabel').textContent = `🏙️ ${myCity} — Feed สด`
 
@@ -524,7 +533,7 @@ async function loadActivePlayers() {
     <div class="active-item cls-${p.class || 'warrior'}">
       <div class="active-dot"></div>
       <div class="active-avatar">
-        ${p.avatar_seed ? `<img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar_seed}" alt="">` : '🧑'}
+        <img src="${getAvatarUrl(p.avatar_seed || p.username, 28)}" alt="">
       </div>
       <div class="active-name">${p.username || '—'}</div>
       <div class="active-xp">${(p.xp_this_month || 0).toLocaleString()} XP</div>
@@ -628,13 +637,9 @@ function renderEmptyFeed(msg) {
 }
 
 function renderFeedCard(item) {
-  const avatarSrc = item.avatar_seed
-    ? `https://api.dicebear.com/7.x/pixel-art/svg?seed=${item.avatar_seed}`
-    : null
+  const avatarSrc = getAvatarUrl(item.avatar_seed || item.username, 38)
 
-  const avatarHtml = avatarSrc
-    ? `<img src="${avatarSrc}" alt="">`
-    : (getClassEmoji(item.class))
+  const avatarHtml = `<img src="${avatarSrc}" alt="">`
 
   const timeAgo = getTimeAgo(item.created_at)
   const data = item.data || {}
@@ -689,7 +694,7 @@ function renderFeedCard(item) {
     <div class="feed-card cls-${item.class || 'warrior'} ${extraClass}" data-id="${item.id}">
       <div class="feed-top">
         <div class="feed-avatar cls-${item.class || 'warrior'}">
-          ${avatarSrc ? `<img src="${avatarSrc}" alt="">` : getClassEmoji(item.class)}
+          ${avatarHtml}
         </div>
         <div class="feed-body">
           <div class="feed-user-row">

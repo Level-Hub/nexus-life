@@ -857,6 +857,19 @@ let selectedClass = 'all'
 let activeTab = 'global'
 
 // ============================================================
+// AVATAR URL HELPER
+// ============================================================
+function getAvatarUrl(avatarSeed, size = 80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length === 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+}
+
+// ============================================================
 // INIT
 // ============================================================
 async function init() {
@@ -884,7 +897,7 @@ async function init() {
 // SIDEBAR
 // ============================================================
 function renderSidebar(p) {
-  document.getElementById('sidebarAvatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${p.avatar_seed||p.username}&backgroundColor=0a0a0a`
+  document.getElementById('sidebarAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
   document.getElementById('sidebarName').textContent = p.display_name || p.username
   document.getElementById('sidebarClass').textContent = (p.class||'').toUpperCase()
   document.getElementById('sidebarLv').textContent = `LV ${p.level||1}`
@@ -896,7 +909,7 @@ function renderSidebar(p) {
 // ============================================================
 function renderMyRankCard(p) {
   document.getElementById('myRankCard').style.display = 'flex'
-  document.getElementById('myRankAvatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${p.avatar_seed||p.username}&backgroundColor=0a0a0a`
+  document.getElementById('myRankAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
   document.getElementById('myRankAvatarWrap').className = `my-rank-avatar cls-${p.class||'warrior'}`
   document.getElementById('myRankName').textContent = p.display_name || p.username
   document.getElementById('myRankClass').textContent = (p.class||'—').toUpperCase()
@@ -959,7 +972,7 @@ function renderGlobal(data) {
           <div class="podium-avatar-wrap">
             ${crown}
             <div class="podium-avatar cls-${cls}">
-              <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+              <img src="${getAvatarUrl(u.avatar_seed||u.username, 88)}" alt="">
             </div>
             <div class="podium-rank-num">#${rank}</div>
           </div>
@@ -995,7 +1008,7 @@ function renderGlobal(data) {
         <div class="lb-row-rank ${rankClass}">${rank}</div>
         <div class="lb-row-user">
           <div class="lb-avatar cls-${cls}">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+            <img src="${getAvatarUrl(u.avatar_seed||u.username, 36)}" alt="">
           </div>
           <div class="lb-user-info">
             <div class="lb-username">${esc(u.display_name||u.username)}${streakBadge}</div>
@@ -1271,7 +1284,7 @@ window.filterCityPlayers = async function(cityName) {
       <div class="modal-player-row cls-${cls}" onclick="goProfile('${u.id}')">
         <div class="modal-player-rank ${rankClass}">${rank}</div>
         <div class="modal-player-avatar cls-${cls}">
-          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=${u.avatar_seed||u.username}&backgroundColor=0a0a0a" alt="">
+          <img src="${getAvatarUrl(u.avatar_seed||u.username, 36)}" alt="">
         </div>
         <div class="modal-player-info">
           <div class="modal-player-name">${esc(u.display_name||u.username)}</div>
