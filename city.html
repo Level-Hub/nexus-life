@@ -98,20 +98,25 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .city-prosperity-badge{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08);white-space:nowrap}
 
 .city-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:600px){
+@media(max-width:768px){
   .city-stats-row{grid-template-columns:repeat(2,1fr)}
+  .city-stat-val{font-size:16px}
+  .city-stat-label{font-size:6px;letter-spacing:0.5px}
   .city-hero{padding:16px}
   .city-name-row{gap:8px}
   .page-header{flex-direction:column;align-items:flex-start}
   .chat-input-wrap{gap:6px}
+  .buff-val{font-size:12px}
+  .buff-name{font-size:6px}
 }
 @media(max-width:400px){
   .city-stats-row{grid-template-columns:1fr 1fr}
+  .city-stat-val{font-size:14px}
   .city-hero{padding:12px}
 }
 .city-stat-item{text-align:center;padding:12px 8px;background:rgba(0,0,0,0.2);border:1px solid rgba(0,245,255,0.08)}
 .city-stat-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--cyan)}
-.city-stat-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-dim);margin-top:3px}
+.city-stat-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);margin-top:3px;word-break:break-word;line-height:1.3}
 
 /* PROSPERITY BAR */
 .prosperity-section{margin-bottom:4px}
@@ -283,7 +288,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .buff-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px}
 .buff-item{padding:12px;background:rgba(0,245,255,0.03);border:1px solid var(--border);text-align:center}
 .buff-icon{font-size:20px;margin-bottom:6px}
-.buff-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);margin-bottom:4px}
+.buff-name{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:0px;color:var(--text-dim);margin-bottom:4px;word-break:break-word;line-height:1.3}
 .buff-val{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--cyan)}
 .buff-item.active-buff{border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.04)}
 .buff-item.active-buff .buff-val{color:var(--green)}
@@ -326,7 +331,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
-  .main{margin-left:0;padding:72px 16px 80px}
+  .main{margin-left:0;padding:72px 12px 80px;max-width:100vw;overflow-x:hidden}
+  .city-layout{gap:12px}
+  .city-hero{max-width:100%;box-sizing:border-box}
+  .buff-grid{gap:6px;padding:10px}
 }
 </style>
 </head>
@@ -429,7 +437,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           <div class="city-stat-label">CITY STREAK</div>
         </div>
         <div class="city-stat-item">
-          <div class="city-stat-val" id="statProject">—%</div>
+          <div class="city-stat-val" id="statProject">—</div>
           <div class="city-stat-label">PROJECT</div>
         </div>
       </div>
@@ -750,7 +758,7 @@ async function loadCityProject(city) {
     document.getElementById('projectTitle').textContent = 'ยังไม่มีโครงการสัปดาห์นี้'
     document.getElementById('projectDesc').textContent = 'รอโครงการใหม่จากผู้ดูแลระบบ...'
     document.getElementById('joinProjectBtn').disabled = true
-    document.getElementById('statProject').textContent = '—%'
+    document.getElementById('statProject').textContent = '—'
     return
   }
 
