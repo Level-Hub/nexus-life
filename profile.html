@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -20,7 +20,7 @@
 .cls-artist   { --cls:#ff66aa; }
 .cls-diplomat { --cls:#00ccff; }
 
-*{margin:0;padding:0;box-sizing:border-box;touch-action:manipulation}html{scroll-behavior:smooth;touch-action:manipulation}img{max-width:100%;height:auto;display:block}img[src]{max-width:100%;width:100%}body,html{touch-action:manipulation}img,svg{touch-action:none} html{scroll-behavior:smooth}
+*{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 
 /* CURSOR */
@@ -880,6 +880,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
 <script type="module">
+function getAvatarUrl(avatarSeed, size=80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length >= 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
+}
+
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 const SUPABASE_URL  = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
@@ -959,7 +969,7 @@ function renderHero(u) {
   document.getElementById('profileHero').className = `profile-hero cls-${cls}`
 
   // avatar
-  const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.avatar_seed || u.username || 'default'}`
+  const avatarUrl = `getAvatarUrl(u.avatar_seed || u.username)`
   document.getElementById('heroAvatar').src   = avatarUrl
   document.getElementById('suAvatar').src     = avatarUrl
   document.getElementById('heroAvatarRing').className = `hero-avatar-ring cls-${cls}`
@@ -1274,7 +1284,7 @@ async function loadSidebarUser() {
     .eq('id', currentUser.id)
     .single()
   if (!data) return
-  const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${data.avatar_seed || data.username || 'default'}`
+  const avatarUrl = `getAvatarUrl(data.avatar_seed || data.username)`
   document.getElementById('suAvatar').src     = avatarUrl
   document.getElementById('suName').textContent  = data.display_name || data.username
   document.getElementById('suClass').textContent = (data.class || 'warrior').toUpperCase()
@@ -1406,7 +1416,7 @@ window.closeEditModal = function() {
 
 function updateAvatarPreview() {
   const seed = document.getElementById('editAvatarSeed').value.trim() || 'default'
-  document.getElementById('editAvatarPreview').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}`
+  document.getElementById('editAvatarPreview').src = `getAvatarUrl(seed)`
 }
 
 document.getElementById('editAvatarSeed').addEventListener('input', updateAvatarPreview)
