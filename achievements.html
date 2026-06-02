@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS LIFE — Achievements</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan: #00f5ff;
+  --cyan-dim: #00a8b5;
+  --gold: #ffd700;
+  --red: #ff003c;
+  --green: #44ff88;
+  --purple: #b044ff;
+  --bg: #010a0f;
+  --bg2: #020d14;
+  --panel: rgba(0,245,255,0.04);
+  --border: rgba(0,245,255,0.12);
+  --text: #c8f0f5;
+  --text-dim: #5a8a90;
+}
+.cls-warrior  { --cls:#ff4444; }
+.cls-mage     { --cls:#aa44ff; }
+.cls-explorer { --cls:#44ff88; }
+.cls-merchant { --cls:#ffaa00; }
+.cls-artist   { --cls:#ff66aa; }
+.cls-diplomat { --cls:#00ccff; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Sarabun',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+  min-height:100vh;
+}
+.cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
+.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
+body::before { content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000; }
+.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
+.orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
+.orb-1 { width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px; }
+.orb-2 { width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px; }
+
+/* SIDEBAR */
+.sidebar {
+  position:fixed;top:0;left:0;bottom:0;width:220px;
+  background:rgba(1,10,15,0.95);
+  border-right:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  z-index:200;
+  display:flex;flex-direction:column;
+  transition:transform 0.3s ease;
+}
+.sidebar-logo { padding:24px 20px 20px;border-bottom:1px solid var(--border); }
+.sidebar-logo-text { font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px; }
+.logo-dot { width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:0.3;box-shadow:none;} }
+.sidebar-tagline { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
+.sidebar-user { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px; }
+.su-avatar { width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0; }
+.su-avatar img { width:100%;height:100%;object-fit:cover; }
+.su-info { overflow:hidden; }
+.su-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.su-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px; }
+.su-lv { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px; }
+.nav-menu { flex:1;padding:12px 0;overflow-y:auto; }
+.nav-item { display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer;position:relative; }
+.nav-item:hover { color:var(--cyan);background:rgba(0,245,255,0.04); }
+.nav-item.active { color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06); }
+.nav-item svg { flex-shrink:0;opacity:0.6;transition:opacity 0.2s; }
+.nav-item:hover svg,.nav-item.active svg { opacity:1; }
+.nav-badge { margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace; }
+.nav-section-label { padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5; }
+.sidebar-bottom { padding:16px 20px;border-top:1px solid var(--border); }
+.signout-btn { width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s; }
+.signout-btn:hover { color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06); }
+
+/* TOPBAR */
+.topbar { display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between; }
+.topbar-logo { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan); }
+.burger { width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer; }
+.burger span { display:block;width:18px;height:1px;background:var(--cyan); }
+.sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190; }
+
+/* MAIN */
+.main { margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px; }
+
+/* PAGE HEADER */
+.page-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both; }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+.page-title { font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px; }
+.page-title span { color:var(--cyan); }
+.page-date { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
+
+/* LOADING */
+.loading-screen { position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px; }
+.loading-logo { font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan); }
+.loading-bar-wrap { width:200px;height:2px;background:var(--border); }
+.loading-bar { height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite; }
+@keyframes loadAnim { 0%{width:0%}50%{width:70%}100%{width:100%} }
+.loading-txt { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim); }
+
+/* TOAST */
+.toast { position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--cyan);background:rgba(1,10,15,0.95);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--cyan);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px;line-height:1.5; }
+.toast.show { transform:translateX(0); }
+.toast.success { border-left-color:var(--green);color:var(--green); }
+.toast.error { border-left-color:var(--red);color:#ff6680; }
+
+/* BOX */
+.box { background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative; }
+.box::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+.box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+.box-header { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border); }
+.box-title { font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--cyan); }
+.box-tag { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim); }
+.box-body { padding:20px; }
+
+/* ===================== ACHIEVEMENTS PAGE STYLES ===================== */
+
+/* SUMMARY CARDS */
+.summary-row {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  margin-bottom:24px;
+  animation:fadeInUp 0.5s 0.05s ease both;
+}
+.sum-card {
+  background:var(--panel);border:1px solid var(--border);
+  padding:20px;position:relative;overflow:hidden;
+  transition:border-color 0.3s;
+}
+.sum-card:hover { border-color:rgba(0,245,255,0.3); }
+.sum-card-icon { font-size:24px;margin-bottom:8px; }
+.sum-card-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px; }
+.sum-card-val { font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff; }
+.sum-card-sub { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px; }
+.sum-glow { position:absolute;bottom:0;right:0;width:70px;height:70px;border-radius:50%;filter:blur(35px);pointer-events:none; }
+
+/* MAIN GRID */
+.ach-grid {
+  display:grid;grid-template-columns:1fr 300px;gap:20px;
+  animation:fadeInUp 0.5s 0.1s ease both;
+}
+
+/* TAB BAR */
+.tab-bar {
+  display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;
+}
+.tab-btn {
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  padding:7px 16px;background:transparent;
+  border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s;
+}
+.tab-btn.active,.tab-btn:hover { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+
+/* TITLE GRID */
+.title-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;
+}
+.title-card {
+  background:rgba(0,245,255,0.02);border:1px solid var(--border);
+  padding:16px;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.title-card.unlocked { border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.03); }
+.title-card.equipped { border-color:var(--gold);background:rgba(255,215,0,0.06);box-shadow:0 0 16px rgba(255,215,0,0.08); }
+.title-card:hover { border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04); }
+.title-card.locked { opacity:0.45; }
+.title-card-top { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px; }
+.title-emoji { font-size:22px; }
+.title-status {
+  font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+  padding:3px 8px;border:1px solid;border-radius:0;
+}
+.title-status.equipped-badge { color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,0.1); }
+.title-status.unlocked-badge { color:var(--green);border-color:rgba(68,255,136,0.4);background:rgba(68,255,136,0.06); }
+.title-status.locked-badge { color:var(--text-dim);border-color:var(--border); }
+.title-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;margin-bottom:4px; }
+.title-cond { font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:10px; }
+.title-type { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);color:var(--cyan);display:inline-block; }
+.equip-btn {
+  margin-top:10px;width:100%;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  padding:7px;background:transparent;border:1px solid rgba(255,215,0,0.4);color:var(--gold);
+  cursor:pointer;transition:all 0.3s;
+}
+.equip-btn:hover { background:rgba(255,215,0,0.1); }
+.equip-btn.current { border-color:var(--gold);background:rgba(255,215,0,0.15);color:var(--gold);cursor:default; }
+
+/* BADGE GRID */
+.badge-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;
+}
+.badge-card {
+  background:rgba(0,245,255,0.02);border:1px solid var(--border);
+  padding:20px 16px;text-align:center;
+  transition:all 0.25s;position:relative;overflow:hidden;
+}
+.badge-card.unlocked { border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04); }
+.badge-card.locked { opacity:0.4;filter:grayscale(1); }
+.badge-icon { font-size:32px;margin-bottom:8px;display:block; }
+.badge-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:4px; }
+.badge-cond { font-size:11px;color:var(--text-dim);line-height:1.4; }
+.badge-unlocked-date { font-family:'Orbitron',monospace;font-size:8px;color:var(--cyan);margin-top:6px; }
+.badge-lock-icon { position:absolute;top:8px;right:8px;font-size:12px;opacity:0.4; }
+.badge-cat { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 6px;background:rgba(176,68,255,0.08);border:1px solid rgba(176,68,255,0.2);color:var(--purple);margin-top:6px;display:inline-block; }
+
+/* RIGHT: EQUIPPED TITLE + PROGRESS */
+.right-col { display:flex;flex-direction:column;gap:16px; }
+
+.equipped-panel {
+  background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.2);
+  padding:24px;text-align:center;position:relative;
+}
+.equipped-panel::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--gold);border-left:2px solid var(--gold); }
+.equipped-panel::after { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold); }
+.ep-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--gold);margin-bottom:16px;opacity:0.8; }
+.ep-avatar { width:72px;height:72px;border-radius:50%;border:2px solid var(--cls,var(--gold));margin:0 auto 12px;overflow:hidden;background:var(--panel); }
+.ep-avatar img { width:100%;height:100%;object-fit:cover; }
+.ep-name { font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:#fff;margin-bottom:4px; }
+.ep-title-badge {
+  font-family:'Orbitron',monospace;font-size:11px;
+  padding:6px 16px;background:rgba(255,215,0,0.1);
+  border:1px solid rgba(255,215,0,0.4);color:var(--gold);
+  display:inline-block;margin-bottom:12px;
+}
+.ep-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim); }
+
+/* PROGRESS BOX */
+.progress-list { display:flex;flex-direction:column;gap:14px; }
+.prog-item {}
+.prog-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
+.prog-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim); }
+.prog-val { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan); }
+.prog-bar { height:4px;background:rgba(0,245,255,0.08);overflow:hidden; }
+.prog-fill { height:100%;transition:width 1.2s ease; }
+
+/* RECENT BADGES */
+.recent-badges { display:flex;gap:8px;flex-wrap:wrap; }
+.recent-badge { display:flex;flex-direction:column;align-items:center;gap:4px; }
+.rb-icon { font-size:24px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15); }
+.rb-name { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);text-align:center;max-width:50px; }
+
+/* EMPTY */
+.empty-state { text-align:center;padding:48px 20px;color:var(--text-dim); }
+.empty-state-icon { font-size:36px;margin-bottom:12px;opacity:0.4; }
+.empty-state-txt { font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px; }
+
+/* RESPONSIVE */
+@media (max-width:1100px) {
+  .summary-row { grid-template-columns:repeat(2,1fr); }
+  .ach-grid { grid-template-columns:1fr; }
+}
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-overlay.open { display:block; }
+  .topbar { display:flex; }
+  .main { margin-left:0;padding:80px 16px 60px; }
+  .summary-row { grid-template-columns:repeat(2,1fr); }
+  .ach-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING ACHIEVEMENTS...</div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+    <div class="sidebar-tagline">// REAL LIFE MMO</div>
+  </div>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="su-avatar" id="suAvatarWrap">
+      <img id="suAvatar" src="" alt="">
+    </div>
+    <div class="su-info">
+      <div class="su-name" id="suName">—</div>
+      <div class="su-class" id="suClass">—</div>
+      <div class="su-lv" id="suLv">LV.1</div>
+    </div>
+  </div>
+
+  <nav class="nav-menu">
+    <div class="nav-section-label">MAIN</div>
+    <a class="nav-item" href="./dashboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      DASHBOARD
+    </a>
+    <a class="nav-item" href="./quests.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      QUESTS
+      <span class="nav-badge" id="navQuestBadge" style="display:none">0</span>
+    </a>
+    <a class="nav-item" href="./feed.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      FEED
+    </a>
+    <a class="nav-item" href="./verify.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      VERIFY
+    </a>
+    <a class="nav-item" href="./leaderboard.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      LEADERBOARD
+    </a>
+
+    <div class="nav-section-label">WORLD</div>
+    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
+    <a class="nav-item" href="./map.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
+      WORLD MAP
+    </a>
+    <a class="nav-item" href="./guild.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
+      GUILD
+    </a>
+    <a class="nav-item" href="./pvp.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      PVP DUEL
+    </a>
+
+    <div class="nav-section-label">PROFILE</div>
+    <a class="nav-item" href="./profile.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
+      PROFILE
+    </a>
+    <a class="nav-item active" href="./achievements.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      ACHIEVEMENTS
+    </a>
+
+    <div class="nav-section-label">ECONOMY</div>
+    <a class="nav-item" href="./shop.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
+      SHOP
+    </a>
+    <a class="nav-item" href="./wallet.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
+      WALLET
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
+      SIGN OUT
+    </button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">NEXUS</div>
+  <button class="burger" onclick="openSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">// <span>ACHIEVEMENTS</span></div>
+      <div class="page-date" id="pageDate">—</div>
+    </div>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-row">
+    <div class="sum-card">
+      <div class="sum-glow" style="background:rgba(255,215,0,0.2)"></div>
+      <div class="sum-card-icon">🏷️</div>
+      <div class="sum-card-label">TITLES</div>
+      <div class="sum-card-val" id="sumTitles">0</div>
+      <div class="sum-card-sub">ที่ปลดล็อคแล้ว</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-glow" style="background:rgba(0,245,255,0.15)"></div>
+      <div class="sum-card-icon">🏅</div>
+      <div class="sum-card-label">BADGES</div>
+      <div class="sum-card-val" id="sumBadges">0</div>
+      <div class="sum-card-sub">ที่ได้รับแล้ว</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-glow" style="background:rgba(176,68,255,0.15)"></div>
+      <div class="sum-card-icon">⭐</div>
+      <div class="sum-card-label">STREAK</div>
+      <div class="sum-card-val" id="sumStreak">0</div>
+      <div class="sum-card-sub">วันติดต่อกัน</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-glow" style="background:rgba(68,255,136,0.1)"></div>
+      <div class="sum-card-icon">✅</div>
+      <div class="sum-card-label">QUESTS DONE</div>
+      <div class="sum-card-val" id="sumQuests">0</div>
+      <div class="sum-card-sub">Quest สำเร็จทั้งหมด</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="ach-grid">
+
+    <!-- LEFT: TITLES + BADGES -->
+    <div>
+      <!-- TAB BAR -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('titles',this)">🏷️ TITLES</button>
+        <button class="tab-btn" onclick="switchTab('badges',this)">🏅 BADGES</button>
+        <button class="tab-btn" onclick="switchTab('all-titles',this)">📋 ทั้งหมด (Titles)</button>
+        <button class="tab-btn" onclick="switchTab('all-badges',this)">📋 ทั้งหมด (Badges)</button>
+      </div>
+
+      <!-- TITLES TAB -->
+      <div id="tab-titles">
+        <div class="title-grid" id="titleGrid">
+          <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div>
+        </div>
+      </div>
+
+      <!-- BADGES TAB -->
+      <div id="tab-badges" style="display:none">
+        <div class="badge-grid" id="badgeGrid">
+          <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div>
+        </div>
+      </div>
+
+      <!-- ALL TITLES TAB -->
+      <div id="tab-all-titles" style="display:none">
+        <div class="title-grid" id="allTitleGrid"></div>
+      </div>
+
+      <!-- ALL BADGES TAB -->
+      <div id="tab-all-badges" style="display:none">
+        <div class="badge-grid" id="allBadgeGrid"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+      <!-- EQUIPPED TITLE PANEL -->
+      <div class="equipped-panel" id="equippedPanel">
+        <div class="ep-label">⚔️ EQUIPPED TITLE</div>
+        <div class="ep-avatar" id="epAvatarWrap">
+          <img id="epAvatar" src="" alt="">
+        </div>
+        <div class="ep-name" id="epName">—</div>
+        <div class="ep-title-badge" id="epTitleBadge">— ไม่มีฉายา —</div>
+        <div class="ep-class" id="epClass">—</div>
+      </div>
+
+      <!-- PROGRESS OVERVIEW -->
+      <div class="box">
+        <div class="box-header">
+          <div class="box-title">📊 PROGRESS</div>
+        </div>
+        <div class="box-body">
+          <div class="progress-list" id="progressList">
+            <div class="prog-item">
+              <div class="prog-top"><span class="prog-label">QUESTS DONE</span><span class="prog-val" id="prQuestVal">0/—</span></div>
+              <div class="prog-bar"><div class="prog-fill" id="prQuestFill" style="width:0%;background:var(--cyan)"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-top"><span class="prog-label">STREAK MAX</span><span class="prog-val" id="prStreakVal">0/30</span></div>
+              <div class="prog-bar"><div class="prog-fill" id="prStreakFill" style="width:0%;background:var(--gold)"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-top"><span class="prog-label">TITLES</span><span class="prog-val" id="prTitleVal">0/—</span></div>
+              <div class="prog-bar"><div class="prog-fill" id="prTitleFill" style="width:0%;background:var(--purple)"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-top"><span class="prog-label">BADGES</span><span class="prog-val" id="prBadgeVal">0/—</span></div>
+              <div class="prog-bar"><div class="prog-fill" id="prBadgeFill" style="width:0%;background:var(--green)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT BADGES -->
+      <div class="box">
+        <div class="box-header">
+          <div class="box-title">🆕 LATEST BADGES</div>
+        </div>
+        <div class="box-body">
+          <div class="recent-badges" id="recentBadges">
+            <div style="color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px">ยังไม่มี Badge</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+let currentUser = null
+let userProfile = null
+let userStats = null
+let myTitles = []
+let myBadges = []
+let currentTab = 'titles'
+
+// ===================== STATIC DATA =====================
+const ALL_TITLES = [
+  // Physical
+  { id:'t01', emoji:'🏃', name:'นักวิ่งมือใหม่', cond:'วิ่งครบ 10 km รวม', type:'PHYSICAL' },
+  { id:'t02', emoji:'💪', name:'The Unbreakable', cond:'Streak 30 วันติด', type:'PHYSICAL' },
+  { id:'t03', emoji:'🏋️', name:'Iron Body', cond:'ออกกำลังกาย 100 ครั้ง', type:'PHYSICAL' },
+  { id:'t04', emoji:'⚡', name:'Speed Demon', cond:'วิ่งครบ 500 km รวม', type:'PHYSICAL' },
+  { id:'t05', emoji:'🦾', name:'Warrior King', cond:'STR stat ถึง 1,000', type:'PHYSICAL' },
+  // Knowledge
+  { id:'t06', emoji:'📖', name:'นักอ่านมือใหม่', cond:'อ่านหนังสือครบ 5 เล่ม', type:'KNOWLEDGE' },
+  { id:'t07', emoji:'🧙', name:'จอมเวทแห่งการเรียนรู้', cond:'ทำ Knowledge Quest ครบ 50 ครั้ง', type:'KNOWLEDGE' },
+  { id:'t08', emoji:'📚', name:'ปัญญาชนไร้ขอบเขต', cond:'อ่านหนังสือ 20 เล่ม', type:'KNOWLEDGE' },
+  { id:'t09', emoji:'🎓', name:'Grand Scholar', cond:'INT stat ถึง 1,000', type:'KNOWLEDGE' },
+  // Exploration
+  { id:'t10', emoji:'🗺️', name:'นักสำรวจผู้กล้า', cond:'Check-in 10 เมือง', type:'EXPLORATION' },
+  { id:'t11', emoji:'📍', name:'Pathfinder', cond:'ไปสถานที่ใหม่ 30 แห่ง', type:'EXPLORATION' },
+  { id:'t12', emoji:'🌍', name:'Globe Trotter', cond:'Check-in 3 จังหวัด', type:'EXPLORATION' },
+  { id:'t13', emoji:'🧭', name:'World Wanderer', cond:'เดินทางครบ 10 จังหวัด', type:'EXPLORATION' },
+  { id:'t14', emoji:'🏔️', name:'Pioneer', cond:'เป็นคนแรก Check-in 5 สถานที่', type:'EXPLORATION' },
+  // Business
+  { id:'t15', emoji:'💰', name:'นักวางแผนการเงิน', cond:'ออมเงิน 10,000 บาท', type:'BUSINESS' },
+  { id:'t16', emoji:'📈', name:'Market Master', cond:'BIZ stat ถึง 500', type:'BUSINESS' },
+  { id:'t17', emoji:'🏦', name:'The Investor', cond:'ออมเงิน 100,000 บาท', type:'BUSINESS' },
+  // Creative
+  { id:'t18', emoji:'🎨', name:'Artisan', cond:'ส่งผลงาน 10 ชิ้น', type:'CREATIVE' },
+  { id:'t19', emoji:'✍️', name:'Storyteller', cond:'เขียน Journal 20 ครั้ง', type:'CREATIVE' },
+  { id:'t20', emoji:'📸', name:'Lens Master', cond:'ถ่ายรูป Quest 50 ครั้ง', type:'CREATIVE' },
+  { id:'t21', emoji:'🌟', name:'Creative Legend', cond:'CRE stat ถึง 1,000', type:'CREATIVE' },
+  // Social
+  { id:'t22', emoji:'🤝', name:'เสน่ห์ล้นเหลือ', cond:'มีเพื่อนใน app 20 คน', type:'SOCIAL' },
+  { id:'t23', emoji:'👑', name:'Guild Master', cond:'เป็นผู้นำ Guild', type:'SOCIAL' },
+  { id:'t24', emoji:'🌐', name:'Ambassador', cond:'ชวนเพื่อนสมัคร 10 คน', type:'SOCIAL' },
+  { id:'t25', emoji:'🏛️', name:'Peacekeeper', cond:'Verify หลักฐาน 100 ครั้ง', type:'SOCIAL' },
+  // Special
+  { id:'t26', emoji:'👑', name:'จ้าวแห่งเดือน', cond:'Top 10 Leaderboard เดือนนี้', type:'SPECIAL' },
+  { id:'t27', emoji:'🥇', name:'Champion', cond:'ชนะ PvP Tournament', type:'SPECIAL' },
+  { id:'t28', emoji:'🌈', name:'Event Hero', cond:'ทำ Event Quest ครบในงาน', type:'SPECIAL' },
+  { id:'t29', emoji:'🧪', name:'Beta Tester', cond:'ใช้งาน app ในช่วง Beta', type:'SPECIAL' },
+  { id:'t30', emoji:'⭐', name:'Founder', cond:'สมัครใน 1,000 คนแรก', type:'SPECIAL' },
+]
+
+const ALL_BADGES = [
+  // Physical
+  { id:'b01', emoji:'👟', name:'First Step', cond:'ทำ Physical Quest ครั้งแรก', cat:'PHYSICAL' },
+  { id:'b02', emoji:'🔥', name:'Week Warrior', cond:'Streak 7 วัน', cat:'PHYSICAL' },
+  { id:'b03', emoji:'💥', name:'Monthly Crusher', cond:'Streak 30 วัน', cat:'PHYSICAL' },
+  { id:'b04', emoji:'🥇', name:'Gold Walker', cond:'เดินครบ 500 km', cat:'PHYSICAL' },
+  { id:'b05', emoji:'🦾', name:'Iron Man', cond:'ออกกำลังกาย 100 ครั้ง', cat:'PHYSICAL' },
+  // Knowledge
+  { id:'b06', emoji:'🧠', name:'First Blood', cond:'ทำ Quest แรกสำเร็จ', cat:'KNOWLEDGE' },
+  { id:'b07', emoji:'📚', name:'Bookworm', cond:'อ่านหนังสือ 10 เล่ม', cat:'KNOWLEDGE' },
+  { id:'b08', emoji:'🎯', name:'Quiz Master', cond:'ทำ Quiz 50 ครั้ง', cat:'KNOWLEDGE' },
+  { id:'b09', emoji:'🎓', name:'Scholar', cond:'INT stat ถึง 500', cat:'KNOWLEDGE' },
+  // Exploration
+  { id:'b10', emoji:'🌍', name:'Globe Trotter', cond:'Check-in 3 จังหวัด', cat:'EXPLORATION' },
+  { id:'b11', emoji:'🏙️', name:'City Explorer', cond:'Check-in 10 เมือง', cat:'EXPLORATION' },
+  { id:'b12', emoji:'🧭', name:'Pioneer', cond:'เป็นคนแรก Check-in สถานที่ใหม่', cat:'EXPLORATION' },
+  { id:'b13', emoji:'⛺', name:'Adventurer', cond:'เดินทาง 5 จังหวัด', cat:'EXPLORATION' },
+  // Social
+  { id:'b14', emoji:'🦋', name:'Social Butterfly', cond:'เข้าร่วม Guild', cat:'SOCIAL' },
+  { id:'b15', emoji:'📣', name:'Recruiter', cond:'ชวนเพื่อน 5 คน', cat:'SOCIAL' },
+  { id:'b16', emoji:'⚔️', name:'Duel Master', cond:'ชนะ PvP 5 ครั้ง', cat:'SOCIAL' },
+  { id:'b17', emoji:'📸', name:'Proof Master', cond:'อัพรูปหลักฐาน 10 ครั้ง', cat:'SOCIAL' },
+  { id:'b18', emoji:'🤝', name:'Helper', cond:'Verify หลักฐาน 50 ครั้ง', cat:'SOCIAL' },
+  // Special
+  { id:'b19', emoji:'⭐', name:'Founder', cond:'สมัครใน 1,000 คนแรก', cat:'SPECIAL' },
+  { id:'b20', emoji:'🏆', name:'Season Champion', cond:'Top 3 Leaderboard เดือนไหนก็ได้', cat:'SPECIAL' },
+  { id:'b21', emoji:'🎉', name:'Event Veteran', cond:'เข้าร่วม 3 Event พิเศษ', cat:'SPECIAL' },
+]
+
+const CLASS_EMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+
+function getAvatarUrl(seed, size=80) {
+  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const [style, s, bg] = seed.split(':')
+  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+
+// ===================== INIT =====================
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = './login.html'; return }
+  currentUser = session.user
+
+  await loadProfile()
+  await loadAchievements()
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  updateDate()
+  initCursor()
+}
+
+// ===================== LOAD PROFILE =====================
+async function loadProfile() {
+  const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  const { data: stats } = await supabase.from('user_stats').select('*').eq('user_id', currentUser.id).single()
+  userProfile = profile
+  userStats = stats
+  if (!profile) return
+
+  const cls = profile.class || 'warrior'
+  const avatarUrl = getAvatarUrl(profile.avatar_seed)
+
+  document.getElementById('suAvatar').src = avatarUrl
+  document.getElementById('sidebarUser').className = 'sidebar-user cls-' + cls
+  document.getElementById('suAvatarWrap').className = 'su-avatar cls-' + cls
+  document.getElementById('suName').textContent = profile.display_name || profile.username
+  document.getElementById('suClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
+  document.getElementById('suLv').textContent = 'LV.' + profile.level
+
+  // Equipped panel
+  document.getElementById('epAvatar').src = avatarUrl
+  document.getElementById('equippedPanel').className = 'equipped-panel cls-' + cls
+  document.getElementById('epName').textContent = profile.display_name || profile.username
+  document.getElementById('epClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
+
+  document.getElementById('sumStreak').textContent = profile.streak_current || 0
+
+  // Progress bars
+  const streak = profile.streak_current || 0
+  document.getElementById('prStreakVal').textContent = `${streak}/30`
+  setTimeout(() => {
+    document.getElementById('prStreakFill').style.width = Math.min(100, streak/30*100) + '%'
+  }, 500)
+}
+
+// ===================== LOAD ACHIEVEMENTS =====================
+async function loadAchievements() {
+  // ดึง user_titles + user_badges จาก Supabase
+  const [{ data: titles }, { data: badges }, { data: questCount }] = await Promise.all([
+    supabase.from('user_titles').select('*').eq('user_id', currentUser.id),
+    supabase.from('user_badges').select('*').eq('user_id', currentUser.id),
+    supabase.from('user_quests').select('id', { count: 'exact' }).eq('user_id', currentUser.id).eq('status', 'approved'),
+  ])
+
+  myTitles = titles || []
+  myBadges = badges || []
+  const questDone = questCount?.length || 0
+
+  // equipped title
+  const equipped = myTitles.find(t => t.is_equipped)
+  const equippedDef = equipped ? ALL_TITLES.find(t => t.id === equipped.title_id) : null
+  document.getElementById('epTitleBadge').textContent = equippedDef ? `${equippedDef.emoji} ${equippedDef.name}` : '— ไม่มีฉายา —'
+
+  // Summary
+  document.getElementById('sumTitles').textContent = myTitles.length
+  document.getElementById('sumBadges').textContent = myBadges.length
+  document.getElementById('sumQuests').textContent = questDone
+
+  // Progress
+  document.getElementById('prQuestVal').textContent = `${questDone}/100`
+  document.getElementById('prTitleVal').textContent = `${myTitles.length}/${ALL_TITLES.length}`
+  document.getElementById('prBadgeVal').textContent = `${myBadges.length}/${ALL_BADGES.length}`
+  setTimeout(() => {
+    document.getElementById('prQuestFill').style.width = Math.min(100, questDone) + '%'
+    document.getElementById('prTitleFill').style.width = Math.round(myTitles.length/ALL_TITLES.length*100) + '%'
+    document.getElementById('prBadgeFill').style.width = Math.round(myBadges.length/ALL_BADGES.length*100) + '%'
+  }, 600)
+
+  // Recent badges
+  const recentEl = document.getElementById('recentBadges')
+  const recentBadgeIds = myBadges.slice(-6).map(b => b.badge_id)
+  if (recentBadgeIds.length) {
+    recentEl.innerHTML = recentBadgeIds.map(bid => {
+      const def = ALL_BADGES.find(b => b.id === bid)
+      if (!def) return ''
+      return `<div class="recent-badge"><div class="rb-icon">${def.emoji}</div><div class="rb-name">${def.name}</div></div>`
+    }).join('')
+  }
+
+  renderTitles()
+  renderBadges()
+  renderAllTitles()
+  renderAllBadges()
+}
+
+// ===================== RENDER TITLES (unlocked only) =====================
+function renderTitles() {
+  const grid = document.getElementById('titleGrid')
+  const myIds = new Set(myTitles.map(t => t.title_id))
+  const equippedId = myTitles.find(t => t.is_equipped)?.title_id
+
+  if (!myTitles.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏷️</div><div class="empty-state-txt">ยังไม่มี Title — ทำ Quest เพื่อปลดล็อค!</div></div>`
+    return
+  }
+
+  grid.innerHTML = ALL_TITLES.filter(t => myIds.has(t.id)).map(t => {
+    const isEquipped = t.id === equippedId
+    return `
+    <div class="title-card ${isEquipped ? 'equipped' : 'unlocked'}">
+      <div class="title-card-top">
+        <div class="title-emoji">${t.emoji}</div>
+        <span class="title-status ${isEquipped ? 'equipped-badge' : 'unlocked-badge'}">${isEquipped ? 'EQUIPPED' : 'UNLOCKED'}</span>
+      </div>
+      <div class="title-name">${t.name}</div>
+      <div class="title-cond">${t.cond}</div>
+      <span class="title-type">${t.type}</span>
+      <button class="equip-btn ${isEquipped ? 'current' : ''}" onclick="equipTitle('${t.id}')">${isEquipped ? '✓ ใส่อยู่แล้ว' : '+ ใส่ฉายานี้'}</button>
+    </div>`
+  }).join('')
+}
+
+// ===================== RENDER ALL TITLES =====================
+function renderAllTitles() {
+  const grid = document.getElementById('allTitleGrid')
+  const myIds = new Set(myTitles.map(t => t.title_id))
+  const equippedId = myTitles.find(t => t.is_equipped)?.title_id
+
+  grid.innerHTML = ALL_TITLES.map(t => {
+    const unlocked = myIds.has(t.id)
+    const isEquipped = t.id === equippedId
+    return `
+    <div class="title-card ${isEquipped ? 'equipped' : unlocked ? 'unlocked' : 'locked'}">
+      <div class="title-card-top">
+        <div class="title-emoji">${t.emoji}</div>
+        <span class="title-status ${isEquipped ? 'equipped-badge' : unlocked ? 'unlocked-badge' : 'locked-badge'}">${isEquipped ? 'EQUIPPED' : unlocked ? 'UNLOCKED' : 'LOCKED'}</span>
+      </div>
+      <div class="title-name">${t.name}</div>
+      <div class="title-cond">${t.cond}</div>
+      <span class="title-type">${t.type}</span>
+      ${unlocked && !isEquipped ? `<button class="equip-btn" onclick="equipTitle('${t.id}')">+ ใส่ฉายานี้</button>` : ''}
+      ${isEquipped ? `<button class="equip-btn current">✓ ใส่อยู่แล้ว</button>` : ''}
+    </div>`
+  }).join('')
+}
+
+// ===================== RENDER BADGES (unlocked only) =====================
+function renderBadges() {
+  const grid = document.getElementById('badgeGrid')
+  const myIds = new Set(myBadges.map(b => b.badge_id))
+
+  if (!myBadges.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏅</div><div class="empty-state-txt">ยังไม่มี Badge — เริ่มทำ Quest เลย!</div></div>`
+    return
+  }
+
+  grid.innerHTML = ALL_BADGES.filter(b => myIds.has(b.id)).map(b => {
+    const myB = myBadges.find(mb => mb.badge_id === b.id)
+    const dateStr = myB?.unlocked_at ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''
+    return `
+    <div class="badge-card unlocked">
+      <span class="badge-icon">${b.emoji}</span>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-cond">${b.cond}</div>
+      <div class="badge-cat">${b.cat}</div>
+      ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
+    </div>`
+  }).join('')
+}
+
+// ===================== RENDER ALL BADGES =====================
+function renderAllBadges() {
+  const grid = document.getElementById('allBadgeGrid')
+  const myIds = new Set(myBadges.map(b => b.badge_id))
+
+  grid.innerHTML = ALL_BADGES.map(b => {
+    const unlocked = myIds.has(b.id)
+    const myB = myBadges.find(mb => mb.badge_id === b.id)
+    const dateStr = myB?.unlocked_at ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''
+    return `
+    <div class="badge-card ${unlocked ? 'unlocked' : 'locked'}">
+      ${!unlocked ? '<div class="badge-lock-icon">🔒</div>' : ''}
+      <span class="badge-icon">${b.emoji}</span>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-cond">${b.cond}</div>
+      <div class="badge-cat">${b.cat}</div>
+      ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
+    </div>`
+  }).join('')
+}
+
+// ===================== EQUIP TITLE =====================
+window.equipTitle = async function(titleId) {
+  try {
+    // ถอด equipped ทั้งหมดก่อน
+    await supabase.from('user_titles').update({ is_equipped: false }).eq('user_id', currentUser.id)
+    // ใส่ title ใหม่
+    await supabase.from('user_titles').update({ is_equipped: true }).eq('user_id', currentUser.id).eq('title_id', titleId)
+
+    const def = ALL_TITLES.find(t => t.id === titleId)
+    myTitles = myTitles.map(t => ({ ...t, is_equipped: t.title_id === titleId }))
+
+    document.getElementById('epTitleBadge').textContent = def ? `${def.emoji} ${def.name}` : '—'
+
+    // อัพเดต equipped_title_id ใน users table ด้วย
+    await supabase.from('users').update({ equipped_title_id: titleId }).eq('id', currentUser.id)
+
+    renderTitles()
+    renderAllTitles()
+    showToast(`✅ ใส่ฉายา "${def?.name}" แล้ว!`, 'success')
+  } catch(e) {
+    showToast('❌ เกิดข้อผิดพลาด', 'error')
+  }
+}
+
+// ===================== TAB SWITCH =====================
+window.switchTab = function(tab, btn) {
+  currentTab = tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  document.querySelectorAll('#tab-titles,#tab-badges,#tab-all-titles,#tab-all-badges').forEach(el => el.style.display = 'none')
+  document.getElementById('tab-' + tab).style.display = ''
+}
+
+// ===================== HELPERS =====================
+function updateDate() {
+  const d = new Date()
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`
+}
+
+window.showToast = function(msg, type='success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3500)
+}
+
+window.handleSignOut = async function() {
+  await supabase.auth.signOut()
+  window.location.href = './login.html'
+}
+
+window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
+window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0, my=0, rx=0, ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
+  document.querySelectorAll('button,a,.title-card,.badge-card,.nav-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(0,245,255,0.7)' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
+  })
+}
+
+init()
+</script>
+</body>
+</html>

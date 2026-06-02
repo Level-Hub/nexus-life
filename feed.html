@@ -30,7 +30,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:199}
-.sidebar-overlay.show{display:block}
+.sidebar-overlay.open{display:block}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
 .sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
 .logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
@@ -238,6 +238,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
       QUESTS
     </a>
+    <a class="nav-item" href="./verify.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>VERIFY<span class="nav-badge" id="navVerifyBadge" style="display:none">0</span></a>
     <a class="nav-item" href="./leaderboard.html">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
       LEADERBOARD
@@ -875,11 +876,11 @@ animRing()
 // SIDEBAR MOBILE
 function openSidebar() {
   document.getElementById('sidebar').classList.add('open')
-  document.getElementById('sidebarOverlay').classList.add('show')
+  document.getElementById('sidebarOverlay').classList.add('open')
 }
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open')
-  document.getElementById('sidebarOverlay').classList.remove('show')
+  document.getElementById('sidebarOverlay').classList.remove('open')
 }
 </script>
 </body>
