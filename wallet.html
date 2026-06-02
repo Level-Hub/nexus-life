@@ -249,7 +249,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)" id="txCountLabel">—</div>
   </div>
   <div class="tx-panel">
-    <div id="txList"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">LOADING...</div></div></div>
+    <div id="txList"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">กำลังโหลด...</div></div></div>
   </div>
 
   <!-- PURCHASES -->
@@ -405,42 +405,48 @@ async function init() {
   initCursor()
   updateDate()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
-  currentUser = session.user
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { window.location.href = './login.html'; return }
+    currentUser = session.user
 
-  const [profileRes, walletRes, txRes, purchasesRes, itemsRes] = await Promise.all([
-    supabase.from('users').select('*').eq('id', currentUser.id).single(),
-    supabase.from('wallet').select('*').eq('user_id', currentUser.id).maybeSingle(),
-    supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }),
-    supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).order('purchased_at', { ascending: false }),
-    supabase.from('shop_items').select('*')
-  ])
+    const [profileRes, walletRes, txRes, purchasesRes, itemsRes] = await Promise.all([
+      supabase.from('users').select('*').eq('id', currentUser.id).single(),
+      supabase.from('wallet').select('*').eq('user_id', currentUser.id).maybeSingle(),
+      supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(200),
+      supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).order('purchased_at', { ascending: false }),
+      supabase.from('shop_items').select('*')
+    ])
 
-  const profile = profileRes.data
-  const wallet = walletRes.data
-  allTx = txRes.data || []
-  const purchases = purchasesRes.data || []
-  const items = itemsRes.data || []
+    const profile = profileRes.data
+    const wallet = walletRes.data
+    allTx = txRes.data || []
+    const purchases = purchasesRes.data || []
+    const items = itemsRes.data || []
 
-  if (profile) renderSidebar(profile)
+    if (profile) renderSidebar(profile)
 
-  document.getElementById('crystalBalance').textContent = (profile?.crystal || 0).toLocaleString()
-  document.getElementById('goldBalance').textContent = (profile?.gold || 0).toLocaleString()
-  document.getElementById('crystalPurchased').textContent = (wallet?.crystal_purchased || 0).toLocaleString()
-  document.getElementById('crystalSpent').textContent = (wallet?.crystal_spent || 0).toLocaleString()
+    document.getElementById('crystalBalance').textContent = (profile?.crystal || 0).toLocaleString()
+    document.getElementById('goldBalance').textContent = (profile?.gold || 0).toLocaleString()
+    document.getElementById('crystalPurchased').textContent = (wallet?.crystal_purchased || 0).toLocaleString()
+    document.getElementById('crystalSpent').textContent = (wallet?.crystal_spent || 0).toLocaleString()
 
-  // daily limit — ยอดเติมวันนี้
-  const today = new Date().toISOString().slice(0, 10)
-  const todayTotal = allTx
-    .filter(t => t.type === 'topup' && t.status === 'completed' && t.created_at?.startsWith(today))
-    .reduce((s, t) => s + (t.amount_thb || 0), 0)
-  const limitPct = Math.min(100, (todayTotal / 3000) * 100)
-  document.getElementById('dailyUsed').textContent = todayTotal.toLocaleString()
-  document.getElementById('dailyLimitFill').style.width = limitPct + '%'
+    // daily limit — ยอดเติมวันนี้
+    const today = new Date().toISOString().slice(0, 10)
+    const todayTotal = allTx
+      .filter(t => t.type === 'topup' && t.status === 'completed' && t.created_at?.startsWith(today))
+      .reduce((s, t) => s + (t.amount_thb || 0), 0)
+    const limitPct = Math.min(100, (todayTotal / 3000) * 100)
+    document.getElementById('dailyUsed').textContent = todayTotal.toLocaleString()
+    document.getElementById('dailyLimitFill').style.width = limitPct + '%'
 
-  renderTxList()
-  renderPurchases(purchases, items)
+    renderTxList()
+    renderPurchases(purchases, items)
+  } catch (err) {
+    console.error('Wallet init error:', err)
+    const txList = document.getElementById('txList')
+    if (txList) txList.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
+  }
 }
 
 init()

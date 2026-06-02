@@ -37,7 +37,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
 .sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 .sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.su-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cyan);overflow:hidden;background:rgba(0,245,255,0.1);display:flex;align-items:center;justify-content:center;font-size:18px}
+.su-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,245,255,0.1);display:flex;align-items:center;justify-content:center;font-size:18px}
 .su-avatar img{width:100%;height:100%;object-fit:cover}
 .su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--text);letter-spacing:1px}
 .su-class{font-size:10px;color:var(--text-dim);margin-top:2px}
@@ -456,6 +456,9 @@ async function loadProfile() {
   document.getElementById('suClass').textContent = (u.class || '—').toUpperCase()
   document.getElementById('suLv').textContent = `LV.${u.level || 1}`
   document.getElementById('suAvatar').src = getAvatarUrl(u.avatar_seed || u.username)
+  const clsClass = 'cls-' + (u.class || 'warrior')
+  document.getElementById('sidebarUser').className = 'sidebar-user ' + clsClass
+  document.getElementById('suAvatarWrap').className = 'su-avatar ' + clsClass
 
   document.getElementById('cityLabel').textContent = `🏙️ ${myCity} — Feed สด`
 

@@ -969,7 +969,7 @@ function renderHero(u) {
   document.getElementById('profileHero').className = `profile-hero cls-${cls}`
 
   // avatar
-  const avatarUrl = `getAvatarUrl(u.avatar_seed || u.username)`
+  const avatarUrl = getAvatarUrl(u.avatar_seed || u.username)
   document.getElementById('heroAvatar').src   = avatarUrl
   document.getElementById('suAvatar').src     = avatarUrl
   document.getElementById('heroAvatarRing').className = `hero-avatar-ring cls-${cls}`
@@ -1284,7 +1284,7 @@ async function loadSidebarUser() {
     .eq('id', currentUser.id)
     .single()
   if (!data) return
-  const avatarUrl = `getAvatarUrl(data.avatar_seed || data.username)`
+  const avatarUrl = getAvatarUrl(data.avatar_seed || data.username)
   document.getElementById('suAvatar').src     = avatarUrl
   document.getElementById('suName').textContent  = data.display_name || data.username
   document.getElementById('suClass').textContent = (data.class || 'warrior').toUpperCase()
@@ -1416,7 +1416,7 @@ window.closeEditModal = function() {
 
 function updateAvatarPreview() {
   const seed = document.getElementById('editAvatarSeed').value.trim() || 'default'
-  document.getElementById('editAvatarPreview').src = `getAvatarUrl(seed)`
+  document.getElementById('editAvatarPreview').src = getAvatarUrl(seed)
 }
 
 document.getElementById('editAvatarSeed').addEventListener('input', updateAvatarPreview)

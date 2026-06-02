@@ -98,7 +98,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .city-prosperity-badge{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;border:1px solid var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08);white-space:nowrap}
 
 .city-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:600px){.city-stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){
+  .city-stats-row{grid-template-columns:repeat(2,1fr)}
+  .city-hero{padding:16px}
+  .city-name-row{gap:8px}
+  .page-header{flex-direction:column;align-items:flex-start}
+  .chat-input-wrap{gap:6px}
+}
+@media(max-width:400px){
+  .city-stats-row{grid-template-columns:1fr 1fr}
+  .city-hero{padding:12px}
+}
 .city-stat-item{text-align:center;padding:12px 8px;background:rgba(0,0,0,0.2);border:1px solid rgba(0,245,255,0.08)}
 .city-stat-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--cyan)}
 .city-stat-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-dim);margin-top:3px}
@@ -173,7 +183,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .contrib-rank.r2{color:#c0c0c0}
 .contrib-rank.r3{color:#cd7f32}
 .contrib-rank.rn{color:var(--text-dim)}
-.contrib-avatar{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid var(--border)}
+.contrib-avatar{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--cls,var(--cyan))}
 .contrib-avatar img{width:100%;height:100%;object-fit:cover}
 .contrib-info{flex:1;min-width:0}
 .contrib-name{font-family:'Orbitron',monospace;font-size:9px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -832,7 +842,7 @@ async function loadContributors(city) {
   el.innerHTML = data.map((u,i) => `
     <a class="contrib-item" href="./profile.html?uid=${u.id}">
       <div class="contrib-rank ${rCls[i]}">#${i+1}</div>
-      <div class="contrib-avatar"><img src="${getAvatarUrl(u.avatar_seed,40)}" alt=""></div>
+      <div class="contrib-avatar cls-${u.class||'warrior'}"><img src="${getAvatarUrl(u.avatar_seed,40)}" alt=""></div>
       <div class="contrib-info">
         <div class="contrib-name">${u.display_name || u.username}</div>
         <div class="contrib-class">${CLASS_EMOJI[u.class]||''} LV.${u.level}</div>

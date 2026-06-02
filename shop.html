@@ -290,7 +290,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- SHOP GRID -->
   <div class="shop-grid" id="shopGrid">
-    <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⏳</div><div class="empty-text">LOADING SHOP...</div></div>
+    <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">ยังไม่มีสินค้า</div></div>
   </div>
 </main>
 
@@ -586,16 +586,22 @@ async function init() {
   initCursor()
   updateDate()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
-  currentUser = session.user
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { window.location.href = './login.html'; return }
+    currentUser = session.user
 
-  await loadData()
-  renderShop()
+    await loadData()
+    renderShop()
 
-  document.getElementById('confirmModal').addEventListener('click', e => {
-    if (e.target === document.getElementById('confirmModal')) closeConfirm()
-  })
+    document.getElementById('confirmModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('confirmModal')) closeConfirm()
+    })
+  } catch (err) {
+    console.error('Shop init error:', err)
+    const grid = document.getElementById('shopGrid')
+    if (grid) grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
+  }
 }
 
 init()

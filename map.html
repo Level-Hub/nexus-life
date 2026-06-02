@@ -859,6 +859,16 @@ async function init() {
 // ============================================================
 // LOAD PROFILE
 // ============================================================
+
+function getAvatarUrl(avatarSeed, size=80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length >= 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
+}
 async function loadProfile() {
   const { data } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   if (!data) return
@@ -872,11 +882,7 @@ async function loadProfile() {
   const wrap = document.getElementById('suAvatarWrap')
   wrap.className = `su-avatar cls-${cls}`
 
-  if (data.avatar_url) {
-    document.getElementById('suAvatar').src = data.avatar_url
-  } else {
-    document.getElementById('suAvatar').src = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${data.avatar_seed || data.id}&size=40`
-  }
+  document.getElementById('suAvatar').src = getAvatarUrl(data.avatar_seed || data.username, 40)
 
   // Verify badge
   const { count } = await supabase.from('user_quests').select('id', { count:'exact', head:true }).eq('status','pending_review')
@@ -1115,7 +1121,7 @@ async function loadNearbyPlayers() {
   list.innerHTML = data.map(p => {
     const cls   = p.class || 'warrior'
     const emoji = CLASS_EMOJI[cls] || '⚔️'
-    const avatar = p.avatar_url || `https://api.dicebear.com/8.x/pixel-art/svg?seed=${p.avatar_seed||p.id}&size=34`
+    const avatar = getAvatarUrl(p.avatar_seed || p.username, 34)
     const dist  = myLat ? getDistKm(myLat, myLng, p.last_lat, p.last_lng) : null
     return `
       <div class="nearby-item cls-${cls}">

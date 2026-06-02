@@ -37,8 +37,10 @@ body {
   color:var(--text);
   font-family:'Sarabun',sans-serif;
   overflow-x:hidden;
-  cursor:none;
   min-height:100vh;
+}
+@media (pointer:fine) {
+  body { cursor:none; }
 }
 
 .cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
@@ -1100,6 +1102,16 @@ function setPageDate() {
 // ============================================================
 // PROFILE → SIDEBAR
 // ============================================================
+
+function getAvatarUrl(avatarSeed, size=80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length >= 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
+}
 async function loadProfile() {
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   if (!profile) return
@@ -1111,10 +1123,8 @@ async function loadProfile() {
   document.getElementById('suLv').textContent = `LV.${profile.level || 1}`
   document.getElementById('sidebarUser').className = `sidebar-user cls-${cls}`
 
-  const avatar = profile.avatar_url || ''
   const avatarEl = document.getElementById('suAvatar')
-  if (avatar) avatarEl.src = avatar
-  else document.getElementById('suAvatarWrap').innerHTML = `<div class="duel-avatar-placeholder" style="font-size:18px">${CLASS_EMOJI[cls]}</div>`
+  avatarEl.src = getAvatarUrl(profile.avatar_seed || profile.username)
 
   // Hero banner
   const wins = profile.pvp_wins || 0

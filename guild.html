@@ -57,6 +57,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
 .burger span{display:block;width:18px;height:1px;background:var(--cyan)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
+.sidebar-overlay.open{display:block}
 
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 80px}
@@ -430,7 +431,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 
   <!-- ======= NO GUILD VIEW ======= -->
-  <div class="no-guild-view" id="noGuildView">
+  <div class="no-guild-view" id="noGuildView" style="display:none">
     <div class="no-guild-hero">
       <div class="no-guild-icon">⚔️</div>
       <div class="no-guild-title">ยังไม่มี Guild</div>
@@ -708,12 +709,22 @@ async function init() {
 // ============================================
 // SIDEBAR USER
 // ============================================
+
+function getAvatarUrl(avatarSeed, size=80) {
+  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const parts = avatarSeed.split(':')
+  if (parts.length >= 3) {
+    const [style, seed, bg] = parts
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
+}
 function renderSidebarUser() {
   document.getElementById('suName').textContent = ME.display_name || ME.username
   document.getElementById('suClass').textContent = (ME.class || 'novice').toUpperCase()
   document.getElementById('suLv').textContent = `LV.${ME.level}`
   const avatarEl = document.getElementById('suAvatar')
-  avatarEl.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${ME.avatar_seed || ME.id}`
+  avatarEl.src = getAvatarUrl(ME.avatar_seed || ME.username)
   const sidebarUser = document.getElementById('sidebarUser')
   sidebarUser.className = `sidebar-user cls-${ME.class || 'warrior'}`
 }
@@ -1206,11 +1217,11 @@ window.handleSignOut = async () => {
 // ============================================
 window.openSidebar = () => {
   document.getElementById('sidebar').classList.add('open')
-  document.getElementById('sidebarOverlay').style.display = 'block'
+  document.getElementById('sidebarOverlay').classList.add('open')
 }
 window.closeSidebar = () => {
   document.getElementById('sidebar').classList.remove('open')
-  document.getElementById('sidebarOverlay').style.display = 'none'
+  document.getElementById('sidebarOverlay').classList.remove('open')
 }
 
 // ============================================
