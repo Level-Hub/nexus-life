@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
 <title>NEXUS LIFE — World Map</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -29,8 +29,14 @@
 .cls-artist   { --cls:#ff66aa; }
 .cls-diplomat { --cls:#00ccff; }
 
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
+* { margin:0; padding:0; box-sizing:border-box; touch-action: manipulation; }
+html { scroll-behavior:smooth; touch-action: manipulation; }
+
+/* ===== IMAGE RESPONSIVENESS ===== */
+img { max-width:100%; height:auto; display:block; }
+img[src] { max-width:100%; width:100% \0; }
+body, html { touch-action: manipulation; }
+img, svg { touch-action: none; }
 
 body {
   background:var(--bg);
