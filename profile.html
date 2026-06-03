@@ -419,10 +419,27 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}.topbar{display:flex}
-  .main{margin-left:0;padding:80px 16px 60px}
+  .main{margin-left:0;padding:80px 16px 60px;overflow-x:hidden;width:100%;max-width:100vw;box-sizing:border-box}
   .stats-grid{grid-template-columns:repeat(3,1fr)}
   .hero-name{font-size:20px}.hero-actions{flex-direction:row;flex-wrap:wrap}
   .profile-layout{grid-template-columns:1fr}
+  /* Fix all overflow issues */
+  .profile-layout > *,
+  .profile-hero,
+  .right-col,
+  .box,
+  .quest-stat-row,
+  .stats-grid,
+  .streak-days,
+  .badges-grid,
+  .titles-list,
+  .quest-history-list,
+  .activity-list { max-width:100%;box-sizing:border-box;overflow:hidden }
+  .quest-stat-row { grid-template-columns:1fr 1fr }
+  .hero-currencies { flex-wrap:wrap;gap:8px }
+  .hero-inner { gap:16px }
+  .stat-item { min-width:0 }
+  .hero-social { gap:12px }
 }
 @media(max-width:480px){.stats-grid{grid-template-columns:repeat(2,1fr)}.hero-inner{flex-direction:column;align-items:center;text-align:center}.hero-class-city{justify-content:center}.hero-social{justify-content:center}}
 </style>
@@ -1031,8 +1048,12 @@ function renderHero(u) {
   }
 
   // sidebar mini
+  const _SEMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+  const _SCOLOR = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
   document.getElementById('suName').textContent  = u.display_name || u.username
-  document.getElementById('suClass').textContent = cls.toUpperCase()
+  const suClassEl = document.getElementById('suClass')
+  suClassEl.textContent = (_SEMOJI[cls] || '') + ' ' + cls.toUpperCase()
+  suClassEl.style.color = _SCOLOR[cls] || 'var(--cyan)'
   document.getElementById('suLv').textContent    = 'LV.' + (u.level || 1)
   document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls}`
 }
@@ -1285,11 +1306,16 @@ async function loadSidebarUser() {
     .single()
   if (!data) return
   const avatarUrl = getAvatarUrl(data.avatar_seed || data.username)
+  const _SE2 = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+  const _SC2 = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+  const cls2 = data.class || 'warrior'
   document.getElementById('suAvatar').src     = avatarUrl
   document.getElementById('suName').textContent  = data.display_name || data.username
-  document.getElementById('suClass').textContent = (data.class || 'warrior').toUpperCase()
+  const sc2El = document.getElementById('suClass')
+  sc2El.textContent = (_SE2[cls2] || '') + ' ' + cls2.toUpperCase()
+  sc2El.style.color = _SC2[cls2] || 'var(--cyan)'
   document.getElementById('suLv').textContent    = 'LV.' + (data.level || 1)
-  document.getElementById('suAvatarWrap').className = `su-avatar cls-${data.class || 'warrior'}`
+  document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls2}`
 }
 
 // ============================================================
