@@ -331,10 +331,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
-  .main{margin-left:0;padding:72px 12px 80px;max-width:100vw;overflow-x:hidden}
-  .city-layout{gap:12px}
-  .city-hero{max-width:100%;box-sizing:border-box}
+  .main{margin-left:0;padding:72px 12px 80px;width:100%;max-width:100vw;overflow-x:hidden;box-sizing:border-box}
+  .city-layout{gap:12px;width:100%;max-width:100%}
+  .city-hero{max-width:100%;box-sizing:border-box;width:100%}
   .buff-grid{gap:6px;padding:10px}
+  .card,.project-card,.war-widget{max-width:100%;box-sizing:border-box;overflow:hidden}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  .tab-btn{font-size:8px;letter-spacing:1px;padding:10px 10px;flex-shrink:0}
+  .city-name{font-size:16px;letter-spacing:1px}
+  .city-prosperity-badge{font-size:9px;padding:5px 10px}
+  .chat-wrap{height:280px}
+  .chat-input-wrap{padding:8px 10px;gap:6px}
+  .chat-input{font-size:12px;padding:8px 10px}
+  .city-stat-val{font-size:16px}
 }
 </style>
 </head>
