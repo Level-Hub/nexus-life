@@ -195,32 +195,32 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="page-title">💎 <span>WALLET</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
-    <a class="btn-topup" href="./topup.html">+ เติม Crystal</a>
+    <a class="btn-topup" href="./wallet.html">+ เติม Crystal</a>
   </div>
 
   <!-- BALANCE CARDS -->
   <div class="balance-grid">
     <div class="balance-card crystal">
       <div class="balance-label">// CRYSTAL BALANCE</div>
-      <div class="balance-amount" id="crystalBalance">—</div>
+      <div class="balance-amount" id="crystalBalance">0</div>
       <div class="balance-sub">Crystal คงเหลือ</div>
       <div class="balance-card-icon">💎</div>
     </div>
     <div class="balance-card gold">
       <div class="balance-label">// GOLD BALANCE</div>
-      <div class="balance-amount" id="goldBalance">—</div>
+      <div class="balance-amount" id="goldBalance">0</div>
       <div class="balance-sub">Gold จาก Gameplay</div>
       <div class="balance-card-icon">⭐</div>
     </div>
     <div class="balance-card earned">
       <div class="balance-label">// CRYSTAL PURCHASED</div>
-      <div class="balance-amount" id="crystalPurchased">—</div>
+      <div class="balance-amount" id="crystalPurchased">0</div>
       <div class="balance-sub">ซื้อด้วยเงินจริงทั้งหมด</div>
       <div class="balance-card-icon">💰</div>
     </div>
     <div class="balance-card spent">
       <div class="balance-label">// CRYSTAL SPENT</div>
-      <div class="balance-amount" id="crystalSpent">—</div>
+      <div class="balance-amount" id="crystalSpent">0</div>
       <div class="balance-sub">ใช้ไปในร้านค้า</div>
       <div class="balance-card-icon">🛒</div>
     </div>
@@ -249,7 +249,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)" id="txCountLabel">—</div>
   </div>
   <div class="tx-panel">
-    <div id="txList"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">กำลังโหลด...</div></div></div>
+    <div id="txList"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ยังไม่มีรายการ</div></div></div>
   </div>
 
   <!-- PURCHASES -->
@@ -260,14 +260,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)" id="purchaseCountLabel">—</div>
     </div>
     <div class="purchase-grid" id="purchaseGrid">
-      <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⏳</div><div class="empty-text">LOADING...</div></div>
+      <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🛒</div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>
     </div>
   </div>
 </main>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 let currentUser = null
@@ -303,11 +304,16 @@ window.closeSidebar = () => { document.getElementById('sidebar').classList.remov
 window.handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = './login.html' }
 
 function renderSidebar(p) {
+  const _SE = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+  const _SC = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+  const cls = p.class || 'warrior'
   document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
   document.getElementById('suName').textContent = p.display_name || p.username
-  document.getElementById('suClass').textContent = (p.class || '').toUpperCase()
+  const suClassEl = document.getElementById('suClass')
+  suClassEl.textContent = (_SE[cls] || '') + ' ' + cls.toUpperCase()
+  suClassEl.style.color = _SC[cls] || 'var(--cyan)'
   document.getElementById('suLv').textContent = `LV.${p.level || 1}`
-  document.getElementById('suAvatarWrap').className = `su-avatar cls-${p.class || 'warrior'}`
+  document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls}`
 }
 
 function fmtDate(iso) {
