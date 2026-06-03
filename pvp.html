@@ -537,7 +537,17 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   .history-table { width:100%;table-layout:fixed; }
   .history-table th, .history-table td { padding:8px 6px;font-size:11px; }
   .search-input-wrap { flex-wrap:wrap; }
-  .bracket-wrap { max-width:100%; }
+  /* Fix bracket overflow */
+  #tab-tournament { overflow:hidden;max-width:100%; }
+  .pvp-grid > div { min-width:0;max-width:100%; }
+  .bracket-wrap {
+    width:100%;max-width:100%;
+    overflow-x:auto;overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    box-sizing:border-box;
+  }
+  .bracket-wrap .bracket { min-width:480px; }
+  .box-body { overflow:hidden; }
 }
 </style>
 </head>
