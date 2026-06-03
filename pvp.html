@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — PvP Duel</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -353,7 +353,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .tournament-countdown { font-family:'Orbitron',monospace;font-size:11px;color:#fff;margin-top:6px; }
 
 .bracket-wrap { overflow-x:auto;padding-bottom:8px; }
-.bracket { display:flex;gap:0;min-width:600px; }
+.bracket { display:flex;gap:0;min-width:520px; }
 .bracket-round { flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:0 8px; }
 .bracket-round-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);text-align:center;margin-bottom:12px; }
 
@@ -514,12 +514,17 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 @media(max-width:768px) {
   .sidebar { transform:translateX(-100%); }
   .sidebar.open { transform:translateX(0); }
-  .sidebar-overlay { display:block; }
   .topbar { display:flex; }
-  .main { margin-left:0;padding:80px 16px 60px; }
-  .pvp-hero { padding:20px; }
-  .pvp-hero-title { font-size:22px; }
+  .main { margin-left:0;padding:80px 12px 60px;width:100%;max-width:100vw;overflow-x:hidden;box-sizing:border-box; }
+  .pvp-hero { padding:16px; }
+  .pvp-hero-inner { flex-direction:column;gap:12px; }
+  .pvp-hero-title { font-size:20px; }
   .tab-btn span { display:none; }
+  .tab-btn { padding:12px 6px;font-size:8px; }
+  .box, .challenge-area, .duel-card { max-width:100%;box-sizing:border-box; }
+  .history-table { font-size:11px; }
+  .history-table th, .history-table td { padding:8px 8px; }
+  .pvp-rating-badge { font-size:11px;padding:8px 12px; }
 }
 </style>
 </head>
