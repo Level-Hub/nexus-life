@@ -680,29 +680,37 @@ const GUILD_XP_PER_LEVEL = 1000
 // INIT
 // ============================================
 async function init() {
-  const { data: { session } } = await sb.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
+  try {
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) { window.location.href = './login.html'; return }
 
-  const { data: me } = await sb.from('users').select('*').eq('id', session.user.id).single()
-  if (!me) { window.location.href = './login.html'; return }
-  ME = me
+    const { data: me, error: meErr } = await sb.from('users').select('*').eq('id', session.user.id).single()
+    if (meErr || !me) { window.location.href = './login.html'; return }
+    ME = me
 
-  renderSidebarUser()
-  buildIconRow()
+    renderSidebarUser()
+    buildIconRow()
 
-  // ดึง gold balance สำหรับ form สร้าง guild
-  document.getElementById('goldBalance').textContent = `คงเหลือ: ${me.gold.toLocaleString()} Gold`
+    // ดึง gold balance สำหรับ form สร้าง guild (null-safe)
+    const goldEl = document.getElementById('goldBalance')
+    if (goldEl) goldEl.textContent = `คงเหลือ: ${(me.gold ?? 0).toLocaleString()} Gold`
 
-  // เช็คว่าอยู่ guild ไหน
-  const { data: memberRow } = await sb.from('guild_members')
-    .select('*, guilds(*)').eq('user_id', me.id).maybeSingle()
+    // เช็คว่าอยู่ guild ไหน
+    const { data: memberRow } = await sb.from('guild_members')
+      .select('*, guilds(*)').eq('user_id', me.id).maybeSingle()
 
-  if (memberRow) {
-    MY_MEMBER = memberRow
-    MY_GUILD = memberRow.guilds
-    showHasGuildView()
-  } else {
-    showNoGuildView()
+    if (memberRow && memberRow.guilds) {
+      MY_MEMBER = memberRow
+      MY_GUILD = memberRow.guilds
+      showHasGuildView()
+    } else {
+      showNoGuildView()
+    }
+  } catch (err) {
+    console.error('Guild init error:', err)
+    document.getElementById('guildStatusSub').textContent = '// เกิดข้อผิดพลาด — โปรดรีเฟรช'
+    document.getElementById('noGuildView').style.display = 'block'
+    document.getElementById('hasGuildView').style.display = 'none'
   }
 }
 
