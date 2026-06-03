@@ -425,7 +425,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="page-header">
     <div>
       <div class="page-title">// <span>GUILD</span></div>
-      <div class="page-sub" id="guildStatusSub">// GUILD SYSTEM — กำลังโหลด...</div>
+      <div class="page-sub" id="guildStatusSub" style="transition:color 0.3s">// GUILD SYSTEM — กำลังโหลด...</div>
     </div>
     <div id="headerActions"></div>
   </div>
@@ -657,6 +657,32 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 </div>
 
+<!-- Sidebar functions as regular script (works even if module fails) -->
+<script>
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  var overlay = document.getElementById('sidebarOverlay')
+  if (overlay) overlay.classList.add('open')
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  var overlay = document.getElementById('sidebarOverlay')
+  if (overlay) overlay.classList.remove('open')
+}
+// Safety timeout - if module doesn't load in 8s, show error
+setTimeout(function() {
+  var sub = document.getElementById('guildStatusSub')
+  if (sub && sub.textContent.includes('กำลังโหลด')) {
+    sub.textContent = '// โหลดไม่สำเร็จ — โปรดรีเฟรชหน้า'
+    sub.style.color = '#ff003c'
+    // Show no-guild view as fallback
+    var noGuild = document.getElementById('noGuildView')
+    if (noGuild && noGuild.style.display === 'none') {
+      document.getElementById('noGuildView').style.display = 'block'
+    }
+  }
+}, 8000)
+</script>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
@@ -708,7 +734,9 @@ async function init() {
     }
   } catch (err) {
     console.error('Guild init error:', err)
-    document.getElementById('guildStatusSub').textContent = '// เกิดข้อผิดพลาด — โปรดรีเฟรช'
+    const sub = document.getElementById('guildStatusSub')
+    sub.textContent = '// ERROR: ' + (err?.message || 'โหลดไม่สำเร็จ') + ' — โปรดรีเฟรช'
+    sub.style.color = '#ff003c'
     document.getElementById('noGuildView').style.display = 'block'
     document.getElementById('hasGuildView').style.display = 'none'
   }
@@ -1221,16 +1249,8 @@ window.handleSignOut = async () => {
 }
 
 // ============================================
-// SIDEBAR MOBILE
+// SIDEBAR MOBILE (defined as regular script above)
 // ============================================
-window.openSidebar = () => {
-  document.getElementById('sidebar').classList.add('open')
-  document.getElementById('sidebarOverlay').classList.add('open')
-}
-window.closeSidebar = () => {
-  document.getElementById('sidebar').classList.remove('open')
-  document.getElementById('sidebarOverlay').classList.remove('open')
-}
 
 // ============================================
 // CURSOR
