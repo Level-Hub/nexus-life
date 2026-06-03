@@ -325,7 +325,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
+const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // ─── STATE ───────────────────────────────────────────────
