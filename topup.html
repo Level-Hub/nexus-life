@@ -148,8 +148,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .sidebar.open{transform:translateX(0)}
   .sidebar-overlay.open{display:block}
   .topbar{display:flex}
-  .main{margin-left:0;padding:80px 16px 60px}
+  .main{margin-left:0;padding:80px 16px 60px;max-width:100%;overflow-x:hidden}
   .amount-grid{grid-template-columns:repeat(2,1fr)}
+  .topup-layout{max-width:100%;overflow-x:hidden}
+  .step-panel{padding:20px 16px}
+  .summary-panel{padding:20px 16px}
+  .method-row{flex-wrap:nowrap}
+  .method-btn{min-width:0;padding:10px 6px;font-size:8px}
+  .qr-section{padding:16px 12px}
+  .bonus-table{padding:12px 10px}
+  .summary-value{font-size:11px}
+  .summary-total .summary-value{font-size:18px}
 }
 </style>
 </head>
@@ -269,7 +278,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
 
         <div style="margin-top:10px;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)">
-          วงเงินสูงสุด 3,000 ฿/วัน | <span id="remainLimit" style="color:var(--cyan)">—</span> ฿ คงเหลือวันนี้
+          วงเงินสูงสุด 3,000 ฿/วัน | <span id="remainLimit" style="color:var(--cyan)">0</span> ฿ คงเหลือวันนี้
         </div>
       </div>
 
@@ -335,11 +344,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
       <div class="summary-row">
         <div class="summary-label">จำนวนเงิน</div>
-        <div class="summary-value gold" id="sumThb">— ฿</div>
+        <div class="summary-value gold" id="sumThb">0 ฿</div>
       </div>
       <div class="summary-row">
         <div class="summary-label">Crystal ฐาน</div>
-        <div class="summary-value crystal" id="sumBase">— 💎</div>
+        <div class="summary-value crystal" id="sumBase">0 💎</div>
       </div>
       <div class="summary-row">
         <div class="summary-label">โบนัส</div>
@@ -347,7 +356,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div class="summary-row summary-total">
         <div class="summary-label">TOTAL CRYSTAL</div>
-        <div class="summary-value crystal" id="sumTotal">— 💎</div>
+        <div class="summary-value crystal" id="sumTotal">0 💎</div>
       </div>
 
       <div class="bonus-table">
@@ -368,6 +377,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   </div>
 </main>
+
+<script>
+function openSidebar() {
+  document.getElementById("sidebar").classList.add("open")
+  document.getElementById("sidebarOverlay").classList.add("open")
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open")
+  document.getElementById("sidebarOverlay").classList.remove("open")
+}
+</script>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
@@ -427,18 +447,22 @@ function updateDate() {
     `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
 }
 
-window.openSidebar = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
-window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
+
+
 window.handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = './login.html' }
 
 function renderSidebar(p) {
+  const _SE = { warrior:"⚔️", mage:"🔮", explorer:"🗺️", merchant:"💰", artist:"🎨", diplomat:"🤝" }
+  const _SC = { warrior:"#ff4444", mage:"#aa44ff", explorer:"#44ff88", merchant:"#ffaa00", artist:"#ff66aa", diplomat:"#00ccff" }
+  const cls = p.class || "warrior"
   document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
   document.getElementById('suName').textContent = p.display_name || p.username
-  document.getElementById('suClass').textContent = (p.class || '').toUpperCase()
+  const suClassEl = document.getElementById('suClass')
+  suClassEl.textContent = (_SE[cls] || '') + ' ' + cls.toUpperCase()
+  suClassEl.style.color = _SC[cls] || 'var(--cyan)'
   document.getElementById('suLv').textContent = `LV.${p.level || 1}`
-  document.getElementById('suAvatarWrap').className = `su-avatar cls-${p.class || 'warrior'}`
+  document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls}`
 }
-
 // ─── CALC CRYSTAL ─────────────────────────────────────────
 function calcCrystal(thb) {
   if (thb >= 500) return Math.round(thb * 1.20)
@@ -449,10 +473,10 @@ function calcCrystal(thb) {
 
 function updateSummary(thb, crystal) {
   const bonus = crystal - thb
-  document.getElementById('sumThb').textContent = thb ? `${thb.toLocaleString()} ฿` : '— ฿'
-  document.getElementById('sumBase').textContent = thb ? `${thb} 💎` : '— 💎'
+  document.getElementById('sumThb').textContent = `${(thb || 0).toLocaleString()} ฿`
+  document.getElementById('sumBase').textContent = `${thb || 0} 💎`
   document.getElementById('sumBonus').textContent = bonus > 0 ? `+${bonus} 💎` : '+0 💎'
-  document.getElementById('sumTotal').textContent = crystal ? `${crystal} 💎` : '— 💎'
+  document.getElementById('sumTotal').textContent = `${crystal || 0} 💎`
 }
 
 function updateQR() {
