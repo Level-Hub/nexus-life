@@ -922,24 +922,49 @@ function updateMyRankPosition(data) {
 // GLOBAL LEADERBOARD
 // ============================================================
 async function loadGlobal() {
-  const orderCol = globalPeriod === 'monthly' ? 'xp_this_month' : 'xp_total'
-  let query = supabase.from('users')
-    .select('id,username,display_name,class,level,rank,xp_this_month,xp_total,avatar_seed,streak_current,equipped_title_id')
-    .eq('profile_public', true)
-    .order(orderCol, { ascending: false })
-    .limit(50)
+  // FIX 1: ใช้ leaderboard_monthly view — มี title join ครบ + profile_public filter แล้ว
+  // FIX 3: filter class ที่ DB ไม่ใช่ JS เพื่อไม่พลาดถ้ามีผู้เล่นมากกว่า limit
+  let query = supabase.from('leaderboard_monthly')
+    .select('*')
+    .order('xp_this_month', { ascending: false })
+    .limit(100)
+
+  if (selectedClass !== 'all') {
+    query = query.eq('class', selectedClass)
+  }
 
   const { data, error } = await query
   if (error) { console.error(error); return }
 
-  allGlobalData = data || []
+  // alltime mode — re-sort by xp_total client side (view sort by xp_this_month)
+  let sorted = data || []
+  if (globalPeriod === 'alltime') {
+    // ดึง xp_total เพิ่มเติม เพราะ view มีแค่ xp_this_month
+    const ids = sorted.map(u => u.id)
+    if (ids.length) {
+      const { data: totals } = await supabase
+        .from('users')
+        .select('id,xp_total,streak_current')
+        .in('id', ids)
+      const totalMap = {}
+      ;(totals || []).forEach(u => { totalMap[u.id] = u })
+      sorted = sorted.map(u => ({
+        ...u,
+        xp_total: totalMap[u.id]?.xp_total || 0,
+        streak_current: totalMap[u.id]?.streak_current || 0
+      })).sort((a,b) => b.xp_total - a.xp_total)
+    }
+  }
+
+  allGlobalData = sorted
   renderGlobal(allGlobalData)
   updateMyRankPosition(allGlobalData)
 }
 
 function renderGlobal(data) {
-  const filtered = selectedClass === 'all' ? data : data.filter(u => u.class === selectedClass)
-  const maxXP = filtered[0] ? (globalPeriod==='monthly' ? filtered[0].xp_this_month : filtered[0].xp_total) : 1
+  // data ถูก filter class จาก DB แล้ว ไม่ต้อง filter ซ้ำใน JS
+  const filtered = data
+  const maxXP = filtered[0] ? (globalPeriod==='monthly' ? filtered[0].xp_this_month : filtered[0].xp_total||0) : 1
 
   // PODIUM (top 3)
   const podium = document.getElementById('podiumSection')
@@ -1170,7 +1195,7 @@ function renderGuilds(guilds) {
 // ============================================================
 async function checkNotifications() {
   const { count } = await supabase.from('notifications')
-    .select('id', { count:'exact',head:true })
+    .select('*', { count:'exact',head:true })
     .eq('user_id', currentUser.id)
     .eq('is_read', false)
   if (count > 0) document.getElementById('notifDot').style.display = 'block'
@@ -1223,7 +1248,8 @@ window.setFilter = function(key, val, btn) {
 
 window.applyClassFilter = function(val) {
   selectedClass = val
-  renderGlobal(allGlobalData)
+  // FIX: re-fetch จาก DB เพราะ filter อยู่ที่ DB แล้ว
+  loadGlobal()
 }
 
 window.setCitySort = function(key, btn) {

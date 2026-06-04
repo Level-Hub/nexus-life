@@ -735,9 +735,15 @@ async function loadCityData(city) {
   document.getElementById('statWeeklyXP').textContent = fmtNum(data.xp_contributed_weekly || 0)
   document.getElementById('statStreak').textContent = (data.city_streak_days || 0) + ' d'
 
-  // prosperity bar
+  // FIX: prosperity bar แสดง progress XP ไป threshold ถัดไป
+  // ถ้าไม่มี xp data ให้ fallback เป็น lv/10
+  const xpCurrent = data.xp_contributed_weekly || 0
+  const xpThreshold = data.xp_threshold_next || 1000
+  const prosBarPct = xpThreshold > 0
+    ? Math.min(100, Math.round(xpCurrent / xpThreshold * 100))
+    : (lv / 10 * 100)
   setTimeout(() => {
-    document.getElementById('prosFill').style.width = (lv / 10 * 100) + '%'
+    document.getElementById('prosFill').style.width = prosBarPct + '%'
   }, 500)
 
   // segments
@@ -978,7 +984,7 @@ async function loadChatMessages(city) {
   }
   el.scrollTop = el.scrollHeight
 
-  // get online count (estimate: recent users in city)
+  // หมายเหตุ: นับ users ทั้งหมดในเมือง ไม่ใช่ online realtime (approximate population)
   const { count } = await supabase
     .from('users')
     .select('*',{count:'exact',head:true})
@@ -1081,7 +1087,13 @@ window.helpRequest = async function(reqId) {
     .eq('id', reqId)
 
   if (!error) {
-    showToast('ช่วยเหลือสำเร็จ! +10 Reputation 🤝', 'success')
+    // FIX: grant reputation จริงๆ ผ่าน DB function
+    await supabase.rpc('add_city_reputation', {
+      p_user_id: currentUser.id,
+      p_city_name: selectedCity,
+      p_points: 10
+    })
+    showToast('ช่วยเหลือสำเร็จ! +10 Reputation', 'success')
     await loadNeighborhoodRequests(selectedCity)
   }
 }
@@ -1162,9 +1174,9 @@ window.saveCity = async function() {
   ])
   loadChatMessages(selectedCity)
   subscribeChat(selectedCity)
+  buildCitySelectGrid()
 
   btn.disabled = false; btn.textContent = '💾 บันทึกเมือง'
-  buildCitySelectGrid()
 }
 
 // ─── PROJECT TIMER ───────────────────────────

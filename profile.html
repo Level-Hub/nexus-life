@@ -1224,8 +1224,9 @@ async function loadQuestHistory() {
 // LOAD ACTIVITY
 // ============================================================
 async function loadActivity() {
+  // FIX: ใช้ social_feed_view แทน activity_feed ตรงๆ เพื่อผ่าน RLS
   const { data } = await supabase
-    .from('activity_feed')
+    .from('social_feed_view')
     .select('*')
     .eq('user_id', viewedUser)
     .order('created_at', { ascending: false })
@@ -1354,14 +1355,11 @@ window.toggleFollow = async function() {
   btn.disabled = true
 
   if (isFollowing) {
-    await supabase.from('social_follows').delete()
-      .eq('follower_id', currentUser.id).eq('following_id', viewedUser)
-    await supabase.from('users').update({ following_count: supabase.rpc('decrement', {}) })
-    // simple update approach
-    const { data: cu } = await supabase.from('users').select('following_count').eq('id', currentUser.id).single()
-    const { data: vu } = await supabase.from('users').select('followers_count').eq('id', viewedUser).single()
-    await supabase.from('users').update({ following_count: Math.max(0,(cu?.following_count||0)-1) }).eq('id', currentUser.id)
-    await supabase.from('users').update({ followers_count: Math.max(0,(vu?.followers_count||0)-1) }).eq('id', viewedUser)
+    // FIX: ใช้ DB function แทน 3 query แยก กัน count drift
+    await supabase.rpc('unfollow_user', {
+      p_follower_id: currentUser.id,
+      p_following_id: viewedUser
+    })
     isFollowing = false
     showToast('Unfollow แล้ว', 'success')
   } else {
@@ -1484,6 +1482,8 @@ window.saveProfile = async function() {
     signature,
     status_text:    statusText,
     profile_public: profilePublic,
+    // FIX: บันทึกเวลาที่เปลี่ยน class (สำหรับ class_change ticket check ในอนาคต)
+    ...(cls !== userProfile.class ? { class_changed_at: new Date().toISOString() } : {})
   }).eq('id', currentUser.id)
 
   if (error) {

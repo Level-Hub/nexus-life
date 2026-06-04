@@ -388,28 +388,28 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="sum-glow" style="background:rgba(255,215,0,0.2)"></div>
       <div class="sum-card-icon">🏷️</div>
       <div class="sum-card-label">TITLES</div>
-      <div class="sum-card-val" id="sumTitles">0</div>
+      <div class="sum-card-val" id="sumTitles">—</div>
       <div class="sum-card-sub">ที่ปลดล็อคแล้ว</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(0,245,255,0.15)"></div>
       <div class="sum-card-icon">🏅</div>
       <div class="sum-card-label">BADGES</div>
-      <div class="sum-card-val" id="sumBadges">0</div>
+      <div class="sum-card-val" id="sumBadges">—</div>
       <div class="sum-card-sub">ที่ได้รับแล้ว</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(176,68,255,0.15)"></div>
       <div class="sum-card-icon">⭐</div>
       <div class="sum-card-label">STREAK</div>
-      <div class="sum-card-val" id="sumStreak">0</div>
+      <div class="sum-card-val" id="sumStreak">—</div>
       <div class="sum-card-sub">วันติดต่อกัน</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(68,255,136,0.1)"></div>
       <div class="sum-card-icon">✅</div>
       <div class="sum-card-label">QUESTS DONE</div>
-      <div class="sum-card-val" id="sumQuests">0</div>
+      <div class="sum-card-val" id="sumQuests">—</div>
       <div class="sum-card-sub">Quest สำเร็จทั้งหมด</div>
     </div>
   </div>
@@ -457,7 +457,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
       <!-- EQUIPPED TITLE PANEL -->
       <div class="equipped-panel" id="equippedPanel">
-        <div class="ep-label">⚔️ EQUIPPED TITLE</div>
+        <div class="ep-label">EQUIPPED TITLE</div>
         <div class="ep-avatar" id="epAvatarWrap">
           <img id="epAvatar" src="" alt="">
         </div>
@@ -469,7 +469,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- PROGRESS OVERVIEW -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">📊 PROGRESS</div>
+          <div class="box-title">PROGRESS</div>
         </div>
         <div class="box-body">
           <div class="progress-list" id="progressList">
@@ -496,7 +496,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- RECENT BADGES -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">🆕 LATEST BADGES</div>
+          <div class="box-title">LATEST BADGES</div>
         </div>
         <div class="box-body">
           <div class="recent-badges" id="recentBadges">
@@ -520,80 +520,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 let currentUser = null
 let userProfile = null
-let userStats = null
-let myTitles = []
-let myBadges = []
+let myTitles = []    // rows จาก user_titles (มี title_id เป็น integer)
+let myBadges = []    // rows จาก user_badges (มี badge_id เป็น integer)
+let allTitlesDB = [] // rows จาก titles table (id เป็น integer)
+let allBadgesDB = [] // rows จาก badges table (id เป็น integer)
 let currentTab = 'titles'
-
-// ===================== STATIC DATA =====================
-const ALL_TITLES = [
-  // Physical
-  { id:'t01', emoji:'🏃', name:'นักวิ่งมือใหม่', cond:'วิ่งครบ 10 km รวม', type:'PHYSICAL' },
-  { id:'t02', emoji:'💪', name:'The Unbreakable', cond:'Streak 30 วันติด', type:'PHYSICAL' },
-  { id:'t03', emoji:'🏋️', name:'Iron Body', cond:'ออกกำลังกาย 100 ครั้ง', type:'PHYSICAL' },
-  { id:'t04', emoji:'⚡', name:'Speed Demon', cond:'วิ่งครบ 500 km รวม', type:'PHYSICAL' },
-  { id:'t05', emoji:'🦾', name:'Warrior King', cond:'STR stat ถึง 1,000', type:'PHYSICAL' },
-  // Knowledge
-  { id:'t06', emoji:'📖', name:'นักอ่านมือใหม่', cond:'อ่านหนังสือครบ 5 เล่ม', type:'KNOWLEDGE' },
-  { id:'t07', emoji:'🧙', name:'จอมเวทแห่งการเรียนรู้', cond:'ทำ Knowledge Quest ครบ 50 ครั้ง', type:'KNOWLEDGE' },
-  { id:'t08', emoji:'📚', name:'ปัญญาชนไร้ขอบเขต', cond:'อ่านหนังสือ 20 เล่ม', type:'KNOWLEDGE' },
-  { id:'t09', emoji:'🎓', name:'Grand Scholar', cond:'INT stat ถึง 1,000', type:'KNOWLEDGE' },
-  // Exploration
-  { id:'t10', emoji:'🗺️', name:'นักสำรวจผู้กล้า', cond:'Check-in 10 เมือง', type:'EXPLORATION' },
-  { id:'t11', emoji:'📍', name:'Pathfinder', cond:'ไปสถานที่ใหม่ 30 แห่ง', type:'EXPLORATION' },
-  { id:'t12', emoji:'🌍', name:'Globe Trotter', cond:'Check-in 3 จังหวัด', type:'EXPLORATION' },
-  { id:'t13', emoji:'🧭', name:'World Wanderer', cond:'เดินทางครบ 10 จังหวัด', type:'EXPLORATION' },
-  { id:'t14', emoji:'🏔️', name:'Pioneer', cond:'เป็นคนแรก Check-in 5 สถานที่', type:'EXPLORATION' },
-  // Business
-  { id:'t15', emoji:'💰', name:'นักวางแผนการเงิน', cond:'ออมเงิน 10,000 บาท', type:'BUSINESS' },
-  { id:'t16', emoji:'📈', name:'Market Master', cond:'BIZ stat ถึง 500', type:'BUSINESS' },
-  { id:'t17', emoji:'🏦', name:'The Investor', cond:'ออมเงิน 100,000 บาท', type:'BUSINESS' },
-  // Creative
-  { id:'t18', emoji:'🎨', name:'Artisan', cond:'ส่งผลงาน 10 ชิ้น', type:'CREATIVE' },
-  { id:'t19', emoji:'✍️', name:'Storyteller', cond:'เขียน Journal 20 ครั้ง', type:'CREATIVE' },
-  { id:'t20', emoji:'📸', name:'Lens Master', cond:'ถ่ายรูป Quest 50 ครั้ง', type:'CREATIVE' },
-  { id:'t21', emoji:'🌟', name:'Creative Legend', cond:'CRE stat ถึง 1,000', type:'CREATIVE' },
-  // Social
-  { id:'t22', emoji:'🤝', name:'เสน่ห์ล้นเหลือ', cond:'มีเพื่อนใน app 20 คน', type:'SOCIAL' },
-  { id:'t23', emoji:'👑', name:'Guild Master', cond:'เป็นผู้นำ Guild', type:'SOCIAL' },
-  { id:'t24', emoji:'🌐', name:'Ambassador', cond:'ชวนเพื่อนสมัคร 10 คน', type:'SOCIAL' },
-  { id:'t25', emoji:'🏛️', name:'Peacekeeper', cond:'Verify หลักฐาน 100 ครั้ง', type:'SOCIAL' },
-  // Special
-  { id:'t26', emoji:'👑', name:'จ้าวแห่งเดือน', cond:'Top 10 Leaderboard เดือนนี้', type:'SPECIAL' },
-  { id:'t27', emoji:'🥇', name:'Champion', cond:'ชนะ PvP Tournament', type:'SPECIAL' },
-  { id:'t28', emoji:'🌈', name:'Event Hero', cond:'ทำ Event Quest ครบในงาน', type:'SPECIAL' },
-  { id:'t29', emoji:'🧪', name:'Beta Tester', cond:'ใช้งาน app ในช่วง Beta', type:'SPECIAL' },
-  { id:'t30', emoji:'⭐', name:'Founder', cond:'สมัครใน 1,000 คนแรก', type:'SPECIAL' },
-]
-
-const ALL_BADGES = [
-  // Physical
-  { id:'b01', emoji:'👟', name:'First Step', cond:'ทำ Physical Quest ครั้งแรก', cat:'PHYSICAL' },
-  { id:'b02', emoji:'🔥', name:'Week Warrior', cond:'Streak 7 วัน', cat:'PHYSICAL' },
-  { id:'b03', emoji:'💥', name:'Monthly Crusher', cond:'Streak 30 วัน', cat:'PHYSICAL' },
-  { id:'b04', emoji:'🥇', name:'Gold Walker', cond:'เดินครบ 500 km', cat:'PHYSICAL' },
-  { id:'b05', emoji:'🦾', name:'Iron Man', cond:'ออกกำลังกาย 100 ครั้ง', cat:'PHYSICAL' },
-  // Knowledge
-  { id:'b06', emoji:'🧠', name:'First Blood', cond:'ทำ Quest แรกสำเร็จ', cat:'KNOWLEDGE' },
-  { id:'b07', emoji:'📚', name:'Bookworm', cond:'อ่านหนังสือ 10 เล่ม', cat:'KNOWLEDGE' },
-  { id:'b08', emoji:'🎯', name:'Quiz Master', cond:'ทำ Quiz 50 ครั้ง', cat:'KNOWLEDGE' },
-  { id:'b09', emoji:'🎓', name:'Scholar', cond:'INT stat ถึง 500', cat:'KNOWLEDGE' },
-  // Exploration
-  { id:'b10', emoji:'🌍', name:'Globe Trotter', cond:'Check-in 3 จังหวัด', cat:'EXPLORATION' },
-  { id:'b11', emoji:'🏙️', name:'City Explorer', cond:'Check-in 10 เมือง', cat:'EXPLORATION' },
-  { id:'b12', emoji:'🧭', name:'Pioneer', cond:'เป็นคนแรก Check-in สถานที่ใหม่', cat:'EXPLORATION' },
-  { id:'b13', emoji:'⛺', name:'Adventurer', cond:'เดินทาง 5 จังหวัด', cat:'EXPLORATION' },
-  // Social
-  { id:'b14', emoji:'🦋', name:'Social Butterfly', cond:'เข้าร่วม Guild', cat:'SOCIAL' },
-  { id:'b15', emoji:'📣', name:'Recruiter', cond:'ชวนเพื่อน 5 คน', cat:'SOCIAL' },
-  { id:'b16', emoji:'⚔️', name:'Duel Master', cond:'ชนะ PvP 5 ครั้ง', cat:'SOCIAL' },
-  { id:'b17', emoji:'📸', name:'Proof Master', cond:'อัพรูปหลักฐาน 10 ครั้ง', cat:'SOCIAL' },
-  { id:'b18', emoji:'🤝', name:'Helper', cond:'Verify หลักฐาน 50 ครั้ง', cat:'SOCIAL' },
-  // Special
-  { id:'b19', emoji:'⭐', name:'Founder', cond:'สมัครใน 1,000 คนแรก', cat:'SPECIAL' },
-  { id:'b20', emoji:'🏆', name:'Season Champion', cond:'Top 3 Leaderboard เดือนไหนก็ได้', cat:'SPECIAL' },
-  { id:'b21', emoji:'🎉', name:'Event Veteran', cond:'เข้าร่วม 3 Event พิเศษ', cat:'SPECIAL' },
-]
 
 const CLASS_EMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
 
@@ -619,10 +550,9 @@ async function init() {
 
 // ===================== LOAD PROFILE =====================
 async function loadProfile() {
-  const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
-  const { data: stats } = await supabase.from('user_stats').select('*').eq('user_id', currentUser.id).single()
+  const { data: profile } = await supabase
+    .from('users').select('*').eq('id', currentUser.id).single()
   userProfile = profile
-  userStats = stats
   if (!profile) return
 
   const cls = profile.class || 'warrior'
@@ -643,7 +573,7 @@ async function loadProfile() {
 
   document.getElementById('sumStreak').textContent = profile.streak_current || 0
 
-  // Progress bars
+  // Progress bars streak
   const streak = profile.streak_current || 0
   document.getElementById('prStreakVal').textContent = `${streak}/30`
   setTimeout(() => {
@@ -653,45 +583,67 @@ async function loadProfile() {
 
 // ===================== LOAD ACHIEVEMENTS =====================
 async function loadAchievements() {
-  // ดึง user_titles + user_badges จาก Supabase
-  const [{ data: titles }, { data: badges }, { data: questCount }] = await Promise.all([
+  // FIX 1: query titles/badges table จาก DB แทน static array
+  // FIX 2: questCount ใช้ count:exact+head:true แทน .length
+  const [
+    { data: titlesData },
+    { data: badgesData },
+    { data: userTitlesData },
+    { data: userBadgesData },
+    { count: questDone }
+  ] = await Promise.all([
+    supabase.from('titles').select('*').order('id'),
+    supabase.from('badges').select('*').order('id'),
     supabase.from('user_titles').select('*').eq('user_id', currentUser.id),
-    supabase.from('user_badges').select('*').eq('user_id', currentUser.id),
-    supabase.from('user_quests').select('id', { count: 'exact' }).eq('user_id', currentUser.id).eq('status', 'approved'),
+    supabase.from('user_badges').select('*').eq('user_id', currentUser.id).order('unlocked_at', { ascending: false }),
+    supabase.from('user_quests').select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id).eq('status', 'approved')
   ])
 
-  myTitles = titles || []
-  myBadges = badges || []
-  const questDone = questCount?.length || 0
+  allTitlesDB = titlesData || []
+  allBadgesDB = badgesData || []
+  myTitles = userTitlesData || []
+  myBadges = userBadgesData || []
 
-  // equipped title
+  // equipped title — title_id เป็น integer ตรงกับ titles.id
   const equipped = myTitles.find(t => t.is_equipped)
-  const equippedDef = equipped ? ALL_TITLES.find(t => t.id === equipped.title_id) : null
-  document.getElementById('epTitleBadge').textContent = equippedDef ? `${equippedDef.emoji} ${equippedDef.name}` : '— ไม่มีฉายา —'
+  const equippedDef = equipped
+    ? allTitlesDB.find(t => t.id === equipped.title_id)
+    : null
+  document.getElementById('epTitleBadge').textContent = equippedDef
+    ? `${equippedDef.icon || ''} ${equippedDef.name}`
+    : '— ไม่มีฉายา —'
 
   // Summary
   document.getElementById('sumTitles').textContent = myTitles.length
   document.getElementById('sumBadges').textContent = myBadges.length
-  document.getElementById('sumQuests').textContent = questDone
+  document.getElementById('sumQuests').textContent = questDone || 0
 
   // Progress
-  document.getElementById('prQuestVal').textContent = `${questDone}/100`
-  document.getElementById('prTitleVal').textContent = `${myTitles.length}/${ALL_TITLES.length}`
-  document.getElementById('prBadgeVal').textContent = `${myBadges.length}/${ALL_BADGES.length}`
+  const qDone = questDone || 0
+  document.getElementById('prQuestVal').textContent = `${qDone}/100`
+  document.getElementById('prTitleVal').textContent = `${myTitles.length}/${allTitlesDB.length}`
+  document.getElementById('prBadgeVal').textContent = `${myBadges.length}/${allBadgesDB.length}`
+
   setTimeout(() => {
-    document.getElementById('prQuestFill').style.width = Math.min(100, questDone) + '%'
-    document.getElementById('prTitleFill').style.width = Math.round(myTitles.length/ALL_TITLES.length*100) + '%'
-    document.getElementById('prBadgeFill').style.width = Math.round(myBadges.length/ALL_BADGES.length*100) + '%'
+    document.getElementById('prQuestFill').style.width = Math.min(100, qDone) + '%'
+    document.getElementById('prTitleFill').style.width = allTitlesDB.length
+      ? Math.round(myTitles.length / allTitlesDB.length * 100) + '%' : '0%'
+    document.getElementById('prBadgeFill').style.width = allBadgesDB.length
+      ? Math.round(myBadges.length / allBadgesDB.length * 100) + '%' : '0%'
   }, 600)
 
-  // Recent badges
+  // FIX 4: Recent badges — myBadges ถูก sort by unlocked_at desc แล้วจาก query
   const recentEl = document.getElementById('recentBadges')
-  const recentBadgeIds = myBadges.slice(-6).map(b => b.badge_id)
-  if (recentBadgeIds.length) {
-    recentEl.innerHTML = recentBadgeIds.map(bid => {
-      const def = ALL_BADGES.find(b => b.id === bid)
+  const recentBadges = myBadges.slice(0, 6)
+  if (recentBadges.length) {
+    recentEl.innerHTML = recentBadges.map(mb => {
+      const def = allBadgesDB.find(b => b.id === mb.badge_id)
       if (!def) return ''
-      return `<div class="recent-badge"><div class="rb-icon">${def.emoji}</div><div class="rb-name">${def.name}</div></div>`
+      return `<div class="recent-badge">
+        <div class="rb-icon">${def.icon || '🏅'}</div>
+        <div class="rb-name">${def.name}</div>
+      </div>`
     }).join('')
   }
 
@@ -708,22 +660,26 @@ function renderTitles() {
   const equippedId = myTitles.find(t => t.is_equipped)?.title_id
 
   if (!myTitles.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏷️</div><div class="empty-state-txt">ยังไม่มี Title — ทำ Quest เพื่อปลดล็อค!</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">🏷️</div>
+      <div class="empty-state-txt">ยังไม่มี Title — ทำ Quest เพื่อปลดล็อค!</div>
+    </div>`
     return
   }
 
-  grid.innerHTML = ALL_TITLES.filter(t => myIds.has(t.id)).map(t => {
+  // FIX 1: เปรียบเทียบ integer กับ integer (allTitlesDB.id vs myIds)
+  grid.innerHTML = allTitlesDB.filter(t => myIds.has(t.id)).map(t => {
     const isEquipped = t.id === equippedId
     return `
     <div class="title-card ${isEquipped ? 'equipped' : 'unlocked'}">
       <div class="title-card-top">
-        <div class="title-emoji">${t.emoji}</div>
+        <div class="title-emoji">${t.icon || '🏷️'}</div>
         <span class="title-status ${isEquipped ? 'equipped-badge' : 'unlocked-badge'}">${isEquipped ? 'EQUIPPED' : 'UNLOCKED'}</span>
       </div>
       <div class="title-name">${t.name}</div>
-      <div class="title-cond">${t.cond}</div>
-      <span class="title-type">${t.type}</span>
-      <button class="equip-btn ${isEquipped ? 'current' : ''}" onclick="equipTitle('${t.id}')">${isEquipped ? '✓ ใส่อยู่แล้ว' : '+ ใส่ฉายานี้'}</button>
+      <div class="title-cond">${t.description || ''}</div>
+      <span class="title-type">${(t.category || '').toUpperCase()}</span>
+      <button class="equip-btn ${isEquipped ? 'current' : ''}" onclick="equipTitle(${t.id})">${isEquipped ? 'ใส่อยู่แล้ว' : '+ ใส่ฉายานี้'}</button>
     </div>`
   }).join('')
 }
@@ -734,20 +690,20 @@ function renderAllTitles() {
   const myIds = new Set(myTitles.map(t => t.title_id))
   const equippedId = myTitles.find(t => t.is_equipped)?.title_id
 
-  grid.innerHTML = ALL_TITLES.map(t => {
+  grid.innerHTML = allTitlesDB.map(t => {
     const unlocked = myIds.has(t.id)
     const isEquipped = t.id === equippedId
     return `
     <div class="title-card ${isEquipped ? 'equipped' : unlocked ? 'unlocked' : 'locked'}">
       <div class="title-card-top">
-        <div class="title-emoji">${t.emoji}</div>
+        <div class="title-emoji">${t.icon || '🏷️'}</div>
         <span class="title-status ${isEquipped ? 'equipped-badge' : unlocked ? 'unlocked-badge' : 'locked-badge'}">${isEquipped ? 'EQUIPPED' : unlocked ? 'UNLOCKED' : 'LOCKED'}</span>
       </div>
       <div class="title-name">${t.name}</div>
-      <div class="title-cond">${t.cond}</div>
-      <span class="title-type">${t.type}</span>
-      ${unlocked && !isEquipped ? `<button class="equip-btn" onclick="equipTitle('${t.id}')">+ ใส่ฉายานี้</button>` : ''}
-      ${isEquipped ? `<button class="equip-btn current">✓ ใส่อยู่แล้ว</button>` : ''}
+      <div class="title-cond">${t.description || ''}</div>
+      <span class="title-type">${(t.category || '').toUpperCase()}</span>
+      ${unlocked && !isEquipped ? `<button class="equip-btn" onclick="equipTitle(${t.id})">+ ใส่ฉายานี้</button>` : ''}
+      ${isEquipped ? `<button class="equip-btn current">ใส่อยู่แล้ว</button>` : ''}
     </div>`
   }).join('')
 }
@@ -758,19 +714,25 @@ function renderBadges() {
   const myIds = new Set(myBadges.map(b => b.badge_id))
 
   if (!myBadges.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏅</div><div class="empty-state-txt">ยังไม่มี Badge — เริ่มทำ Quest เลย!</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">🏅</div>
+      <div class="empty-state-txt">ยังไม่มี Badge — เริ่มทำ Quest เลย!</div>
+    </div>`
     return
   }
 
-  grid.innerHTML = ALL_BADGES.filter(b => myIds.has(b.id)).map(b => {
+  // FIX 1: เปรียบเทียบ integer กับ integer
+  grid.innerHTML = allBadgesDB.filter(b => myIds.has(b.id)).map(b => {
     const myB = myBadges.find(mb => mb.badge_id === b.id)
-    const dateStr = myB?.unlocked_at ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''
+    const dateStr = myB?.unlocked_at
+      ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' })
+      : ''
     return `
     <div class="badge-card unlocked">
-      <span class="badge-icon">${b.emoji}</span>
+      <span class="badge-icon">${b.icon || '🏅'}</span>
       <div class="badge-name">${b.name}</div>
-      <div class="badge-cond">${b.cond}</div>
-      <div class="badge-cat">${b.cat}</div>
+      <div class="badge-cond">${b.description || ''}</div>
+      <div class="badge-cat">${(b.category || '').toUpperCase()}</div>
       ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
     </div>`
   }).join('')
@@ -781,43 +743,61 @@ function renderAllBadges() {
   const grid = document.getElementById('allBadgeGrid')
   const myIds = new Set(myBadges.map(b => b.badge_id))
 
-  grid.innerHTML = ALL_BADGES.map(b => {
+  grid.innerHTML = allBadgesDB.map(b => {
     const unlocked = myIds.has(b.id)
     const myB = myBadges.find(mb => mb.badge_id === b.id)
-    const dateStr = myB?.unlocked_at ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' }) : ''
+    const dateStr = myB?.unlocked_at
+      ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' })
+      : ''
     return `
     <div class="badge-card ${unlocked ? 'unlocked' : 'locked'}">
       ${!unlocked ? '<div class="badge-lock-icon">🔒</div>' : ''}
-      <span class="badge-icon">${b.emoji}</span>
+      <span class="badge-icon">${b.icon || '🏅'}</span>
       <div class="badge-name">${b.name}</div>
-      <div class="badge-cond">${b.cond}</div>
-      <div class="badge-cat">${b.cat}</div>
+      <div class="badge-cond">${b.description || ''}</div>
+      <div class="badge-cat">${(b.category || '').toUpperCase()}</div>
       ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
     </div>`
   }).join('')
 }
 
 // ===================== EQUIP TITLE =====================
+// FIX 3+5: titleId เป็น integer จาก DB เสมอ
 window.equipTitle = async function(titleId) {
+  // titleId ที่รับมาเป็น integer (จาก allTitlesDB.id)
+  const titleIdInt = parseInt(titleId)
+  if (!titleIdInt) return
+
   try {
     // ถอด equipped ทั้งหมดก่อน
-    await supabase.from('user_titles').update({ is_equipped: false }).eq('user_id', currentUser.id)
-    // ใส่ title ใหม่
-    await supabase.from('user_titles').update({ is_equipped: true }).eq('user_id', currentUser.id).eq('title_id', titleId)
+    await supabase.from('user_titles')
+      .update({ is_equipped: false })
+      .eq('user_id', currentUser.id)
 
-    const def = ALL_TITLES.find(t => t.id === titleId)
-    myTitles = myTitles.map(t => ({ ...t, is_equipped: t.title_id === titleId }))
+    // ใส่ title ใหม่ — title_id เป็น integer
+    await supabase.from('user_titles')
+      .update({ is_equipped: true })
+      .eq('user_id', currentUser.id)
+      .eq('title_id', titleIdInt)
 
-    document.getElementById('epTitleBadge').textContent = def ? `${def.emoji} ${def.name}` : '—'
+    // FIX 5: อัพเดต equipped_title_id ใน users ด้วย integer ที่ถูกต้อง
+    await supabase.from('users')
+      .update({ equipped_title_id: titleIdInt })
+      .eq('id', currentUser.id)
 
-    // อัพเดต equipped_title_id ใน users table ด้วย
-    await supabase.from('users').update({ equipped_title_id: titleId }).eq('id', currentUser.id)
+    // อัพเดต local state
+    myTitles = myTitles.map(t => ({ ...t, is_equipped: t.title_id === titleIdInt }))
+
+    const def = allTitlesDB.find(t => t.id === titleIdInt)
+    document.getElementById('epTitleBadge').textContent = def
+      ? `${def.icon || ''} ${def.name}`
+      : '—'
 
     renderTitles()
     renderAllTitles()
-    showToast(`✅ ใส่ฉายา "${def?.name}" แล้ว!`, 'success')
+    showToast(`ใส่ฉายา "${def?.name}" แล้ว!`, 'success')
   } catch(e) {
-    showToast('❌ เกิดข้อผิดพลาด', 'error')
+    showToast('เกิดข้อผิดพลาด', 'error')
   }
 }
 

@@ -548,7 +548,7 @@ async function loadActivePlayers() {
 // ===== CITY STATS =====
 async function loadCityStats() {
   const [{ count: members }, { data: cs }] = await Promise.all([
-    supabase.from('users').select('id', { count: 'exact', head: true }).eq('city', myCity),
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('city', myCity),
     supabase.from('city_stats').select('*').eq('city_name', myCity).single()
   ])
 
@@ -820,8 +820,25 @@ function subscribeRealtime() {
 
       if (!item) return
 
-      // filter check
+      // FIX: filter check ครบทุก mode
       if (currentFilter === 'city' && item.city !== myCity) return
+
+      if (currentFilter === 'following') {
+        const { data: follows } = await supabase
+          .from('social_follows').select('following_id').eq('follower_id', userId)
+        const ids = (follows || []).map(f => f.following_id)
+        if (!ids.includes(item.user_id)) return
+      }
+
+      if (currentFilter === 'guild') {
+        const { data: gm } = await supabase
+          .from('guild_members').select('guild_id').eq('user_id', userId).single()
+        if (!gm) return
+        const { data: gmembers } = await supabase
+          .from('guild_members').select('user_id').eq('guild_id', gm.guild_id)
+        const ids = (gmembers || []).map(m => m.user_id)
+        if (!ids.includes(item.user_id)) return
+      }
 
       const html = renderFeedCard(item)
       document.getElementById('feedList').insertAdjacentHTML('afterbegin', html)

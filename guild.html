@@ -1046,11 +1046,12 @@ window.joinGuildQuest = async (questId, btn) => {
   btn.disabled = true
   btn.textContent = '⏳...'
 
-  // insert user_quest
-  const { error } = await sb.from('user_quests').insert({
+  // FIX: upsert แทน insert กัน duplicate error
+  const { error } = await sb.from('user_quests').upsert({
     user_id: ME.id, quest_id: questId, status: 'in_progress'
-  })
-  if (error && !error.message.includes('duplicate')) {
+  }, { onConflict: 'user_id,quest_id', ignoreDuplicates: true })
+
+  if (error) {
     btn.disabled = false; btn.textContent = 'เข้าร่วม Quest'
     toast('เกิดข้อผิดพลาด', 'error'); return
   }
@@ -1070,8 +1071,9 @@ async function loadGuildFeed() {
   const userIds = members?.map(m => m.user_id) || []
   if (!userIds.length) return
 
-  const { data } = await sb.from('activity_feed')
-    .select('*, users(username, display_name, avatar_seed, class)')
+  // FIX: ใช้ social_feed_view แทน join manual เพื่อผ่าน RLS
+  const { data } = await sb.from('social_feed_view')
+    .select('*')
     .in('user_id', userIds)
     .order('created_at', { ascending: false })
     .limit(30)
@@ -1083,13 +1085,14 @@ async function loadGuildFeed() {
   const labels = { quest_complete:'ทำ Quest สำเร็จ', level_up:'Level Up!', badge_unlock:'ปลดล็อค Badge', title_unlock:'ได้รับ Title', checkin:'Check-in สถานที่ใหม่', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP!' }
 
   el.innerHTML = data.map(a => {
-    const u = a.users
+    // social_feed_view มี display_name, username โดยตรง
+    const name = a.display_name || a.username || '?'
     const t = relTime(a.created_at)
     return `
     <div class="gfeed-item">
       <div class="gfeed-icon">${icons[a.type]||'📢'}</div>
       <div class="gfeed-text">
-        <div class="gfeed-main"><strong>${escHtml(u.display_name||u.username)}</strong> ${labels[a.type]||a.type}</div>
+        <div class="gfeed-main"><strong>${escHtml(name)}</strong> ${labels[a.type]||a.type}</div>
         <div class="gfeed-time">${t}</div>
       </div>
     </div>`
@@ -1188,6 +1191,11 @@ window.promoteOfficer = async (userId, uname, currentRole) => {
 // LEAVE GUILD
 // ============================================
 window.confirmLeave = async () => {
+  // FIX: master ออกไม่ได้ถ้ายังไม่ transfer
+  if (MY_MEMBER.role === 'master') {
+    toast('ต้อง Transfer Master ให้คนอื่นก่อนออก Guild', 'error')
+    return
+  }
   if (!confirm(`ออกจาก Guild "${MY_GUILD.name}"?`)) return
   await sb.from('guild_members').delete().eq('user_id', ME.id)
   toast('ออกจาก Guild แล้ว', 'info')

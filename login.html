@@ -803,6 +803,38 @@
           <span id="pw-label" style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);">PASSWORD STRENGTH</span>
         </div>
 
+        <!-- CLASS SELECTION -->
+        <div class="field">
+          <label class="field-label" style="margin-bottom:10px;display:block;">เลือกอาชีพ <span style="color:var(--red)">*</span></label>
+          <div id="classPickerMsg" style="font-family:'Orbitron',monospace;font-size:9px;color:var(--red);margin-bottom:6px;display:none;">กรุณาเลือกอาชีพก่อน</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div class="class-pick-btn" data-class="warrior" onclick="selectClass('warrior',this)" style="border:1px solid rgba(255,68,68,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">⚔️</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">WARRIOR</div>
+            </div>
+            <div class="class-pick-btn" data-class="mage" onclick="selectClass('mage',this)" style="border:1px solid rgba(170,68,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">🔮</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MAGE</div>
+            </div>
+            <div class="class-pick-btn" data-class="explorer" onclick="selectClass('explorer',this)" style="border:1px solid rgba(68,255,136,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">🗺️</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">EXPLORER</div>
+            </div>
+            <div class="class-pick-btn" data-class="merchant" onclick="selectClass('merchant',this)" style="border:1px solid rgba(255,170,0,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">💰</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MERCHANT</div>
+            </div>
+            <div class="class-pick-btn" data-class="artist" onclick="selectClass('artist',this)" style="border:1px solid rgba(255,102,170,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">🎨</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">ARTIST</div>
+            </div>
+            <div class="class-pick-btn" data-class="diplomat" onclick="selectClass('diplomat',this)" style="border:1px solid rgba(0,204,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
+              <div style="font-size:20px;margin-bottom:4px;">🤝</div>
+              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">DIPLOMAT</div>
+            </div>
+          </div>
+        </div>
+
         <button class="btn-submit" id="btn-register" onclick="handleRegister()">
           <span class="btn-text">CREATE CHARACTER</span>
           <div class="spinner"></div>
@@ -969,6 +1001,21 @@
   document.getElementById('login-email').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
   document.getElementById('login-password').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
 
+  // ====== CLASS SELECTION ======
+  let selectedClass = null
+
+  window.selectClass = function(cls, el) {
+    selectedClass = cls
+    document.querySelectorAll('.class-pick-btn').forEach(b => {
+      b.style.background = 'transparent'
+      b.style.opacity = '0.6'
+    })
+    el.style.background = 'rgba(0,245,255,0.08)'
+    el.style.opacity = '1'
+    el.style.borderColor = 'var(--cyan)'
+    document.getElementById('classPickerMsg').style.display = 'none'
+  }
+
   // ====== REGISTER ======
   window.handleRegister = async function() {
     const email    = document.getElementById('reg-email').value.trim()
@@ -980,6 +1027,12 @@
     if (username.length < 3) return showMsg('msg-register', 'error', 'Username ต้องมีอย่างน้อย 3 ตัวอักษร')
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return showMsg('msg-register', 'error', 'Username ใช้ได้แค่ a-z 0-9 และ _')
     if (password.length < 6) return showMsg('msg-register', 'error', 'Password ต้องมีอย่างน้อย 6 ตัวอักษร')
+
+    // FIX 1: validate class
+    if (!selectedClass) {
+      document.getElementById('classPickerMsg').style.display = 'block'
+      return showMsg('msg-register', 'error', 'กรุณาเลือกอาชีพก่อน')
+    }
 
     setLoading('btn-register', true)
 
@@ -995,13 +1048,50 @@
       return
     }
 
-    // Insert user profile (เก็บ email ไว้ด้วยเพื่อ login ด้วย username ได้)
+    // FIX 2: insert users ครบ fields + avatar_seed + class + city
     if (data.user) {
+      const avatarSeed = `pixel-art:${username.toLowerCase()}:0a1628`
+
       await supabase.from('users').insert({
         id: data.user.id,
         username: username.toLowerCase(),
         display_name: username,
         email: email,
+        class: selectedClass,
+        avatar_seed: avatarSeed,
+        city: 'กรุงเทพมหานคร',
+        level: 1,
+        xp_total: 0,
+        xp_this_month: 0,
+        gold: 100,       // gold เริ่มต้น
+        crystal: 0,
+        rank: 'bronze',
+        streak_current: 0,
+        streak_longest: 0,
+        profile_public: true,
+        stats_public: true,
+        feed_public: true,
+        location_public: true,
+        grace_day_used: false,
+      })
+
+      // FIX 3: สร้าง user_stats row
+      await supabase.from('user_stats').insert({
+        user_id: data.user.id,
+        str_points: 0,
+        int_points: 0,
+        exp_points: 0,
+        biz_points: 0,
+        cre_points: 0,
+        soc_points: 0,
+      })
+
+      // FIX 4: สร้าง wallet row
+      await supabase.from('wallet').insert({
+        user_id: data.user.id,
+        balance_thb: 0,
+        crystal_purchased: 0,
+        crystal_spent: 0,
       })
     }
 

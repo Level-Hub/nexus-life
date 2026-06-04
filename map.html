@@ -893,7 +893,7 @@ async function loadProfile() {
   document.getElementById('suAvatar').src = getAvatarUrl(data.avatar_seed || data.username, 40)
 
   // Verify badge
-  const { count } = await supabase.from('user_quests').select('id', { count:'exact', head:true }).eq('status','pending_review')
+  const { count } = await supabase.from('user_quests').select('*', { count:'exact', head:true }).eq('status','pending_review')
   if (count > 0) {
     const badge = document.getElementById('navVerifyBadge')
     badge.style.display = 'inline'
@@ -983,10 +983,13 @@ function getUserLocation() {
 // LOAD PLAYERS ON MAP
 // ============================================================
 async function loadPlayersOnMap() {
+  // หมายเหตุ: last_lat, last_lng, map_visible ต้อง patch SQL เพิ่มใน users table
+  // FIX: เพิ่ม location_public filter + ลบ avatar_url ที่ไม่มีใน schema
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, avatar_url, avatar_seed, last_lat, last_lng, map_visible')
+    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng')
     .eq('map_visible', true)
+    .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
     .limit(200)
@@ -1001,7 +1004,6 @@ async function loadPlayersOnMap() {
     const color = CLASS_COLORS[cls] || '#00f5ff'
     const emoji = CLASS_EMOJI[cls] || '⚔️'
 
-    // Jitter location slightly for cluster privacy
     const jLat = p.last_lat + (Math.random() - 0.5) * 0.08
     const jLng = p.last_lng + (Math.random() - 0.5) * 0.08
 
@@ -1026,16 +1028,16 @@ async function loadPlayersOnMap() {
 // LOAD HOTSPOTS
 // ============================================================
 async function loadHotspots() {
+  // FIX: column ที่ถูกต้องคือ latitude/longitude ไม่ใช่ lat/lng
   const { data } = await supabase
-    .from('check_ins')
-    .select('place_name, city, lat, lng, count:id.count()')
-    .not('lat','is',null)
+    .from('checkins')
+    .select('place_name, city, latitude, longitude, count:id.count()')
+    .not('latitude','is',null)
     .order('count', { ascending: false })
     .limit(20)
 
   document.getElementById('hotspotCount').textContent = data?.length || 0
 
-  // Render list
   const list = document.getElementById('hotspotList')
   if (!data?.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div><div class="empty-state-txt">ยังไม่มี Hotspot</div></div>`
@@ -1043,7 +1045,7 @@ async function loadHotspots() {
   }
 
   list.innerHTML = data.map((h, i) => `
-    <div class="hotspot-item" onclick="flyToHotspot(${h.lat},${h.lng})">
+    <div class="hotspot-item" onclick="flyToHotspot(${h.latitude},${h.longitude})">
       <div class="hotspot-rank ${i===0?'r1':i===1?'r2':i===2?'r3':'rn'}">${i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</div>
       <div class="hotspot-info">
         <div class="hotspot-name">${h.place_name || 'Unknown'}</div>
@@ -1053,15 +1055,14 @@ async function loadHotspots() {
     </div>
   `).join('')
 
-  // Add hotspot markers on map
   if (data) {
     data.forEach(h => {
-      if (!h.lat || !h.lng) return
+      if (!h.latitude || !h.longitude) return
       const icon = L.divIcon({
         html: `<div class="hotspot-marker">🔥</div>`,
         iconSize:[24,24], iconAnchor:[12,12], className:''
       })
-      const marker = L.marker([h.lat, h.lng], { icon })
+      const marker = L.marker([h.latitude, h.longitude], { icon })
         .bindPopup(`
           <div style="font-family:Orbitron,monospace">
             <div style="color:#ffd700;font-size:11px;font-weight:700">${h.place_name||'Hotspot'}</div>
@@ -1069,7 +1070,6 @@ async function loadHotspots() {
           </div>
         `)
       hotspotMarkers.push(marker)
-      // Start hidden
     })
   }
 }
@@ -1078,44 +1078,22 @@ async function loadHotspots() {
 // LOAD TERRITORIES
 // ============================================================
 async function loadTerritories() {
-  const { data } = await supabase
-    .from('guild_territories')
-    .select('city, province, guild:guilds(name, color, tag)')
-    .limit(10)
-
-  document.getElementById('territoryCount').textContent = data?.length || 0
-
+  // หมายเหตุ: guild_territories ยังไม่มีใน schema — Phase 2+
+  document.getElementById('territoryCount').textContent = 0
   const list = document.getElementById('territoryList')
-  if (!data?.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏰</div><div class="empty-state-txt">ยังไม่มี Territory</div></div>`
-    return
-  }
-
-  list.innerHTML = data.map(t => {
-    const g = t.guild || {}
-    const col = g.color || '#b044ff'
-    return `
-      <div class="territory-item">
-        <div class="territory-color" style="background:${col}"></div>
-        <div class="territory-info">
-          <div class="territory-city">${t.city || t.province || '—'}</div>
-          <div class="territory-guild">[${g.tag||'???'}] ${g.name||'—'}</div>
-          <div class="territory-bonus">+10% XP ใน Quest เมืองนี้</div>
-        </div>
-      </div>
-    `
-  }).join('')
+  list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏰</div><div class="empty-state-txt">ระบบ Territory จะเปิดให้ใช้งานเร็วๆ นี้</div></div>`
 }
 
 // ============================================================
 // LOAD NEARBY PLAYERS
 // ============================================================
 async function loadNearbyPlayers() {
-  // Load players visible on map for nearby display
+  // FIX: ลบ avatar_url + เพิ่ม location_public filter
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, avatar_url, avatar_seed, last_lat, last_lng')
+    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng')
     .eq('map_visible', true)
+    .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
     .limit(10)
@@ -1185,12 +1163,12 @@ async function checkPioneer() {
   const lngRound = parseFloat(myLng.toFixed(3))
 
   const { count } = await supabase
-    .from('check_ins')
-    .select('id', { count:'exact', head:true })
-    .gte('lat', latRound - 0.001)
-    .lte('lat', latRound + 0.001)
-    .gte('lng', lngRound - 0.001)
-    .lte('lng', lngRound + 0.001)
+    .from('checkins')
+    .select('*', { count:'exact', head:true })
+    .gte('latitude', latRound - 0.001)
+    .lte('latitude', latRound + 0.001)
+    .gte('longitude', lngRound - 0.001)
+    .lte('longitude', lngRound + 0.001)
 
   const isPioneer = (count || 0) === 0
   document.getElementById('pioneerNotice').classList.toggle('show', isPioneer)
@@ -1214,13 +1192,13 @@ window.submitCheckin = async function() {
   const xpGain    = 100 + (isPioneer ? 100 : 0)
 
   try {
-    // Insert check-in
-    const { error } = await supabase.from('check_ins').insert({
+    // FIX: column ที่ถูกต้องคือ latitude/longitude
+    const { error } = await supabase.from('checkins').insert({
       user_id: currentUser.id,
       place_name: placeName || locName,
       city: document.getElementById('myLocationSub').textContent.split('·')[1]?.trim() || '',
-      lat: parseFloat(myLat.toFixed(3)),
-      lng: parseFloat(myLng.toFixed(3)),
+      latitude: parseFloat(myLat.toFixed(3)),
+      longitude: parseFloat(myLng.toFixed(3)),
       is_pioneer: isPioneer
     })
     if (error) throw error
@@ -1232,17 +1210,25 @@ window.submitCheckin = async function() {
       xp_this_month: (u?.xp_this_month || 0) + xpGain
     }).eq('id', currentUser.id)
 
-    // Activity feed
+    // FIX 7: grant EXP stat points (Explorer stat)
+    await supabase.rpc('increment_stat', {
+      p_user_id: currentUser.id,
+      p_col: 'exp_points',
+      p_amount: 20
+    })
+
+    // FIX 7: update rank หลัง grant XP
+    await supabase.rpc('update_user_rank', { p_user_id: currentUser.id })
+
+    // FIX 5: activity type ถูกต้องคือ 'checkin' ไม่ใช่ 'check_in'
     await supabase.from('activity_feed').insert({
       user_id: currentUser.id,
-      type: 'check_in',
+      type: 'checkin',
       data: { place: placeName || locName, xp: xpGain, pioneer: isPioneer }
     })
 
-    showToast(`📍 Check-in สำเร็จ! +${xpGain} XP${isPioneer ? ' 🧭 Pioneer Bonus!' : ''}`, 'success')
+    showToast(`Check-in สำเร็จ! +${xpGain} XP${isPioneer ? ' Pioneer Bonus!' : ''}`, 'success')
     closeCheckinModal()
-
-    // Reload hotspots
     loadHotspots()
 
   } catch(e) {

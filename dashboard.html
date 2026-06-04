@@ -1091,13 +1091,19 @@ async function loadQuests() {
     .eq('type', 'daily')
     .or(`class_target.eq.${cls},class_target.is.null`)
 
-  // ดึง user_quests วันนี้
-  const today = new Date().toISOString().split('T')[0]
+  // FIX: ดึง user_quests เฉพาะวันนี้ ใส่ range ชัดๆ กันดึงวันพรุ่งนี้มาด้วย
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+
   const { data: userQuests } = await supabase
     .from('user_quests')
     .select('*')
     .eq('user_id', currentUser.id)
-    .gte('created_at', today)
+    .gte('created_at', todayStr + 'T00:00:00')
+    .lt('created_at', tomorrowStr + 'T00:00:00')
 
   const uqMap = {}
   ;(userQuests || []).forEach(uq => { uqMap[uq.quest_id] = uq })
@@ -1170,9 +1176,10 @@ window.filterQuests = function(f, btn) {
 // LOAD FEED
 // ============================================================
 async function loadFeed() {
+  // FIX: ใช้ social_feed_view แทน join manual เพื่อผ่าน RLS
   const { data } = await supabase
-    .from('activity_feed')
-    .select('*, users(username, display_name, class, level, avatar_seed)')
+    .from('social_feed_view')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(8)
 
@@ -1192,8 +1199,8 @@ async function loadFeed() {
   }
 
   el.innerHTML = data.map(item => {
-    const u = item.users
-    const name = u?.display_name || u?.username || 'Unknown'
+    // social_feed_view มี username, display_name, class, level โดยตรง
+    const name = item.display_name || item.username || 'Unknown'
     const icon = typeMap[item.type] || '🎮'
     const label = typeLabel[item.type] || item.type
     const timeAgo = getTimeAgo(item.created_at)
@@ -1333,19 +1340,40 @@ window.submitProof = async function() {
 
     if (error) throw error
 
-    // auto approve text quests
-    if (activeProofType === 'text') {
+    // FIX: auto approve text และ gps (ไม่ใช่แค่ text)
+    if (activeProofType === 'text' || activeProofType === 'gps') {
       const found = allQuests.find(q => q.quest.id === activeQuestId)
       if (found) {
         const q = found.quest
         // grant XP + Gold
-        const newXP    = (userProfile.xp_total || 0) + q.xp_reward
-        const newXPMo  = (userProfile.xp_this_month || 0) + q.xp_reward
-        const newGold  = (userProfile.gold || 0) + (q.gold_reward || 0)
-        await supabase.from('users').update({ xp_total: newXP, xp_this_month: newXPMo, gold: newGold }).eq('id', currentUser.id)
-        await supabase.from('user_quests').update({ status: 'approved', xp_granted: true }).eq('user_id', currentUser.id).eq('quest_id', activeQuestId)
-        await supabase.from('activity_feed').insert({ user_id: currentUser.id, type: 'quest_complete', data: { title: q.title, xp: q.xp_reward } })
-        showToast(`✅ ได้รับ +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'success')
+        const newXP   = (userProfile.xp_total || 0) + q.xp_reward
+        const newXPMo = (userProfile.xp_this_month || 0) + q.xp_reward
+        const newGold = (userProfile.gold || 0) + (q.gold_reward || 0)
+        await supabase.from('users')
+          .update({ xp_total: newXP, xp_this_month: newXPMo, gold: newGold })
+          .eq('id', currentUser.id)
+        await supabase.from('user_quests')
+          .update({ status: 'approved', xp_granted: true })
+          .eq('user_id', currentUser.id).eq('quest_id', activeQuestId)
+
+        // FIX: grant stat points ผ่าน DB function
+        if (q.stat_type && q.stat_points) {
+          await supabase.rpc('increment_stat', {
+            p_user_id: currentUser.id,
+            p_col: q.stat_type + '_points',
+            p_amount: q.stat_points
+          })
+        }
+
+        // FIX: update rank หลัง grant XP
+        await supabase.rpc('update_user_rank', { p_user_id: currentUser.id })
+
+        await supabase.from('activity_feed').insert({
+          user_id: currentUser.id,
+          type: 'quest_complete',
+          data: { title: q.title, xp: q.xp_reward }
+        })
+        showToast(`ได้รับ +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'success')
       }
     } else {
       showToast('📸 ส่งหลักฐานแล้ว — รอ Review', 'success')

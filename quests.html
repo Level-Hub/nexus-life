@@ -486,12 +486,18 @@ async function loadAllQuests() {
   // ดึง quest ทั้งหมด
   const { data: quests } = await supabase.from('quests').select('*').eq('is_active', true).order('type').order('id')
 
-  // ดึง user_quests ของวันนี้ (daily) + ทั้งหมด (weekly/challenge)
-  const today = new Date().toISOString().split('T')[0]
+  // FIX: เพิ่ม date range ชัดๆ กัน query วันพรุ่งนี้มาด้วย
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+
   const { data: uqToday } = await supabase
     .from('user_quests').select('*')
     .eq('user_id', currentUser.id)
-    .gte('created_at', today)
+    .gte('created_at', todayStr + 'T00:00:00')
+    .lt('created_at', tomorrowStr + 'T00:00:00')
 
   // history ทั้งหมด
   const { data: uqAll } = await supabase
@@ -846,6 +852,9 @@ window.submitProof = async function() {
         const col = stMap[q.stat_type]
         if (col) await supabase.rpc('increment_stat', { p_user_id: currentUser.id, p_col: col, p_amount: q.stat_points || 0 }).catch(()=>{})
       }
+
+      // FIX: update rank หลัง grant XP
+      await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
 
       showToast(`🎉 +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'gold')
     } else {
