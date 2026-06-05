@@ -871,12 +871,15 @@ window.handleFinish = async function(){
       xp_total: 0,
       xp_this_month: 0,
       rank: 'bronze',
-      gold: 0,
+      gold: 100,
       crystal: 0,
     })
 
     // 3. Insert user_stats
     await supabase.from('user_stats').insert({ user_id: data.user.id })
+
+    // 4. Insert wallet
+    await supabase.from('wallet').insert({ user_id: data.user.id })
 
     if(dbErr){ console.error(dbErr) }
   }

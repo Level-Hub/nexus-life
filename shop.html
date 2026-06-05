@@ -558,10 +558,12 @@ window.doPurchase = async function() {
     is_active: true
   })
 
-  // 4. อัพเดต wallet
+  // 4. อัพเดต wallet (บวกสะสม ไม่ overwrite)
+  const { data: w } = await supabase.from('wallet')
+    .select('crystal_spent').eq('user_id', currentUser.id).single()
   await supabase.from('wallet').upsert({
     user_id: currentUser.id,
-    crystal_spent: selectedItem.crystal_cost
+    crystal_spent: (w?.crystal_spent || 0) + selectedItem.crystal_cost
   }, { onConflict: 'user_id' })
 
   showToast(`✅ ซื้อ ${selectedItem.name} สำเร็จ!`, 'success')

@@ -486,27 +486,44 @@ async function loadAllQuests() {
   // ดึง quest ทั้งหมด
   const { data: quests } = await supabase.from('quests').select('*').eq('is_active', true).order('type').order('id')
 
-  // FIX: เพิ่ม date range ชัดๆ กัน query วันพรุ่งนี้มาด้วย
+  // FIX 1+2: ใช้ submitted_at แทน created_at + ครอบ weekly ทั้งสัปดาห์
   const today = new Date()
   const todayStr = today.toISOString().split('T')[0]
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
   const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
+  // หา Monday ของสัปดาห์นี้ (สำหรับ weekly quest)
+  const monday = new Date(today)
+  const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay()
+  monday.setDate(today.getDate() - dayOfWeek + 1)
+  monday.setHours(0, 0, 0, 0)
+  const mondayStr = monday.toISOString().split('T')[0]
+
+  // FIX 1: ใช้ submitted_at แทน created_at สำหรับ daily quest
   const { data: uqToday } = await supabase
     .from('user_quests').select('*')
     .eq('user_id', currentUser.id)
-    .gte('created_at', todayStr + 'T00:00:00')
-    .lt('created_at', tomorrowStr + 'T00:00:00')
+    .gte('submitted_at', todayStr + 'T00:00:00')
+    .lt('submitted_at', tomorrowStr + 'T00:00:00')
+
+  // FIX 2: ดึง weekly quest ของสัปดาห์นี้แยก
+  const { data: uqWeek } = await supabase
+    .from('user_quests').select('*')
+    .eq('user_id', currentUser.id)
+    .gte('submitted_at', mondayStr + 'T00:00:00')
+    .lt('submitted_at', tomorrowStr + 'T00:00:00')
 
   // history ทั้งหมด
   const { data: uqAll } = await supabase
     .from('user_quests').select('*,quests(*)')
     .eq('user_id', currentUser.id)
-    .order('created_at', { ascending: false })
+    .order('submitted_at', { ascending: false })
     .limit(30)
 
   const uqMap = {}
+  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today (today มีความ fresh กว่า)
+  ;(uqWeek || []).forEach(uq => { uqMap[uq.quest_id] = uq })
   ;(uqToday || []).forEach(uq => { uqMap[uq.quest_id] = uq })
 
   allQuests = (quests || []).map(q => ({ quest: q, userQuest: uqMap[q.id] || null }))
@@ -514,10 +531,15 @@ async function loadAllQuests() {
   // store history
   window._historyQuests = uqAll || []
 
-  // ดึง vote counts สำหรับ quest ที่ pending_review
-  const pendingUQIds = (uqToday || [])
-    .filter(uq => uq.status === 'pending_review')
-    .map(uq => uq.id)
+  // FIX 4: ดึง vote counts จาก uqToday + uqWeek รวมกัน (ครอบ daily + weekly pending)
+  const allUQIds = [...new Set([
+    ...(uqToday || []).map(uq => uq.id),
+    ...(uqWeek  || []).map(uq => uq.id)
+  ])]
+  const pendingUQIds = allUQIds.filter(id => {
+    const uq = [...(uqToday||[]), ...(uqWeek||[])].find(u => u.id === id)
+    return uq?.status === 'pending_review'
+  })
 
   window._voteCounts = {}
   if (pendingUQIds.length > 0) {
@@ -826,38 +848,64 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
-    const { error } = await supabase.from('user_quests').upsert({
-      user_id: currentUser.id,
-      quest_id: q.id,
-      status: 'pending_review',
-      proof_url: proofUrl,
-      proof_text: proofText,
-      submitted_at: new Date().toISOString()
-    }, { onConflict: 'user_id,quest_id' })
-
-    if (error) throw error
-
-    // text quest → auto approve
+    // FIX 5+6: text quest → upsert ครั้งเดียว approved เลย ไม่ต้องเขียน 2 รอบ
     if (!isImage) {
-      const newXP   = (userProfile.xp_total || 0) + q.xp_reward
-      const newXPMo = (userProfile.xp_this_month || 0) + q.xp_reward
+      // FIX 3: คำนวณ class bonus +15% สำหรับ text quest ด้วย
+      const isClassMatch = userProfile?.class && q.stat_type && (
+        (userProfile.class === 'warrior'  && q.stat_type === 'str') ||
+        (userProfile.class === 'mage'     && q.stat_type === 'int') ||
+        (userProfile.class === 'explorer' && q.stat_type === 'exp') ||
+        (userProfile.class === 'merchant' && q.stat_type === 'biz') ||
+        (userProfile.class === 'artist'   && q.stat_type === 'cre') ||
+        (userProfile.class === 'diplomat' && q.stat_type === 'soc')
+      )
+      const finalXP   = isClassMatch ? Math.round(q.xp_reward * 1.15) : q.xp_reward
+      const finalStat = isClassMatch ? Math.round((q.stat_points || 0) * 1.5) : (q.stat_points || 0)
+
+      // FIX 5: upsert ครั้งเดียว — approved ทันที
+      const { error } = await supabase.from('user_quests').upsert({
+        user_id: currentUser.id,
+        quest_id: q.id,
+        status: 'approved',
+        xp_granted: true,
+        proof_text: proofText,
+        submitted_at: new Date().toISOString()
+      }, { onConflict: 'user_id,quest_id' })
+      if (error) throw error
+
+      // อัพเดต XP + Gold (atomic: ถ้า fail ตรงนี้ quest ยัง approved แต่ XP ยังไม่เข้า — retry ได้)
+      const newXP   = (userProfile.xp_total || 0) + finalXP
+      const newXPMo = (userProfile.xp_this_month || 0) + finalXP
       const newGold = (userProfile.gold || 0) + (q.gold_reward || 0)
       await supabase.from('users').update({ xp_total:newXP, xp_this_month:newXPMo, gold:newGold }).eq('id', currentUser.id)
-      await supabase.from('user_quests').update({ status:'approved', xp_granted:true }).eq('user_id', currentUser.id).eq('quest_id', q.id)
-      await supabase.from('activity_feed').insert({ user_id:currentUser.id, type:'quest_complete', data:{ title:q.title, xp:q.xp_reward } })
 
-      // update stat
-      if (q.stat_type) {
+      // activity feed
+      await supabase.from('activity_feed').insert({ user_id:currentUser.id, type:'quest_complete', data:{ title:q.title, xp:finalXP } })
+
+      // stat points พร้อม class bonus
+      if (q.stat_type && finalStat > 0) {
         const stMap = { str:'str_points', int:'int_points', exp:'exp_points', biz:'biz_points', cre:'cre_points', soc:'soc_points' }
         const col = stMap[q.stat_type]
-        if (col) await supabase.rpc('increment_stat', { p_user_id: currentUser.id, p_col: col, p_amount: q.stat_points || 0 }).catch(()=>{})
+        if (col) await supabase.rpc('increment_stat', { p_user_id: currentUser.id, p_col: col, p_amount: finalStat }).catch(()=>{})
       }
 
-      // FIX: update rank หลัง grant XP
+      // update rank
       await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
 
-      showToast(`🎉 +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'gold')
+      const bonusTxt = isClassMatch ? ' (Class Bonus!)' : ''
+      showToast(`🎉 +${finalXP} XP +${q.gold_reward||0} Gold!${bonusTxt}`, 'gold')
+
     } else {
+      // image quest → pending_review รอ community verify
+      const { error } = await supabase.from('user_quests').upsert({
+        user_id: currentUser.id,
+        quest_id: q.id,
+        status: 'pending_review',
+        xp_granted: false,
+        proof_url: proofUrl,
+        submitted_at: new Date().toISOString()
+      }, { onConflict: 'user_id,quest_id' })
+      if (error) throw error
       showToast('📸 ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')
     }
 

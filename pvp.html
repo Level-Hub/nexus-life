@@ -1134,6 +1134,38 @@ async function init() {
   loadGuildWar()
   loadTournament()
   loadNotifBadge()
+
+  // FIX 2: subscribe หลัง currentUser มีค่าแล้ว
+  supabase.channel('pvp-challenges')
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'pvp_duels',
+      filter: `defender_id=eq.${currentUser.id}`
+    }, () => {
+      loadIncomingChallenges()
+      showToast('⚔️ มีคนท้า Duel คุณ!')
+    })
+    .subscribe()
+
+  // FIX 4: realtime อัพเดต XP bar ของ active duel แบบ live
+  supabase.channel('pvp-duel-xp')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'pvp_duels'
+    }, (payload) => {
+      const d = payload.new
+      const isInvolved = d.challenger_id === currentUser.id || d.defender_id === currentUser.id
+      if (isInvolved && d.status === 'active') loadActiveDuels()
+      if (isInvolved && d.status === 'completed') {
+        loadHistory()
+        loadProfile()
+        loadActiveDuels()
+        showToast(d.winner_id === currentUser.id ? '🏆 ชนะ Duel! +50 XP +20 Gold' : d.winner_id ? '❌ แพ้ Duel' : '🤝 Duel เสมอ', d.winner_id === currentUser.id ? 'success' : '')
+      }
+    })
+    .subscribe()
 }
 
 function setPageDate() {
@@ -1146,15 +1178,6 @@ function setPageDate() {
 // PROFILE → SIDEBAR
 // ============================================================
 
-function getAvatarUrl(avatarSeed, size=80) {
-  if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
-  const parts = avatarSeed.split(':')
-  if (parts.length >= 3) {
-    const [style, seed, bg] = parts
-    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
-  }
-  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
-}
 async function loadProfile() {
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   if (!profile) return
@@ -1470,11 +1493,14 @@ window.sendChallenge = async function() {
 // PVP RANKING
 // ============================================================
 async function loadPvPRanking() {
-  // FIX: pvp_wins/pvp_losses ไม่มีใน users table — คำนวณจาก pvp_duels แทน
+  // FIX 3: กรองเฉพาะ 90 วันล่าสุด ป้องกัน query ทั้ง table
+  const since90d = new Date(Date.now() - 90 * 24 * 3600000).toISOString()
   const { data: duels } = await supabase
     .from('pvp_duels')
     .select('winner_id, challenger_id, defender_id')
     .eq('status', 'completed')
+    .gte('completed_at', since90d)
+    .limit(500)
 
   const winsMap = {}
   ;(duels || []).forEach(d => {
@@ -1852,14 +1878,6 @@ function showToast(msg, type = '') {
     r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px'
   })
 })()
-
-// REALTIME: listen for challenge notifications
-supabase.channel('pvp-challenges')
-  .on('postgres_changes', { event:'INSERT', schema:'public', table:'pvp_duels', filter:`defender_id=eq.${currentUser?.id}` }, () => {
-    loadIncomingChallenges()
-    showToast('⚔️ มีคนท้า Duel คุณ!')
-  })
-  .subscribe()
 
 // BOOT
 init()
