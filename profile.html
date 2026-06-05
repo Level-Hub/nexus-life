@@ -950,6 +950,31 @@ async function init() {
 
   if (!isOwnProfile) await checkFollowing()
 
+  // navVerifyBadge — นับ quest ของคนอื่นที่รอ verify และยังไม่เคย vote
+  const { data: alreadyVoted } = await supabase
+    .from('quest_verifications').select('user_quest_id').eq('voter_id', currentUser.id)
+  const votedIds = (alreadyVoted || []).map(v => v.user_quest_id)
+  let verifyQuery = supabase
+    .from('user_quests').select('*', { count: 'exact', head: true })
+    .eq('status', 'pending_review').neq('user_id', currentUser.id)
+  if (votedIds.length > 0) verifyQuery = verifyQuery.not('id', 'in', `(${votedIds.join(',')})`)
+  const { count: verifyCount } = await verifyQuery
+  if (verifyCount > 0) {
+    const vBadge = document.getElementById('navVerifyBadge')
+    vBadge.style.display = 'inline'
+    vBadge.textContent = verifyCount > 99 ? '99+' : verifyCount
+  }
+
+  // navQuestBadge — นับ quest ของตัวเองที่ in_progress
+  const { count: questCount } = await supabase
+    .from('user_quests').select('*', { count: 'exact', head: true })
+    .eq('user_id', currentUser.id).eq('status', 'in_progress')
+  if (questCount > 0) {
+    const qBadge = document.getElementById('navQuestBadge')
+    qBadge.style.display = 'inline'
+    qBadge.textContent = questCount > 99 ? '99+' : questCount
+  }
+
   renderActions()
   renderStreakDays(userProfile?.streak_current || 0)
   updateQuestStats()
@@ -997,7 +1022,7 @@ function renderHero(u) {
   document.getElementById('pageSub').textContent       = `// @${u.username || '—'}`
 
   // rank badge
-  const rankLabels = { bronze:'🥉 BRONZE', silver:'🥈 SILVER', gold:'🥇 GOLD', platinum:'💎 PLATINUM', diamond:'💠 DIAMOND' }
+  const rankLabels = { bronze:'🥉 BRONZE', silver:'🥈 SILVER', gold:'🥇 GOLD', platinum:'💎 PLATINUM', diamond:'💠 DIAMOND', legendary:'👑 LEGENDARY' }
   document.getElementById('heroRankBadge').textContent = rankLabels[u.rank] || u.rank?.toUpperCase() || 'BRONZE'
 
   // level
@@ -1030,14 +1055,23 @@ function renderHero(u) {
   document.getElementById('heroFollowing').textContent = fmtNum(u.following_count)
   document.getElementById('heroXpTotal').textContent   = fmtNum(u.xp_total)
 
-  // xp bar
-  const xpForLevel  = (u.level || 1) * 100
-  const xpNextLevel = xpForLevel + 100
-  const xpPct       = Math.min(100, Math.round(((u.xp_total || 0) % 100) / 1 ))
-  document.getElementById('heroXpLevel').textContent   = u.level || 1
-  document.getElementById('heroXpNextLevel').textContent = (u.level || 1) + 1
-  document.getElementById('heroXpCurrent').textContent = fmtNum(u.xp_total)
-  document.getElementById('heroXpNext').textContent    = fmtNum(xpNextLevel)
+  // xp bar — ใช้สูตรตาม Blueprint: XP(n) = XP(n-1) + (n*50) + (n^1.5 * 30)
+  function xpForLevel(n) {
+    if (n <= 1) return 0
+    let xp = 0
+    for (let i = 2; i <= n; i++) xp += (i * 50) + Math.round(Math.pow(i, 1.5) * 30)
+    return xp
+  }
+  const lv          = u.level || 1
+  const xpThisLvl   = xpForLevel(lv)
+  const xpNextLvl   = xpForLevel(lv + 1)
+  const xpInLvl     = (u.xp_total || 0) - xpThisLvl
+  const xpNeeded    = xpNextLvl - xpThisLvl
+  const xpPct       = Math.min(100, Math.max(0, Math.round(xpInLvl / xpNeeded * 100)))
+  document.getElementById('heroXpLevel').textContent      = lv
+  document.getElementById('heroXpNextLevel').textContent  = lv + 1
+  document.getElementById('heroXpCurrent').textContent    = fmtNum(u.xp_total)
+  document.getElementById('heroXpNext').textContent       = fmtNum(xpNextLvl)
   setTimeout(() => { document.getElementById('heroXpFill').style.width = xpPct + '%' }, 300)
 
   // currencies (only own)
@@ -1224,8 +1258,8 @@ async function loadQuestHistory() {
 // LOAD ACTIVITY
 // ============================================================
 async function loadActivity() {
-  // FIX: ใช้ social_feed_view แทน activity_feed ตรงๆ เพื่อผ่าน RLS
-  const { data } = await supabase
+  // ใช้ social_feed_view — ⚠️ ต้องสร้าง view นี้ใน Supabase ก่อน (ดู Blueprint Section 21)
+  const { data, error } = await supabase
     .from('social_feed_view')
     .select('*')
     .eq('user_id', viewedUser)
@@ -1233,6 +1267,11 @@ async function loadActivity() {
     .limit(15)
 
   const list = document.getElementById('activityList')
+  if (error) {
+    // social_feed_view อาจยังไม่ได้สร้าง — fallback gracefully
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
+    return
+  }
   if (!data || !data.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
     return

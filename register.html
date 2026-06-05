@@ -710,7 +710,7 @@ document.getElementById('s1-username').addEventListener('input', function(){
   st.className='username-status checking'; st.textContent='กำลังตรวจสอบ...'
 
   usernameTimer=setTimeout(async()=>{
-    const { data } = await supabase.from('users').select('id').eq('username',val.toLowerCase()).single()
+    const { data } = await supabase.from('users').select('id').eq('username',val.toLowerCase()).maybeSingle()
     if(data){ st.className='username-status err'; st.textContent='Username นี้ถูกใช้ไปแล้ว' }
     else { st.className='username-status ok'; st.textContent='✓ Username ว่างอยู่'; state.usernameOk=true }
   }, 500)
@@ -759,7 +759,7 @@ window.goStep2 = async function(){
   if(!email.includes('@')) return showMsg('msg1','error','อีเมลไม่ถูกต้อง')
   if(!state.usernameOk){
     // ถ้ายังไม่ได้ check ให้ check ใหม่
-    const { data } = await supabase.from('users').select('id').eq('username',username.toLowerCase()).single()
+    const { data } = await supabase.from('users').select('id').eq('username',username.toLowerCase()).maybeSingle()
     if(data) return showMsg('msg1','error','Username นี้ถูกใช้ไปแล้ว')
     state.usernameOk=true
   }
@@ -857,6 +857,8 @@ window.handleFinish = async function(){
   }
 
   // 2. Insert user profile
+  // หมายเหตุ: user_stats และ wallet สร้างอัตโนมัติผ่าน DB trigger
+  // create_user_stats_on_insert และ create_wallet_on_insert — ไม่ต้อง insert เอง
   if(data.user){
     const avatarSeed=`${state.avatarStyle}:${state.avatarSeed}:${state.avatarBg}`
     const { error: dbErr } = await supabase.from('users').insert({
@@ -873,15 +875,20 @@ window.handleFinish = async function(){
       rank: 'bronze',
       gold: 100,
       crystal: 0,
+      // FIX: ใส่ค่า default ให้ privacy fields ชัดเจน ไม่พึ่ง DB default
+      profile_public: true,
+      stats_public: true,
+      feed_public: true,
+      location_public: true,
+      map_visible: true,
     })
 
-    // 3. Insert user_stats
-    await supabase.from('user_stats').insert({ user_id: data.user.id })
-
-    // 4. Insert wallet
-    await supabase.from('wallet').insert({ user_id: data.user.id })
-
-    if(dbErr){ console.error(dbErr) }
+    // FIX: ถ้า insert users ไม่สำเร็จ ให้ stop ไม่ redirect
+    if(dbErr){
+      console.error('Insert users error:', dbErr)
+      setLoading('btn-finish',false)
+      return showMsg('msg3','error', dbErr.message || 'ไม่สามารถสร้างโปรไฟล์ได้ กรุณาลองใหม่')
+    }
   }
 
   setLoading('btn-finish',false)

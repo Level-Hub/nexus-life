@@ -377,20 +377,26 @@ function getItemIcon(item) {
 
 function renderPurchases(purchases, items) {
   const grid = document.getElementById('purchaseGrid')
-  document.getElementById('purchaseCountLabel').textContent = `${purchases.length} รายการ`
+  const now = new Date()
 
-  if (!purchases.length) {
+  // FIX: แยก active vs expired
+  const active  = purchases.filter(p => !p.expires_at || new Date(p.expires_at) > now)
+  const expired = purchases.filter(p => p.expires_at && new Date(p.expires_at) <= now)
+  const display = [...active, ...expired]
+
+  document.getElementById('purchaseCountLabel').textContent = `${active.length} รายการ (active)`
+
+  if (!display.length) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🛒</div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>`
     return
   }
 
-  const now = new Date()
-  grid.innerHTML = purchases.map(p => {
+  grid.innerHTML = display.map(p => {
     const item = items.find(i => i.id === p.item_id)
     const icon = getItemIcon(item)
-    const isExpired = p.expires_at && new Date(p.expires_at) < now
+    const isExpired = p.expires_at && new Date(p.expires_at) <= now
     return `
-      <div class="purchase-card">
+      <div class="purchase-card" style="${isExpired ? 'opacity:0.45;filter:grayscale(0.7)' : ''}">
         <div class="purchase-card-icon">${icon}</div>
         <div>
           <div class="purchase-card-name">${item?.name || 'Unknown Item'}</div>
@@ -420,7 +426,7 @@ async function init() {
       supabase.from('users').select('*').eq('id', currentUser.id).single(),
       supabase.from('wallet').select('*').eq('user_id', currentUser.id).maybeSingle(),
       supabase.from('transactions').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(200),
-      supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).order('purchased_at', { ascending: false }),
+      supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).eq('is_active', true).order('purchased_at', { ascending: false }),
       supabase.from('shop_items').select('*')
     ])
 
@@ -431,6 +437,27 @@ async function init() {
     const items = itemsRes.data || []
 
     if (profile) renderSidebar(profile)
+
+    // Verify badge — นับ quest ของคนอื่นที่รอ verify และยังไม่เคย vote
+    const { data: alreadyVoted } = await supabase
+      .from('quest_verifications')
+      .select('user_quest_id')
+      .eq('voter_id', currentUser.id)
+    const votedIds = (alreadyVoted || []).map(v => v.user_quest_id)
+    let verifyQuery = supabase
+      .from('user_quests')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending_review')
+      .neq('user_id', currentUser.id)
+    if (votedIds.length > 0) {
+      verifyQuery = verifyQuery.not('id', 'in', `(${votedIds.join(',')})`)
+    }
+    const { count: verifyCount } = await verifyQuery
+    if (verifyCount > 0) {
+      const badge = document.getElementById('navVerifyBadge')
+      badge.style.display = 'inline'
+      badge.textContent = verifyCount > 99 ? '99+' : verifyCount
+    }
 
     document.getElementById('crystalBalance').textContent = (profile?.crystal || 0).toLocaleString()
     document.getElementById('goldBalance').textContent = (profile?.gold || 0).toLocaleString()

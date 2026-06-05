@@ -605,6 +605,23 @@ export async function getChatHistory(channel, limit = 50) {
 }
 
 // ============================================
+// XP & STREAK HELPERS
+// ============================================
+
+/** Grant XP จาก Quest — เรียก DB function grant_quest_xp */
+export async function grantQuestXP(userId, userQuestId) {
+  return supabase.rpc('grant_quest_xp', {
+    p_user_id: userId,
+    p_user_quest_id: userQuestId
+  })
+}
+
+/** อัพเดต streak ของ user */
+export async function updateStreak(userId) {
+  return supabase.rpc('update_streak', { p_user_id: userId })
+}
+
+// ============================================
 // WALLET & SHOP HELPERS
 // ============================================
 

@@ -263,18 +263,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 
   <!-- FEATURED -->
-  <div class="featured-banner" id="featuredBanner">
-    <div class="featured-banner-icon">🌟</div>
+  <div class="featured-banner" id="featuredBanner" style="display:none">
+    <div class="featured-banner-icon" id="featuredIcon">🌟</div>
     <div class="featured-banner-info">
       <div class="featured-banner-label">// LIMITED TIME OFFER</div>
-      <div class="featured-banner-title">SEASON PASS PREMIUM</div>
-      <div class="featured-banner-desc">รับ Exclusive Frame + Pet พิเศษ + 200 Crystal โบนัส + Quest พิเศษ 30 วัน ไม่มีขายในร้านปกติ</div>
+      <div class="featured-banner-title" id="featuredTitle">—</div>
+      <div class="featured-banner-desc" id="featuredDesc">—</div>
       <div class="featured-banner-price">
-        <div class="price-new">💎 299</div>
-        <div class="price-old">💎 499</div>
+        <div class="price-new" id="featuredPrice">💎 —</div>
       </div>
     </div>
-    <button class="btn-buy-featured" onclick="openConfirm(21)">GET NOW →</button>
+    <button class="btn-buy-featured" id="featuredBtn" onclick="openConfirm(0)">GET NOW →</button>
   </div>
 
   <!-- CATEGORY TABS -->
@@ -423,6 +422,26 @@ function getItemIcon(item) {
   return '📦'
 }
 
+// ─── RENDER FEATURED ─────────────────────────────────────
+function renderFeatured() {
+  // หา limited/season_pass item ที่ยัง active + ยังไม่หมดอายุ
+  const now = new Date()
+  const featured = allItems.find(i =>
+    (i.category === 'limited' || i.category === 'season_pass') &&
+    i.is_active &&
+    (!i.available_until || new Date(i.available_until) > now)
+  )
+  const banner = document.getElementById('featuredBanner')
+  if (!featured) { banner.style.display = 'none'; return }
+
+  document.getElementById('featuredIcon').textContent = getItemIcon(featured)
+  document.getElementById('featuredTitle').textContent = featured.name
+  document.getElementById('featuredDesc').textContent = featured.description || ''
+  document.getElementById('featuredPrice').textContent = `💎 ${featured.crystal_cost}`
+  document.getElementById('featuredBtn').onclick = () => openConfirm(featured.id)
+  banner.style.display = 'flex'
+}
+
 // ─── RENDER ITEMS ─────────────────────────────────────────
 function renderShop() {
   const grid = document.getElementById('shopGrid')
@@ -529,6 +548,23 @@ window.doPurchase = async function() {
     btn.disabled = false; btn.textContent = 'CONFIRM →'; return
   }
 
+  // FIX: เช็ค limited item หมดอายุหรือยัง
+  if (selectedItem.is_limited && selectedItem.available_until) {
+    if (new Date(selectedItem.available_until) < new Date()) {
+      msgEl.className = 'modal-msg error'; msgEl.textContent = 'สินค้านี้หมดแล้ว!'
+      btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+    }
+  }
+
+  // FIX: เช็ค non-consumable ซื้อแล้วหรือยัง
+  if (!selectedItem.is_consumable) {
+    const alreadyOwned = myPurchases.some(p => p.item_id === selectedItem.id)
+    if (alreadyOwned) {
+      msgEl.className = 'modal-msg error'; msgEl.textContent = 'คุณมีสินค้านี้แล้ว!'
+      btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+    }
+  }
+
   // 1. หัก crystal
   const { error: e1 } = await supabase.from('users')
     .update({ crystal: crystal - selectedItem.crystal_cost })
@@ -558,13 +594,14 @@ window.doPurchase = async function() {
     is_active: true
   })
 
-  // 4. อัพเดต wallet (บวกสะสม ไม่ overwrite)
-  const { data: w } = await supabase.from('wallet')
-    .select('crystal_spent').eq('user_id', currentUser.id).single()
-  await supabase.from('wallet').upsert({
-    user_id: currentUser.id,
-    crystal_spent: (w?.crystal_spent || 0) + selectedItem.crystal_cost
-  }, { onConflict: 'user_id' })
+  // FIX: wallet update — บวกสะสม ไม่ overwrite, ลบ updated_at (ไม่มีใน schema)
+  const { data: wData } = await supabase.from('wallet')
+    .select('crystal_spent').eq('user_id', currentUser.id).maybeSingle()
+  if (wData) {
+    await supabase.from('wallet').update({
+      crystal_spent: (wData.crystal_spent || 0) + selectedItem.crystal_cost
+    }).eq('user_id', currentUser.id)
+  }
 
   showToast(`✅ ซื้อ ${selectedItem.name} สำเร็จ!`, 'success')
   closeConfirm()
@@ -600,7 +637,23 @@ async function init() {
     currentUser = session.user
 
     await loadData()
+    renderFeatured()
     renderShop()
+
+    // navVerifyBadge — นับ quest ของคนอื่นที่รอ verify และยังไม่เคย vote
+    const { data: alreadyVoted } = await supabase
+      .from('quest_verifications').select('user_quest_id').eq('voter_id', currentUser.id)
+    const votedIds = (alreadyVoted || []).map(v => v.user_quest_id)
+    let verifyQuery = supabase
+      .from('user_quests').select('*', { count: 'exact', head: true })
+      .eq('status', 'pending_review').neq('user_id', currentUser.id)
+    if (votedIds.length > 0) verifyQuery = verifyQuery.not('id', 'in', `(${votedIds.join(',')})`)
+    const { count: verifyCount } = await verifyQuery
+    if (verifyCount > 0) {
+      const badge = document.getElementById('navVerifyBadge')
+      badge.style.display = 'inline'
+      badge.textContent = verifyCount > 99 ? '99+' : verifyCount
+    }
 
     document.getElementById('confirmModal').addEventListener('click', e => {
       if (e.target === document.getElementById('confirmModal')) closeConfirm()

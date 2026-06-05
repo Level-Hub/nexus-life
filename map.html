@@ -892,12 +892,26 @@ async function loadProfile() {
 
   document.getElementById('suAvatar').src = getAvatarUrl(data.avatar_seed || data.username, 40)
 
-  // Verify badge
-  const { count } = await supabase.from('user_quests').select('*', { count:'exact', head:true }).eq('status','pending_review')
-  if (count > 0) {
+  // Verify badge — นับ quest ของคนอื่นที่รอ verify และยังไม่เคย vote
+  const { data: alreadyVoted } = await supabase
+    .from('quest_verifications')
+    .select('user_quest_id')
+    .eq('voter_id', currentUser.id)
+  const votedIds = (alreadyVoted || []).map(v => v.user_quest_id)
+
+  let verifyQuery = supabase
+    .from('user_quests')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending_review')
+    .neq('user_id', currentUser.id)
+  if (votedIds.length > 0) {
+    verifyQuery = verifyQuery.not('id', 'in', `(${votedIds.join(',')})`)
+  }
+  const { count: verifyCount } = await verifyQuery
+  if (verifyCount > 0) {
     const badge = document.getElementById('navVerifyBadge')
     badge.style.display = 'inline'
-    badge.textContent = count
+    badge.textContent = verifyCount > 99 ? '99+' : verifyCount
   }
 
   locationVisible = data.map_visible !== false
@@ -1028,18 +1042,30 @@ async function loadPlayersOnMap() {
 // LOAD HOTSPOTS
 // ============================================================
 async function loadHotspots() {
-  // FIX: column ที่ถูกต้องคือ latitude/longitude ไม่ใช่ lat/lng
-  const { data } = await supabase
+  // ดึง checkins ทั้งหมด แล้ว aggregate ใน JS เพราะ supabase-js@2 ไม่รองรับ count() ใน select โดยตรง
+  const { data: rawData } = await supabase
     .from('checkins')
-    .select('place_name, city, latitude, longitude, count:id.count()')
-    .not('latitude','is',null)
-    .order('count', { ascending: false })
-    .limit(20)
+    .select('place_name, city, latitude, longitude')
+    .not('latitude', 'is', null)
+    .not('place_name', 'is', null)
 
-  document.getElementById('hotspotCount').textContent = data?.length || 0
+  // Aggregate: นับ check-in ต่อ place_name+เมือง, เก็บ lat/lng จาก record แรก
+  const countMap = {}
+  ;(rawData || []).forEach(c => {
+    const key = `${c.place_name}||${c.city}`
+    if (!countMap[key]) {
+      countMap[key] = { place_name: c.place_name, city: c.city, latitude: c.latitude, longitude: c.longitude, count: 0 }
+    }
+    countMap[key].count++
+  })
+  const data = Object.values(countMap)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20)
+
+  document.getElementById('hotspotCount').textContent = data.length
 
   const list = document.getElementById('hotspotList')
-  if (!data?.length) {
+  if (!data.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div><div class="empty-state-txt">ยังไม่มี Hotspot</div></div>`
     return
   }
@@ -1055,23 +1081,23 @@ async function loadHotspots() {
     </div>
   `).join('')
 
-  if (data) {
-    data.forEach(h => {
-      if (!h.latitude || !h.longitude) return
-      const icon = L.divIcon({
-        html: `<div class="hotspot-marker">🔥</div>`,
-        iconSize:[24,24], iconAnchor:[12,12], className:''
-      })
-      const marker = L.marker([h.latitude, h.longitude], { icon })
-        .bindPopup(`
-          <div style="font-family:Orbitron,monospace">
-            <div style="color:#ffd700;font-size:11px;font-weight:700">${h.place_name||'Hotspot'}</div>
-            <div style="color:#5a8a90;font-size:9px;margin-top:4px">🔥 ${h.count} check-ins</div>
-          </div>
-        `)
-      hotspotMarkers.push(marker)
+  // สร้าง marker และ addTo map ทันที (ถ้า layer hotspots เปิดอยู่)
+  data.forEach(h => {
+    if (!h.latitude || !h.longitude) return
+    const icon = L.divIcon({
+      html: `<div class="hotspot-marker">🔥</div>`,
+      iconSize: [24,24], iconAnchor: [12,12], className: ''
     })
-  }
+    const marker = L.marker([h.latitude, h.longitude], { icon })
+      .bindPopup(`
+        <div style="font-family:Orbitron,monospace">
+          <div style="color:#ffd700;font-size:11px;font-weight:700">${h.place_name || 'Hotspot'}</div>
+          <div style="color:#5a8a90;font-size:9px;margin-top:4px">🔥 ${h.count} check-ins · ${h.city || '—'}</div>
+        </div>
+      `)
+    hotspotMarkers.push(marker)
+    if (layers.hotspots) marker.addTo(mapInstance)  // FIX: addTo map ถ้า layer เปิดอยู่
+  })
 }
 
 // ============================================================
@@ -1189,11 +1215,11 @@ window.submitCheckin = async function() {
   const placeName = document.getElementById('checkinPlaceName').value.trim()
   const isPioneer = document.getElementById('pioneerNotice').classList.contains('show')
   const locName   = document.getElementById('checkinLocName').textContent
-  const xpGain    = 100 + (isPioneer ? 100 : 0)
+  const baseXP    = 100 + (isPioneer ? 100 : 0)
 
   try {
-    // FIX: column ที่ถูกต้องคือ latitude/longitude
-    const { error } = await supabase.from('checkins').insert({
+    // 1. Insert checkin record
+    const { error: checkinErr } = await supabase.from('checkins').insert({
       user_id: currentUser.id,
       place_name: placeName || locName,
       city: document.getElementById('myLocationSub').textContent.split('·')[1]?.trim() || '',
@@ -1201,33 +1227,78 @@ window.submitCheckin = async function() {
       longitude: parseFloat(myLng.toFixed(3)),
       is_pioneer: isPioneer
     })
-    if (error) throw error
+    if (checkinErr) throw checkinErr
 
-    // Grant XP
-    const { data: u } = await supabase.from('users').select('xp_total,xp_this_month').eq('id',currentUser.id).single()
+    // 2. ดึง user profile เพื่อเช็ค class + streak + level ปัจจุบัน
+    const { data: u } = await supabase
+      .from('users')
+      .select('class, streak_current, xp_total, xp_this_month, level')
+      .eq('id', currentUser.id)
+      .single()
+
+    // 3. คำนวณ class bonus (+15% ถ้า class = explorer, stat_type = exp)
+    const isExplorer = (u?.class || '') === 'explorer'
+    const classBonus = isExplorer ? 1.15 : 1.0
+
+    // 4. คำนวณ streak bonus
+    const streak = u?.streak_current || 0
+    let streakBonus = 1.0
+    if (streak >= 100) streakBonus = 1.5
+    else if (streak >= 30) streakBonus = 1.3
+    else if (streak >= 7)  streakBonus = 1.2
+    else if (streak >= 3)  streakBonus = 1.1
+
+    // 5. XP หลังโบนัส (ปัดเป็น int)
+    const finalXP = Math.round(baseXP * classBonus * streakBonus)
+    const bonusNote = []
+    if (isExplorer) bonusNote.push('Explorer +15%')
+    if (streakBonus > 1) bonusNote.push(`Streak x${streakBonus}`)
+
+    // 6. อัพเดต xp_total / xp_this_month บน users table
+    const newXPTotal = (u?.xp_total || 0) + finalXP
     await supabase.from('users').update({
-      xp_total:      (u?.xp_total     || 0) + xpGain,
-      xp_this_month: (u?.xp_this_month || 0) + xpGain
+      xp_total:      newXPTotal,
+      xp_this_month: (u?.xp_this_month || 0) + finalXP
     }).eq('id', currentUser.id)
 
-    // FIX 7: grant EXP stat points (Explorer stat)
+    // 7. Grant EXP stat points ผ่าน RPC (Explorer stat)
+    // FIX: p_stat_type ใช้ค่า 'exp' ตาม DB function signature — ไม่ใช่ column name 'exp_points'
     await supabase.rpc('increment_stat', {
       p_user_id: currentUser.id,
-      p_col: 'exp_points',
-      p_amount: 20
+      p_stat_type: 'exp',
+      p_amount: finalXP
     })
 
-    // FIX 7: update rank หลัง grant XP
+    // 8. Update rank
     await supabase.rpc('update_user_rank', { p_user_id: currentUser.id })
 
-    // FIX 5: activity type ถูกต้องคือ 'checkin' ไม่ใช่ 'check_in'
+    // 9. Update streak
+    await supabase.rpc('update_streak', { p_user_id: currentUser.id })
+
+    // 10. เช็ค level up
+    const currentLevel = u?.level || 1
+    function xpForLevel(n) {
+      if (n <= 1) return 0
+      let xp = 0
+      for (let i = 2; i <= n; i++) xp += (i * 50) + Math.round(Math.pow(i, 1.5) * 30)
+      return xp
+    }
+    const xpNeededNext = xpForLevel(currentLevel + 1)
+    if (newXPTotal >= xpNeededNext) {
+      const newLevel = currentLevel + 1
+      await supabase.from('users').update({ level: newLevel }).eq('id', currentUser.id)
+      showToast(`🎉 LEVEL UP! คุณขึ้นเป็น LV.${newLevel}!`, 'success')
+    }
+
+    // 11. Activity feed
     await supabase.from('activity_feed').insert({
       user_id: currentUser.id,
       type: 'checkin',
-      data: { place: placeName || locName, xp: xpGain, pioneer: isPioneer }
+      data: { place: placeName || locName, xp: finalXP, pioneer: isPioneer }
     })
 
-    showToast(`Check-in สำเร็จ! +${xpGain} XP${isPioneer ? ' Pioneer Bonus!' : ''}`, 'success')
+    const bonusStr = bonusNote.length ? ` (${bonusNote.join(', ')})` : ''
+    showToast(`Check-in สำเร็จ! +${finalXP} XP${bonusStr}${isPioneer ? ' 🌟 Pioneer!' : ''}`, 'success')
     closeCheckinModal()
     loadHotspots()
 
