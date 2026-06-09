@@ -55,86 +55,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .orb-2 { width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px; }
 .orb-3 { width:200px;height:200px;background:rgba(255,215,0,0.03);top:40%;left:40%; }
 
-/* ===================== SIDEBAR ===================== */
-.sidebar {
-  position:fixed;top:0;left:0;bottom:0;width:220px;
-  background:rgba(1,10,15,0.95);
-  border-right:1px solid var(--border);
-  backdrop-filter:blur(20px);
-  z-index:200;
-  display:flex;flex-direction:column;
-  transition:transform 0.3s ease;
-}
-
-.sidebar-logo {
-  padding:24px 20px 20px;
-  border-bottom:1px solid var(--border);
-}
-.sidebar-logo-text {
-  font-family:'Orbitron',monospace;font-weight:900;font-size:14px;
-  letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);
-  display:flex;align-items:center;gap:8px;
-}
-.logo-dot { width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:0.3;box-shadow:none;} }
-.sidebar-tagline { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
-
-.sidebar-user {
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px;
-}
-.su-avatar {
-  width:40px;height:40px;border-radius:50%;
-  border:2px solid var(--cls, var(--cyan));
-  overflow:hidden;background:var(--panel);flex-shrink:0;
-}
-.su-avatar img { width:100%;height:100%;object-fit:cover; }
-.su-info { overflow:hidden; }
-.su-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.su-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls, var(--cyan));letter-spacing:1px; }
-.su-lv { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px; }
-
-.nav-menu { flex:1;padding:12px 0;overflow-y:auto; }
-.nav-item {
-  display:flex;align-items:center;gap:12px;
-  padding:12px 20px;
-  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;
-  color:var(--text-dim);text-decoration:none;
-  border-left:2px solid transparent;
-  transition:all 0.2s;cursor:pointer;
-}
-.nav-item:hover { color:var(--cyan);background:rgba(0,245,255,0.04); }
-.nav-item.active { color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06); }
-.nav-item svg { flex-shrink:0;opacity:0.6;transition:opacity 0.2s; }
-.nav-item:hover svg,.nav-item.active svg { opacity:1; }
-.nav-badge { margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace; }
-.nav-section-label { padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5; }
-
-.sidebar-bottom { padding:16px 20px;border-top:1px solid var(--border); }
-.signout-btn {
-  width:100%;display:flex;align-items:center;gap:10px;
-  padding:10px 12px;
-  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  color:var(--text-dim);background:transparent;border:1px solid var(--border);
-  cursor:pointer;transition:all 0.3s;
-}
-.signout-btn:hover { color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06); }
-
-/* ===================== TOPBAR (mobile) ===================== */
-.topbar {
-  display:none;position:fixed;top:0;left:0;right:0;z-index:150;
-  padding:14px 20px;
-  background:rgba(1,10,15,0.95);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(20px);
-  align-items:center;justify-content:space-between;
-}
-.topbar-logo { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan); }
-.burger { width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer; }
-.burger span { display:block;width:18px;height:1px;background:var(--cyan); }
-.sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190; }
-
 /* ===================== MAIN ===================== */
 .main {
   margin-left:220px;
@@ -547,9 +467,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 /* ===================== RESPONSIVE ===================== */
 @media(max-width:900px){
-  .sidebar { transform:translateX(-100%); }
-  .sidebar.open { transform:translateX(0); }
-  .sidebar-overlay.open { display:block; }
   .topbar { display:flex; }
   .main { margin-left:0;padding:90px 16px 60px; }
   .lb-table-header { display:none; }
@@ -578,58 +495,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-    <div class="sidebar-tagline">// REAL LIFE MMO</div>
-  </div>
 
-  <div class="sidebar-user" id="sidebarUser">
-    <div class="su-avatar"><img id="suAvatar" src="" alt=""></div>
-    <div class="su-info">
-      <div class="su-name" id="suName">—</div>
-      <div class="su-class" id="suClass">—</div>
-      <div class="su-lv" id="suLv">LV —</div>
-    </div>
-  </div>
 
-  <nav class="nav-menu">
-    <div class="nav-section-label">MAIN</div>
-    <a class="nav-item" href="./dashboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>DASHBOARD</a>
-    <a class="nav-item" href="./quests.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>QUESTS<span class="nav-badge" id="navQuestBadge" style="display:none">0</span></a>
-    <a class="nav-item" href="./feed.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>FEED</a>
-    <a class="nav-item" href="./verify.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>VERIFY<span class="nav-badge" id="navVerifyBadge" style="display:none">0</span></a>
-    <a class="nav-item active" href="./leaderboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>LEADERBOARD</a>
-    <div class="nav-section-label">WORLD</div>
-    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
-    <a class="nav-item" href="./map.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>WORLD MAP</a>
-    <a class="nav-item" href="./guild.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>GUILD</a>
-    <a class="nav-item" href="./pvp.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>PVP DUEL</a>
-    <div class="nav-section-label">PROFILE</div>
-    <a class="nav-item" href="./profile.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>PROFILE</a>
-    <a class="nav-item" href="./achievements.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>ACHIEVEMENTS</a>
-    <div class="nav-section-label">ECONOMY</div>
-    <a class="nav-item" href="./shop.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>SHOP</a>
-    <a class="nav-item" href="./wallet.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>WALLET</a>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <button class="signout-btn" onclick="handleSignOut()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      SIGN OUT
-    </button>
-  </div>
-</aside>
-
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-  <div class="topbar-logo">NEXUS</div>
   <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
 </div>
 
+<div id="sidebar-root"></div>
 <!-- MAIN CONTENT -->
 <main class="main">
   <!-- PAGE HEADER -->
@@ -651,7 +522,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="season-banner">
     <div class="season-banner-inner">
       <div class="season-info">
-        <div class="season-icon">🏆</div>
+        <div class="season-icon"><svg width="28" height="28" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2"/></svg></div>
         <div>
           <div class="season-label">SEASON 1 — THE AWAKENING</div>
           <div class="season-title">MONTHLY LEADERBOARD</div>
@@ -722,12 +593,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <span class="filter-label">CLASS:</span>
         <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
           <option value="all">ทุก Class</option>
-          <option value="warrior">⚔️ Warrior</option>
-          <option value="mage">🧙 Mage</option>
-          <option value="explorer">🗺️ Explorer</option>
-          <option value="merchant">💰 Merchant</option>
-          <option value="artist">🎨 Artist</option>
-          <option value="diplomat">🤝 Diplomat</option>
+          <option value="warrior">Warrior</option>
+          <option value="mage">Mage</option>
+          <option value="explorer">Explorer</option>
+          <option value="merchant">Merchant</option>
+          <option value="artist">Artist</option>
+          <option value="diplomat">Diplomat</option>
         </select>
       </div>
     </div>
@@ -829,11 +700,9 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { CLASS_ICONS, SYSTEM_ICONS, getIcon } from './icons.js'
 
 // ============================================================
 // STATE
@@ -867,15 +736,14 @@ async function init() {
   updateDate()
   startSeasonTimer()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
-  currentUser = session.user
+  const { user } = await initSidebar('leaderboard')
+  if (!user) return
+  currentUser = user
 
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   userProfile = profile
 
   if (profile) {
-    renderSidebar(profile)
     renderMyRankCard(profile)
   }
 
@@ -886,13 +754,6 @@ async function init() {
 // ============================================================
 // SIDEBAR
 // ============================================================
-function renderSidebar(p) {
-  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
-  document.getElementById('suName').textContent = p.display_name || p.username
-  document.getElementById('suClass').textContent = (p.class||'').toUpperCase()
-  document.getElementById('suLv').textContent = `LV ${p.level||1}`
-  document.getElementById('sidebarUser').className = `sidebar-user cls-${p.class||'warrior'}`
-}
 
 // ============================================================
 // MY RANK CARD
@@ -905,7 +766,7 @@ function renderMyRankCard(p) {
   document.getElementById('myRankClass').textContent = (p.class||'—').toUpperCase()
   document.getElementById('myRankXP').textContent = fmtNum(p.xp_this_month||0)
   document.getElementById('myRankLv').textContent = p.level||1
-  document.getElementById('myRankStreak').textContent = (p.streak_current||0) + '🔥'
+  document.getElementById('myRankStreak').innerHTML = (p.streak_current||0) + '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-left:2px"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'
   document.getElementById('myRankTotal').textContent = fmtNum(p.xp_total||0)
 }
 
@@ -969,7 +830,7 @@ function renderGlobal(data) {
   // PODIUM (top 3)
   const podium = document.getElementById('podiumSection')
   if (filtered.length === 0) {
-    podium.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">ยังไม่มีข้อมูล</div></div>'
+    podium.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" opacity="0.35"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2" opacity="0.35"/></svg></div><div class="empty-title">ยังไม่มีข้อมูล</div></div>'
   } else {
     const top3 = filtered.slice(0,3)
     // reorder: 2nd, 1st, 3rd
@@ -979,7 +840,7 @@ function renderGlobal(data) {
       const rank = top3[1] ? [2,1,3][i] : i+1
       const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
       const cls = u.class||'warrior'
-      const crown = rank===1 ? '<div class="podium-crown">👑</div>' : ''
+      const crown = rank===1 ? '<div class="podium-crown"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="5" r="1" fill="currentColor"/><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="14" cy="5" r="1" fill="currentColor"/></svg></div>' : ''
       return `
         <div class="podium-item podium-rank-${rank}">
           <div class="podium-name">${esc(u.display_name||u.username)}</div>
@@ -1005,7 +866,7 @@ function renderGlobal(data) {
     return
   }
   if (rest.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" opacity="0.35"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2" opacity="0.35"/></svg></div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
     return
   }
 
@@ -1017,7 +878,7 @@ function renderGlobal(data) {
     const cls = u.class||'warrior'
     const rankClass = rank<=3 ? `r${rank}` : 'rother'
     const delay = (i*0.04).toFixed(2)
-    const streakBadge = (u.streak_current||0) >= 7 ? `<span style="color:var(--gold);font-size:9px;margin-left:4px">🔥${u.streak_current}</span>` : ''
+    const streakBadge = (u.streak_current||0) >= 7 ? `<span style="color:var(--gold);font-size:9px;margin-left:4px"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" style="vertical-align:middle"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>${u.streak_current}</span>` : ''
     return `
       <div class="lb-row ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="goProfile('${u.id}')">
         <div class="lb-row-rank ${rankClass}">${rank}</div>
@@ -1094,7 +955,7 @@ function renderCities(cities) {
     return `
       <div class="city-card" style="${isMyCity?'border-color:rgba(0,245,255,0.3);':''}" onclick="filterCityPlayers('${esc(c.city_name)}')">
         <div class="city-rank-badge ${rankClass}">#${rank}</div>
-        <div class="city-name">${esc(c.city_name)}${isMyCity?' 📍':''}</div>
+        <div class="city-name">${esc(c.city_name)}${isMyCity?' <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle"><path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="5" r="1.5" fill="currentColor"/></svg>':''}</div>
         <div class="city-province">${esc(c.province||'')}</div>
         <div class="city-prosperity">
           <span class="prosperity-label">PROSPERITY</span>
@@ -1156,19 +1017,18 @@ async function loadGuilds() {
 
 function renderGuilds(guilds) {
   const maxXP = guilds[0]?.guild_xp || 1
-  const emojis = ['⚔️','🔥','🌙','⚡','🌊','🐉','🦅','💎','🌟','🎯']
+  const shieldSvg = `<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 5v5c0 2.8 2.3 5 6 6 3.7-1 6-3.2 6-6V5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`
 
   document.getElementById('guildList').innerHTML = guilds.map((g, i) => {
     const rank = i + 1
     const rankClass = rank <= 3 ? `r${rank}` : 'rother'
     const pct = Math.round((g.guild_xp/maxXP)*100)
-    const emoji = emojis[i % emojis.length]
     const delay = (i*0.04).toFixed(2)
     return `
       <div class="guild-row" style="animation-delay:${delay}s">
         <div class="guild-rank-num ${rankClass}">${rank}</div>
         <div class="guild-info">
-          <div class="guild-emblem">${emoji}</div>
+          <div class="guild-emblem">${shieldSvg}</div>
           <div class="guild-texts">
             <div class="guild-name">${esc(g.name)}</div>
             <div class="guild-tag">[${esc(g.tag)}]</div>
@@ -1181,7 +1041,7 @@ function renderGuilds(guilds) {
         <div class="guild-members">${g.member_count} คน</div>
         <div class="guild-level">LV ${g.guild_level||1}</div>
       </div>`
-  }).join('') || `<div class="empty-state"><div class="empty-icon">🏰</div><div class="empty-title">ยังไม่มี Guild</div><div class="empty-sub">สร้าง Guild เป็นคนแรก!</div></div>`
+  }).join('') || `<div class="empty-state"><div class="empty-icon">${shieldSvg}</div><div class="empty-title">ยังไม่มี Guild</div><div class="empty-sub">สร้าง Guild เป็นคนแรก!</div></div>`
 
   requestAnimationFrame(() => {
     document.querySelectorAll('#guildList .guild-xp-bar').forEach(el => {
@@ -1199,6 +1059,40 @@ async function checkNotifications() {
     .eq('user_id', currentUser.id)
     .eq('is_read', false)
   if (count > 0) document.getElementById('notifDot').style.display = 'block'
+
+  // navQuestBadge
+  const { count: questCount } = await supabase
+    .from('user_quests')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', currentUser.id)
+    .eq('status', 'in_progress')
+  if (questCount > 0) {
+    const qb = document.getElementById('navQuestBadge')
+    qb.textContent = questCount > 99 ? '99+' : questCount
+    qb.style.display = 'inline'
+  }
+
+  // ✅ FIX: ใช้ profile.city ที่โหลดมาแล้ว + fallback แทน userProfile?.city
+  // เหตุผล: if (userProfile?.city) จะ skip ทั้งบล็อกถ้า city เป็น null/undefined
+  const lbCity = profile?.city || 'กรุงเทพมหานคร'
+  // navVerifyBadge
+  const { data: pendingLB } = await supabase
+    .from('user_quests')
+    .select('id, users!inner(city)')
+    .eq('status', 'pending_review')
+    .eq('users.city', lbCity)
+    .neq('user_id', currentUser.id)
+  const { data: myVotesLB } = await supabase
+    .from('quest_verifications')
+    .select('user_quest_id')
+    .eq('voter_id', currentUser.id)
+  const votedIdsLB = new Set((myVotesLB||[]).map(v => v.user_quest_id))
+  const notVotedCountLB = (pendingLB||[]).filter(p => !votedIdsLB.has(p.id)).length
+  if (notVotedCountLB > 0) {
+    const vb = document.getElementById('navVerifyBadge')
+    vb.textContent = notVotedCountLB > 99 ? '99+' : notVotedCountLB
+    vb.style.display = 'inline'
+  }
 }
 
 // ============================================================
@@ -1339,13 +1233,7 @@ window.showToast = function(msg, type='success') {
 // ============================================================
 // SIDEBAR MOBILE
 // ============================================================
-window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
-window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
 
-window.handleSignOut = async function() {
-  await supabase.auth.signOut()
-  window.location.href = './login.html'
-}
 
 // ============================================================
 // CURSOR

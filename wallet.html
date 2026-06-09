@@ -16,34 +16,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
 .orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
-/* SIDEBAR */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
-.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
-.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
-.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
-.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
-.su-avatar img{width:100%;height:100%;object-fit:cover}
-.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
-.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
-.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
-.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
-.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
-.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
-.nav-item:hover svg,.nav-item.active svg{opacity:1}
-.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
-.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
-.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
-.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
-.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
-.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
-.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
-.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -126,10 +98,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .daily-limit-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width 0.5s}
 .daily-limit-text{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);flex-shrink:0}
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.open{display:block}
-  .topbar{display:flex}
   .main{margin-left:0;padding:80px 16px 60px}
   .balance-grid{grid-template-columns:repeat(2,1fr)}
 }
@@ -142,53 +110,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-    <div class="sidebar-tagline">// REAL LIFE MMO</div>
-  </div>
-  <div class="sidebar-user" id="sidebarUser">
-    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
-    <div class="su-info">
-      <div class="su-name" id="suName">—</div>
-      <div class="su-class" id="suClass">—</div>
-      <div class="su-lv" id="suLv">LV.1</div>
-    </div>
-  </div>
-  <nav class="nav-menu">
-    <div class="nav-section-label">MAIN</div>
-    <a class="nav-item" href="./dashboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>DASHBOARD</a>
-    <a class="nav-item" href="./quests.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>QUESTS</a>
-    <a class="nav-item" href="./feed.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>FEED</a>
-    <a class="nav-item" href="./verify.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>VERIFY<span class="nav-badge" id="navVerifyBadge" style="display:none">0</span></a>
-    <a class="nav-item" href="./leaderboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>LEADERBOARD</a>
-    <div class="nav-section-label">WORLD</div>
-    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
-    <a class="nav-item" href="./map.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>WORLD MAP</a>
-    <a class="nav-item" href="./guild.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>GUILD</a>
-    <a class="nav-item" href="./pvp.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>PVP DUEL</a>
-    <div class="nav-section-label">PROFILE</div>
-    <a class="nav-item" href="./profile.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>PROFILE</a>
-    <a class="nav-item" href="./achievements.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>ACHIEVEMENTS</a>
-    <div class="nav-section-label">ECONOMY</div>
-    <a class="nav-item" href="./shop.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>SHOP</a>
-    <a class="nav-item active" href="./wallet.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>WALLET</a>
-  </nav>
-  <div class="sidebar-bottom">
-    <button class="signout-btn" onclick="handleSignOut()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>SIGN OUT</button>
-  </div>
-</aside>
 
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-  <div class="topbar-logo">NEXUS</div>
   <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
 </div>
 
 <!-- MAIN -->
+<div id="sidebar-root"></div>
 <main class="main">
   <div class="page-header">
     <div>
@@ -266,10 +194,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </main>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { getIcon } from './icons.js'
 
 let currentUser = null
 let allTx = []
@@ -299,22 +226,7 @@ function updateDate() {
     `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
 }
 
-window.openSidebar = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
-window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
-window.handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = './login.html' }
 
-function renderSidebar(p) {
-  const _SE = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
-  const _SC = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
-  const cls = p.class || 'warrior'
-  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
-  document.getElementById('suName').textContent = p.display_name || p.username
-  const suClassEl = document.getElementById('suClass')
-  suClassEl.textContent = (_SE[cls] || '') + ' ' + cls.toUpperCase()
-  suClassEl.style.color = _SC[cls] || 'var(--cyan)'
-  document.getElementById('suLv').textContent = `LV.${p.level || 1}`
-  document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls}`
-}
 
 function fmtDate(iso) {
   if (!iso) return '—'
@@ -322,7 +234,7 @@ function fmtDate(iso) {
   return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
 }
 
-const txIcon = { topup:'💚', spend:'🔴', bonus:'⭐', refund:'🔄', gift:'🎁' }
+const txIcon = { topup: getIcon('crystal',20), spend: getIcon('cart',20), bonus: getIcon('gift',20), refund: getIcon('refresh',20), gift: getIcon('gift',20) }
 const txLabel = { topup:'เติม Crystal', spend:'ซื้อของ', bonus:'โบนัส', refund:'คืนเงิน', gift:'ของขวัญ' }
 
 function renderTxList() {
@@ -341,9 +253,9 @@ function renderTxList() {
     const amountClass = isPlus ? 'plus' : 'minus'
     return `
       <div class="tx-row">
-        <div class="tx-icon ${tx.type}">${txIcon[tx.type] || '💱'}</div>
+        <div class="tx-icon ${tx.type}">${txIcon[tx.type] || getIcon('diamond',20)}</div>
         <div class="tx-info">
-          <div class="tx-title">${tx.note || txLabel[tx.type] || tx.type}</div>
+          <div class="tx-title">${txLabel[tx.type] || tx.type}</div>
           <div class="tx-meta">
             ${tx.amount_thb ? `฿${tx.amount_thb.toLocaleString()} → ` : ''}
             <span class="tx-status ${tx.status}">${tx.status.toUpperCase()}</span>
@@ -365,14 +277,14 @@ window.filterTx = function(type, btn) {
 }
 
 function getItemIcon(item) {
-  if (!item) return '📦'
+  if (!item) return getIcon('package', 20)
   const meta = item.metadata || {}
-  if (item.category === 'pet') return meta.emoji || '🐾'
-  if (item.category === 'booster') return '⚡'
-  if (item.category === 'season_pass') return meta.tier === 'premium' ? '👑' : '🌟'
-  if (item.category === 'frame') return '🖼'
-  if (item.category === 'utility') return '🔧'
-  return '🎨'
+  if (item.category === 'pet') return meta.emoji || getIcon('paw', 20)
+  if (item.category === 'booster') return getIcon('quest_challenge', 20)
+  if (item.category === 'season_pass') return meta.tier === 'premium' ? getIcon('crown', 20) : getIcon('star', 20)
+  if (item.category === 'frame') return getIcon('frame', 20)
+  if (item.category === 'utility') return getIcon('wrench', 20)
+  return getIcon('camera', 20)
 }
 
 function renderPurchases(purchases, items) {
@@ -400,7 +312,7 @@ function renderPurchases(purchases, items) {
         <div class="purchase-card-icon">${icon}</div>
         <div>
           <div class="purchase-card-name">${item?.name || 'Unknown Item'}</div>
-          <div class="purchase-card-cost">💎 ${p.crystal_spent}</div>
+          <div class="purchase-card-cost">${getIcon('crystal',13)} ${p.crystal_spent}</div>
           <div class="purchase-card-date">${fmtDate(p.purchased_at)}</div>
           ${p.expires_at
             ? isExpired
@@ -418,9 +330,9 @@ async function init() {
   updateDate()
 
   try {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { window.location.href = './login.html'; return }
-    currentUser = session.user
+    const { user } = await initSidebar('wallet')
+    if (!user) return
+    currentUser = user
 
     const [profileRes, walletRes, txRes, purchasesRes, itemsRes] = await Promise.all([
       supabase.from('users').select('*').eq('id', currentUser.id).single(),
@@ -436,27 +348,39 @@ async function init() {
     const purchases = purchasesRes.data || []
     const items = itemsRes.data || []
 
-    if (profile) renderSidebar(profile)
+    if (profile)
 
-    // Verify badge — นับ quest ของคนอื่นที่รอ verify และยังไม่เคย vote
+    // ✅ BUG FIX: fallback city ป้องกัน null ทำให้ query คืนผลผิด
+    const userCity = profile?.city || 'กรุงเทพมหานคร'
+    // navVerifyBadge — นับ quest ของคนอื่นในเมืองเดียวกัน ที่รอ verify และยังไม่เคย vote
+    const { data: pendingInCity } = await supabase
+      .from('user_quests')
+      .select('id, users!inner(city)')
+      .eq('status', 'pending_review')
+      .eq('users.city', userCity)
+      .neq('user_id', currentUser.id)
     const { data: alreadyVoted } = await supabase
       .from('quest_verifications')
       .select('user_quest_id')
       .eq('voter_id', currentUser.id)
-    const votedIds = (alreadyVoted || []).map(v => v.user_quest_id)
-    let verifyQuery = supabase
-      .from('user_quests')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'pending_review')
-      .neq('user_id', currentUser.id)
-    if (votedIds.length > 0) {
-      verifyQuery = verifyQuery.not('id', 'in', `(${votedIds.join(',')})`)
-    }
-    const { count: verifyCount } = await verifyQuery
+    const votedSet = new Set((alreadyVoted || []).map(v => v.user_quest_id))
+    const verifyCount = (pendingInCity || []).filter(p => !votedSet.has(p.id)).length
     if (verifyCount > 0) {
       const badge = document.getElementById('navVerifyBadge')
       badge.style.display = 'inline'
       badge.textContent = verifyCount > 99 ? '99+' : verifyCount
+    }
+
+    // navQuestBadge — นับ quest ที่ยัง in_progress
+    const { count: questCount } = await supabase
+      .from('user_quests')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .eq('status', 'in_progress')
+    if (questCount > 0) {
+      const qb = document.getElementById('navQuestBadge')
+      qb.textContent = questCount > 99 ? '99+' : questCount
+      qb.style.display = 'inline'
     }
 
     document.getElementById('crystalBalance').textContent = (profile?.crystal || 0).toLocaleString()

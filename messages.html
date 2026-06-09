@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NEXUS LIFE — Messages</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+*{margin:0;padding:0;box-sizing:border-box} html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow:hidden;cursor:none}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0%}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--cyan);background:rgba(1,10,15,0.96);border:1px solid var(--border);border-left:3px solid var(--cyan);color:var(--cyan);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left-color:var(--green);color:var(--green)}
+.toast.error{border-left-color:var(--red);color:#ff6680}
+
+/* LAYOUT — 3 คอลัมน์: sidebar | inbox | chat */
+.app-layout{position:fixed;top:0;left:220px;right:0;bottom:0;display:grid;grid-template-columns:280px 1fr;z-index:1}
+
+/* INBOX PANEL */
+.inbox{display:flex;flex-direction:column;border-right:1px solid var(--border);background:rgba(1,10,15,0.8);overflow:hidden}
+.inbox-header{padding:20px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.inbox-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;letter-spacing:3px;color:var(--cyan)}
+.inbox-search{margin-top:10px;position:relative}
+.inbox-search input{width:100%;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:9px 12px 9px 36px;outline:none;transition:border-color 0.2s}
+.inbox-search input:focus{border-color:var(--cyan)}
+.inbox-search input::placeholder{color:var(--text-dim)}
+.inbox-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none}
+.inbox-list{flex:1;overflow-y:auto}
+.inbox-list::-webkit-scrollbar{width:3px}
+.inbox-list::-webkit-scrollbar-track{background:transparent}
+.inbox-list::-webkit-scrollbar-thumb{background:var(--border)}
+
+.conv-item{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;border-bottom:1px solid rgba(0,245,255,0.05);transition:all 0.2s;position:relative}
+.conv-item:hover{background:rgba(0,245,255,0.04)}
+.conv-item.active{background:rgba(0,245,255,0.07);border-right:2px solid var(--cyan)}
+.conv-avatar{width:42px;height:42px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3);flex-shrink:0}
+.conv-avatar img{width:100%;height:100%;object-fit:cover}
+.conv-info{flex:1;min-width:0}
+.conv-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-preview{font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.conv-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);position:absolute;top:14px;right:14px}
+.conv-unread{position:absolute;bottom:14px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+
+.inbox-new-btn{margin:12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;padding:10px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;width:calc(100% - 24px)}
+.inbox-new-btn:hover{background:var(--cyan);color:var(--bg)}
+
+.inbox-empty{text-align:center;padding:40px 20px;color:var(--text-dim)}
+.inbox-empty-icon{font-size:32px;display:block;margin-bottom:10px;opacity:0.3}
+.inbox-empty-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px}
+
+/* CHAT PANEL */
+.chat-panel{display:flex;flex-direction:column;background:rgba(1,10,15,0.6);overflow:hidden}
+.chat-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0;background:rgba(1,10,15,0.9)}
+.chat-peer-avatar{width:38px;height:38px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3);flex-shrink:0}
+.chat-peer-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-peer-info{flex:1}
+.chat-peer-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff}
+.chat-peer-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px;margin-top:2px}
+.chat-header-actions{display:flex;gap:8px}
+.chat-action-btn{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:6px 12px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s}
+.chat-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.chat-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.chat-messages::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border)}
+
+.msg{display:flex;gap:10px;max-width:75%;animation:msgIn 0.2s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.msg.theirs{align-self:flex-start}
+.msg-avatar{width:32px;height:32px;border-radius:50%;border:1px solid var(--cls,var(--cyan));overflow:hidden;flex-shrink:0;align-self:flex-end}
+.msg-avatar img{width:100%;height:100%;object-fit:cover}
+.msg-bubble{padding:10px 14px;font-size:13px;line-height:1.6;position:relative;max-width:100%;word-break:break-word}
+.msg.mine .msg-bubble{background:rgba(0,245,255,0.12);border:1px solid rgba(0,245,255,0.2);border-radius:12px 12px 2px 12px;color:var(--text)}
+.msg.theirs .msg-bubble{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px 12px 12px 2px;color:var(--text)}
+.msg-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px;text-align:right}
+.msg.theirs .msg-time{text-align:left}
+.msg-sender{font-family:'Orbitron',monospace;font-size:8px;color:var(--cls,var(--cyan));margin-bottom:3px}
+
+.msg-date-divider{text-align:center;margin:8px 0;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);position:relative}
+.msg-date-divider::before,.msg-date-divider::after{content:'';position:absolute;top:50%;width:30%;height:1px;background:var(--border)}
+.msg-date-divider::before{left:0} .msg-date-divider::after{right:0}
+
+/* CHAT INPUT */
+.chat-input-area{padding:16px 24px;border-top:1px solid var(--border);background:rgba(1,10,15,0.9);flex-shrink:0}
+.chat-input-row{display:flex;gap:10px;align-items:flex-end}
+.chat-input{flex:1;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;padding:11px 16px;outline:none;resize:none;transition:border-color 0.2s;max-height:100px;min-height:44px;line-height:1.5}
+.chat-input:focus{border-color:var(--cyan)}
+.chat-input::placeholder{color:var(--text-dim)}
+.send-btn{width:44px;height:44px;background:var(--cyan);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.send-btn:hover{background:var(--cyan-dim)}
+.send-btn:disabled{opacity:0.4;cursor:not-allowed}
+.chat-hint{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:6px;letter-spacing:1px}
+
+/* EMPTY CHAT */
+.chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-dim)}
+.chat-empty-icon{font-size:48px;opacity:0.2}
+.chat-empty-txt{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px}
+.chat-empty-sub{font-size:12px;opacity:0.5;text-align:center;max-width:300px;line-height:1.6}
+
+/* NEW DM MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#010d14;border:1px solid var(--border);width:420px;max-width:92vw;padding:28px;position:relative}
+.modal::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.modal-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--cyan);margin-bottom:20px}
+.modal-input{width:100%;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;padding:11px 14px;outline:none;margin-bottom:10px;transition:border-color 0.2s}
+.modal-input:focus{border-color:var(--cyan)}
+.modal-input::placeholder{color:var(--text-dim)}
+.search-results{max-height:220px;overflow-y:auto;margin-bottom:14px}
+.search-result-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid transparent;cursor:pointer;transition:all 0.2s}
+.search-result-item:hover{border-color:var(--border);background:rgba(0,245,255,0.04)}
+.sr-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;flex-shrink:0}
+.sr-avatar img{width:100%;height:100%;object-fit:cover}
+.sr-info{flex:1}
+.sr-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff}
+.sr-sub{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-cancel{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:10px 18px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s}
+.modal-cancel:hover{border-color:var(--red);color:var(--red)}
+
+/* RESPONSIVE */
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}.inbox{position:fixed;left:0;right:0;bottom:0;top:0;z-index:100;transform:translateX(0);transition:transform 0.3s ease}.inbox.hidden{transform:translateX(-100%)}.chat-panel{display:flex}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{display:flex}
+  .app-layout{left:0;top:60px}
+  .inbox{position:fixed;inset:60px 0 0 0;z-index:50;transform:translateX(0);transition:transform 0.3s}
+  .inbox.slide-out{transform:translateX(-100%)}
+  .chat-panel{position:fixed;inset:60px 0 0 0}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING MESSAGES...</div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+
+
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<div id="sidebar-root"></div>
+<!-- APP LAYOUT -->
+<div class="app-layout">
+
+  <!-- INBOX -->
+  <div class="inbox" id="inboxPanel">
+    <div class="inbox-header">
+      <div class="inbox-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg> MESSAGES</div>
+      <div class="inbox-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#00f5ff" stroke-width="1.2"/><path d="M10 10l4 4" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="square"/></svg>
+        <input type="text" placeholder="ค้นหาชื่อ..." id="inboxSearch" oninput="filterInbox(this.value)">
+      </div>
+    </div>
+    <button class="inbox-new-btn" onclick="openNewDM()">+ NEW MESSAGE</button>
+    <div class="inbox-list" id="inboxList">
+      <div style="padding:20px 18px;font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:1px">กำลังโหลด...</div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-empty" id="chatEmpty">
+      <div class="chat-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></div>
+      <div class="chat-empty-txt">SELECT A CONVERSATION</div>
+      <div class="chat-empty-sub">เลือกบทสนทนาจากด้านซ้าย หรือสร้างข้อความใหม่เพื่อเริ่มต้นคุย</div>
+    </div>
+    <div id="chatActive" style="display:none;flex-direction:column;height:100%">
+      <div class="chat-header" id="chatHeader">
+        <button class="chat-action-btn" id="backBtn" onclick="showInbox()" style="display:none">← กลับ</button>
+        <div class="chat-peer-avatar cls-warrior" id="peerAvatarWrap"><img id="peerAvatar" src="" alt=""></div>
+        <div class="chat-peer-info">
+          <div class="chat-peer-name" id="peerName">—</div>
+          <div class="chat-peer-sub" id="peerSub">—</div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="chat-action-btn" onclick="goProfile()">ดูโปรไฟล์</button>
+          <button class="chat-action-btn" onclick="goChallenge()"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>ท้าดวล</button>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="พิมพ์ข้อความ..." rows="1"
+            onkeydown="handleInputKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1 17L17 9 1 1v6l10 2-10 2v6z" fill="#010a0f"/></svg>
+          </button>
+        </div>
+        <div class="chat-hint">Enter = ส่ง · Shift+Enter = ขึ้นบรรทัดใหม่</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW DM MODAL -->
+<div class="modal-bg" id="newDMModal">
+  <div class="modal">
+    <div class="modal-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg> NEW MESSAGE</div>
+    <input class="modal-input" id="dmSearch" type="text" placeholder="ค้นหาชื่อ username..."
+      oninput="searchDMTarget(this.value)">
+    <div class="search-results" id="dmSearchResults"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewDM()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { CLASS_ICONS } from './icons.js'
+
+function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
+const CLASS_COLOR = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+
+let currentUser = null
+let myProfile   = null
+let activePeer  = null   // { id, username, display_name, class, level, avatar_seed }
+let activeChannel = null
+let realtimeSub   = null
+let allConversations = [] // cache inbox
+let lastDateLabel = ''
+
+// ─── INIT ────────────────────────────────────────────────────
+async function init() {
+  const { user } = await initSidebar('messages')
+  if (!user) return
+  currentUser = user
+
+  await loadMyProfile()
+  await loadInbox()
+
+  // ถ้า URL มี ?uid= → เปิด DM กับ user นั้นทันที
+  const params = new URLSearchParams(window.location.search)
+  const uidParam = params.get('uid')
+  if (uidParam) {
+    const { data: peer } = await supabase.from('users')
+      .select('id,username,display_name,class,level,avatar_seed').eq('id', uidParam).single()
+    if (peer) openChat(peer)
+  }
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  initCursor()
+}
+
+// ─── LOAD MY PROFILE ─────────────────────────────────────────
+async function loadMyProfile() {
+  const { data: p } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
+  myProfile = p
+  if (!p) return
+
+  const cls = p.class || 'warrior'
+  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed)
+  document.getElementById('sidebarUser').className = 'sidebar-user cls-' + cls
+  document.getElementById('suAvatarWrap').className = 'su-avatar cls-' + cls
+  document.getElementById('suName').textContent = p.display_name || p.username
+  document.getElementById('suClass').innerHTML = classIcon(cls,12) + ' ' + cls.toUpperCase()
+  document.getElementById('suLv').textContent = 'LV.' + p.level
+
+  // navQuestBadge
+  const { count: qc } = await supabase.from('user_quests')
+    .select('*',{count:'exact',head:true}).eq('user_id', currentUser.id).eq('status','in_progress')
+  if (qc > 0) {
+    const qb = document.getElementById('navQuestBadge')
+    qb.textContent = qc > 99 ? '99+' : qc; qb.style.display = 'inline'
+  }
+
+  // navVerifyBadge
+  const myCity = p.city || 'กรุงเทพมหานคร'
+  const { data: pV } = await supabase.from('user_quests')
+    .select('id, users!inner(city)').eq('status','pending_review')
+    .eq('users.city', myCity).neq('user_id', currentUser.id)
+  const { data: mV } = await supabase.from('quest_verifications')
+    .select('user_quest_id').eq('voter_id', currentUser.id)
+  const vIds = new Set((mV||[]).map(v => v.user_quest_id))
+  const notVoted = (pV||[]).filter(p => !vIds.has(p.id)).length
+  if (notVoted > 0) {
+    const vb = document.getElementById('navVerifyBadge')
+    vb.textContent = notVoted > 99 ? '99+' : notVoted; vb.style.display = 'inline'
+  }
+}
+
+// ─── LOAD INBOX ──────────────────────────────────────────────
+async function loadInbox() {
+  // ดึงข้อความล่าสุดของทุก DM channel ที่เกี่ยวข้องกับ currentUser
+  // channel format: dm:{smallerId}:{largerId} (เรียง UUID เพื่อ unique key)
+  const { data: sent } = await supabase.from('messages')
+    .select('channel, content, created_at, sender_id')
+    .eq('sender_id', currentUser.id)
+    .like('channel', 'dm:%')
+    .order('created_at', { ascending: false })
+
+  const { data: recv } = await supabase.from('messages')
+    .select('channel, content, created_at, sender_id')
+    .neq('sender_id', currentUser.id)
+    .like('channel', 'dm:%')
+    .order('created_at', { ascending: false })
+
+  // รวม channels unique ล่าสุด
+  const channelMap = {}
+  ;[...(sent||[]), ...(recv||[])].forEach(m => {
+    if (!channelMap[m.channel] || new Date(m.created_at) > new Date(channelMap[m.channel].created_at)) {
+      channelMap[m.channel] = m
+    }
+  })
+
+  // filter เฉพาะ channel ที่เกี่ยวข้องกับตัวเอง
+  const myChannels = Object.entries(channelMap)
+    .filter(([ch]) => ch.includes(currentUser.id))
+    .sort((a,b) => new Date(b[1].created_at) - new Date(a[1].created_at))
+
+  if (!myChannels.length) {
+    document.getElementById('inboxList').innerHTML = `
+      <div class="inbox-empty">
+        <span class="inbox-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></span>
+        <div class="inbox-empty-txt">ยังไม่มีข้อความ</div>
+      </div>`
+    return
+  }
+
+  // ดึง peer user info สำหรับแต่ละ channel
+  const peerIds = myChannels.map(([ch]) => {
+    const parts = ch.replace('dm:','').split(':')
+    return parts.find(id => id !== currentUser.id)
+  }).filter(Boolean)
+
+  const { data: peers } = await supabase.from('users')
+    .select('id,username,display_name,class,level,avatar_seed')
+    .in('id', peerIds)
+
+  const peerMap = {}
+  ;(peers||[]).forEach(p => { peerMap[p.id] = p })
+
+  allConversations = myChannels.map(([ch, lastMsg]) => {
+    const peerId = ch.replace('dm:','').split(':').find(id => id !== currentUser.id)
+    return { channel: ch, lastMsg, peer: peerMap[peerId] }
+  }).filter(c => c.peer)
+
+  renderInbox(allConversations)
+}
+
+// ─── RENDER INBOX ────────────────────────────────────────────
+function renderInbox(convs) {
+  const el = document.getElementById('inboxList')
+  if (!convs.length) {
+    el.innerHTML = `<div class="inbox-empty"><span class="inbox-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></span><div class="inbox-empty-txt">ไม่พบบทสนทนา</div></div>`
+    return
+  }
+
+  el.innerHTML = convs.map(c => {
+    const p = c.peer
+    const cls = p.class || 'warrior'
+    const isMine = c.lastMsg.sender_id === currentUser.id
+    const preview = (isMine ? 'คุณ: ' : '') + (c.lastMsg.content || '').substring(0, 35) + (c.lastMsg.content?.length > 35 ? '...' : '')
+    const timeStr = formatTime(c.lastMsg.created_at)
+    const isActive = activePeer?.id === p.id
+
+    return `
+    <div class="conv-item cls-${cls} ${isActive ? 'active' : ''}" onclick="openChat(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div class="conv-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+        <img src="${getAvatarUrl(p.avatar_seed, 42)}" alt="">
+      </div>
+      <div class="conv-info">
+        <div class="conv-name">${esc(p.display_name || p.username)}</div>
+        <div class="conv-preview">${esc(preview)}</div>
+      </div>
+      <div class="conv-time">${timeStr}</div>
+    </div>`
+  }).join('')
+}
+
+window.filterInbox = function(q) {
+  if (!q) { renderInbox(allConversations); return }
+  const filtered = allConversations.filter(c =>
+    c.peer.username.toLowerCase().includes(q.toLowerCase()) ||
+    c.peer.display_name?.toLowerCase().includes(q.toLowerCase())
+  )
+  renderInbox(filtered)
+}
+
+// ─── OPEN CHAT ───────────────────────────────────────────────
+window.openChat = async function(peer) {
+  activePeer = peer
+  activeChannel = getDMChannel(currentUser.id, peer.id)
+
+  // UI peer info
+  const cls = peer.class || 'warrior'
+  document.getElementById('peerAvatar').src = getAvatarUrl(peer.avatar_seed, 38)
+  document.getElementById('peerAvatarWrap').className = `chat-peer-avatar cls-${cls}`
+  document.getElementById('peerAvatarWrap').style.borderColor = CLASS_COLOR[cls]
+  document.getElementById('peerName').textContent = esc(peer.display_name || peer.username)
+  document.getElementById('peerSub').innerHTML = `${classIcon(cls)} ${cls.toUpperCase()} · LV.${peer.level||1}`
+
+  // Show chat panel
+  document.getElementById('chatEmpty').style.display = 'none'
+  const chatActive = document.getElementById('chatActive')
+  chatActive.style.display = 'flex'
+
+  // Mobile: ซ่อน inbox
+  if (window.innerWidth <= 768) {
+    document.getElementById('inboxPanel').classList.add('slide-out')
+    document.getElementById('backBtn').style.display = 'inline-flex'
+  }
+
+  // Unsubscribe channel เก่า
+  if (realtimeSub) { supabase.removeChannel(realtimeSub); realtimeSub = null }
+
+  // โหลด history
+  await loadChatHistory()
+
+  // Subscribe realtime
+  realtimeSub = supabase.channel(`chat:${activeChannel}`)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'messages',
+      filter: `channel=eq.${activeChannel}`
+    }, async (payload) => {
+      const msg = payload.new
+      // ดึง sender info ถ้าไม่ใช่ตัวเอง
+      if (msg.sender_id !== currentUser.id) {
+        const { data: senderData } = await supabase.from('users')
+          .select('username,display_name,avatar_seed,class').eq('id', msg.sender_id).single()
+        msg.users = senderData
+      } else {
+        msg.users = myProfile
+      }
+      appendMessage(msg)
+    }).subscribe()
+
+  // Focus input
+  document.getElementById('chatInput').focus()
+
+  // Reload inbox เพื่ออัพเดต active state
+  renderInbox(allConversations)
+}
+
+window.showInbox = function() {
+  document.getElementById('inboxPanel').classList.remove('slide-out')
+  document.getElementById('backBtn').style.display = 'none'
+}
+
+// ─── LOAD CHAT HISTORY ───────────────────────────────────────
+async function loadChatHistory() {
+  const msgEl = document.getElementById('chatMessages')
+  msgEl.innerHTML = `<div style="text-align:center;font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);padding:20px">กำลังโหลด...</div>`
+  lastDateLabel = ''
+
+  const { data, error } = await supabase.from('messages')
+    .select('*, users(username, display_name, avatar_seed, class)')
+    .eq('channel', activeChannel)
+    .order('created_at', { ascending: true })
+    .limit(100)
+
+  if (error) { msgEl.innerHTML = `<div style="color:var(--red);padding:20px">${error.message}</div>`; return }
+  if (!data?.length) {
+    msgEl.innerHTML = `<div class="chat-empty" style="flex:1">
+      <div class="chat-empty-icon">👋</div>
+      <div class="chat-empty-txt">เริ่มบทสนทนาใหม่</div>
+      <div class="chat-empty-sub">ส่งข้อความแรกเพื่อเริ่มคุยกับ ${esc(activePeer.display_name || activePeer.username)}</div>
+    </div>`
+    return
+  }
+
+  msgEl.innerHTML = ''
+  data.forEach(msg => appendMessage(msg, false))
+  scrollToBottom()
+}
+
+// ─── APPEND MESSAGE ──────────────────────────────────────────
+function appendMessage(msg, scroll=true) {
+  const msgEl = document.getElementById('chatMessages')
+  const isMine = msg.sender_id === currentUser.id
+  const sender = msg.users
+  const cls = sender?.class || 'warrior'
+
+  // Date divider
+  const msgDate = new Date(msg.created_at)
+  const dateLabel = msgDate.toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' })
+  if (dateLabel !== lastDateLabel) {
+    lastDateLabel = dateLabel
+    const div = document.createElement('div')
+    div.className = 'msg-date-divider'
+    div.textContent = dateLabel
+    msgEl.appendChild(div)
+  }
+
+  const timeStr = msgDate.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' })
+  const wrapper = document.createElement('div')
+  wrapper.className = `msg ${isMine ? 'mine' : 'theirs'}`
+  wrapper.innerHTML = `
+    ${!isMine ? `<div class="msg-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}"><img src="${getAvatarUrl(sender?.avatar_seed, 32)}" alt=""></div>` : ''}
+    <div>
+      ${!isMine ? `<div class="msg-sender cls-${cls}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
+      <div class="msg-bubble">${escHtml(msg.content)}</div>
+      <div class="msg-time">${timeStr}</div>
+    </div>
+    ${isMine ? `<div class="msg-avatar cls-${myProfile?.class||'warrior'}" style="border-color:${CLASS_COLOR[myProfile?.class||'warrior']}"><img src="${getAvatarUrl(myProfile?.avatar_seed, 32)}" alt=""></div>` : ''}`
+
+  msgEl.appendChild(wrapper)
+  if (scroll) scrollToBottom()
+}
+
+function scrollToBottom() {
+  const el = document.getElementById('chatMessages')
+  setTimeout(() => { el.scrollTop = el.scrollHeight }, 50)
+}
+
+// ─── SEND MESSAGE ────────────────────────────────────────────
+window.sendMessage = async function() {
+  const input = document.getElementById('chatInput')
+  const content = input.value.trim()
+  if (!content || !activeChannel) return
+
+  const btn = document.getElementById('sendBtn')
+  btn.disabled = true
+  input.value = ''
+  input.style.height = 'auto'
+
+  const { error } = await supabase.from('messages').insert({
+    sender_id: currentUser.id,
+    channel: activeChannel,
+    content
+  })
+
+  if (error) {
+    showToast('ส่งข้อความไม่สำเร็จ: ' + error.message, 'error')
+    input.value = content
+  } else {
+    // append locally (realtime จะ fire ด้วย แต่ filter ออก sender ตัวเอง)
+    appendMessage({
+      sender_id: currentUser.id,
+      channel: activeChannel,
+      content,
+      created_at: new Date().toISOString(),
+      users: myProfile
+    })
+    // อัพเดต inbox preview
+    await loadInbox()
+  }
+
+  btn.disabled = false
+  input.focus()
+}
+
+window.handleInputKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    sendMessage()
+  }
+}
+
+window.autoResize = function(el) {
+  el.style.height = 'auto'
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px'
+}
+
+// ─── NEW DM MODAL ────────────────────────────────────────────
+window.openNewDM = function() {
+  document.getElementById('newDMModal').classList.add('open')
+  document.getElementById('dmSearch').focus()
+}
+window.closeNewDM = function() {
+  document.getElementById('newDMModal').classList.remove('open')
+  document.getElementById('dmSearch').value = ''
+  document.getElementById('dmSearchResults').innerHTML = ''
+}
+
+let searchTimeout = null
+window.searchDMTarget = function(q) {
+  clearTimeout(searchTimeout)
+  if (!q.trim()) { document.getElementById('dmSearchResults').innerHTML = ''; return }
+  searchTimeout = setTimeout(async () => {
+    const { data } = await supabase.from('users')
+      .select('id,username,display_name,class,level,avatar_seed')
+      .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+      .eq('profile_public', true).neq('id', currentUser.id).limit(6)
+
+    const el = document.getElementById('dmSearchResults')
+    if (!data?.length) { el.innerHTML = `<div style="padding:12px;font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)">ไม่พบผู้เล่น</div>`; return }
+
+    el.innerHTML = data.map(u => {
+      const cls = u.class || 'warrior'
+      return `
+      <div class="search-result-item" onclick="startDM(${JSON.stringify(u).replace(/"/g,'&quot;')})">
+        <div class="sr-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+          <img src="${getAvatarUrl(u.avatar_seed, 36)}" alt="">
+        </div>
+        <div class="sr-info">
+          <div class="sr-name">${esc(u.display_name || u.username)}</div>
+          <div class="sr-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+        </div>
+      </div>`
+    }).join('')
+  }, 300)
+}
+
+window.startDM = async function(peer) {
+  closeNewDM()
+  openChat(peer)
+}
+
+// ─── HEADER ACTIONS ──────────────────────────────────────────
+window.goProfile = function() {
+  if (activePeer) window.location.href = `./profile.html?uid=${activePeer.id}`
+}
+window.goChallenge = function() {
+  if (activePeer) window.location.href = `./pvp.html?challenge=${activePeer.id}`
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function getDMChannel(uid1, uid2) {
+  // เรียง UUID เล็ก-ใหญ่ เพื่อให้ channel เดียวกันไม่ว่าใครเริ่ม
+  const [a, b] = [uid1, uid2].sort()
+  return `dm:${a}:${b}`
+}
+
+function getAvatarUrl(seed, size=80) {
+  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const [style, s, bg] = seed.split(':')
+  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+
+function formatTime(ts) {
+  const d = new Date(ts), now = new Date()
+  const diff = now - d
+  if (diff < 60000) return 'เมื่อกี้'
+  if (diff < 3600000) return Math.floor(diff/60000) + ' นาที'
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' ชม.'
+  if (diff < 604800000) return Math.floor(diff/86400000) + ' วัน'
+  return d.toLocaleDateString('th-TH', { day:'numeric', month:'short' })
+}
+
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;') }
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>').replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" style="color:var(--cyan)">$1</a>')
+}
+
+window.showToast = function(msg, type='info') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3000)
+}
+
+
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
+  document.querySelectorAll('button,a,.conv-item,.search-result-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px' })
+  })
+}
+
+init()
+</script>
+</body>
+</html>

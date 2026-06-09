@@ -55,100 +55,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .orb-1 { width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px; }
 .orb-2 { width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px; }
 
-/* ===================== SIDEBAR ===================== */
-.sidebar {
-  position:fixed;top:0;left:0;bottom:0;width:220px;
-  background:rgba(1,10,15,0.95);
-  border-right:1px solid var(--border);
-  backdrop-filter:blur(20px);
-  z-index:200;
-  display:flex;flex-direction:column;
-  transition:transform 0.3s ease;
-}
-
-.sidebar-logo {
-  padding:24px 20px 20px;
-  border-bottom:1px solid var(--border);
-}
-.sidebar-logo-text {
-  font-family:'Orbitron',monospace;font-weight:900;font-size:14px;
-  letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);
-  display:flex;align-items:center;gap:8px;
-}
-.logo-dot { width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan);}50%{opacity:0.3;box-shadow:none;} }
-.sidebar-tagline { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
-
-/* SIDEBAR USER MINI */
-.sidebar-user {
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px;
-}
-.su-avatar {
-  width:40px;height:40px;border-radius:50%;
-  border:2px solid var(--cls, var(--cyan));
-  overflow:hidden;background:var(--panel);
-  flex-shrink:0;position:relative;
-}
-.su-avatar img { width:100%;height:100%;object-fit:cover; }
-.su-info { overflow:hidden; }
-.su-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.su-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls, var(--cyan));letter-spacing:1px; }
-.su-lv { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px; }
-
-/* NAV MENU */
-.nav-menu { flex:1;padding:12px 0;overflow-y:auto; }
-.nav-item {
-  display:flex;align-items:center;gap:12px;
-  padding:12px 20px;
-  font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;
-  color:var(--text-dim);text-decoration:none;
-  border-left:2px solid transparent;
-  transition:all 0.2s;cursor:pointer;
-  position:relative;
-}
-.nav-item:hover { color:var(--cyan);background:rgba(0,245,255,0.04); }
-.nav-item.active { color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06); }
-.nav-item svg { flex-shrink:0;opacity:0.6;transition:opacity 0.2s; }
-.nav-item:hover svg,.nav-item.active svg { opacity:1; }
-.nav-badge { margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace; }
-
-.nav-section-label { padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5; }
-
-.sidebar-bottom {
-  padding:16px 20px;
-  border-top:1px solid var(--border);
-}
-.signout-btn {
-  width:100%;display:flex;align-items:center;gap:10px;
-  padding:10px 12px;
-  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  color:var(--text-dim);background:transparent;border:1px solid var(--border);
-  cursor:pointer;transition:all 0.3s;
-}
-.signout-btn:hover { color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06); }
-
-/* ===================== TOPBAR (mobile) ===================== */
-.topbar {
-  display:none;
-  position:fixed;top:0;left:0;right:0;z-index:150;
-  padding:14px 20px;
-  background:rgba(1,10,15,0.95);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(20px);
-  align-items:center;justify-content:space-between;
-}
-.topbar-logo { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan); }
-.burger {
-  width:36px;height:36px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:5px;
-  background:transparent;border:1px solid var(--border);cursor:pointer;
-}
-.burger span { display:block;width:18px;height:1px;background:var(--cyan); }
-
-/* SIDEBAR OVERLAY */
-.sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190; }
 
 /* ===================== MAIN CONTENT ===================== */
 .main {
@@ -529,9 +435,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 
 @media (max-width: 768px) {
-  .sidebar { transform:translateX(-100%); }
-  .sidebar.open { transform:translateX(0); }
-  .sidebar-overlay.open { display:block; }
   .topbar { display:flex; }
   .main { margin-left:0;padding:80px 16px 60px; }
   .stat-row { grid-template-columns:repeat(2,1fr); }
@@ -558,104 +461,14 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<!-- SIDEBAR OVERLAY -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- ===================== SIDEBAR ===================== -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-    <div class="sidebar-tagline">// REAL LIFE MMO</div>
-  </div>
 
-  <div class="sidebar-user" id="sidebarUser">
-    <div class="su-avatar" id="suAvatarWrap">
-      <img id="suAvatar" src="" alt="">
-    </div>
-    <div class="su-info">
-      <div class="su-name" id="suName">—</div>
-      <div class="su-class" id="suClass">—</div>
-      <div class="su-lv" id="suLv">LV.1</div>
-    </div>
-  </div>
-
-  <nav class="nav-menu">
-    <div class="nav-section-label">MAIN</div>
-    <a class="nav-item active" href="./dashboard.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
-      DASHBOARD
-    </a>
-    <a class="nav-item" href="./quests.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      QUESTS
-      <span class="nav-badge" id="navQuestBadge" style="display:none">0</span>
-    </a>
-    <a class="nav-item" href="./feed.html">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      FEED
-    </a>
-    <a class="nav-item" href="./verify.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-      VERIFY
-      <span class="nav-badge" id="navVerifyBadge" style="display:none">0</span>
-    </a>
-    <a class="nav-item" href="./leaderboard.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-      LEADERBOARD
-    </a>
-
-    <div class="nav-section-label">WORLD</div>
-    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
-    <a class="nav-item" href="./map.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
-      WORLD MAP
-    </a>
-    <a class="nav-item" href="./guild.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
-      GUILD
-    </a>
-    <a class="nav-item" href="./pvp.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      PVP DUEL
-    </a>
-
-    <div class="nav-section-label">PROFILE</div>
-    <a class="nav-item" href="./profile.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
-      PROFILE
-    </a>
-    <a class="nav-item" href="./achievements.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
-      ACHIEVEMENTS
-    </a>
-
-    <div class="nav-section-label">ECONOMY</div>
-    <a class="nav-item" href="./shop.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
-      SHOP
-    </a>
-    <a class="nav-item" href="./wallet.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
-      WALLET
-    </a>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <button class="signout-btn" onclick="handleSignOut()">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      SIGN OUT
-    </button>
-  </div>
-</aside>
-
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-  <div class="topbar-logo">NEXUS</div>
   <button class="burger" onclick="openSidebar()">
     <span></span><span></span><span></span>
   </button>
 </div>
 
+<div id="sidebar-root"></div>
 <!-- ===================== MAIN ===================== -->
 <main class="main">
 
@@ -678,7 +491,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="xp-level-badge" id="xpLevelBadge">LV.1</div>
         <div>
           <div class="xp-lv-title" id="xpLvTitle">NOVICE</div>
-          <div class="xp-lv-sub" id="xpLvSub">⬆️ ต้องการ 0 XP เพื่อ Level Up</div>
+          <div class="xp-lv-sub" id="xpLvSub">ต้องการ 0 XP เพื่อ Level Up</div>
         </div>
       </div>
       <div class="xp-right">
@@ -693,28 +506,28 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="stat-row">
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(0,245,255,0.15)"></div>
-      <div class="stat-card-icon">📅</div>
+      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" stroke="currentColor" stroke-width="1.2"/><path d="M2 7h12M6 3v2M10 3v2" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="9" width="2" height="2" fill="currentColor" opacity="0.7"/><rect x="9" y="9" width="2" height="2" fill="currentColor" opacity="0.4"/></svg></div>
       <div class="stat-card-label">QUEST วันนี้</div>
       <div class="stat-card-val" id="statQuestDone">0/0</div>
       <div class="stat-card-sub">สำเร็จแล้ว</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(255,215,0,0.1)"></div>
-      <div class="stat-card-icon">🔥</div>
+      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.6"/></svg></div>
       <div class="stat-card-label">STREAK</div>
       <div class="stat-card-val" id="statStreak">0</div>
       <div class="stat-card-sub">วันติดต่อกัน</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(255,215,0,0.08)"></div>
-      <div class="stat-card-icon">⭐</div>
+      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
       <div class="stat-card-label">GOLD</div>
       <div class="stat-card-val" id="statGold">0</div>
       <div class="stat-card-sub">Gold สะสม</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(0,245,255,0.08)"></div>
-      <div class="stat-card-icon">💎</div>
+      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 1l4 4-1 6H5L4 5zM4 5h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 1L5 5M8 1l3 4" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg></div>
       <div class="stat-card-label">CRYSTAL</div>
       <div class="stat-card-val" id="statCrystal">0</div>
       <div class="stat-card-sub">Crystal คงเหลือ</div>
@@ -729,7 +542,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- DAILY QUESTS -->
       <div class="box" style="margin-bottom:16px">
         <div class="box-header">
-          <div class="box-title">⚔️ DAILY QUESTS</div>
+          <div class="box-title"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/><path d="M7 13l3-3" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>DAILY QUESTS</div>
           <div class="box-tag" id="questResetTimer">รีเซ็ตใน —</div>
         </div>
         <div class="box-body">
@@ -751,7 +564,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- ACTIVITY FEED -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">📡 ACTIVITY FEED</div>
+          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><circle cx="8" cy="12" r="1.5" fill="currentColor"/><path d="M5 9.5a4.2 4.2 0 016 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 7a7 7 0 0110 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M1 4.5a9.8 9.8 0 0114 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>ACTIVITY FEED</div>
           <div class="box-tag">// GLOBAL</div>
         </div>
         <div class="box-body" style="padding:0 20px">
@@ -784,14 +597,14 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </div>
         <div class="pm-currencies">
           <div class="pm-currency">
-            <div class="pm-currency-icon">⭐</div>
+            <div class="pm-currency-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
             <div>
               <div class="pm-currency-val" id="pmGold">0</div>
               <div class="pm-currency-lab">GOLD</div>
             </div>
           </div>
           <div class="pm-currency">
-            <div class="pm-currency-icon">💎</div>
+            <div class="pm-currency-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l4 4-1 6H5L4 5zM4 5h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 1L5 5M8 1l3 4" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg></div>
             <div>
               <div class="pm-currency-val" id="pmCrystal">0</div>
               <div class="pm-currency-lab">CRYSTAL</div>
@@ -804,7 +617,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="streak-box">
         <div class="streak-header">
           <div>
-            <div class="streak-label">🔥 STREAK</div>
+            <div class="streak-label"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.6"/></svg>STREAK</div>
             <div class="streak-sub" id="streakLongest">สถิติสูงสุด: 0 วัน</div>
           </div>
           <div>
@@ -826,16 +639,16 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- 6-STAT BARS -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">📊 CHARACTER STATS</div>
+          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M2 14V8h3v6M7 14V4h2v10M11 14V6h3v8" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M1 14h14" stroke="currentColor" stroke-width="1.2"/></svg>CHARACTER STATS</div>
         </div>
         <div class="box-body" style="padding:16px 20px">
           <div class="stat-bars" id="statBars">
-            <div class="sbar"><div class="sbar-icon">💪</div><div class="sbar-label">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:#ff4444"></div></div><div class="sbar-val" id="v-str">0</div></div>
-            <div class="sbar"><div class="sbar-icon">🧠</div><div class="sbar-label">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:#aa44ff"></div></div><div class="sbar-val" id="v-int">0</div></div>
-            <div class="sbar"><div class="sbar-icon">🗺️</div><div class="sbar-label">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:#44ff88"></div></div><div class="sbar-val" id="v-exp">0</div></div>
-            <div class="sbar"><div class="sbar-icon">💼</div><div class="sbar-label">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:#ffaa00"></div></div><div class="sbar-val" id="v-biz">0</div></div>
-            <div class="sbar"><div class="sbar-icon">🎨</div><div class="sbar-label">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:#ff66aa"></div></div><div class="sbar-val" id="v-cre">0</div></div>
-            <div class="sbar"><div class="sbar-icon">🤝</div><div class="sbar-label">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:#00ccff"></div></div><div class="sbar-val" id="v-soc">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 11c0 0 1-4 4-4s4 2 4 2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 9l1 2 2-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M12 6c1 0 2 .5 2 2s-1 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></div><div class="sbar-label">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:#ff4444"></div></div><div class="sbar-val" id="v-str">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 10V8a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4 10h8v2a2 2 0 01-4 0 2 2 0 01-4 0v-2z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 5V3M5.5 5.5L4 4M10.5 5.5L12 4" stroke="currentColor" stroke-width="1.1"/></svg></div><div class="sbar-label">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:#aa44ff"></div></div><div class="sbar-val" id="v-int">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.35"/></svg></div><div class="sbar-label">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:#44ff88"></div></div><div class="sbar-val" id="v-exp">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="6" width="10" height="8" stroke="currentColor" stroke-width="1.2"/><path d="M5 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3 10h10" stroke="currentColor" stroke-width="1.2"/></svg></div><div class="sbar-label">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:#ffaa00"></div></div><div class="sbar-val" id="v-biz">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="currentColor" stroke-width="1" opacity="0.7"/></svg></div><div class="sbar-label">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:#ff66aa"></div></div><div class="sbar-val" id="v-cre">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 10l2-2h3l1 1h2l1-1h2l1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 10l-.5 1.5M14 10l.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="sbar-label">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:#00ccff"></div></div><div class="sbar-val" id="v-soc">0</div></div>
           </div>
         </div>
       </div>
@@ -843,7 +656,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- LEADERBOARD MINI -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">🏆 TOP PLAYERS</div>
+          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2"/></svg>TOP PLAYERS</div>
           <a href="./leaderboard.html" style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--cyan);text-decoration:none;opacity:0.7">ดูทั้งหมด →</a>
         </div>
         <div class="box-body" style="padding:0 20px">
@@ -864,7 +677,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="modal-overlay" id="proofModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">📸 ส่งหลักฐาน Quest</div>
+      <div class="modal-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><rect x="2" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="currentColor" stroke-width="1.2"/></svg>ส่งหลักฐาน Quest</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
@@ -877,7 +690,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="upload-area" id="uploadArea" style="display:none">
         <input type="file" id="proofFile" accept="image/*" onchange="previewFile(this)">
         <img class="upload-preview" id="uploadPreview">
-        <div class="upload-icon">📷</div>
+        <div class="upload-icon"><svg width="24" height="24" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
         <div class="upload-txt">แตะเพื่อเลือกรูป หรือลากวางที่นี่</div>
       </div>
 
@@ -894,11 +707,9 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { CLASS_ICONS, SYSTEM_ICONS, QUEST_ICONS, getIcon } from './icons.js'
 
 // ============================================================
 // STATE
@@ -940,16 +751,16 @@ function getAvatarUrl(avatarSeed, size=80) {
   return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
 }
 
-const CLASS_EMOJI = { warrior:'⚔️', mage:'🔮', explorer:'🗺️', merchant:'💰', artist:'🎨', diplomat:'🤝' }
+function classIcon(cls, size=16) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
 const RANK_COLORS = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#ffd700', platinum:'#00f5ff', diamond:'#b044ff', legendary:'#ff9500' }
 
 // ============================================================
 // INIT
 // ============================================================
 async function init() {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
-  currentUser = session.user
+  const { user } = await initSidebar('dashboard')
+  if (!user) return
+  currentUser = user
 
   await Promise.all([loadProfile(), loadFeed(), loadLeaderboard()])
   await loadQuests()
@@ -966,9 +777,9 @@ async function init() {
 // LOAD VERIFY BADGE COUNT
 // ============================================================
 async function loadVerifyBadge() {
-  // ดึง city ของ user ก่อน
-  const city = userProfile?.city
-  if (!city) return
+  // ✅ BUG FIX: ใช้ fallback แทน return เมื่อ city = null
+  // เพราะ userProfile อาจมี city = null แต่ยังต้องนับ badge ได้
+  const city = userProfile?.city || 'กรุงเทพมหานคร'
 
   // นับ quest ที่รอ verify ในเมืองเดียวกัน (ไม่ใช่ของตัวเอง และยังไม่ได้ vote)
   const { data: pending } = await supabase
@@ -1016,17 +827,11 @@ async function loadProfile() {
   const clsClass = 'cls-' + cls
 
   // Sidebar
-  document.getElementById('suAvatar').src = avatarUrl
-  document.getElementById('sidebarUser').className = 'sidebar-user ' + clsClass
-  document.getElementById('suName').textContent = profile.display_name || profile.username
-  document.getElementById('suClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
-  document.getElementById('suLv').textContent = 'LV.' + profile.level
-
   // Profile mini
   document.getElementById('pmAvatar').src = avatarUrl
   document.getElementById('profileMini').className = 'profile-mini ' + clsClass
   document.getElementById('pmName').textContent = profile.display_name || profile.username
-  document.getElementById('pmClass').textContent = (CLASS_EMOJI[cls]||'') + ' ' + cls.toUpperCase()
+  document.getElementById('pmClass').innerHTML = classIcon(cls,14) + ' ' + cls.toUpperCase()
   document.getElementById('pmLevel').textContent = profile.level
   document.getElementById('pmXP').textContent = fmtNum(profile.xp_this_month)
   document.getElementById('pmStreak').textContent = profile.streak_current || 0
@@ -1047,7 +852,7 @@ async function loadProfile() {
 
   document.getElementById('xpLevelBadge').textContent = 'LV.' + profile.level
   document.getElementById('xpLvTitle').textContent    = current.name.toUpperCase()
-  document.getElementById('xpLvSub').textContent      = next ? `⬆️ ต้องการ ${fmtNum(xpToNext - xpInLevel)} XP เพื่อ Level Up` : '⭐ MAX LEVEL'
+  document.getElementById('xpLvSub').innerHTML      = next ? `${getIcon('arrow_up',12)} ต้องการ ${fmtNum(xpToNext - xpInLevel)} XP เพื่อ Level Up` : `${getIcon('star',12)} MAX LEVEL`
   document.getElementById('xpCurrent').textContent    = fmtNum(profile.xp_total || 0)
   document.getElementById('xpNext').textContent       = next ? fmtNum(next.xp) : '—'
   document.getElementById('xpPercent').textContent    = pct + '% สู่ Level ถัดไป'
@@ -1073,9 +878,7 @@ async function loadProfile() {
     })
   }
 
-  // nav badge
-  document.getElementById('suAvatarWrap').className = 'su-avatar ' + clsClass
-}
+  // nav badge}
 
 // ============================================================
 // LOAD QUESTS
@@ -1140,7 +943,7 @@ function renderQuests() {
     const st = uq?.status || 'in_progress'
     const isDone    = st === 'approved'
     const isPending = st === 'pending_review'
-    const clsEmoji  = CLASS_EMOJI[q.class_target] || '🎯'
+    const clsIcon = CLASS_ICONS[q.class_target] ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" aria-hidden="true">${CLASS_ICONS[q.class_target]}</svg>` : getIcon('sword',20)
 
     let btnHtml = ''
     if (isDone)    btnHtml = `<button class="quest-btn done-btn">✓ สำเร็จ</button>`
@@ -1149,7 +952,7 @@ function renderQuests() {
 
     return `
     <div class="quest-card cls-${q.class_target||'warrior'} ${isDone?'done':''}">
-      <div class="quest-icon">${clsEmoji}</div>
+      <div class="quest-icon">${clsIcon}</div>
       <div class="quest-info">
         <div class="quest-title">${q.title}</div>
         <div class="quest-desc">${q.description||''}</div>
@@ -1185,14 +988,20 @@ async function loadFeed() {
 
   const el = document.getElementById('feedList')
   if (!data || !data.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
+    el.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="12" r="1.5" fill="currentColor" opacity="0.3"/><path d="M5 9.5a4.2 4.2 0 016 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.3"/><path d="M3 7a7 7 0 0110 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.3"/></svg></div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
     return
   }
 
-  const typeMap = {
-    quest_complete:'✅', level_up:'⬆️', badge_unlock:'🏅',
-    title_unlock:'🏷️', checkin:'📍', guild_join:'🤝', pvp_win:'⚔️'
+  const typeIcon = {
+    quest_complete: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>`,
+    level_up:       `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l-5 6h3.5v6h3V8H13z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`,
+    badge_unlock:   `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
+    title_unlock:   `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`,
+    checkin:        `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M6 5l1.5 1.5L10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    guild_join:     `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 1.8-4.5 4-4.5M15 14c0-3-1.8-4.5-4-4.5M8 10c2 0 4 1.2 4 4H4c0-2.8 2-4 4-4z" stroke="currentColor" stroke-width="1.2"/></svg>`,
+    pvp_win:        `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>`,
   }
+  const defaultIcon = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`
   const typeLabel = {
     quest_complete:'ทำ Quest สำเร็จ', level_up:'Level Up!', badge_unlock:'ปลดล็อค Badge',
     title_unlock:'ได้รับ Title', checkin:'Check-in สถานที่', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP'
@@ -1201,7 +1010,7 @@ async function loadFeed() {
   el.innerHTML = data.map(item => {
     // social_feed_view มี username, display_name, class, level โดยตรง
     const name = item.display_name || item.username || 'Unknown'
-    const icon = typeMap[item.type] || '🎮'
+    const icon = typeIcon[item.type] || defaultIcon
     const label = typeLabel[item.type] || item.type
     const timeAgo = getTimeAgo(item.created_at)
     return `
@@ -1219,30 +1028,30 @@ async function loadFeed() {
 // LOAD LEADERBOARD
 // ============================================================
 async function loadLeaderboard() {
+  // FIX: ใช้ leaderboard_monthly view ตาม Blueprint v5 (มี position field + filter profile_public ใน view แล้ว)
   const { data } = await supabase
-    .from('users')
-    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed')
-    .eq('profile_public', true)
-    .order('xp_this_month', { ascending: false })
+    .from('leaderboard_monthly')
+    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed, position')
+    .order('position', { ascending: true })
     .limit(5)
 
   const el = document.getElementById('lbList')
   if (!data || !data.length) {
-    el.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="empty-state-icon">🏆</div><div class="empty-state-txt">ยังไม่มีข้อมูล</div></div>`
+    el.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.3"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" opacity="0.3"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2" opacity="0.3"/></svg></div><div class="empty-state-txt">ยังไม่มีข้อมูล</div></div>`
     return
   }
 
   el.innerHTML = data.map((u, i) => {
-    const pos = i + 1
+    const pos = u.position || (i + 1)   // FIX: ใช้ position จาก leaderboard_monthly view
     const posClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : ''
     const isMe = u.id === currentUser?.id
     return `
     <div class="lb-item ${isMe ? 'lb-me' : ''}">
-      <div class="lb-pos ${posClass}">${pos === 1 ? '👑' : pos}</div>
+      <div class="lb-pos ${posClass}">${pos === 1 ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="5" r="1" fill="currentColor"/><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="14" cy="5" r="1" fill="currentColor"/></svg>' : pos}</div>
       <div class="lb-avatar"><img src="${getAvatarUrl(u.avatar_seed, 28)}" alt=""></div>
       <div class="lb-info">
         <div class="lb-name">${u.display_name || u.username}${isMe ? ' (คุณ)' : ''}</div>
-        <div class="lb-cls">${CLASS_EMOJI[u.class]||''} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>
+        <div class="lb-cls">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>
       </div>
       <div class="lb-xp">${fmtNum(u.xp_this_month)}</div>
     </div>`
@@ -1316,7 +1125,6 @@ window.submitProof = async function() {
     if (activeProofType === 'image' || activeProofType === 'screenshot') {
       const file = document.getElementById('proofFile').files[0]
       if (!file) { showModalMsg('error','กรุณาเลือกรูปหลักฐานก่อน'); return }
-
       const ext  = file.name.split('.').pop()
       const path = `proofs/${currentUser.id}/${activeQuestId}_${Date.now()}.${ext}`
       const { error: upErr } = await supabase.storage.from('nexuslife').upload(path, file, { upsert:true })
@@ -1328,55 +1136,64 @@ window.submitProof = async function() {
       if (!proofText) { showModalMsg('error','กรุณากรอกข้อความหลักฐานก่อน'); return }
     }
 
+    // ✅ BUG FIX: ตรวจสอบก่อนว่า quest นี้ไม่ได้ approved แล้ว (ป้องกัน XP ซ้ำ)
+    const { data: existingUQ } = await supabase
+      .from('user_quests').select('id, status, xp_granted')
+      .eq('user_id', currentUser.id).eq('quest_id', activeQuestId)
+      .maybeSingle()
+
+    if (existingUQ?.status === 'approved' && existingUQ?.xp_granted === true) {
+      throw new Error('Quest นี้สำเร็จและได้รับ XP แล้ว — ไม่สามารถส่งซ้ำได้')
+    }
+    if (existingUQ?.status === 'pending_review') {
+      throw new Error('Quest นี้อยู่ในระหว่างรอตรวจสอบอยู่แล้ว')
+    }
+
     // upsert user_quest
-    const { error } = await supabase.from('user_quests').upsert({
-      user_id: currentUser.id,
-      quest_id: activeQuestId,
-      status: 'pending_review',
-      proof_url: proofUrl,
-      proof_text: proofText,
-      submitted_at: new Date().toISOString()
-    }, { onConflict: 'user_id,quest_id' })
+    // text/gps = 'approved' (auto approve), image/screenshot/url = 'pending_review'
+    const autoApprove = activeProofType === 'text' || activeProofType === 'gps'
+    const { data: uqData, error: uqErr } = await supabase
+      .from('user_quests').upsert({
+        user_id:      currentUser.id,
+        quest_id:     activeQuestId,
+        status:       autoApprove ? 'approved' : 'pending_review',
+        proof_url:    proofUrl,
+        proof_text:   proofText,
+        submitted_at: new Date().toISOString(),
+        xp_granted:   false
+      }, { onConflict: 'user_id,quest_id' }).select().single()
 
-    if (error) throw error
+    if (uqErr) throw uqErr
 
-    // FIX: auto approve text และ gps (ไม่ใช่แค่ text)
-    if (activeProofType === 'text' || activeProofType === 'gps') {
-      const found = allQuests.find(q => q.quest.id === activeQuestId)
-      if (found) {
-        const q = found.quest
-        // grant XP + Gold
-        const newXP   = (userProfile.xp_total || 0) + q.xp_reward
-        const newXPMo = (userProfile.xp_this_month || 0) + q.xp_reward
-        const newGold = (userProfile.gold || 0) + (q.gold_reward || 0)
-        await supabase.from('users')
-          .update({ xp_total: newXP, xp_this_month: newXPMo, gold: newGold })
-          .eq('id', currentUser.id)
-        await supabase.from('user_quests')
-          .update({ status: 'approved', xp_granted: true })
-          .eq('user_id', currentUser.id).eq('quest_id', activeQuestId)
+    // text / gps → auto approve ผ่าน grant_quest_xp() DB function
+    // ได้ class bonus +15%, streak bonus, update rank, update streak อัตโนมัติ
+    if (autoApprove) {
+      const { error: grantErr } = await supabase.rpc('grant_quest_xp', {
+        p_user_id:       currentUser.id,
+        p_user_quest_id: uqData.id
+      })
 
-        // FIX: grant stat points ผ่าน DB function
-        if (q.stat_type && q.stat_points) {
-          await supabase.rpc('increment_stat', {
-            p_user_id: currentUser.id,
-            p_col: q.stat_type + '_points',
-            p_amount: q.stat_points
-          })
-        }
+      if (grantErr) throw grantErr
 
-        // FIX: update rank หลัง grant XP
-        await supabase.rpc('update_user_rank', { p_user_id: currentUser.id })
+      // reload profile เพื่อดู XP ที่ได้จริง (function return void)
+      const oldLevel = userProfile?.level || 1
+      await loadProfile()
+      const newLevel = userProfile?.level || 1
 
+      if (newLevel > oldLevel) {
+        showToast(`LEVEL UP! LV.${oldLevel} → LV.${newLevel}!`, 'success')
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
-          type: 'quest_complete',
-          data: { title: q.title, xp: q.xp_reward }
+          type: 'level_up',
+          data: { old_level: oldLevel, new_level: newLevel }
         })
-        showToast(`ได้รับ +${q.xp_reward} XP +${q.gold_reward||0} Gold!`, 'success')
       }
+
+      showToast('Quest สำเร็จ! XP เข้าแล้ว', 'success')
+
     } else {
-      showToast('📸 ส่งหลักฐานแล้ว — รอ Review', 'success')
+      // image / screenshot / url → pending_review รอ community verify
+      showToast('ส่งหลักฐานแล้ว — รอ Community 3 votes ยืนยัน', 'success')
     }
 
     window.closeModal()
@@ -1393,10 +1210,6 @@ window.submitProof = async function() {
 // ============================================================
 // SIGN OUT
 // ============================================================
-window.handleSignOut = async function() {
-  await supabase.auth.signOut()
-  window.location.href = './login.html'
-}
 
 // ============================================================
 // STREAK DAYS
@@ -1470,8 +1283,6 @@ window.showToast = function(msg, type='success') {
 // ============================================================
 // SIDEBAR MOBILE
 // ============================================================
-window.openSidebar  = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open') }
-window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open') }
 
 // ============================================================
 // CURSOR

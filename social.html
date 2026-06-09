@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NEXUS LIFE — Social</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#010a0f; --bg2:#020d14;
+  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
+  --text:#c8f0f5; --text-dim:#5a8a90;
+}
+.cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
+.cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
+
+*{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+.cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
+
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0%}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--cyan);background:rgba(1,10,15,0.96);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--cyan);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px;line-height:1.5}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left-color:var(--green);color:var(--green)}
+.toast.error{border-left-color:var(--red);color:#ff6680}
+
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
+.page-title span{color:var(--cyan);text-shadow:0 0 16px var(--cyan)}
+.page-date{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:10px;margin-bottom:24px;animation:fadeInUp 0.5s 0.05s ease both}
+.search-wrap{flex:1;position:relative}
+.search-input{width:100%;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;padding:12px 14px 12px 44px;outline:none;transition:all 0.3s}
+.search-input:focus{border-color:var(--cyan);background:rgba(0,245,255,0.06)}
+.search-input::placeholder{color:var(--text-dim)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none}
+.search-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:12px 20px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.search-btn:hover{background:var(--cyan);color:var(--bg)}
+
+/* FILTERS */
+.filter-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.1s ease both}
+.filter-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.filter-btn.active,.filter-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06)}
+.filter-btn.cls-warrior.active{border-color:#ff4444;color:#ff4444;background:rgba(255,68,68,0.06)}
+.filter-btn.cls-mage.active{border-color:#aa44ff;color:#aa44ff;background:rgba(170,68,255,0.06)}
+.filter-btn.cls-explorer.active{border-color:#44ff88;color:#44ff88;background:rgba(68,255,136,0.06)}
+.filter-btn.cls-merchant.active{border-color:#ffaa00;color:#ffaa00;background:rgba(255,170,0,0.06)}
+.filter-btn.cls-artist.active{border-color:#ff66aa;color:#ff66aa;background:rgba(255,102,170,0.06)}
+.filter-btn.cls-diplomat.active{border-color:#00ccff;color:#00ccff;background:rgba(0,204,255,0.06)}
+
+/* LAYOUT */
+.social-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;animation:fadeInUp 0.5s 0.15s ease both}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:12px 20px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.tab-count{font-family:'Orbitron',monospace;font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(0,245,255,0.1);color:var(--cyan)}
+
+/* USER CARDS */
+.user-grid{display:flex;flex-direction:column;gap:8px}
+.user-card{background:var(--panel);border:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:16px;transition:all 0.25s;position:relative;cursor:pointer}
+.user-card:hover{border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.05)}
+.user-card-avatar{width:52px;height:52px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3);flex-shrink:0}
+.user-card-avatar img{width:100%;height:100%;object-fit:cover}
+.user-card-info{flex:1;min-width:0}
+.user-card-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-card-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px;margin-bottom:4px}
+.user-card-meta{font-size:11px;color:var(--text-dim);display:flex;gap:12px;flex-wrap:wrap}
+.user-card-meta span{display:flex;align-items:center;gap:4px}
+.user-card-actions{display:flex;gap:8px;flex-shrink:0}
+.follow-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.follow-btn:hover{background:var(--cyan);color:var(--bg)}
+.follow-btn.following{border-color:var(--border);color:var(--text-dim)}
+.follow-btn.following:hover{border-color:var(--red);color:var(--red)}
+.profile-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.profile-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.rank-badge{font-family:'Orbitron',monospace;font-size:8px;padding:2px 8px;border:1px solid;letter-spacing:1px}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--panel) 25%,rgba(0,245,255,0.06) 50%,var(--panel) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:0;margin-bottom:8px}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-dim)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:0.3;display:block}
+.empty-txt{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px}
+.empty-sub{font-size:12px;margin-top:6px;opacity:0.6}
+
+/* RIGHT COLUMN */
+.right-col{display:flex;flex-direction:column;gap:16px}
+.box{background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative}
+.box::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.box-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.box-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan)}
+.box-body{padding:16px 18px}
+
+/* SUGGEST USER (RIGHT) */
+.suggest-list{display:flex;flex-direction:column;gap:10px}
+.suggest-item{display:flex;align-items:center;gap:10px}
+.suggest-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3);flex-shrink:0}
+.suggest-avatar img{width:100%;height:100%;object-fit:cover}
+.suggest-info{flex:1;min-width:0}
+.suggest-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.suggest-sub{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px}
+.suggest-follow-btn{font-family:'Orbitron',monospace;font-size:8px;padding:5px 10px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.suggest-follow-btn:hover{background:var(--cyan);color:var(--bg)}
+.suggest-follow-btn.following{border-color:var(--border);color:var(--text-dim)}
+
+/* MY STATS */
+.my-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.my-stat{background:rgba(0,245,255,0.03);border:1px solid var(--border);padding:12px;text-align:center}
+.my-stat-num{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--cyan);display:block}
+.my-stat-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);margin-top:2px;display:block}
+
+/* CLASS COLOR */
+.cls-warrior .user-card-avatar,.suggest-avatar.cls-warrior{border-color:#ff4444}
+.cls-mage .user-card-avatar,.suggest-avatar.cls-mage{border-color:#aa44ff}
+.cls-explorer .user-card-avatar,.suggest-avatar.cls-explorer{border-color:#44ff88}
+.cls-merchant .user-card-avatar,.suggest-avatar.cls-merchant{border-color:#ffaa00}
+.cls-artist .user-card-avatar,.suggest-avatar.cls-artist{border-color:#ff66aa}
+.cls-diplomat .user-card-avatar,.suggest-avatar.cls-diplomat{border-color:#00ccff}
+
+/* RANK COLORS */
+.rank-bronze{color:#cd7f32;border-color:#cd7f32}
+.rank-silver{color:#c0c0c0;border-color:#c0c0c0}
+.rank-gold{color:#ffd700;border-color:#ffd700}
+.rank-platinum{color:#00f5ff;border-color:#00f5ff}
+.rank-diamond{color:#b044ff;border-color:#b044ff}
+.rank-legendary{color:#ff9500;border-color:#ff9500}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.social-layout{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{display:flex}
+  .main{margin-left:0;padding:80px 16px 60px}
+  .user-card-actions{flex-direction:column;gap:4px}
+  .user-card-meta{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING SOCIAL...</div>
+</div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+
+
+  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+</div>
+
+<!-- MAIN -->
+<div id="sidebar-root"></div>
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">// <span>SOCIAL</span></div>
+      <div class="page-date" id="pageDate">—</div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-bar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#00f5ff" stroke-width="1.2"/><path d="M10 10l4 4" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="square"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="ค้นหาชื่อผู้เล่น, username..." onkeydown="if(event.key==='Enter') searchUsers()">
+    </div>
+    <button class="search-btn" onclick="searchUsers()">SEARCH</button>
+  </div>
+
+  <!-- CLASS FILTERS -->
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" onclick="setClassFilter('',this)">ALL CLASS</button>
+    <button class="filter-btn cls-warrior" onclick="setClassFilter('warrior',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>WARRIOR</button>
+    <button class="filter-btn cls-mage" onclick="setClassFilter('mage',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="10" cy="11" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="10" cy="11" r="1.5" fill="currentColor"/></svg>MAGE</button>
+    <button class="filter-btn cls-explorer" onclick="setClassFilter('explorer',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><polygon points="10,6 12,11 10,10 8,11" fill="currentColor" opacity="0.9"/></svg>EXPLORER</button>
+    <button class="filter-btn cls-merchant" onclick="setClassFilter('merchant',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><ellipse cx="10" cy="6" rx="5" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M5 6v4c0 1.1 2.24 2 5 2s5-.9 5-2V6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>MERCHANT</button>
+    <button class="filter-btn cls-artist" onclick="setClassFilter('artist',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg>ARTIST</button>
+    <button class="filter-btn cls-diplomat" onclick="setClassFilter('diplomat',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M17 12c0 0-2-3-4-3H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>DIPLOMAT</button>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="social-layout">
+
+    <!-- LEFT: USER LIST -->
+    <div>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-discover" onclick="switchTab('discover')">🌐 ค้นพบ <span class="tab-count" id="cntDiscover">0</span></button>
+        <button class="tab-btn" id="tab-following" onclick="switchTab('following')">✅ ติดตาม <span class="tab-count" id="cntFollowing">0</span></button>
+        <button class="tab-btn" id="tab-followers" onclick="switchTab('followers')">👤 ผู้ติดตาม <span class="tab-count" id="cntFollowers">0</span></button>
+      </div>
+      <div class="user-grid" id="userGrid">
+        <div class="skel" style="height:84px"></div>
+        <div class="skel" style="height:84px"></div>
+        <div class="skel" style="height:84px"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-col">
+
+      <!-- MY SOCIAL STATS -->
+      <div class="box">
+        <div class="box-header"><div class="box-title">MY NETWORK</div></div>
+        <div class="box-body">
+          <div class="my-stats-grid">
+            <div class="my-stat">
+              <span class="my-stat-num" id="myFollowing">—</span>
+              <span class="my-stat-label">FOLLOWING</span>
+            </div>
+            <div class="my-stat">
+              <span class="my-stat-num" id="myFollowers">—</span>
+              <span class="my-stat-label">FOLLOWERS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUGGESTED -->
+      <div class="box">
+        <div class="box-header"><div class="box-title">แนะนำ</div></div>
+        <div class="box-body">
+          <div class="suggest-list" id="suggestList">
+            <div class="skel" style="height:44px"></div>
+            <div class="skel" style="height:44px"></div>
+            <div class="skel" style="height:44px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CITY RANKING (social context) -->
+      <div class="box">
+        <div class="box-header"><div class="box-title">TOP CITY</div></div>
+        <div class="box-body">
+          <div id="cityRankList" style="display:flex;flex-direction:column;gap:8px;font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)">
+            <div class="skel" style="height:24px"></div>
+            <div class="skel" style="height:24px"></div>
+            <div class="skel" style="height:24px"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { CLASS_ICONS } from './icons.js'
+
+function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
+const CLASS_COLOR = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+const RANK_LABEL  = { bronze:'🥉 BRONZE', silver:'🥈 SILVER', gold:'🥇 GOLD', platinum:'💠 PLATINUM', diamond:'💎 DIAMOND', legendary:'👑 LEGENDARY' }
+const RANK_CLS    = { bronze:'rank-bronze', silver:'rank-silver', gold:'rank-gold', platinum:'rank-platinum', diamond:'rank-diamond', legendary:'rank-legendary' }
+
+let currentUser = null
+let myProfile   = null
+let activeTab   = 'discover'
+let classFilter = ''
+let followingIds = new Set()
+
+// ─── HELPERS ────────────────────────────────────────────────
+function getAvatarUrl(seed, size=80) {
+  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  const [style, s, bg] = seed.split(':')
+  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+
+function updateDate() {
+  const d = new Date()
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+async function init() {
+  const { user } = await initSidebar('social')
+  if (!user) return
+  currentUser = user
+
+  await loadFollowingIds()
+  await Promise.all([
+    loadDiscover(),
+    loadSuggested(),
+    loadCityRank()
+  ])
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  updateDate()
+  initCursor()
+}
+
+
+// ─── LOAD FOLLOWING IDS ──────────────────────────────────────
+async function loadFollowingIds() {
+  const { data } = await supabase.from('social_follows')
+    .select('following_id').eq('follower_id', currentUser.id)
+  followingIds = new Set((data||[]).map(r => r.following_id))
+}
+
+// ─── LOAD DISCOVER ───────────────────────────────────────────
+async function loadDiscover() {
+  let q = supabase.from('users')
+    .select('id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current')
+    .eq('profile_public', true)
+    .neq('id', currentUser.id)
+    .order('followers_count', { ascending: false })
+    .limit(20)
+
+  if (classFilter) q = q.eq('class', classFilter)
+
+  const { data } = await q
+  const users = data || []
+  document.getElementById('cntDiscover').textContent = users.length
+  if (activeTab === 'discover') renderUserGrid(users)
+}
+
+// ─── LOAD FOLLOWING ──────────────────────────────────────────
+async function loadFollowing() {
+  const { data } = await supabase.from('social_follows')
+    .select('following_id, users!social_follows_following_id_fkey(id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current)')
+    .eq('follower_id', currentUser.id)
+
+  const users = (data||[]).map(r => r.users).filter(Boolean)
+  const filtered = classFilter ? users.filter(u => u.class === classFilter) : users
+  document.getElementById('cntFollowing').textContent = filtered.length
+  document.getElementById('myFollowing').textContent = filtered.length
+  if (activeTab === 'following') renderUserGrid(filtered)
+}
+
+// ─── LOAD FOLLOWERS ──────────────────────────────────────────
+async function loadFollowers() {
+  const { data } = await supabase.from('social_follows')
+    .select('follower_id, users!social_follows_follower_id_fkey(id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current)')
+    .eq('following_id', currentUser.id)
+
+  const users = (data||[]).map(r => r.users).filter(Boolean)
+  const filtered = classFilter ? users.filter(u => u.class === classFilter) : users
+  document.getElementById('cntFollowers').textContent = filtered.length
+  document.getElementById('myFollowers').textContent = filtered.length
+  if (activeTab === 'followers') renderUserGrid(filtered)
+}
+
+// ─── SEARCH USERS ────────────────────────────────────────────
+window.searchUsers = async function() {
+  const q = document.getElementById('searchInput').value.trim()
+  if (!q) { await reloadCurrentTab(); return }
+
+  const grid = document.getElementById('userGrid')
+  grid.innerHTML = '<div class="skel" style="height:84px"></div>'.repeat(3)
+
+  let query = supabase.from('users')
+    .select('id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current')
+    .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+    .eq('profile_public', true)
+    .neq('id', currentUser.id)
+    .limit(15)
+
+  if (classFilter) query = query.eq('class', classFilter)
+
+  const { data } = await query
+  renderUserGrid(data || [])
+}
+
+// ─── RENDER USER GRID ────────────────────────────────────────
+function renderUserGrid(users) {
+  const grid = document.getElementById('userGrid')
+  if (!users.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">👤</span>
+      <div class="empty-txt">ไม่พบผู้เล่น</div>
+      <div class="empty-sub">ลองค้นหาด้วยคำอื่น หรือเปลี่ยน filter</div>
+    </div>`
+    return
+  }
+
+  grid.innerHTML = users.map(u => {
+    const cls = u.class || 'warrior'
+    const isFollowing = followingIds.has(u.id)
+    const rankCls = RANK_CLS[u.rank] || 'rank-bronze'
+    return `
+    <div class="user-card cls-${cls}" onclick="goProfile('${u.id}')">
+      <div class="user-card-avatar">
+        <img src="${getAvatarUrl(u.avatar_seed, 52)}" alt="">
+      </div>
+      <div class="user-card-info">
+        <div class="user-card-name">${esc(u.display_name || u.username)}</div>
+        <div class="user-card-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+        <div class="user-card-meta">
+          <span><span class="rank-badge ${rankCls}">${(RANK_LABEL[u.rank]||'BRONZE').replace(/.*? /,'')}</span></span>
+          <span>🏙️ ${esc(u.city||'—')}</span>
+          <span>⚡ Streak ${u.streak_current||0}</span>
+          <span>👤 ${(u.followers_count||0).toLocaleString()} ผู้ติดตาม</span>
+        </div>
+      </div>
+      <div class="user-card-actions" onclick="event.stopPropagation()">
+        <button class="follow-btn ${isFollowing ? 'following' : ''}" id="fbtn-${u.id}"
+          onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
+          ${isFollowing ? '✓ ติดตาม' : '+ ติดตาม'}
+        </button>
+        <button class="profile-btn" onclick="goProfile('${u.id}')">ดูโปรไฟล์</button>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ─── TOGGLE FOLLOW ───────────────────────────────────────────
+window.toggleFollow = async function(userId, displayName) {
+  const btn = document.getElementById(`fbtn-${userId}`)
+  if (!btn) return
+  btn.disabled = true
+
+  const isCurrentlyFollowing = followingIds.has(userId)
+
+  if (isCurrentlyFollowing) {
+    const { error } = await supabase.rpc('unfollow_user', {
+      p_follower_id: currentUser.id,
+      p_following_id: userId
+    })
+    if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); btn.disabled = false; return }
+    followingIds.delete(userId)
+    btn.textContent = '+ ติดตาม'
+    btn.classList.remove('following')
+    showToast(`เลิกติดตาม ${displayName} แล้ว`)
+
+    // อัพเดต following count local
+    const cur = parseInt(document.getElementById('myFollowing').textContent.replace(/,/g,'')) || 0
+    document.getElementById('myFollowing').textContent = Math.max(0, cur - 1).toLocaleString()
+  } else {
+    const { error } = await supabase.rpc('follow_user', {
+      p_follower_id: currentUser.id,
+      p_following_id: userId
+    })
+    if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); btn.disabled = false; return }
+    followingIds.add(userId)
+    btn.textContent = '✓ ติดตาม'
+    btn.classList.add('following')
+    showToast(`ติดตาม ${displayName} แล้ว! 🎉`, 'success')
+
+    // notification ถูกสร้างโดย follow_user RPC อัตโนมัติ
+    const cur = parseInt(document.getElementById('myFollowing').textContent.replace(/,/g,'')) || 0
+    document.getElementById('myFollowing').textContent = (cur + 1).toLocaleString()
+  }
+
+  btn.disabled = false
+}
+
+// ─── GO PROFILE ──────────────────────────────────────────────
+window.goProfile = function(userId) {
+  window.location.href = `./profile.html?uid=${userId}`
+}
+
+// ─── LOAD SUGGESTED ──────────────────────────────────────────
+async function loadSuggested() {
+  // แนะนำ: เมืองเดียวกัน, ยังไม่ได้ follow, เรียงตาม followers_count
+  const myCity = myProfile?.city || 'กรุงเทพมหานคร'
+
+  const { data } = await supabase.from('users')
+    .select('id,username,display_name,class,level,avatar_seed,followers_count')
+    .eq('city', myCity)
+    .eq('profile_public', true)
+    .neq('id', currentUser.id)
+    .order('followers_count', { ascending: false })
+    .limit(10)
+
+  const suggested = (data||[]).filter(u => !followingIds.has(u.id)).slice(0, 5)
+  const el = document.getElementById('suggestList')
+
+  if (!suggested.length) {
+    el.innerHTML = `<div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);text-align:center;padding:8px">ติดตามทุกคนในเมืองแล้ว!</div>`
+    return
+  }
+
+  el.innerHTML = suggested.map(u => {
+    const cls = u.class || 'warrior'
+    return `
+    <div class="suggest-item">
+      <div class="suggest-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+        <img src="${getAvatarUrl(u.avatar_seed, 36)}" alt="">
+      </div>
+      <div class="suggest-info">
+        <div class="suggest-name">${esc(u.display_name || u.username)}</div>
+        <div class="suggest-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+      </div>
+      <button class="suggest-follow-btn" id="sfbtn-${u.id}"
+        onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}');this.textContent='✓';this.classList.add('following')">
+        + Follow
+      </button>
+    </div>`
+  }).join('')
+}
+
+// ─── LOAD CITY RANK ──────────────────────────────────────────
+async function loadCityRank() {
+  const { data } = await supabase.from('users')
+    .select('city')
+    .eq('profile_public', true)
+    .not('city', 'is', null)
+
+  if (!data) return
+
+  // นับจำนวน user ต่อเมือง
+  const cityCount = {}
+  data.forEach(u => { cityCount[u.city] = (cityCount[u.city]||0) + 1 })
+  const sorted = Object.entries(cityCount).sort((a,b) => b[1]-a[1]).slice(0, 5)
+
+  const MEDAL = ['🥇','🥈','🥉','4️⃣','5️⃣']
+  document.getElementById('cityRankList').innerHTML = sorted.map(([city, count], i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text)">${MEDAL[i]} ${esc(city)}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan)">${count.toLocaleString()} คน</div>
+    </div>`).join('')
+}
+
+// ─── TAB / FILTER ────────────────────────────────────────────
+window.switchTab = async function(tab) {
+  activeTab = tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('tab-' + tab).classList.add('active')
+  document.getElementById('userGrid').innerHTML = '<div class="skel" style="height:84px"></div>'.repeat(3)
+  await reloadCurrentTab()
+}
+
+window.setClassFilter = function(cls, btn) {
+  classFilter = cls
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  reloadCurrentTab()
+}
+
+async function reloadCurrentTab() {
+  if (activeTab === 'discover')  await loadDiscover()
+  if (activeTab === 'following') await loadFollowing()
+  if (activeTab === 'followers') await loadFollowers()
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;') }
+
+window.showToast = function(msg, type='info') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `toast ${type} show`
+  setTimeout(() => { t.className = `toast ${type}` }, 3000)
+}
+
+
+
+function initCursor() {
+  const cur = document.getElementById('cursor'), ring = document.getElementById('cursorRing')
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
+  ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
+  document.querySelectorAll('button,a,.user-card,.suggest-item,.nav-item').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='44px'; ring.style.height='44px'; ring.style.borderColor='rgba(0,245,255,0.7)' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
+  })
+}
+
+init()
+</script>
+</body>
+</html>

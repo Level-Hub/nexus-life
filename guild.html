@@ -26,39 +26,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
 
-/* SIDEBAR */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
-.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
-.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
-.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
-.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
-.su-avatar img{width:100%;height:100%;object-fit:cover}
-.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
-.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
-.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
-.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
-.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
-.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
-.nav-item:hover svg,.nav-item.active svg{opacity:1}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace}
-.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
-.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
-.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
-.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
-
-/* TOPBAR MOBILE */
-.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
-.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
-.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
-.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
-.sidebar-overlay.open{display:block}
-
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 80px}
 
@@ -317,9 +284,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .leave-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
 
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .topbar{display:flex}
   .main{margin-left:0;padding:80px 16px 100px}
   .guild-grid{grid-template-columns:1fr}
   .right-panel{display:none}
@@ -334,90 +298,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-    <div class="sidebar-tagline">// REAL LIFE MMO</div>
-  </div>
-  <div class="sidebar-user" id="sidebarUser">
-    <div class="su-avatar"><img id="suAvatar" src="" alt=""></div>
-    <div>
-      <div class="su-name" id="suName">Loading...</div>
-      <div class="su-class" id="suClass">—</div>
-      <div class="su-lv" id="suLv">LV.1</div>
-    </div>
-  </div>
-  <nav class="nav-menu">
-    <div class="nav-section-label">MAIN</div>
-    <a class="nav-item" href="./dashboard.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
-      DASHBOARD
-    </a>
-    <a class="nav-item" href="./quests.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      QUESTS
-    </a>
-    <a class="nav-item" href="./feed.html">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      FEED
-    </a>
-    <a class="nav-item" href="./verify.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-      VERIFY
-    </a>
-    <a class="nav-item" href="./leaderboard.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-      LEADERBOARD
-    </a>
-    <div class="nav-section-label">WORLD</div>
-    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
-    <a class="nav-item" href="./map.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>
-      WORLD MAP
-    </a>
-    <a class="nav-item active" href="./guild.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>
-      GUILD
-    </a>
-    <a class="nav-item" href="./pvp.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      PVP DUEL
-    </a>
-    <div class="nav-section-label">PROFILE</div>
-    <a class="nav-item" href="./profile.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>
-      PROFILE
-    </a>
-    <a class="nav-item" href="./achievements.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
-      ACHIEVEMENTS
-    </a>
-    <div class="nav-section-label">ECONOMY</div>
-    <a class="nav-item" href="./shop.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>
-      SHOP
-    </a>
-    <a class="nav-item" href="./wallet.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
-      WALLET
-    </a>
-  </nav>
-  <div class="sidebar-bottom">
-    <button class="signout-btn" onclick="handleSignOut()">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-      SIGN OUT
-    </button>
-  </div>
-</aside>
 
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-  <div class="topbar-logo">NEXUS</div>
   <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
 </div>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
+<div id="sidebar-root"></div>
 <!-- MAIN -->
 <main class="main">
 
@@ -685,6 +570,8 @@ setTimeout(function() {
 </script>
 <script type="module">
 import { supabase as sb } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { getIcon } from './icons.js'
 
 // ============================================
 // STATE
@@ -704,14 +591,13 @@ const GUILD_XP_PER_LEVEL = 1000
 // ============================================
 async function init() {
   try {
-    const { data: { session } } = await sb.auth.getSession()
-    if (!session) { window.location.href = './login.html'; return }
+    const { user } = await initSidebar('guild')
+    if (!user) return
 
-    const { data: me, error: meErr } = await sb.from('users').select('*').eq('id', session.user.id).single()
+    const { data: me, error: meErr } = await sb.from('users').select('*').eq('id', user.id).single()
     if (meErr || !me) { window.location.href = './login.html'; return }
     ME = me
 
-    renderSidebarUser()
     buildIconRow()
 
     // ดึง gold balance สำหรับ form สร้าง guild (null-safe)
@@ -752,14 +638,33 @@ function getAvatarUrl(avatarSeed, size=80) {
   }
   return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
 }
-function renderSidebarUser() {
-  document.getElementById('suName').textContent = ME.display_name || ME.username
-  document.getElementById('suClass').textContent = (ME.class || 'novice').toUpperCase()
-  document.getElementById('suLv').textContent = `LV.${ME.level}`
-  const avatarEl = document.getElementById('suAvatar')
-  avatarEl.src = getAvatarUrl(ME.avatar_seed || ME.username)
-  const sidebarUser = document.getElementById('sidebarUser')
-  sidebarUser.className = `sidebar-user cls-${ME.class || 'warrior'}`
+
+async function loadNavBadges() {
+  // navQuestBadge — นับ quest ที่ยัง in_progress
+  const { count: qCount } = await sb.from('user_quests')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', ME.id).eq('status', 'in_progress')
+  if (qCount > 0) {
+    const b = document.getElementById('navQuestBadge')
+    b.textContent = qCount; b.style.display = 'inline'
+  }
+
+  // navVerifyBadge — นับ pending_review ในเมืองเดียวกัน ที่ไม่ใช่ของตัวเองและยังไม่ได้ vote
+  const { data: votedByMe } = await sb.from('quest_verifications')
+    .select('user_quest_id').eq('voter_id', ME.id)
+  const votedSet = new Set((votedByMe || []).map(v => v.user_quest_id))
+
+  const { data: pendingInCity } = await sb.from('user_quests')
+    .select('id, users!inner(city)')
+    .eq('status', 'pending_review')
+    .eq('users.city', ME.city || 'กรุงเทพมหานคร')  // ✅ fallback city
+    .neq('user_id', ME.id)
+  const vCount = (pendingInCity || []).filter(p => !votedSet.has(p.id)).length
+  if (vCount > 0) {
+    const vb = document.getElementById('navVerifyBadge')
+    vb.textContent = vCount > 99 ? '99+' : vCount
+    vb.style.display = 'inline'
+  }
 }
 
 // ============================================
@@ -774,11 +679,17 @@ function showNoGuildView() {
 
 async function loadAllGuilds() {
   const { data } = await sb.from('guilds')
-    .select('*, guild_members(count)')
+    .select('*')
     .eq('is_public', true)
     .order('guild_xp', { ascending: false })
 
-  ALL_GUILDS = data || []
+  if (!data) { ALL_GUILDS = []; return }
+
+  // นับสมาชิกแยกแต่ละ guild
+  const counts = await Promise.all(data.map(g =>
+    sb.from('guild_members').select('*', { count: 'exact', head: true }).eq('guild_id', g.id)
+  ))
+  ALL_GUILDS = data.map((g, i) => ({ ...g, _memberCount: counts[i]?.count ?? 0 }))
   document.getElementById('guildCountTag').textContent = `${ALL_GUILDS.length} guilds`
   renderGuildBrowse(ALL_GUILDS)
 }
@@ -790,7 +701,7 @@ function renderGuildBrowse(list) {
     return
   }
   el.innerHTML = list.map(g => {
-    const memberCount = g.guild_members?.[0]?.count ?? 0
+    const memberCount = g._memberCount ?? 0
     const gLv = Math.max(1, Math.floor(g.guild_xp / GUILD_XP_PER_LEVEL) + 1)
     return `
     <div class="guild-browse-card">
@@ -888,8 +799,16 @@ window.createGuild = async () => {
   // Insert master member
   await sb.from('guild_members').insert({ guild_id: newGuild.id, user_id: ME.id, role: 'master' })
 
-  // หัก Gold
-  await sb.from('users').update({ gold: ME.gold - 500 }).eq('id', ME.id)
+  // ✅ BUG FIX: re-fetch gold ก่อนหัก ป้องกัน race condition
+  const { data: freshMe } = await sb.from('users').select('gold').eq('id', ME.id).single()
+  const currentGold = freshMe?.gold ?? ME.gold
+  if (currentGold < 500) {
+    // rollback — ลบ guild และ member ที่เพิ่งสร้าง
+    await sb.from('guild_members').delete().eq('guild_id', newGuild.id).eq('user_id', ME.id)
+    await sb.from('guilds').delete().eq('id', newGuild.id)
+    toast('Gold ไม่พอ — ต้องการ 500 Gold', 'error'); return
+  }
+  await sb.from('users').update({ gold: currentGold - 500 }).eq('id', ME.id)
 
   // Notification + activity
   await sb.from('notifications').insert({ user_id: ME.id, title: '🏰 สร้าง Guild สำเร็จ!', body: `Guild "${name}" ถูกสร้างแล้ว` })
@@ -909,7 +828,7 @@ async function showHasGuildView() {
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
   const gXpPct = Math.min(100, ((MY_GUILD.guild_xp % GUILD_XP_PER_LEVEL) / GUILD_XP_PER_LEVEL) * 100)
-  document.getElementById('gBannerIcon').textContent = MY_GUILD.metadata?.icon || '⚔️'
+  document.getElementById('gBannerIcon').innerHTML = MY_GUILD.metadata?.icon || '⚔️'
   document.getElementById('gBannerName').textContent = MY_GUILD.name
   document.getElementById('gBannerTag').textContent = `[${MY_GUILD.tag}]`
   document.getElementById('gBannerDesc').textContent = MY_GUILD.description || 'ไม่มีคำอธิบาย'
@@ -934,6 +853,16 @@ async function showHasGuildView() {
   // load data
   await Promise.all([loadMembers(), loadGuildQuests(), loadGuildFeed()])
   subscribeGuildChat()
+
+  // Territory badge — query ตาราง territories (ไม่ใช่ guild_territories)
+  const { data: territory } = await sb.from('territories')
+    .select('city, controlling_guild_id')
+    .eq('controlling_guild_id', MY_GUILD.id)
+    .maybeSingle()
+  if (territory) {
+    document.getElementById('territoryBadge').style.display = 'block'
+    document.getElementById('territoryCity').textContent = territory.city
+  }
 }
 
 // ============================================
@@ -957,12 +886,12 @@ async function loadMembers() {
     const canManage = MY_MEMBER.role === 'master' && !isMe
     return `
     <div class="member-item cls-${u.class || 'warrior'}">
-      <div class="member-avatar"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${u.avatar_seed||u.id}" alt=""></div>
+      <div class="member-avatar"><img src="${getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
       <div class="member-info">
         <div class="member-name">
           ${escHtml(u.display_name || u.username)}
           ${isMe ? '<span style="font-family:Orbitron,monospace;font-size:7px;color:var(--cyan);padding:1px 6px;border:1px solid rgba(0,245,255,0.3)">YOU</span>' : ''}
-          <span class="member-role ${m.role}">${m.role === 'master' ? '👑' : m.role === 'officer' ? '⭐' : ''} ${m.role.toUpperCase()}</span>
+          <span class="member-role ${m.role}">${m.role === 'master' ? getIcon('crown',11) : m.role === 'officer' ? getIcon('star',11) : ''} ${m.role.toUpperCase()}</span>
         </div>
         <div class="member-cls">${(u.class||'novice').toUpperCase()} · LV.${u.level}</div>
       </div>
@@ -970,7 +899,7 @@ async function loadMembers() {
       ${canManage ? `
         <div class="member-actions">
           <button class="member-action-btn promote" onclick="promoteOfficer('${u.id}','${escHtml(u.username)}','${m.role}')">
-            ${m.role === 'officer' ? '⬇️' : '⬆️'}
+            ${m.role === 'officer' ? getIcon('levelup',13) : getIcon('levelup',13)}
           </button>
           <button class="member-action-btn" onclick="kickMember('${u.id}','${escHtml(u.username)}')">kick</button>
         </div>
@@ -998,10 +927,11 @@ async function loadMembers() {
 // GUILD QUEST
 // ============================================
 async function loadGuildQuests() {
-  const { data } = await sb.from('quests')
-    .select('*')
-    .eq('type', 'guild')
-    .eq('is_active', true)
+  if (!MY_GUILD) return
+  const { data } = await sb.from('guild_quests')
+    .select('*, quests(*)')
+    .eq('guild_id', MY_GUILD.id)
+    .eq('status', 'active')
 
   const el = document.getElementById('guestList')
   if (!data?.length) {
@@ -1014,41 +944,45 @@ async function loadGuildQuests() {
     return
   }
 
-  el.innerHTML = data.map(q => {
-    const timerH = 72 // 3 วัน
+  el.innerHTML = data.map(gq => {
+    const q = gq.quests
+    const cur = gq.current_value || 0
+    const target = gq.target_value || 3
+    const pct = Math.min(100, Math.round(cur / target * 100))
     return `
     <div class="gquest-card">
       <div class="gquest-header">
-        <div class="gquest-name">${escHtml(q.title)}</div>
-        <div class="gquest-timer">⏱️ ${timerH}h</div>
+        <div class="gquest-name">${escHtml(q?.title || 'Guild Quest')}</div>
+        <div class="gquest-timer">⏱️ 72h</div>
       </div>
-      <div class="gquest-desc">${escHtml(q.description || '')}</div>
+      <div class="gquest-desc">${escHtml(q?.description || '')}</div>
       <div class="gquest-progress">
         <div class="gquest-prog-top">
           <div class="gquest-prog-label">ความคืบหน้า</div>
-          <div class="gquest-prog-val">0 / 3 สมาชิก</div>
+          <div class="gquest-prog-val">${cur} / ${target} สมาชิก</div>
         </div>
-        <div class="gquest-track"><div class="gquest-fill" style="width:0%"></div></div>
+        <div class="gquest-track"><div class="gquest-fill" style="width:${pct}%"></div></div>
       </div>
       <div class="gquest-bottom">
         <div class="gquest-rewards">
-          <div class="gquest-reward xp">+${q.xp_reward} XP</div>
-          <div class="gquest-reward gold">+${q.gold_reward||0} Gold</div>
+          <div class="gquest-reward xp">+${q?.xp_reward || 0} XP</div>
+          <div class="gquest-reward gold">+${q?.gold_reward || 0} Gold</div>
         </div>
-        <button class="gquest-join-btn" onclick="joinGuildQuest(${q.id},this)">เข้าร่วม Quest</button>
+        <button class="gquest-join-btn" onclick="joinGuildQuest(${gq.id},'${q?.id}',this)">เข้าร่วม Quest</button>
       </div>
-      <div class="gquest-participants" style="margin-top:8px">// ต้องมีสมาชิกอย่างน้อย 3 คน</div>
+      <div class="gquest-participants" style="margin-top:8px">// ต้องมีสมาชิกอย่างน้อย ${target} คน</div>
     </div>`
   }).join('')
 }
 
-window.joinGuildQuest = async (questId, btn) => {
+window.joinGuildQuest = async (guildQuestId, questId, btn) => {
   btn.disabled = true
   btn.textContent = '⏳...'
 
-  // FIX: upsert แทน insert กัน duplicate error
+  // upsert เข้า user_quests ด้วย quest_id (ตาราง quests) จริงๆ
   const { error } = await sb.from('user_quests').upsert({
-    user_id: ME.id, quest_id: questId, status: 'in_progress'
+    user_id: ME.id, quest_id: questId, status: 'in_progress',
+    xp_granted: false
   }, { onConflict: 'user_id,quest_id', ignoreDuplicates: true })
 
   if (error) {
@@ -1056,9 +990,16 @@ window.joinGuildQuest = async (questId, btn) => {
     toast('เกิดข้อผิดพลาด', 'error'); return
   }
 
+  // อัพเดต current_value ใน guild_quests
+  await sb.rpc('update_guild_quest_progress', {
+    p_guild_quest_id: guildQuestId,
+    p_amount: 1
+  }).catch(() => {})
+
   btn.classList.add('joined')
   btn.textContent = '✅ เข้าร่วมแล้ว'
   toast('เข้าร่วม Guild Quest แล้ว! ไปทำ Quest ที่หน้า Quests', 'success')
+  await loadGuildQuests()
 }
 
 // ============================================
@@ -1079,9 +1020,17 @@ async function loadGuildFeed() {
     .limit(30)
 
   const el = document.getElementById('gfeedList')
-  if (!data?.length) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>`; return }
+  if (!data?.length) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">${getIcon('signal',20)}</div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>`; return }
 
-  const icons = { quest_complete:'✅', level_up:'⬆️', badge_unlock:'🏅', title_unlock:'🎖️', checkin:'📍', guild_join:'🤝', pvp_win:'⚔️' }
+  const icons = {
+    quest_complete: getIcon('sword',16),
+    level_up:       getIcon('levelup',16),
+    badge_unlock:   getIcon('medal',16),
+    title_unlock:   getIcon('crown',16),
+    checkin:        getIcon('checkin',16),
+    guild_join:     getIcon('guild',16),
+    pvp_win:        getIcon('trophy',16),
+  }
   const labels = { quest_complete:'ทำ Quest สำเร็จ', level_up:'Level Up!', badge_unlock:'ปลดล็อค Badge', title_unlock:'ได้รับ Title', checkin:'Check-in สถานที่ใหม่', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP!' }
 
   el.innerHTML = data.map(a => {
@@ -1090,7 +1039,7 @@ async function loadGuildFeed() {
     const t = relTime(a.created_at)
     return `
     <div class="gfeed-item">
-      <div class="gfeed-icon">${icons[a.type]||'📢'}</div>
+      <div class="gfeed-icon">${icons[a.type]||getIcon('announce',16)}</div>
       <div class="gfeed-text">
         <div class="gfeed-main"><strong>${escHtml(name)}</strong> ${labels[a.type]||a.type}</div>
         <div class="gfeed-time">${t}</div>
@@ -1141,7 +1090,7 @@ function appendChatMsg(msg, u) {
   const div = document.createElement('div')
   div.className = `chat-msg${isMe?' mine':''}`
   div.innerHTML = `
-    <div class="chat-avatar"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${u?.avatar_seed||msg.sender_id}" alt=""></div>
+    <div class="chat-avatar"><img src="${getAvatarUrl(u?.avatar_seed || msg.sender_id)}" alt=""></div>
     <div class="chat-bubble">
       <div class="chat-sender">${escHtml(u?.display_name||u?.username||'?')}</div>
       <div class="chat-text">${escHtml(msg.content)}</div>
@@ -1168,16 +1117,28 @@ window.sendChat = async () => {
 // MANAGE MEMBERS (MASTER)
 // ============================================
 window.kickMember = async (userId, uname) => {
+  // ✅ BUG FIX: ตรวจสอบ role ฝั่ง JS ก่อน execute (RLS ควรป้องกัน DB ด้วย)
+  if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
+    toast('เฉพาะ Master เท่านั้นที่ Kick ได้', 'error'); return
+  }
+  if (userId === ME?.id) { toast('ไม่สามารถ Kick ตัวเองได้', 'error'); return }
   if (!confirm(`Kick ${uname} ออกจาก Guild?`)) return
-  await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  const { error } = await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
   await sb.from('notifications').insert({ user_id: userId, title: '🚪 ถูก Kick', body: `คุณถูก Kick ออกจาก Guild "${MY_GUILD.name}"` })
   toast(`Kick ${uname} ออกแล้ว`, 'info')
   loadMembers()
 }
 
 window.promoteOfficer = async (userId, uname, currentRole) => {
+  // ✅ BUG FIX: ตรวจสอบ role ก่อน execute
+  if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
+    toast('เฉพาะ Master เท่านั้นที่ Promote/Demote ได้', 'error'); return
+  }
+  if (userId === ME?.id) { toast('ไม่สามารถเปลี่ยน role ตัวเองได้', 'error'); return }
   const newRole = currentRole === 'officer' ? 'member' : 'officer'
-  await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  const { error } = await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
   await sb.from('notifications').insert({
     user_id: userId,
     title: newRole === 'officer' ? '⭐ ได้รับตำแหน่ง Officer!' : '📝 ถูก Demote เป็น Member',
@@ -1248,7 +1209,6 @@ window.closeModal = id => document.getElementById(id).classList.remove('open')
 // ============================================
 // SIGN OUT
 // ============================================
-window.handleSignOut = async () => {
   await sb.auth.signOut()
   window.location.href = './login.html'
 }

@@ -16,34 +16,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
 .orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
-/* SIDEBAR */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid var(--border);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
-.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 16px var(--cyan);display:flex;align-items:center;gap:8px}
-.logo-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--cyan)}50%{opacity:0.3;box-shadow:none}}
-.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
-.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0}
-.su-avatar img{width:100%;height:100%;object-fit:cover}
-.su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px}
-.su-lv{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
-.nav-menu{flex:1;padding:12px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer}
-.nav-item:hover{color:var(--cyan);background:rgba(0,245,255,0.04)}
-.nav-item.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,245,255,0.06)}
-.nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
-.nav-item:hover svg,.nav-item.active svg{opacity:1}
-.nav-section-label{padding:16px 20px 6px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);opacity:0.5}
-.sidebar-bottom{padding:16px 20px;border-top:1px solid var(--border)}
-.signout-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border);cursor:pointer;transition:all 0.3s}
-.signout-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
-.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
-.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
-.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid var(--border);cursor:pointer}
-.burger span{display:block;width:18px;height:1px;background:var(--cyan)}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -144,21 +116,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .summary-panel{position:static}
 }
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.open{display:block}
-  .topbar{display:flex}
-  .main{margin-left:0;padding:80px 16px 60px;max-width:100%;overflow-x:hidden}
+  .main{margin-left:0;padding:80px 16px 60px}
   .amount-grid{grid-template-columns:repeat(2,1fr)}
-  .topup-layout{max-width:100%;overflow-x:hidden}
-  .step-panel{padding:20px 16px}
-  .summary-panel{padding:20px 16px}
-  .method-row{flex-wrap:nowrap}
-  .method-btn{min-width:0;padding:10px 6px;font-size:8px}
-  .qr-section{padding:16px 12px}
-  .bonus-table{padding:12px 10px}
-  .summary-value{font-size:11px}
-  .summary-total .summary-value{font-size:18px}
 }
 </style>
 </head>
@@ -169,53 +128,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-    <div class="sidebar-tagline">// REAL LIFE MMO</div>
-  </div>
-  <div class="sidebar-user" id="sidebarUser">
-    <div class="su-avatar" id="suAvatarWrap"><img id="suAvatar" src="" alt=""></div>
-    <div class="su-info">
-      <div class="su-name" id="suName">—</div>
-      <div class="su-class" id="suClass">—</div>
-      <div class="su-lv" id="suLv">LV.1</div>
-    </div>
-  </div>
-  <nav class="nav-menu">
-    <div class="nav-section-label">MAIN</div>
-    <a class="nav-item" href="./dashboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>DASHBOARD</a>
-    <a class="nav-item" href="./quests.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>QUESTS</a>
-    <a class="nav-item" href="./feed.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>FEED</a>
-    <a class="nav-item" href="./verify.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>VERIFY<span class="nav-badge" id="navVerifyBadge" style="display:none">0</span></a>
-    <a class="nav-item" href="./leaderboard.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="4" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="11" y="1" width="4" height="14" stroke="currentColor" stroke-width="1.2"/></svg>LEADERBOARD</a>
-    <div class="nav-section-label">WORLD</div>
-    <a class="nav-item" href="./city.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="4" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="4" width="4" height="10" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2"/></svg>CITY</a>
-    <a class="nav-item" href="./map.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 11v2M1 7h2M11 7h2" stroke="currentColor" stroke-width="1.2"/></svg>WORLD MAP</a>
-    <a class="nav-item" href="./guild.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 2-5 4-5M10 9c2 0 5 2 5 5" stroke="currentColor" stroke-width="1.2"/></svg>GUILD</a>
-    <a class="nav-item" href="./pvp.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>PVP DUEL</a>
-    <div class="nav-section-label">PROFILE</div>
-    <a class="nav-item" href="./profile.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2"/></svg>PROFILE</a>
-    <a class="nav-item" href="./achievements.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>ACHIEVEMENTS</a>
-    <div class="nav-section-label">ECONOMY</div>
-    <a class="nav-item" href="./shop.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l2 8h6l2-6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><circle cx="7" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>SHOP</a>
-    <a class="nav-item" href="./wallet.html"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" stroke="currentColor" stroke-width="1.2"/><path d="M1 8h14" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>WALLET</a>
-  </nav>
-  <div class="sidebar-bottom">
-    <button class="signout-btn" onclick="handleSignOut()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 4l3 3-3 3M12 7H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>SIGN OUT</button>
-  </div>
-</aside>
 
-<!-- TOPBAR MOBILE -->
-<div class="topbar">
-  <div class="topbar-logo">NEXUS</div>
   <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
 </div>
 
 <!-- MAIN -->
+<div id="sidebar-root"></div>
 <main class="main">
   <div class="page-header">
     <div class="page-title">💎 เติม <span>CRYSTAL</span></div>
@@ -224,7 +143,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- SUCCESS STATE -->
   <div class="success-state" id="successState">
-    <div class="success-icon">✅</div>
+    <div class="success-icon">${getIcon('check',48)}</div>
     <div class="success-title">ส่งสลิปเรียบร้อย!</div>
     <div class="success-desc">
       รายการเติมเงินของคุณอยู่ระหว่างรอ Admin ตรวจสอบ<br>
@@ -278,7 +197,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
 
         <div style="margin-top:10px;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)">
-          วงเงินสูงสุด 3,000 ฿/วัน | <span id="remainLimit" style="color:var(--cyan)">0</span> ฿ คงเหลือวันนี้
+          วงเงินสูงสุด 3,000 ฿/วัน | <span id="remainLimit" style="color:var(--cyan)">—</span> ฿ คงเหลือวันนี้
         </div>
       </div>
 
@@ -287,13 +206,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="step-title"><div class="step-num">2</div>วิธีชำระเงิน</div>
         <div class="method-row">
           <button class="method-btn selected" data-method="promptpay" onclick="selectMethod('promptpay',this)">
-            <span class="method-icon">📱</span>PROMPTPAY
+            <span class="method-icon">${getIcon('phone',22)}</span>PROMPTPAY
           </button>
           <button class="method-btn" data-method="truemoney" onclick="selectMethod('truemoney',this)">
-            <span class="method-icon">💛</span>TRUEMONEY
+            <span class="method-icon">${getIcon('wallet',22)}</span>TRUEMONEY
           </button>
           <button class="method-btn" data-method="manual" onclick="selectMethod('manual',this)">
-            <span class="method-icon">🏦</span>โอนธนาคาร
+            <span class="method-icon">${getIcon('bank',22)}</span>โอนธนาคาร
           </button>
         </div>
 
@@ -316,14 +235,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
         <div class="upload-zone" id="uploadZone">
           <input type="file" id="slipFile" accept="image/*" onchange="onFileSelect(this)">
-          <div class="upload-icon" id="uploadIcon">📄</div>
+          <div class="upload-icon" id="uploadIcon">${getIcon('upload_img',32)}</div>
           <div class="upload-text">คลิกหรือลากไฟล์สลิปมาวางที่นี่</div>
           <div class="upload-sub">รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 10MB</div>
           <img class="upload-preview" id="uploadPreview" src="" alt="">
         </div>
 
         <div class="pending-notice">
-          <div class="pending-notice-icon">⏳</div>
+          <div class="pending-notice-icon">${getIcon('bell',20)}</div>
           <div class="pending-notice-text">
             <strong>หมายเหตุ</strong><br>
             หลังส่งสลิป Admin จะตรวจสอบภายใน 30 นาที – 2 ชั่วโมง
@@ -344,11 +263,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
       <div class="summary-row">
         <div class="summary-label">จำนวนเงิน</div>
-        <div class="summary-value gold" id="sumThb">0 ฿</div>
+        <div class="summary-value gold" id="sumThb">— ฿</div>
       </div>
       <div class="summary-row">
         <div class="summary-label">Crystal ฐาน</div>
-        <div class="summary-value crystal" id="sumBase">0 💎</div>
+        <div class="summary-value crystal" id="sumBase">— 💎</div>
       </div>
       <div class="summary-row">
         <div class="summary-label">โบนัส</div>
@@ -356,7 +275,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div class="summary-row summary-total">
         <div class="summary-label">TOTAL CRYSTAL</div>
-        <div class="summary-value crystal" id="sumTotal">0 💎</div>
+        <div class="summary-value crystal" id="sumTotal">— 💎</div>
       </div>
 
       <div class="bonus-table">
@@ -378,21 +297,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 </main>
 
-<script>
-function openSidebar() {
-  document.getElementById("sidebar").classList.add("open")
-  document.getElementById("sidebarOverlay").classList.add("open")
-}
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("open")
-  document.getElementById("sidebarOverlay").classList.remove("open")
-}
-</script>
-
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+import { supabase } from './supabase.js'
+import { initSidebar } from './sidebar.js'
+import { getIcon } from './icons.js'
 
 // ─── PAYMENT CONFIG — เปลี่ยนเป็นข้อมูลจริงของคุณ ───────
 const PAYMENT_CONFIG = {
@@ -449,20 +357,6 @@ function updateDate() {
 
 
 
-window.handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = './login.html' }
-
-function renderSidebar(p) {
-  const _SE = { warrior:"⚔️", mage:"🔮", explorer:"🗺️", merchant:"💰", artist:"🎨", diplomat:"🤝" }
-  const _SC = { warrior:"#ff4444", mage:"#aa44ff", explorer:"#44ff88", merchant:"#ffaa00", artist:"#ff66aa", diplomat:"#00ccff" }
-  const cls = p.class || "warrior"
-  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
-  document.getElementById('suName').textContent = p.display_name || p.username
-  const suClassEl = document.getElementById('suClass')
-  suClassEl.textContent = (_SE[cls] || '') + ' ' + cls.toUpperCase()
-  suClassEl.style.color = _SC[cls] || 'var(--cyan)'
-  document.getElementById('suLv').textContent = `LV.${p.level || 1}`
-  document.getElementById('suAvatarWrap').className = `su-avatar cls-${cls}`
-}
 // ─── CALC CRYSTAL ─────────────────────────────────────────
 function calcCrystal(thb) {
   if (thb >= 500) return Math.round(thb * 1.20)
@@ -473,10 +367,10 @@ function calcCrystal(thb) {
 
 function updateSummary(thb, crystal) {
   const bonus = crystal - thb
-  document.getElementById('sumThb').textContent = `${(thb || 0).toLocaleString()} ฿`
-  document.getElementById('sumBase').textContent = `${thb || 0} 💎`
+  document.getElementById('sumThb').textContent = thb ? `${thb.toLocaleString()} ฿` : '— ฿'
+  document.getElementById('sumBase').textContent = thb ? `${thb} 💎` : '— 💎'
   document.getElementById('sumBonus').textContent = bonus > 0 ? `+${bonus} 💎` : '+0 💎'
-  document.getElementById('sumTotal').textContent = `${crystal || 0} 💎`
+  document.getElementById('sumTotal').textContent = crystal ? `${crystal} 💎` : '— 💎'
 }
 
 function updateQR() {
@@ -538,13 +432,7 @@ window.onFileSelect = function(input) {
   reader.onload = e => {
     preview.src = e.target.result
     preview.style.display = 'block'
-    icon.textContent = '✅'
-  }
-  reader.readAsDataURL(file)
-  checkSubmitReady()
-}
-
-// drag & drop
+    icon.innerHTML = getIcon('check', 32)
 const zone = document.getElementById('uploadZone')
 zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
 zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
@@ -556,7 +444,7 @@ zone.addEventListener('drop', e => {
     const preview = document.getElementById('uploadPreview')
     const icon = document.getElementById('uploadIcon')
     const reader = new FileReader()
-    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; icon.textContent = '✅' }
+    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; icon.innerHTML = getIcon('check', 32) }
     reader.readAsDataURL(file)
     checkSubmitReady()
   }
@@ -599,8 +487,7 @@ window.submitTopup = async function() {
       crystal_amount: selectedCrystal,
       payment_method: selectedMethod,
       slip_url: slipUrl,
-      status: 'pending',
-      note: `เติมเงิน ${selectedAmountThb} บาท ผ่าน ${selectedMethod}`
+      status: 'pending'
     })
 
     if (txErr) throw new Error('บันทึกข้อมูลไม่สำเร็จ: ' + txErr.message)
@@ -621,12 +508,45 @@ async function init() {
   initCursor()
   updateDate()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) { window.location.href = './login.html'; return }
-  currentUser = session.user
+  const { user } = await initSidebar('wallet')
+  if (!user) return
+  currentUser = user
 
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
-  if (profile) renderSidebar(profile)
+  if (profile) {
+
+    // navQuestBadge
+    const { count: questCount } = await supabase
+      .from('user_quests')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .eq('status', 'in_progress')
+    if (questCount > 0) {
+      const qb = document.getElementById('navQuestBadge')
+      qb.textContent = questCount > 99 ? '99+' : questCount
+      qb.style.display = 'inline'
+    }
+
+    // navVerifyBadge — ✅ ใช้ fallback city ป้องกันกรณี profile.city เป็น null
+    const topupCity = profile?.city || 'กรุงเทพมหานคร'
+    const { data: pending } = await supabase
+      .from('user_quests')
+      .select('id, users!inner(city)')
+      .eq('status', 'pending_review')
+      .eq('users.city', topupCity)
+      .neq('user_id', currentUser.id)
+    const { data: myVotes } = await supabase
+      .from('quest_verifications')
+      .select('user_quest_id')
+      .eq('voter_id', currentUser.id)
+    const votedIds = new Set((myVotes||[]).map(v => v.user_quest_id))
+    const notVotedCount = (pending||[]).filter(p => !votedIds.has(p.id)).length
+    if (notVotedCount > 0) {
+      const vb = document.getElementById('navVerifyBadge')
+      vb.textContent = notVotedCount > 99 ? '99+' : notVotedCount
+      vb.style.display = 'inline'
+    }
+  }
 
   // คำนวณ daily used
   const today = new Date().toISOString().slice(0, 10)
