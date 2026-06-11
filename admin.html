@@ -220,6 +220,42 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .announce-preview-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--admin-accent);margin-bottom:8px}
 .announce-preview-content{font-size:13px;color:var(--text);line-height:1.6}
 
+/* ===== QUEST MANAGEMENT ===== */
+.quest-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:800px){.quest-form-grid{grid-template-columns:1fr}}
+.quest-card{background:rgba(68,255,136,0.03);border:1px solid rgba(68,255,136,0.12);padding:16px;margin-bottom:10px;position:relative;transition:border-color 0.2s}
+.quest-card:hover{border-color:rgba(68,255,136,0.3)}
+.quest-card::before{content:'';position:absolute;top:-1px;left:-1px;width:8px;height:8px;border-top:1.5px solid var(--green);border-left:1.5px solid var(--green)}
+.quest-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.quest-card-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff}
+.quest-card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.quest-tag{display:inline-flex;align-items:center;padding:2px 8px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;border:1px solid}
+.quest-tag.type-daily{color:#00f5ff;border-color:rgba(0,245,255,0.3)}
+.quest-tag.type-weekly{color:#aa44ff;border-color:rgba(170,68,255,0.3)}
+.quest-tag.type-challenge{color:#ff9500;border-color:rgba(255,149,0,0.3)}
+.quest-tag.type-guild{color:#ffd700;border-color:rgba(255,215,0,0.3)}
+.quest-tag.type-story{color:#ff66aa;border-color:rgba(255,102,170,0.3)}
+.quest-tag.class-all{color:#5a8a90;border-color:rgba(90,138,144,0.3)}
+.quest-tag.class-warrior{color:#ff4444;border-color:rgba(255,68,68,0.3)}
+.quest-tag.class-mage{color:#aa44ff;border-color:rgba(170,68,255,0.3)}
+.quest-tag.class-explorer{color:#44ff88;border-color:rgba(68,255,136,0.3)}
+.quest-tag.class-merchant{color:#ffaa00;border-color:rgba(255,170,0,0.3)}
+.quest-tag.class-artist{color:#ff66aa;border-color:rgba(255,102,170,0.3)}
+.quest-tag.class-diplomat{color:#00ccff;border-color:rgba(0,204,255,0.3)}
+.quest-xp-badge{font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:2px 8px}
+.quest-inactive{opacity:0.45}
+.quest-toggle{display:flex;align-items:center;gap:8px}
+.toggle-switch{position:relative;width:36px;height:20px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,0,60,0.3);border:1px solid rgba(255,0,60,0.4);transition:0.2s;border-radius:20px}
+.toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:2px;bottom:2px;background:var(--red);transition:0.2s;border-radius:50%}
+.toggle-switch input:checked + .toggle-slider{background:rgba(68,255,136,0.2);border-color:rgba(68,255,136,0.4)}
+.toggle-switch input:checked + .toggle-slider::before{background:var(--green);transform:translateX(16px)}
+.submit-btn{padding:11px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;background:rgba(68,255,136,0.1);border:1px solid rgba(68,255,136,0.4);color:var(--green);cursor:pointer;transition:all 0.2s;width:100%}
+.submit-btn:hover{background:rgba(68,255,136,0.2);box-shadow:0 0 14px rgba(68,255,136,0.15)}
+.submit-btn.danger-btn{background:rgba(255,0,60,0.08);border-color:rgba(255,0,60,0.35);color:var(--red)}
+.submit-btn.danger-btn:hover{background:rgba(255,0,60,0.16)}
+
 /* ===== MUSIC PLAYER ===== */
 .music-player{background:linear-gradient(135deg,rgba(255,149,0,0.06),rgba(176,68,255,0.04));border:1px solid rgba(255,149,0,0.2);padding:24px;position:relative;overflow:hidden}
 .music-player::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--admin-accent);border-left:2px solid var(--admin-accent)}
@@ -412,6 +448,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="nav-item" onclick="switchTab('announcements', this)">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 8.01a7 7 0 0 0-6-6.95M18 8a6 6 0 0 0-6-6"/><path d="M11 3H5C3.89 3 3 3.89 3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-6"/><path d="M8 13h5m-5 4h3"/></svg>
     ANNOUNCEMENTS
+  </div>
+
+  <div class="nav-item" onclick="switchTab('quests', this)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    QUEST MGMT
+    <span class="nav-badge green" id="questCountBadge">0</span>
   </div>
 
   <div class="nav-section">MEDIA</div>
@@ -700,6 +742,143 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
   </div>
 
+  <!-- ===================== TAB: QUEST MANAGEMENT ===================== -->
+  <div class="tab-panel" id="tab-quests">
+
+    <div style="display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start" class="quest-mgmt-wrap">
+
+      <!-- LEFT: QUEST LIST -->
+      <div>
+        <div class="filter-row">
+          <input class="search-input" id="questSearch" type="text" placeholder="ค้นหา quest..." oninput="filterQuests()">
+          <select class="filter-select" id="questTypeFilter" onchange="filterQuests()">
+            <option value="all">ทุกประเภท</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="challenge">Challenge</option>
+            <option value="guild">Guild</option>
+            <option value="story">Story</option>
+          </select>
+          <select class="filter-select" id="questClassFilter" onchange="filterQuests()">
+            <option value="all">ทุก Class</option>
+            <option value="null">ทุกอาชีพ (null)</option>
+            <option value="warrior">Warrior</option>
+            <option value="mage">Mage</option>
+            <option value="explorer">Explorer</option>
+            <option value="merchant">Merchant</option>
+            <option value="artist">Artist</option>
+            <option value="diplomat">Diplomat</option>
+          </select>
+          <select class="filter-select" id="questActiveFilter" onchange="filterQuests()">
+            <option value="all">ทั้งหมด</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div class="box">
+          <div class="box-header">
+            <div class="box-title">QUEST LIST</div>
+            <div class="box-tag" id="questListCount">— quests</div>
+          </div>
+          <div class="box-body">
+            <div id="questList">
+              <div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">กำลังโหลด...</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CREATE / EDIT FORM -->
+      <div class="box" style="position:sticky;top:28px">
+        <div class="box-header">
+          <div class="box-title" id="questFormTitle">➕ สร้าง Quest ใหม่</div>
+          <button class="act-btn" id="questFormResetBtn" onclick="resetQuestForm()" style="font-size:8px">RESET</button>
+        </div>
+        <div class="box-body">
+          <input type="hidden" id="editQuestId">
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+
+            <div>
+              <div class="form-label">TITLE *</div>
+              <input class="form-input" id="qTitle" type="text" placeholder="ชื่อ quest เช่น วิ่ง 5 กม.">
+            </div>
+
+            <div>
+              <div class="form-label">DESCRIPTION</div>
+              <textarea class="form-textarea" id="qDesc" placeholder="รายละเอียด quest..." style="min-height:70px"></textarea>
+            </div>
+
+            <div class="quest-form-grid">
+              <div>
+                <div class="form-label">TYPE *</div>
+                <select class="filter-select" id="qType" style="width:100%">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="challenge">Challenge</option>
+                  <option value="guild">Guild</option>
+                  <option value="story">Story</option>
+                </select>
+              </div>
+              <div>
+                <div class="form-label">PROOF TYPE *</div>
+                <select class="filter-select" id="qProofType" style="width:100%">
+                  <option value="image">Image (รูปภาพ)</option>
+                  <option value="screenshot">Screenshot</option>
+                  <option value="text">Text (Auto approve)</option>
+                  <option value="gps">GPS (Auto approve)</option>
+                  <option value="url">URL</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="quest-form-grid">
+              <div>
+                <div class="form-label">XP REWARD *</div>
+                <input class="form-input" id="qXp" type="number" placeholder="เช่น 100" min="1" max="9999">
+              </div>
+              <div>
+                <div class="form-label">GOLD REWARD</div>
+                <input class="form-input" id="qGold" type="number" placeholder="0" min="0">
+              </div>
+            </div>
+
+            <div>
+              <div class="form-label">CLASS TARGET</div>
+              <select class="filter-select" id="qClassTarget" style="width:100%">
+                <option value="">ทุกอาชีพ (null)</option>
+                <option value="warrior">⚔️ Warrior</option>
+                <option value="mage">🔮 Mage</option>
+                <option value="explorer">🗺️ Explorer</option>
+                <option value="merchant">💰 Merchant</option>
+                <option value="artist">🎨 Artist</option>
+                <option value="diplomat">🤝 Diplomat</option>
+              </select>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:5px">null = ทำได้ทุกอาชีพ / เลือก class = เฉพาะ class นั้น</div>
+            </div>
+
+            <div>
+              <div class="form-label">STATUS</div>
+              <label class="quest-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="qIsActive" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span id="qIsActiveLabel" style="font-family:Orbitron,monospace;font-size:9px;color:var(--green)">ACTIVE</span>
+              </label>
+            </div>
+
+            <button class="submit-btn" id="questSubmitBtn" onclick="submitQuest()">CREATE QUEST</button>
+            <button class="submit-btn danger-btn" id="questDeleteBtn" onclick="deleteQuest()" style="display:none">DELETE QUEST</button>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ===================== TAB: MUSIC ===================== -->
   <div class="tab-panel" id="tab-music">
     <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
@@ -868,7 +1047,7 @@ async function init() {
   const broadcastEmptyIconHtml = document.getElementById('broadcastEmptyIconHtml')
   if (broadcastEmptyIconHtml) broadcastEmptyIconHtml.innerHTML = getIcon('announce',24)
 
-  await Promise.all([loadOverview(), loadTransactions(), loadUsers(), loadTickets(), loadAnnounceHistory()])
+  await Promise.all([loadOverview(), loadTransactions(), loadUsers(), loadTickets(), loadAnnounceHistory(), loadQuests()])
   startCharts()
   startClock()
   setupTargetListeners()
@@ -1335,6 +1514,180 @@ function setupTargetListeners() {
 }
 
 // ============================================
+// QUEST MANAGEMENT
+// ============================================
+let allQuests = []
+let editingQuestId = null
+
+async function loadQuests() {
+  const { data } = await sb.from('quests').select('*').order('created_at', { ascending: false })
+  allQuests = data || []
+  document.getElementById('questCountBadge').textContent = allQuests.filter(q => q.is_active).length
+  filterQuests()
+}
+
+window.filterQuests = function() {
+  const q = (document.getElementById('questSearch')?.value || '').toLowerCase()
+  const type = document.getElementById('questTypeFilter')?.value || 'all'
+  const cls = document.getElementById('questClassFilter')?.value || 'all'
+  const activeF = document.getElementById('questActiveFilter')?.value || 'all'
+
+  let list = allQuests.filter(quest => {
+    const matchQ = !q || (quest.title || '').toLowerCase().includes(q) || (quest.description || '').toLowerCase().includes(q)
+    const matchType = type === 'all' || quest.type === type
+    const matchCls = cls === 'all' || (cls === 'null' ? !quest.class_target : quest.class_target === cls)
+    const matchActive = activeF === 'all' || (activeF === 'active' ? quest.is_active : !quest.is_active)
+    return matchQ && matchType && matchCls && matchActive
+  })
+
+  document.getElementById('questListCount').textContent = `${list.length} quests`
+  renderQuestList(list)
+}
+
+function renderQuestList(list) {
+  const el = document.getElementById('questList')
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">ไม่พบ Quest</div></div>'
+    return
+  }
+
+  const typeColors = { daily:'type-daily', weekly:'type-weekly', challenge:'type-challenge', guild:'type-guild', story:'type-story' }
+  const typeLabel = { daily:'DAILY', weekly:'WEEKLY', challenge:'CHALLENGE', guild:'GUILD', story:'STORY' }
+  const proofLabel = { image:'📷 Image', screenshot:'🖥️ Screenshot', text:'📝 Text', gps:'📍 GPS', url:'🔗 URL' }
+  const classLabel = { warrior:'⚔️ Warrior', mage:'🔮 Mage', explorer:'🗺️ Explorer', merchant:'💰 Merchant', artist:'🎨 Artist', diplomat:'🤝 Diplomat' }
+
+  el.innerHTML = list.map(q => `
+    <div class="quest-card ${!q.is_active ? 'quest-inactive' : ''}">
+      <div class="quest-card-top">
+        <div style="flex:1;min-width:0">
+          <div class="quest-card-title">${escHtml(q.title || 'ไม่มีชื่อ')}</div>
+          <div class="quest-card-meta">
+            <span class="quest-tag ${typeColors[q.type] || ''}">${typeLabel[q.type] || q.type}</span>
+            <span class="quest-tag ${q.class_target ? 'class-' + q.class_target : 'class-all'}">${q.class_target ? classLabel[q.class_target] : 'ทุกอาชีพ'}</span>
+            <span class="quest-xp-badge">${(q.xp_reward || 0).toLocaleString()} XP</span>
+            ${q.gold_reward ? `<span class="quest-xp-badge" style="color:var(--gold);border-color:rgba(255,215,0,0.2)">${q.gold_reward} 🪙</span>` : ''}
+            <span style="font-size:10px;color:var(--text-dim)">${proofLabel[q.proof_type] || q.proof_type}</span>
+          </div>
+          ${q.description ? `<div style="font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5">${escHtml(q.description.slice(0, 100))}${q.description.length > 100 ? '...' : ''}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
+          <label class="toggle-switch" title="${q.is_active ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด'}">
+            <input type="checkbox" ${q.is_active ? 'checked' : ''} onchange="toggleQuestActive(${q.id}, this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+          <button class="act-btn primary" onclick="editQuest(${q.id})" style="font-size:7px;padding:4px 10px">แก้ไข</button>
+        </div>
+      </div>
+    </div>`).join('')
+}
+
+window.editQuest = function(id) {
+  const q = allQuests.find(x => x.id === id)
+  if (!q) return
+
+  editingQuestId = id
+  document.getElementById('editQuestId').value = id
+  document.getElementById('qTitle').value = q.title || ''
+  document.getElementById('qDesc').value = q.description || ''
+  document.getElementById('qType').value = q.type || 'daily'
+  document.getElementById('qProofType').value = q.proof_type || 'image'
+  document.getElementById('qXp').value = q.xp_reward || ''
+  document.getElementById('qGold').value = q.gold_reward || 0
+  document.getElementById('qClassTarget').value = q.class_target || ''
+  document.getElementById('qIsActive').checked = q.is_active !== false
+  document.getElementById('qIsActiveLabel').textContent = q.is_active !== false ? 'ACTIVE' : 'INACTIVE'
+  document.getElementById('qIsActiveLabel').style.color = q.is_active !== false ? 'var(--green)' : 'var(--red)'
+
+  document.getElementById('questFormTitle').textContent = '✏️ แก้ไข Quest'
+  document.getElementById('questSubmitBtn').textContent = 'UPDATE QUEST'
+  document.getElementById('questDeleteBtn').style.display = 'block'
+
+  // Scroll to form on mobile
+  document.getElementById('questSubmitBtn').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+}
+
+window.resetQuestForm = function() {
+  editingQuestId = null
+  document.getElementById('editQuestId').value = ''
+  document.getElementById('qTitle').value = ''
+  document.getElementById('qDesc').value = ''
+  document.getElementById('qType').value = 'daily'
+  document.getElementById('qProofType').value = 'image'
+  document.getElementById('qXp').value = ''
+  document.getElementById('qGold').value = 0
+  document.getElementById('qClassTarget').value = ''
+  document.getElementById('qIsActive').checked = true
+  document.getElementById('qIsActiveLabel').textContent = 'ACTIVE'
+  document.getElementById('qIsActiveLabel').style.color = 'var(--green)'
+  document.getElementById('questFormTitle').textContent = '➕ สร้าง Quest ใหม่'
+  document.getElementById('questSubmitBtn').textContent = 'CREATE QUEST'
+  document.getElementById('questDeleteBtn').style.display = 'none'
+}
+
+window.submitQuest = async function() {
+  const title = document.getElementById('qTitle').value.trim()
+  const xp = parseInt(document.getElementById('qXp').value)
+
+  if (!title) { toast('กรุณากรอก Title', 'warn'); return }
+  if (!xp || xp < 1) { toast('กรุณากรอก XP Reward', 'warn'); return }
+
+  const payload = {
+    title,
+    description: document.getElementById('qDesc').value.trim() || null,
+    type: document.getElementById('qType').value,
+    proof_type: document.getElementById('qProofType').value,
+    xp_reward: xp,
+    gold_reward: parseInt(document.getElementById('qGold').value) || 0,
+    class_target: document.getElementById('qClassTarget').value || null,
+    is_active: document.getElementById('qIsActive').checked
+  }
+
+  let error
+  if (editingQuestId) {
+    // UPDATE
+    const res = await sb.from('quests').update(payload).eq('id', editingQuestId)
+    error = res.error
+    if (!error) { toast('อัพเดต Quest สำเร็จ', 'success'); resetQuestForm() }
+  } else {
+    // INSERT
+    const res = await sb.from('quests').insert(payload)
+    error = res.error
+    if (!error) { toast('สร้าง Quest สำเร็จ', 'success'); resetQuestForm() }
+  }
+
+  if (error) { toast('Error: ' + error.message, 'error'); return }
+  await loadQuests()
+}
+
+window.deleteQuest = async function() {
+  if (!editingQuestId) return
+  const q = allQuests.find(x => x.id === editingQuestId)
+  if (!confirm(`ลบ Quest "${q?.title}" จริงๆ เหรอ?\n(ถ้าต้องการแค่ปิดใช้ แนะนำ toggle ปิดแทนนะ)`)) return
+  const { error } = await sb.from('quests').delete().eq('id', editingQuestId)
+  if (error) { toast('Error: ' + error.message, 'error'); return }
+  toast('ลบ Quest แล้ว', 'info')
+  resetQuestForm()
+  await loadQuests()
+}
+
+window.toggleQuestActive = async function(id, isActive) {
+  const { error } = await sb.from('quests').update({ is_active: isActive }).eq('id', id)
+  if (error) { toast('Error: ' + error.message, 'error'); return }
+  toast(isActive ? 'เปิด Quest แล้ว' : 'ปิด Quest แล้ว', isActive ? 'success' : 'info')
+  const q = allQuests.find(x => x.id === id)
+  if (q) q.is_active = isActive
+  document.getElementById('questCountBadge').textContent = allQuests.filter(q => q.is_active).length
+}
+
+// toggle active label
+document.addEventListener('change', e => {
+  if (e.target.id === 'qIsActive') {
+    document.getElementById('qIsActiveLabel').textContent = e.target.checked ? 'ACTIVE' : 'INACTIVE'
+    document.getElementById('qIsActiveLabel').style.color = e.target.checked ? 'var(--green)' : 'var(--red)'
+  }
+})
+
+// ============================================
 // SIGN OUT
 // ============================================
 window.handleSignOut = async () => {
@@ -1492,7 +1845,7 @@ function switchTab(name, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
   document.getElementById(`tab-${name}`).classList.add('active')
   if (el) el.classList.add('active')
-  const labels = { overview: 'OVERVIEW — NEXUS LIFE CONTROL CENTER', transactions: 'TRANSACTIONS — ตรวจสลิปเติมเงิน', users: 'USERS — จัดการผู้เล่น', support: 'SUPPORT — Ticket ของผู้เล่น', announcements: 'ANNOUNCEMENTS — Broadcast', music: 'MUSIC PLAYER — Admin BGM' }
+  const labels = { overview: 'OVERVIEW — NEXUS LIFE CONTROL CENTER', transactions: 'TRANSACTIONS — ตรวจสลิปเติมเงิน', users: 'USERS — จัดการผู้เล่น', support: 'SUPPORT — Ticket ของผู้เล่น', announcements: 'ANNOUNCEMENTS — Broadcast', music: 'MUSIC PLAYER — Admin BGM', quests: 'QUEST MANAGEMENT — สร้าง / แก้ไข / ปิด Quest' }
   document.getElementById('currentTabLabel').textContent = labels[name] || name.toUpperCase()
 }
 function openModal(id) { document.getElementById(id).classList.add('open') }
