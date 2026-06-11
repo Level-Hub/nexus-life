@@ -172,17 +172,19 @@ async function loadBadges(userId, userCity) {
 // ─── LOAD USER ───────────────────────────────────────────────
 async function loadSidebarUser(userId) {
   const { data: p } = await supabase.from('users')
-    .select('id,username,display_name,class,level,avatar_seed,city,is_admin')
+    .select('id,username,display_name,class,level,avatar_seed,avatar_url,city,is_admin')
     .eq('id', userId).single()
   if (!p) return null
 
   const cls = p.class || 'warrior'
-  const avatarUrl = p.avatar_seed
-    ? (() => {
-        const [style, s, bg] = p.avatar_seed.split(':')
-        return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=40`
-      })()
-    : `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=40`
+  const avatarUrl = p.avatar_url
+    ? p.avatar_url
+    : p.avatar_seed
+      ? (() => {
+          const [style, s, bg] = p.avatar_seed.split(':')
+          return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=40`
+        })()
+      : `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=40`
 
   // Set CSS var for class color
   const suUser = document.getElementById('sidebarUser')
@@ -306,11 +308,16 @@ export async function refreshSidebarBadges(userId, city) {
   await loadBadges(userId, city)
 }
 
-/** เปลี่ยน avatar ใน sidebar โดยไม่ต้อง reload */
-export function updateSidebarAvatar(avatarSeed) {
+/** เปลี่ยน avatar ใน sidebar โดยไม่ต้อง reload — รับ avatarUrl (direct URL) หรือ avatarSeed (seed string) */
+export function updateSidebarAvatar(avatarSeedOrUrl) {
   const img = document.getElementById('suAvatar')
-  if (!img || !avatarSeed) return
-  const [style, s, bg] = avatarSeed.split(':')
+  if (!img || !avatarSeedOrUrl) return
+  // ถ้าเป็น URL โดยตรง (มี http หรือ /) ใช้เลย
+  if (avatarSeedOrUrl.startsWith('http') || avatarSeedOrUrl.startsWith('/')) {
+    img.src = avatarSeedOrUrl
+    return
+  }
+  const [style, s, bg] = avatarSeedOrUrl.split(':')
   img.src = `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=40`
 }
 

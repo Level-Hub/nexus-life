@@ -845,7 +845,7 @@ function getAvatarUrl(avatarSeed, size=80) {
 }
 
 import { supabase } from './supabase.js'
-import { initSidebar } from './sidebar.js'
+import { initSidebar, updateSidebarAvatar, updateSidebarName } from './sidebar.js'
 import { getIcon } from './icons.js'
 import { renderBadgeItem, renderTitleCard, injectTitleStyles } from './titles.js'
 
@@ -1571,6 +1571,13 @@ window.saveProfile = async function() {
   showToast('บันทึกโปรไฟล์แล้ว!', 'success')
   closeEditModal()
   await loadProfile()
+  // อัพเดต sidebar avatar ทันที
+  if (typeof updateSidebarAvatar === 'function') {
+    updateSidebarAvatar(avatarUrl || updatePayload.avatar_seed)
+  }
+  if (typeof updateSidebarName === 'function') {
+    updateSidebarName(updatePayload.display_name || username)
+  }
   btn.disabled = false; btn.textContent = 'SAVE CHANGES →'
 }
 

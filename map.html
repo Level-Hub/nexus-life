@@ -1184,7 +1184,7 @@ window.submitCheckin = async function() {
     await supabase.from('activity_feed').insert({
       user_id: currentUser.id,
       type: 'checkin',
-      data: { place: placeName || locName, xp: finalXP, pioneer: isPioneer }
+      data: { place_name: placeName || locName, xp: finalXP, pioneer: isPioneer }
     })
 
     const bonusStr = bonusNote.length ? ` (${bonusNote.join(', ')})` : ''
