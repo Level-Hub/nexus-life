@@ -172,7 +172,7 @@ async function loadBadges(userId, userCity) {
 // ─── LOAD USER ───────────────────────────────────────────────
 async function loadSidebarUser(userId) {
   const { data: p } = await supabase.from('users')
-    .select('id,username,display_name,class,level,avatar_seed,city')
+    .select('id,username,display_name,class,level,avatar_seed,city,is_admin')
     .eq('id', userId).single()
   if (!p) return null
 
@@ -200,6 +200,20 @@ async function loadSidebarUser(userId) {
     suClass.innerHTML = `${iconSvg}${cls.toUpperCase()}`
   }
   if (suLv)     suLv.textContent = `LV.${p.level || 1}`
+
+  // inject ADMIN link เฉพาะ is_admin = true
+  if (p.is_admin) {
+    const nav = document.querySelector('.nav-menu')
+    if (nav) {
+      const adminHTML = `
+        <div class="nav-section-label">SYSTEM</div>
+        <a class="nav-item${activePage === 'admin' ? ' active' : ''}" href="./admin.html" style="color:#ff9500;border-left-color:${activePage === 'admin' ? '#ff9500' : 'transparent'}">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.2"/></svg>
+          ADMIN
+        </a>`
+      nav.insertAdjacentHTML('beforeend', adminHTML)
+    }
+  }
 
   return p
 }
