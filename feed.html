@@ -323,6 +323,7 @@ if (cityBuffIcon) cityBuffIcon.innerHTML = getIcon('city', 22)
 const userId = user.id
 let myCity = 'กรุงเทพมหานคร'
 let myClass = 'warrior'
+let myUsername = ''
 let currentFilter = 'city'
 let feedOffset = 0
 const PAGE_SIZE = 15
@@ -346,6 +347,7 @@ async function loadProfile() {
 
   myCity = u.city || 'กรุงเทพมหานคร'
   myClass = u.class || 'warrior'
+  myUsername = u.username || u.display_name || 'คุณ'
 
   const clsClass = 'cls-' + (u.class || 'warrior')
 
@@ -537,10 +539,40 @@ async function loadFeed(reset = true) {
     return
   }
 
+  // ดึง likes/comments/cheers จาก DB พร้อมกัน
+  const feedIds = feed.map(f => f.id)
+  const [likesRes, commentsRes, cheersRes, myLikesRes, myCheersRes] = await Promise.all([
+    supabase.from('activity_feed_likes').select('feed_id').in('feed_id', feedIds),
+    supabase.from('activity_feed_comments').select('feed_id').in('feed_id', feedIds),
+    supabase.from('activity_feed_cheers').select('feed_id').in('feed_id', feedIds),
+    supabase.from('activity_feed_likes').select('feed_id').in('feed_id', feedIds).eq('user_id', userId),
+    supabase.from('activity_feed_cheers').select('feed_id').in('feed_id', feedIds).eq('user_id', userId),
+  ])
+
+  const likeCounts   = {}
+  const commentCounts = {}
+  const cheerCounts  = {}
+  const myLikedSet   = new Set((myLikesRes.data || []).map(r => r.feed_id))
+  const myCheeredSet = new Set((myCheersRes.data || []).map(r => r.feed_id))
+
+  ;(likesRes.data || []).forEach(r => { likeCounts[r.feed_id] = (likeCounts[r.feed_id] || 0) + 1 })
+  ;(commentsRes.data || []).forEach(r => { commentCounts[r.feed_id] = (commentCounts[r.feed_id] || 0) + 1 })
+  ;(cheersRes.data || []).forEach(r => { cheerCounts[r.feed_id] = (cheerCounts[r.feed_id] || 0) + 1 })
+
+  // เพิ่ม count ลงใน item ก่อน render
+  const enriched = feed.map(item => ({
+    ...item,
+    like_count:    likeCounts[item.id] || 0,
+    comment_count: commentCounts[item.id] || 0,
+    cheer_count:   cheerCounts[item.id] || 0,
+    user_liked:    myLikedSet.has(item.id),
+    user_cheered:  myCheeredSet.has(item.id),
+  }))
+
   document.getElementById('loadMoreBtn').style.display = 'flex'
   if (feed.length < PAGE_SIZE) document.getElementById('loadMoreBtn').style.display = 'none'
 
-  const html = feed.map(item => renderFeedCard(item)).join('')
+  const html = enriched.map(item => renderFeedCard(item)).join('')
 
   if (reset) {
     document.getElementById('feedList').innerHTML = html
@@ -623,7 +655,11 @@ function renderFeedCard(item) {
       content = `<strong>${escHtml(item.display_name || item.username)}</strong> มี activity ใหม่`
   }
 
-  const likeCount = data.likes || 0
+  const likeCount = item.like_count || 0
+  const commentCount = item.comment_count || 0
+  const cheerCount = item.cheer_count || 0
+  const userLiked = item.user_liked || false
+  const userCheered = item.user_cheered || false
 
   return `
     <div class="feed-card cls-${item.class || 'warrior'} ${extraClass}" data-id="${item.id}">
@@ -644,16 +680,16 @@ function renderFeedCard(item) {
       </div>
       ${data.proof_url ? `<div class="feed-proof"><img src="${escHtml(data.proof_url)}" alt="proof" loading="lazy"></div>` : ''}
       <div class="feed-actions">
-        <button class="feed-action-btn like-btn" data-id="${item.id}" data-likes="${likeCount}">
+        <button class="feed-action-btn like-btn${userLiked ? ' liked' : ''}" data-id="${item.id}" data-likes="${likeCount}" data-liked="${userLiked}">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12s-5-3.5-5-6.5C2 3.57 3.57 2 5.5 2c.9 0 1.7.37 2.5 1 .8-.63 1.6-1 2.5-1C12.43 2 14 3.57 14 5.5c0 3-5 6.5-5 6.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
           <span class="like-count">${likeCount}</span>
         </button>
         <button class="feed-action-btn comment-toggle-btn" data-id="${item.id}">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v8H7l-3 2V10H2z" stroke="currentColor" stroke-width="1.2"/></svg>
-          ความคิดเห็น
+          <span class="comment-count">${commentCount > 0 ? commentCount : 'ความคิดเห็น'}</span>
         </button>
-        <button class="feed-action-btn cheer-btn" data-id="${item.id}" style="margin-left:auto">
-          <span id="cheer-icon-${item.id}"></span> Cheer
+        <button class="feed-action-btn cheer-btn${userCheered ? ' cheered' : ''}" data-id="${item.id}" data-cheered="${userCheered}" style="margin-left:auto${userCheered ? ';color:var(--gold)' : ''}">
+          <span id="cheer-icon-${item.id}"></span> <span class="cheer-label">${userCheered ? 'Cheered!' : 'Cheer'}</span>${cheerCount > 0 ? ` <span class="cheer-count">${cheerCount}</span>` : ''}
         </button>
       </div>
       <div class="comment-area" id="comments-${item.id}">
@@ -668,55 +704,127 @@ function renderFeedCard(item) {
 }
 
 function attachCardListeners() {
-  // Like buttons
+  // Like buttons — real DB
   document.querySelectorAll('.like-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.classList.toggle('liked')
-      const count = parseInt(btn.dataset.likes || 0)
-      const newCount = btn.classList.contains('liked') ? count + 1 : count - 1
-      btn.dataset.likes = newCount
-      btn.querySelector('.like-count').textContent = newCount
+    if (btn.dataset.bound) return
+    btn.dataset.bound = '1'
+    btn.addEventListener('click', async () => {
+      const feedId = parseInt(btn.dataset.id)
+      const liked = btn.dataset.liked === 'true'
+      const countEl = btn.querySelector('.like-count')
+      const cur = parseInt(btn.dataset.likes || 0)
+
+      if (liked) {
+        // Unlike
+        await supabase.from('activity_feed_likes')
+          .delete().eq('feed_id', feedId).eq('user_id', userId)
+        btn.classList.remove('liked')
+        btn.dataset.liked = 'false'
+        btn.dataset.likes = cur - 1
+        countEl.textContent = cur - 1
+      } else {
+        // Like
+        await supabase.from('activity_feed_likes')
+          .insert({ feed_id: feedId, user_id: userId })
+        btn.classList.add('liked')
+        btn.dataset.liked = 'true'
+        btn.dataset.likes = cur + 1
+        countEl.textContent = cur + 1
+      }
     })
   })
 
-  // Comment toggles
+  // Comment toggles — load comments from DB on open
   document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const area = document.getElementById(`comments-${btn.dataset.id}`)
+    if (btn.dataset.bound) return
+    btn.dataset.bound = '1'
+    btn.addEventListener('click', async () => {
+      const feedId = btn.dataset.id
+      const area = document.getElementById(`comments-${feedId}`)
       area.classList.toggle('open')
       if (area.classList.contains('open')) {
+        await loadComments(feedId)
         area.querySelector('.comment-input').focus()
       }
     })
   })
 
-  // Cheer buttons
+  // Cheer buttons — real DB
   document.querySelectorAll('.cheer-btn').forEach(btn => {
+    if (btn.dataset.bound) return
+    btn.dataset.bound = '1'
     const id = btn.dataset.id
-    const iconEl = btn.querySelector('span[id^="cheer-icon-"]')
+    const iconEl = btn.querySelector(`#cheer-icon-${id}`)
     if (iconEl) iconEl.innerHTML = getIcon('lightning', 14)
-    btn.addEventListener('click', () => {
+    if (btn.dataset.cheered === 'true') {
       if (iconEl) iconEl.innerHTML = getIcon('check_circle', 14)
-      btn.querySelector('span[id^="cheer-icon-"]')
-      btn.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = ' Cheered!' })
-      btn.style.color = 'var(--gold)'
       btn.disabled = true
+    }
+    btn.addEventListener('click', async () => {
+      if (btn.dataset.cheered === 'true') return
+      const feedId = parseInt(btn.dataset.id)
+      const { error } = await supabase.from('activity_feed_cheers')
+        .insert({ feed_id: feedId, user_id: userId })
+      if (!error) {
+        if (iconEl) iconEl.innerHTML = getIcon('check_circle', 14)
+        btn.querySelector('.cheer-label').textContent = 'Cheered!'
+        btn.style.color = 'var(--gold)'
+        btn.dataset.cheered = 'true'
+        btn.disabled = true
+      }
     })
   })
 }
 
-window.sendComment = function(feedId) {
+async function loadComments(feedId) {
+  const list = document.getElementById(`comment-list-${feedId}`)
+  if (!list) return
+  const { data: comments } = await supabase
+    .from('activity_feed_comments')
+    .select('content, user_id, created_at, users(username)')
+    .eq('feed_id', feedId)
+    .order('created_at', { ascending: true })
+  if (!comments || comments.length === 0) return
+  list.innerHTML = comments.map(c => `
+    <div class="comment-item">
+      <span class="comment-user">${escHtml(c.users?.username || '—')}</span>
+      <span class="comment-text">${escHtml(c.content)}</span>
+    </div>
+  `).join('')
+}
+
+window.sendComment = async function(feedId) {
   const input = document.getElementById(`comment-input-${feedId}`)
   const val = input.value.trim()
   if (!val) return
+  const btn = input.nextElementSibling
+  btn.disabled = true
+  btn.textContent = '...'
+
+  const { error } = await supabase.from('activity_feed_comments')
+    .insert({ feed_id: parseInt(feedId), user_id: userId, content: val })
+
+  btn.disabled = false
+  btn.textContent = 'ส่ง'
+  if (error) return
+
+  input.value = ''
   const list = document.getElementById(`comment-list-${feedId}`)
   list.insertAdjacentHTML('beforeend', `
     <div class="comment-item">
-      <span class="comment-user">คุณ</span>
+      <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
       <span class="comment-text">${escHtml(val)}</span>
     </div>
   `)
-  input.value = ''
+  // update comment count badge
+  const toggleBtn = document.querySelector(`.comment-toggle-btn[data-id="${feedId}"]`)
+  if (toggleBtn) {
+    const countEl = toggleBtn.querySelector('.comment-count')
+    if (countEl) {
+      const cur = parseInt(countEl.textContent) || 0
+      countEl.textContent = cur + 1
+    }
+  }
 }
 
 // ===== FILTER =====
@@ -776,7 +884,9 @@ function subscribeRealtime() {
         if (!ids.includes(item.user_id)) return
       }
 
-      const html = renderFeedCard(item)
+      // new items จาก realtime ยังไม่มี like/cheer — ใส่ค่า default
+      const enrichedItem = { ...item, like_count: 0, comment_count: 0, cheer_count: 0, user_liked: false, user_cheered: false }
+      const html = renderFeedCard(enrichedItem)
       document.getElementById('feedList').insertAdjacentHTML('afterbegin', html)
       attachCardListeners()
     })
