@@ -170,7 +170,7 @@ async function loadBadges(userId, userCity) {
 }
 
 // ─── LOAD USER ───────────────────────────────────────────────
-async function loadSidebarUser(userId) {
+async function loadSidebarUser(userId, activePage = '') {
   const { data: p } = await supabase.from('users')
     .select('id,username,display_name,class,level,avatar_seed,avatar_url,city,is_admin')
     .eq('id', userId).single()
@@ -296,7 +296,7 @@ export async function initSidebar(activePage = '', options = {}) {
   initEvents()
 
   // 5. Load user + badges พร้อมกัน
-  const profile = await loadSidebarUser(userId)
+  const profile = await loadSidebarUser(userId, activePage)
   if (profile) await loadBadges(userId, profile.city)
 
   return { user: session.user, profile }
