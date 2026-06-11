@@ -1327,17 +1327,18 @@ window.submitProof = async function() {
 // STREAK DAYS
 // ============================================================
 function renderStreakDays(streak, lastDate) {
-  const days   = ['อา','จ','อ','พ','พฤ','ศ','ส']
-  const today  = new Date().getDay()
-  const items  = document.querySelectorAll('.streak-day')
+  const days  = ['อา','จ','อ','พ','พฤ','ศ','ส']
+  const today = new Date().getDay()
+  const items = document.querySelectorAll('.streak-day')
   items.forEach((el, i) => {
     el.classList.remove('done','today')
     el.textContent = days[i]
-    const diff = (i - today + 7) % 7
-    if (diff === 0) {
+    // daysAgo: วันนี้ = 0, เมื่อวาน = 1, สองวันก่อน = 2 ...
+    const daysAgo = (today - i + 7) % 7
+    if (daysAgo === 0) {
       el.classList.add('today')
       if (streak > 0) el.classList.add('done')
-    } else if (diff > 0 && diff <= Math.min(streak - 1, 6)) {
+    } else if (daysAgo > 0 && daysAgo < streak) {
       el.classList.add('done')
     }
   })

@@ -1087,7 +1087,7 @@ async function checkNotifications() {
 
   // ✅ FIX: ใช้ profile.city ที่โหลดมาแล้ว + fallback แทน userProfile?.city
   // เหตุผล: if (userProfile?.city) จะ skip ทั้งบล็อกถ้า city เป็น null/undefined
-  const lbCity = profile?.city || 'กรุงเทพมหานคร'
+  const lbCity = userProfile?.city || 'กรุงเทพมหานคร'
   // navVerifyBadge
   const { data: pendingLB } = await supabase
     .from('user_quests')

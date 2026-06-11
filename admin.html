@@ -1278,7 +1278,7 @@ window.approveTransaction = async (id) => {
         const cur = data?.[0]?.crystal || 0
         await sb.from('users').update({ crystal: cur + crystal }).eq('id', tx.user_id)
       })
-      await sb.from('notifications').insert({ user_id: tx.user_id, type: 'crystal', title: 'เติม Crystal สำเร็จ!', body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว` })
+      await sb.from('notifications').insert({ user_id: tx.user_id, title: 'เติม Crystal สำเร็จ!', body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว` })
     }
   }
   if (note) await sb.from('transactions').update({ note }).eq('id', id)
@@ -1291,7 +1291,7 @@ window.rejectTransaction = async (id) => {
   if (!confirm('ปฏิเสธ transaction นี้?')) return
   await sb.from('transactions').update({ status: 'rejected', admin_verified_by: ME.id, verified_at: new Date().toISOString(), note }).eq('id', id)
   const { data: tx } = await sb.from('transactions').select('user_id').eq('id', id).single()
-  if (tx) await sb.from('notifications').insert({ user_id: tx.user_id, type: 'system', title: 'เติมเงินไม่สำเร็จ', body: 'ไม่สามารถยืนยันสลิปได้ กรุณาติดต่อ Admin' })
+  if (tx) await sb.from('notifications').insert({ user_id: tx.user_id, title: 'เติมเงินไม่สำเร็จ', body: 'ไม่สามารถยืนยันสลิปได้ กรุณาติดต่อ Admin' })
   toast('Reject แล้ว', 'info')
   await loadTransactions()
   await loadOverview()
@@ -1372,7 +1372,7 @@ window.toggleBan = async (userId, isBanned, uname) => {
   if (!confirm(`${action} @${uname}?`)) return
   await sb.from('users').update({ is_banned: !isBanned }).eq('id', userId)
   if (!isBanned) {
-    await sb.from('notifications').insert({ user_id: userId, type: 'system', title: 'บัญชีถูกระงับ', body: 'บัญชีของคุณถูกระงับโดย Admin กรุณาติดต่อ Support' })
+    await sb.from('notifications').insert({ user_id: userId, title: 'บัญชีถูกระงับ', body: 'บัญชีของคุณถูกระงับโดย Admin กรุณาติดต่อ Support' })
   }
   toast(`${isBanned ? 'Unban' : 'Ban'} @${uname} แล้ว`, isBanned ? 'success' : 'warn')
   await loadUsers()
@@ -1431,7 +1431,7 @@ window.replyTicket = async (id, newStatus) => {
   if (reply) update.admin_reply = reply
   await sb.from('support_tickets').update(update).eq('id', id)
   const { data: tk } = await sb.from('support_tickets').select('user_id, subject').eq('id', id).single()
-  if (tk && reply) await sb.from('notifications').insert({ user_id: tk.user_id, type: 'system', title: 'Admin ตอบ Ticket ของคุณ', body: reply.slice(0, 100) })
+  if (tk && reply) await sb.from('notifications').insert({ user_id: tk.user_id, title: 'Admin ตอบ Ticket ของคุณ', body: reply.slice(0, 100) })
   toast(newStatus === 'closed' ? 'ปิด Ticket แล้ว' : 'ตอบกลับแล้ว', 'success')
   await loadTickets()
   await loadOverview()
@@ -1487,7 +1487,7 @@ window.sendAnnouncement = async function() {
 
   if (!userIds.length) { toast('ไม่พบ user ที่ตรงกับเงื่อนไข', 'warn'); return }
 
-  const rows = userIds.map(uid => ({ user_id: uid, type, title, body }))
+  const rows = userIds.map(uid => ({ user_id: uid, title, body }))
   const BATCH = 50
   for (let i = 0; i < rows.length; i += BATCH) {
     await sb.from('notifications').insert(rows.slice(i, i + BATCH))

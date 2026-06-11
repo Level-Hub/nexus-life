@@ -728,7 +728,7 @@ async function loadProfile() {
     .from('user_quests')
     .select('id, users!inner(city)')
     .eq('status', 'pending_review')
-    .eq('users.city', data.city)
+    .eq('users.city', data.city || 'กรุงเทพมหานคร')
     .neq('user_id', currentUser.id)
   const { data: myVotesV } = await supabase
     .from('quest_verifications')
