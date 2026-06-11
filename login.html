@@ -243,7 +243,7 @@
   .mini-class.artist   { --cc: rgba(255,102,170,0.15); }
   .mini-class.diplomat { --cc: rgba(0,204,255,0.15); }
 
-  .mini-class-emoji { font-size: 22px; display: block; margin-bottom: 4px; }
+  .mini-class-icon { display:flex; align-items:center; justify-content:center; height:28px; margin-bottom:6px; }
   .mini-class-name {
     font-family: 'Orbitron', monospace;
     font-size: 8px;
@@ -639,27 +639,27 @@
     <!-- MINI CLASS SHOWCASE -->
     <div class="mini-classes">
       <div class="mini-class warrior">
-        <span class="mini-class-emoji">⚔️</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">WARRIOR</div>
       </div>
       <div class="mini-class mage">
-        <span class="mini-class-emoji">🔮</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">MAGE</div>
       </div>
       <div class="mini-class explorer">
-        <span class="mini-class-emoji">🗺️</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">EXPLORER</div>
       </div>
       <div class="mini-class merchant">
-        <span class="mini-class-emoji">💰</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">MERCHANT</div>
       </div>
       <div class="mini-class artist">
-        <span class="mini-class-emoji">🎨</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">ARTIST</div>
       </div>
       <div class="mini-class diplomat">
-        <span class="mini-class-emoji">🤝</span>
+        <div class="mini-class-icon"></div>
         <div class="mini-class-name">DIPLOMAT</div>
       </div>
     </div>
@@ -809,27 +809,27 @@
           <div id="classPickerMsg" style="font-family:'Orbitron',monospace;font-size:9px;color:var(--red);margin-bottom:6px;display:none;">กรุณาเลือกอาชีพก่อน</div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
             <div class="class-pick-btn" data-class="warrior" onclick="selectClass('warrior',this)" style="border:1px solid rgba(255,68,68,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">⚔️</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">WARRIOR</div>
             </div>
             <div class="class-pick-btn" data-class="mage" onclick="selectClass('mage',this)" style="border:1px solid rgba(170,68,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">🔮</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MAGE</div>
             </div>
             <div class="class-pick-btn" data-class="explorer" onclick="selectClass('explorer',this)" style="border:1px solid rgba(68,255,136,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">🗺️</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">EXPLORER</div>
             </div>
             <div class="class-pick-btn" data-class="merchant" onclick="selectClass('merchant',this)" style="border:1px solid rgba(255,170,0,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">💰</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MERCHANT</div>
             </div>
             <div class="class-pick-btn" data-class="artist" onclick="selectClass('artist',this)" style="border:1px solid rgba(255,102,170,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">🎨</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">ARTIST</div>
             </div>
             <div class="class-pick-btn" data-class="diplomat" onclick="selectClass('diplomat',this)" style="border:1px solid rgba(0,204,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div style="font-size:20px;margin-bottom:4px;">🤝</div>
+              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
               <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">DIPLOMAT</div>
             </div>
           </div>
@@ -862,9 +862,27 @@
 
 <script type="module">
   import { supabase, signIn, signUp, redirectIfLoggedIn } from './supabase.js'
+  import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
 
   // ถ้า login แล้วให้ redirect ไป dashboard ทันที
-  redirectIfLoggedIn('./dashboard.html')
+  await redirectIfLoggedIn('./dashboard.html')
+
+  // ====== INJECT CLASS ICONS (แทน emoji ใน mini-classes) ======
+  const classMap = ['warrior','mage','explorer','merchant','artist','diplomat']
+  classMap.forEach(cls => {
+    const el = document.querySelector(`.mini-class.${cls} .mini-class-icon`)
+    if (el && CLASS_ICONS[cls]) {
+      el.innerHTML = `<svg width="24" height="24" viewBox="0 0 20 20" fill="none" style="color:${CLASS_COLOR[cls]}">${CLASS_ICONS[cls]}</svg>`
+    }
+  })
+
+  // ====== INJECT CLASS ICONS ใน class-pick-btn (register form) ======
+  classMap.forEach(cls => {
+    const wrap = document.querySelector(`.class-pick-btn[data-class="${cls}"] .cls-icon-wrap`)
+    if (wrap && CLASS_ICONS[cls]) {
+      wrap.innerHTML = `<svg width="24" height="24" viewBox="0 0 20 20" fill="none" style="color:${CLASS_COLOR[cls]}">${CLASS_ICONS[cls]}</svg>`
+    }
+  })
 
   // ====== CURSOR ======
   const cursor = document.getElementById('cursor')
@@ -972,7 +990,7 @@
         .from('users')
         .select('email')
         .eq('username', identifier.toLowerCase())
-        .single()
+        .maybeSingle()
 
       if (userErr || !userData?.email) {
         setLoading('btn-login', false)
@@ -1052,7 +1070,7 @@
     if (data.user) {
       const avatarSeed = `pixel-art:${username.toLowerCase()}:0a1628`
 
-      await supabase.from('users').insert({
+      const { error: dbErr } = await supabase.from('users').insert({
         id: data.user.id,
         username: username.toLowerCase(),
         display_name: username,
@@ -1063,7 +1081,7 @@
         level: 1,
         xp_total: 0,
         xp_this_month: 0,
-        gold: 100,       // gold เริ่มต้น
+        gold: 100,
         crystal: 0,
         rank: 'bronze',
         streak_current: 0,
@@ -1072,27 +1090,27 @@
         stats_public: true,
         feed_public: true,
         location_public: true,
+        map_visible: true,
+        // FIX: เพิ่ม fields ที่ขาดหายไป
+        status_emoji: '',
+        status_text: '',
         grace_day_used: false,
+        pvp_win_streak: 0,
+        class_changed_at: new Date().toISOString(),
+        equipped_frame_id: null,
+        equipped_pet_id: null,
       })
 
-      // FIX 3: สร้าง user_stats row
-      await supabase.from('user_stats').insert({
-        user_id: data.user.id,
-        str_points: 0,
-        int_points: 0,
-        exp_points: 0,
-        biz_points: 0,
-        cre_points: 0,
-        soc_points: 0,
-      })
+      // FIX: error handling หลัง insert
+      if (dbErr) {
+        setLoading('btn-register', false)
+        const errMap = { 'duplicate key value violates unique constraint': 'Username นี้ถูกใช้ไปแล้ว' }
+        showMsg('msg-register', 'error', errMap[dbErr.message] || dbErr.message || 'ไม่สามารถสร้างโปรไฟล์ได้ กรุณาลองใหม่')
+        return
+      }
 
-      // FIX 4: สร้าง wallet row
-      await supabase.from('wallet').insert({
-        user_id: data.user.id,
-        balance_thb: 0,
-        crystal_purchased: 0,
-        crystal_spent: 0,
-      })
+      // หมายเหตุ: user_stats และ wallet สร้างอัตโนมัติผ่าน DB trigger
+      // create_user_stats_on_insert และ create_wallet_on_insert — ไม่ต้อง insert เอง
     }
 
     setLoading('btn-register', false)
@@ -1111,7 +1129,7 @@
     let email = identifier
     if (!identifier.includes('@')) {
       const { data: userData } = await supabase
-        .from('users').select('email').eq('username', identifier.toLowerCase()).single()
+        .from('users').select('email').eq('username', identifier.toLowerCase()).maybeSingle()
       if (!userData?.email) {
         showMsg('msg-login', 'error', 'ไม่พบ username นี้ในระบบ')
         return
