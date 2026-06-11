@@ -876,7 +876,7 @@ async function loadProfile() {
     equippedTitle = null
   }
 
-  const avatarUrl = getAvatarUrl(profile.avatar_seed)
+  const avatarUrl = profile.avatar_url || getAvatarUrl(profile.avatar_seed)
   const cls = profile.class || 'warrior'
   const clsClass = 'cls-' + cls
 
