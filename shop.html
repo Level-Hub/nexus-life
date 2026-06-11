@@ -170,9 +170,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="toast-container" id="toastContainer"></div>
 
 
-  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-</div>
-
 <div id="sidebar-root"></div>
 <!-- MAIN -->
 <main class="main">
@@ -535,7 +532,6 @@ async function loadData() {
   userProfile = profileRes.data
   myPurchases = purchasesRes.data || []
 
-  if (userProfile)
 }
 
 // ─── INIT ────────────────────────────────────────────────

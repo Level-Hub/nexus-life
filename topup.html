@@ -116,8 +116,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .summary-panel{position:static}
 }
 @media(max-width:768px){
-  .main{margin-left:0;padding:80px 16px 60px}
+  .main{margin-left:0;padding:80px 16px 40px}
   .amount-grid{grid-template-columns:repeat(2,1fr)}
+  .amount-thb{font-size:16px}
+  .amount-crystal{font-size:11px}
+  .step-panel{padding:18px 14px}
+  .topup-layout{gap:14px}
+  .summary-total .summary-value{font-size:17px}
+  .qr-box img{width:130px;height:130px}
 }
 </style>
 </head>
@@ -130,10 +136,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="orb orb-2"></div>
 
 
-  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-</div>
 
-<!-- MAIN -->
 <div id="sidebar-root"></div>
 <main class="main">
   <div class="page-header">
@@ -143,7 +146,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- SUCCESS STATE -->
   <div class="success-state" id="successState">
-    <div class="success-icon">${getIcon('check',48)}</div>
+    <div class="success-icon" id="successIcon"></div>
     <div class="success-title">ส่งสลิปเรียบร้อย!</div>
     <div class="success-desc">
       รายการเติมเงินของคุณอยู่ระหว่างรอ Admin ตรวจสอบ<br>
@@ -206,13 +209,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="step-title"><div class="step-num">2</div>วิธีชำระเงิน</div>
         <div class="method-row">
           <button class="method-btn selected" data-method="promptpay" onclick="selectMethod('promptpay',this)">
-            <span class="method-icon">${getIcon('phone',22)}</span>PROMPTPAY
+            <span class="method-icon" id="methodIconPromptpay"></span>PROMPTPAY
           </button>
           <button class="method-btn" data-method="truemoney" onclick="selectMethod('truemoney',this)">
-            <span class="method-icon">${getIcon('wallet',22)}</span>TRUEMONEY
+            <span class="method-icon" id="methodIconTruemoney"></span>TRUEMONEY
           </button>
           <button class="method-btn" data-method="manual" onclick="selectMethod('manual',this)">
-            <span class="method-icon">${getIcon('bank',22)}</span>โอนธนาคาร
+            <span class="method-icon" id="methodIconManual"></span>โอนธนาคาร
           </button>
         </div>
 
@@ -235,14 +238,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
         <div class="upload-zone" id="uploadZone">
           <input type="file" id="slipFile" accept="image/*" onchange="onFileSelect(this)">
-          <div class="upload-icon" id="uploadIcon">${getIcon('upload_img',32)}</div>
+          <div class="upload-icon" id="uploadIcon"></div>
           <div class="upload-text">คลิกหรือลากไฟล์สลิปมาวางที่นี่</div>
           <div class="upload-sub">รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 10MB</div>
           <img class="upload-preview" id="uploadPreview" src="" alt="">
         </div>
 
         <div class="pending-notice">
-          <div class="pending-notice-icon">${getIcon('bell',20)}</div>
+          <div class="pending-notice-icon" id="pendingNoticeIcon"></div>
           <div class="pending-notice-text">
             <strong>หมายเหตุ</strong><br>
             หลังส่งสลิป Admin จะตรวจสอบภายใน 30 นาที – 2 ชั่วโมง
@@ -433,22 +436,30 @@ window.onFileSelect = function(input) {
     preview.src = e.target.result
     preview.style.display = 'block'
     icon.innerHTML = getIcon('check', 32)
-const zone = document.getElementById('uploadZone')
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
-zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
-zone.addEventListener('drop', e => {
-  e.preventDefault(); zone.classList.remove('dragover')
-  const file = e.dataTransfer.files[0]
-  if (file && file.type.startsWith('image/')) {
-    slipFile = file
-    const preview = document.getElementById('uploadPreview')
-    const icon = document.getElementById('uploadIcon')
-    const reader = new FileReader()
-    reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; icon.innerHTML = getIcon('check', 32) }
-    reader.readAsDataURL(file)
-    checkSubmitReady()
   }
-})
+  reader.readAsDataURL(file)
+  checkSubmitReady()
+}
+
+// ─── DRAG & DROP ──────────────────────────────────────────
+const zone = document.getElementById('uploadZone')
+if (zone) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragover')
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) {
+      slipFile = file
+      const preview = document.getElementById('uploadPreview')
+      const icon = document.getElementById('uploadIcon')
+      const reader = new FileReader()
+      reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; icon.innerHTML = getIcon('check', 32) }
+      reader.readAsDataURL(file)
+      checkSubmitReady()
+    }
+  })
+}
 
 // ─── SUBMIT ───────────────────────────────────────────────
 window.submitTopup = async function() {
@@ -515,8 +526,20 @@ async function init() {
   if (shopBtn) shopBtn.innerHTML = getIcon('cart', 14) + ' SHOP'
   const policyTitle = document.getElementById('policyTitle')
   if (policyTitle) policyTitle.innerHTML = getIcon('shield', 12) + ' POLICY'
+  const successIcon = document.getElementById('successIcon')
+  if (successIcon) successIcon.innerHTML = getIcon('check', 48)
+  const methodIconPromptpay = document.getElementById('methodIconPromptpay')
+  if (methodIconPromptpay) methodIconPromptpay.innerHTML = getIcon('phone', 22)
+  const methodIconTruemoney = document.getElementById('methodIconTruemoney')
+  if (methodIconTruemoney) methodIconTruemoney.innerHTML = getIcon('wallet', 22)
+  const methodIconManual = document.getElementById('methodIconManual')
+  if (methodIconManual) methodIconManual.innerHTML = getIcon('bank', 22)
+  const pendingNoticeIcon = document.getElementById('pendingNoticeIcon')
+  if (pendingNoticeIcon) pendingNoticeIcon.innerHTML = getIcon('bell', 20)
+  const uploadIconEl = document.getElementById('uploadIcon')
+  if (uploadIconEl) uploadIconEl.innerHTML = getIcon('upload_img', 32)
 
-  const { user } = await initSidebar('wallet')
+  const { user } = await initSidebar('topup')
   if (!user) return
   currentUser = user
 

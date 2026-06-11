@@ -251,7 +251,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 
 .pm-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#fff;margin-bottom:2px; }
-.pm-title { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);margin-bottom:4px; }
+.pm-title { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);margin-bottom:4px;min-height:20px; }
 .pm-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));margin-bottom:16px; }
 
 .pm-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border); }
@@ -719,6 +719,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, SYSTEM_ICONS, QUEST_ICONS, getIcon } from './icons.js'
+import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ============================================================
 // STATE
@@ -771,6 +772,8 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  injectTitleStyles()
+
   // inject static icon placeholders
   const questLoadingIcon = document.getElementById('questLoadingIcon')
   const feedLoadingIcon  = document.getElementById('feedLoadingIcon')
@@ -781,10 +784,14 @@ async function init() {
   if (lbLoadingIcon)    lbLoadingIcon.innerHTML    = getIcon('trophy', 32)
   if (modalCloseBtn)    modalCloseBtn.innerHTML    = getIcon('close', 18)
 
-  await Promise.all([loadProfile(), loadFeed(), loadLeaderboard()])
-  await loadQuests()
-  await loadVerifyBadge()
-  loadNotifBadge()
+  try {
+    await Promise.all([loadProfile(), loadFeed(), loadLeaderboard()])
+    await loadQuests()
+    await loadVerifyBadge()
+    loadNotifBadge()
+  } catch (err) {
+    console.error('[dashboard] init error:', err)
+  }
 
   document.getElementById('loadingScreen').style.display = 'none'
   updateDate()
@@ -834,6 +841,7 @@ async function loadVerifyBadge() {
 // LOAD PROFILE
 // ============================================================
 async function loadProfile() {
+  try {
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   const { data: stats }   = await supabase.from('user_stats').select('*').eq('user_id', currentUser.id).single()
 
@@ -841,6 +849,32 @@ async function loadProfile() {
   userStats   = stats
 
   if (!profile) return
+
+  // ดึง equipped title (ไม่ throw ถ้าไม่มี)
+  let equippedTitle = null
+  try {
+    if (profile.equipped_title_id) {
+      const { data: titleDef } = await supabase
+        .from('titles')
+        .select('id, name, icon, category, rarity')
+        .eq('id', profile.equipped_title_id)
+        .maybeSingle()
+      equippedTitle = titleDef || null
+    } else {
+      // fallback: query user_titles is_equipped — ใช้ maybeSingle() ไม่ใช่ single()
+      // single() จะ error ถ้าไม่มีแถว (user ยังไม่มี title เลย)
+      const { data: utRow } = await supabase
+        .from('user_titles')
+        .select('title_id, titles(id, name, icon, category, rarity)')
+        .eq('user_id', currentUser.id)
+        .eq('is_equipped', true)
+        .maybeSingle()
+      equippedTitle = utRow?.titles || null
+    }
+  } catch (e) {
+    // ไม่มี title — ปล่อยผ่าน
+    equippedTitle = null
+  }
 
   const avatarUrl = getAvatarUrl(profile.avatar_seed)
   const cls = profile.class || 'warrior'
@@ -857,6 +891,16 @@ async function loadProfile() {
   document.getElementById('pmStreak').textContent = profile.streak_current || 0
   document.getElementById('pmGold').textContent = fmtNum(profile.gold)
   document.getElementById('pmCrystal').textContent = fmtNum(profile.crystal)
+
+  // Equipped title badge
+  const pmTitleEl = document.getElementById('pmTitle')
+  if (equippedTitle) {
+    pmTitleEl.innerHTML = renderTitleBadge(equippedTitle)
+    pmTitleEl.style.cssText = 'background:none;border:none;padding:0;margin-bottom:6px'
+  } else {
+    pmTitleEl.textContent = '— ไม่มีฉายา —'
+    pmTitleEl.style.cssText = ''
+  }
 
   const rankTxt = (profile.rank||'bronze').toUpperCase()
   const rankEl = document.getElementById('pmRank')
@@ -898,6 +942,9 @@ async function loadProfile() {
     })
   }
 
+  } catch (err) {
+    console.error('[loadProfile] error:', err)
+  }
 }
 
 // ============================================================
@@ -1000,6 +1047,7 @@ window.filterQuests = function(f, btn) {
 // LOAD FEED
 // ============================================================
 async function loadFeed() {
+  try {
   // FIX: ใช้ social_feed_view แทน join manual เพื่อผ่าน RLS
   const { data } = await supabase
     .from('social_feed_view')
@@ -1043,12 +1091,11 @@ async function loadFeed() {
       </div>
     </div>`
   }).join('')
+  } catch (err) { console.error('[loadFeed] error:', err) }
 }
-
-// ============================================================
-// LOAD LEADERBOARD
 // ============================================================
 async function loadLeaderboard() {
+  try {
   // FIX: ใช้ leaderboard_monthly view ตาม Blueprint v5 (มี position field + filter profile_public ใน view แล้ว)
   const { data } = await supabase
     .from('leaderboard_monthly')
@@ -1077,6 +1124,7 @@ async function loadLeaderboard() {
       <div class="lb-xp">${fmtNum(u.xp_this_month)}</div>
     </div>`
   }).join('')
+  } catch (err) { console.error('[loadLeaderboard] error:', err) }
 }
 
 // ============================================================
@@ -1182,18 +1230,6 @@ window.updateCount = function() {
   const cc = document.getElementById('charCount')
   const ta = document.getElementById('proofText')
   if (cc && ta) cc.textContent = ta.value.length
-}
-  const reader = new FileReader()
-  reader.onload = e => {
-    const preview = document.getElementById('uploadPreview')
-    preview.src = e.target.result
-    preview.style.display = 'block'
-    const iconBox = document.getElementById('uploadIconBox')
-    if (iconBox) iconBox.style.display = 'none'
-    const uploadTxt = document.querySelector('#uploadArea .upload-txt')
-    if (uploadTxt) uploadTxt.style.display = 'none'
-  }
-  reader.readAsDataURL(file)
 }
 
 window.submitProof = async function() {

@@ -112,10 +112,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="orb orb-2"></div>
 
 
-  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-</div>
 
-<!-- MAIN -->
 <div id="sidebar-root"></div>
 <main class="main">
   <div class="page-header">
@@ -363,8 +360,6 @@ async function init() {
     allTx = txRes.data || []
     const purchases = purchasesRes.data || []
     const items = itemsRes.data || []
-
-    if (profile)
 
     // ✅ BUG FIX: fallback city ป้องกัน null ทำให้ query คืนผลผิด
     const userCity = profile?.city || 'กรุงเทพมหานคร'
