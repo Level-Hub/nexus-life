@@ -543,7 +543,8 @@ export const ICONS = {
   // convenience aliases
   chart:            SYSTEM_ICONS.stats,
   upload:           SYSTEM_ICONS.send,
-  palette:          SYSTEM_ICONS.artist,
+  palette:          SYSTEM_ICONS.frame,
+  cre:              SYSTEM_ICONS.frame,
   warning:          SYSTEM_ICONS.warning,
   settings:         SYSTEM_ICONS.settings,
   copy:             SYSTEM_ICONS.copy,

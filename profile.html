@@ -469,6 +469,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           </div>
         </div>
         <div class="hero-signature" id="heroSignature"></div>
+        <div class="hero-status" id="heroStatus" style="display:none;font-size:12px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span id="heroStatusEmoji"></span><span id="heroStatusText"></span>
+        </div>
         <div class="hero-social">
           <div class="hero-social-stat">
             <div class="hero-social-num" id="heroQuestCount">0</div>
@@ -743,10 +746,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
       <!-- AVATAR PREVIEW -->
       <div class="avatar-preview-wrap">
-        <div class="avatar-preview-img"><img id="editAvatarPreview" src="" alt=""></div>
-        <div class="avatar-seed-info">
-          Avatar ใช้ <strong style="color:var(--cyan)">DiceBear</strong><br>
-          เปลี่ยน seed ด้านล่างเพื่อเปลี่ยน Avatar
+        <div class="avatar-preview-img" style="position:relative;cursor:pointer" onclick="document.getElementById('avatarFileInput').click()">
+          <img id="editAvatarPreview" src="" alt="">
+          <div style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s" id="avatarOverlay">
+            <span style="font-size:18px">📷</span>
+          </div>
+        </div>
+        <div>
+          <div class="avatar-seed-info">คลิกที่รูปเพื่ออัพโหลดจากเครื่อง<br>หรือใส่ seed ด้านล่างสำหรับ Avatar อัตโนมัติ</div>
+          <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
+          <div id="avatarUploadStatus" style="font-family:'Orbitron',monospace;font-size:8px;color:var(--green);margin-top:6px;display:none">✓ รูปพร้อมบันทึก</div>
         </div>
       </div>
 
@@ -865,19 +874,19 @@ async function init() {
   if (currIconCrystal) currIconCrystal.innerHTML = getIcon('diamond', 18)
   const attrBoxTitle = document.getElementById('attrBoxTitle')
   if (attrBoxTitle) attrBoxTitle.innerHTML = getIcon('lightning', 12) + ' ATTRIBUTES'
-  const statIcons = { statIconStr:'strength', statIconInt:'intel', statIconExp:'explore_stat', statIconBiz:'biz', statIconCre:'palette', statIconSoc:'diplo_stat' }
+  const statIcons = { statIconStr:'strength', statIconInt:'intel', statIconExp:'explore_stat', statIconBiz:'biz', statIconCre:'frame', statIconSoc:'diplo_stat' }
   Object.entries(statIcons).forEach(([id, key]) => {
     const el = document.getElementById(id)
     if (el) el.innerHTML = getIcon(key, 16)
   })
-  const tabBadges = document.getElementById('tabBadges')
-  if (tabBadges) tabBadges.innerHTML = getIcon('medal', 12) + ' BADGES'
-  const tabTitles = document.getElementById('tabTitles')
-  if (tabTitles) tabTitles.innerHTML = getIcon('crown', 12) + ' TITLES'
+  const tabBtnBadges = document.getElementById('tabBtnBadges')
+  if (tabBtnBadges) tabBtnBadges.innerHTML = getIcon('medal', 12) + ' BADGES'
+  const tabBtnTitles = document.getElementById('tabBtnTitles')
+  if (tabBtnTitles) tabBtnTitles.innerHTML = getIcon('crown', 12) + ' TITLES'
   const tabQuestsProf = document.getElementById('tabQuestsProf')
   if (tabQuestsProf) tabQuestsProf.innerHTML = getIcon('sword', 12) + ' QUESTS'
-  const tabActivity = document.getElementById('tabActivity')
-  if (tabActivity) tabActivity.innerHTML = getIcon('signal', 12) + ' ACTIVITY'
+  const tabBtnActivity = document.getElementById('tabBtnActivity')
+  if (tabBtnActivity) tabBtnActivity.innerHTML = getIcon('signal', 12) + ' ACTIVITY'
   const emptyBadgesIcon = document.getElementById('emptyBadgesIcon')
   if (emptyBadgesIcon) emptyBadgesIcon.innerHTML = getIcon('medal', 24)
   const emptyTitlesIcon = document.getElementById('emptyTitlesIcon')
@@ -1015,8 +1024,8 @@ function renderHero(u) {
   // class color
   document.getElementById('profileHero').className = `profile-hero cls-${cls}`
 
-  // avatar
-  const avatarUrl = getAvatarUrl(u.avatar_seed || u.username)
+  // avatar — use uploaded image if available, else DiceBear seed
+  const avatarUrl = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username)
   document.getElementById('heroAvatar').src   = avatarUrl
   document.getElementById('heroAvatarRing').className = `hero-avatar-ring cls-${cls}`
 
@@ -1049,10 +1058,22 @@ function renderHero(u) {
   document.getElementById('cityNameBig').textContent  = u.city || 'กรุงเทพมหานคร'
 
   // signature
-  const sig = u.signature || u.status_text || ''
+  const sig = u.signature || ''
   const sigEl = document.getElementById('heroSignature')
   sigEl.textContent = sig
   sigEl.style.display = sig ? '' : 'none'
+
+  // status emoji + text
+  const statusEmoji = u.status_emoji || ''
+  const statusText  = u.status_text  || ''
+  const statusEl    = document.getElementById('heroStatus')
+  if (statusEmoji || statusText) {
+    document.getElementById('heroStatusEmoji').textContent = statusEmoji
+    document.getElementById('heroStatusText').textContent  = statusText
+    statusEl.style.display = 'flex'
+  } else {
+    statusEl.style.display = 'none'
+  }
 
   // social counts
   document.getElementById('heroFollowers').textContent = fmtNum(u.followers_count)
@@ -1448,7 +1469,10 @@ window.openEditModal = function() {
   document.getElementById('editPublic').checked      = u.profile_public !== false
   document.getElementById('editStatsPublic').checked = u.stats_public !== false
   document.getElementById('editFeedPublic').checked  = u.feed_public !== false
-  updateAvatarPreview()
+  // show current avatar (uploaded or dicebear)
+  document.getElementById('editAvatarPreview').src = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username)
+  document.getElementById('avatarUploadStatus').style.display = 'none'
+  pendingAvatarFile = null
   document.getElementById('editModal').classList.add('open')
 }
 
@@ -1465,6 +1489,29 @@ function updateAvatarPreview() {
 
 document.getElementById('editAvatarSeed').addEventListener('input', updateAvatarPreview)
 document.getElementById('editModal').addEventListener('click', e => { if (e.target === document.getElementById('editModal')) closeEditModal() })
+
+// Avatar hover overlay
+const avatarPreviewImg = document.querySelector('.avatar-preview-img')
+const avatarOverlay = document.getElementById('avatarOverlay')
+avatarPreviewImg.addEventListener('mouseenter', () => { avatarOverlay.style.opacity = '1' })
+avatarPreviewImg.addEventListener('mouseleave', () => { avatarOverlay.style.opacity = '0' })
+
+// Avatar file upload — preview locally, upload on save
+let pendingAvatarFile = null
+document.getElementById('avatarFileInput').addEventListener('change', e => {
+  const file = e.target.files[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) { showToast('รูปใหญ่เกิน 2MB', 'error'); return }
+  pendingAvatarFile = file
+  const reader = new FileReader()
+  reader.onload = ev => {
+    document.getElementById('editAvatarPreview').src = ev.target.result
+    document.getElementById('avatarUploadStatus').style.display = 'block'
+    // clear seed so custom image takes priority
+    document.getElementById('editAvatarSeed').value = ''
+  }
+  reader.readAsDataURL(file)
+})
 
 window.saveProfile = async function() {
   const btn = document.getElementById('editSaveBtn')
@@ -1496,21 +1543,43 @@ window.saveProfile = async function() {
     }
   }
 
-  const { error } = await supabase.from('users').update({
+  // upload avatar image if user picked a file
+  let avatarUrl = null
+  if (pendingAvatarFile) {
+    btn.textContent = 'กำลังอัพโหลดรูป...'
+    const ext  = pendingAvatarFile.name.split('.').pop()
+    const path = `avatars/${currentUser.id}.${ext}`
+    const { error: uploadErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, pendingAvatarFile, { upsert: true, contentType: pendingAvatarFile.type })
+    if (uploadErr) {
+      showModalMsg('error', 'อัพโหลดรูปไม่ได้: ' + uploadErr.message)
+      btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+    }
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+    avatarUrl = urlData.publicUrl + '?t=' + Date.now()
+    pendingAvatarFile = null
+    document.getElementById('avatarUploadStatus').style.display = 'none'
+  }
+
+  btn.textContent = 'กำลังบันทึก...'
+  const updatePayload = {
     display_name:   displayName || username,
     username,
     class:          cls,
     city,
-    avatar_seed:    avatarSeed || username,
+    avatar_seed:    avatarUrl ? '' : (avatarSeed || username),
     signature,
     status_text:    statusText,
     status_emoji:   statusEmoji,
     profile_public: profilePublic,
     stats_public:   statsPublic,
     feed_public:    feedPublic,
-    // บันทึกเวลาที่เปลี่ยน class (สำหรับ class_change ticket check)
+    ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
     ...(cls !== userProfile.class ? { class_changed_at: new Date().toISOString() } : {})
-  }).eq('id', currentUser.id)
+  }
+
+  const { error } = await supabase.from('users').update(updatePayload).eq('id', currentUser.id)
 
   if (error) {
     showModalMsg('error', error.message || 'เกิดข้อผิดพลาด')
