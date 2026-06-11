@@ -1099,7 +1099,7 @@ async function loadLeaderboard() {
   // FIX: ใช้ leaderboard_monthly view ตาม Blueprint v5 (มี position field + filter profile_public ใน view แล้ว)
   const { data } = await supabase
     .from('leaderboard_monthly')
-    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed, position')
+    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed, avatar_url, position')
     .order('position', { ascending: true })
     .limit(5)
 
@@ -1116,7 +1116,7 @@ async function loadLeaderboard() {
     return `
     <div class="lb-item ${isMe ? 'lb-me' : ''}">
       <div class="lb-pos ${posClass}">${pos === 1 ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="5" r="1" fill="currentColor"/><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="14" cy="5" r="1" fill="currentColor"/></svg>' : pos}</div>
-      <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${getAvatarUrl(u.avatar_seed, 28)}" alt=""></div>
+      <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 28)}" alt=""></div>
       <div class="lb-info">
         <div class="lb-name">${u.display_name || u.username}${isMe ? ' (คุณ)' : ''}</div>
         <div class="lb-cls cls-${u.class||'warrior'}">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>
