@@ -461,8 +461,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-
-
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="mobile-nav-bar">
   <button class="burger" onclick="openSidebar()">
     <span></span><span></span><span></span>
   </button>
@@ -550,11 +550,11 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
             <button class="qf-btn active" onclick="filterQuests('all',this)">ทั้งหมด</button>
             <button class="qf-btn" onclick="filterQuests('in_progress',this)">รอทำ</button>
             <button class="qf-btn" onclick="filterQuests('pending_review',this)">รอ Review</button>
-            <button class="qf-btn" onclick="filterQuests('approved',this)">สำเร็จ ✓</button>
+            <button class="qf-btn" onclick="filterQuests('approved',this)">สำเร็จ</button>
           </div>
           <div class="quest-list" id="questList">
             <div class="empty-state">
-              <div class="empty-state-icon">⏳</div>
+              <div class="empty-state-icon" id="questLoadingIcon"></div>
               <div class="empty-state-txt">กำลังโหลด Quest...</div>
             </div>
           </div>
@@ -570,7 +570,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="box-body" style="padding:0 20px">
           <div class="feed-list" id="feedList">
             <div class="empty-state" style="padding:32px 0">
-              <div class="empty-state-icon">📡</div>
+              <div class="empty-state-icon" id="feedLoadingIcon"></div>
               <div class="empty-state-txt">กำลังโหลด Feed...</div>
             </div>
           </div>
@@ -662,7 +662,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="box-body" style="padding:0 20px">
           <div class="lb-list" id="lbList">
             <div class="empty-state" style="padding:24px 0">
-              <div class="empty-state-icon">🏆</div>
+              <div class="empty-state-icon" id="lbLoadingIcon"></div>
               <div class="empty-state-txt">กำลังโหลด...</div>
             </div>
           </div>
@@ -678,7 +678,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><rect x="2" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="currentColor" stroke-width="1.2"/></svg>ส่งหลักฐาน Quest</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()" id="modalCloseBtn"></button>
     </div>
     <div class="modal-body">
       <div class="modal-quest-name" id="modalQuestName">—</div>
@@ -761,6 +761,16 @@ async function init() {
   const { user } = await initSidebar('dashboard')
   if (!user) return
   currentUser = user
+
+  // inject static icon placeholders
+  const questLoadingIcon = document.getElementById('questLoadingIcon')
+  const feedLoadingIcon  = document.getElementById('feedLoadingIcon')
+  const lbLoadingIcon    = document.getElementById('lbLoadingIcon')
+  const modalCloseBtn    = document.getElementById('modalCloseBtn')
+  if (questLoadingIcon) questLoadingIcon.innerHTML = getIcon('scroll', 36)
+  if (feedLoadingIcon)  feedLoadingIcon.innerHTML  = getIcon('signal', 32)
+  if (lbLoadingIcon)    lbLoadingIcon.innerHTML    = getIcon('trophy', 32)
+  if (modalCloseBtn)    modalCloseBtn.innerHTML    = getIcon('close', 18)
 
   await Promise.all([loadProfile(), loadFeed(), loadLeaderboard()])
   await loadQuests()
@@ -852,7 +862,7 @@ async function loadProfile() {
 
   document.getElementById('xpLevelBadge').textContent = 'LV.' + profile.level
   document.getElementById('xpLvTitle').textContent    = current.name.toUpperCase()
-  document.getElementById('xpLvSub').innerHTML      = next ? `${getIcon('arrow_up',12)} ต้องการ ${fmtNum(xpToNext - xpInLevel)} XP เพื่อ Level Up` : `${getIcon('star',12)} MAX LEVEL`
+  document.getElementById('xpLvSub').innerHTML      = next ? `${getIcon('levelup',12)} ต้องการ ${fmtNum(xpToNext - xpInLevel)} XP เพื่อ Level Up` : `${getIcon('star',12)} MAX LEVEL`
   document.getElementById('xpCurrent').textContent    = fmtNum(profile.xp_total || 0)
   document.getElementById('xpNext').textContent       = next ? fmtNum(next.xp) : '—'
   document.getElementById('xpPercent').textContent    = pct + '% สู่ Level ถัดไป'
@@ -878,7 +888,7 @@ async function loadProfile() {
     })
   }
 
-  // nav badge}
+}
 
 // ============================================================
 // LOAD QUESTS
@@ -946,8 +956,8 @@ function renderQuests() {
     const clsIcon = CLASS_ICONS[q.class_target] ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" aria-hidden="true">${CLASS_ICONS[q.class_target]}</svg>` : getIcon('sword',20)
 
     let btnHtml = ''
-    if (isDone)    btnHtml = `<button class="quest-btn done-btn">✓ สำเร็จ</button>`
-    else if (isPending) btnHtml = `<button class="quest-btn pending-btn">⏳ รอ Community Verify</button>`
+    if (isDone)    btnHtml = `<button class="quest-btn done-btn">${getIcon('check',12)} สำเร็จ</button>`
+    else if (isPending) btnHtml = `<button class="quest-btn pending-btn">${getIcon('refresh',12)} รอ Community Verify</button>`
     else btnHtml = `<button class="quest-btn" onclick="openQuestModal(${q.id})">ส่งหลักฐาน →</button>`
 
     return `

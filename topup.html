@@ -137,7 +137,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div id="sidebar-root"></div>
 <main class="main">
   <div class="page-header">
-    <div class="page-title">💎 เติม <span>CRYSTAL</span></div>
+    <div class="page-title" id="topupPageTitle">เติม <span>CRYSTAL</span></div>
     <div class="page-date" id="pageDate">—</div>
   </div>
 
@@ -152,7 +152,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a class="btn-back" href="./wallet.html">← WALLET</a>
-      <a class="btn-back" href="./shop.html">🛒 SHOP</a>
+      <a class="btn-back" href="./shop.html" id="btnShopBack">SHOP</a>
     </div>
   </div>
 
@@ -169,23 +169,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="amount-grid">
           <div class="amount-card" data-thb="50" data-crystal="50" onclick="selectAmount(this)">
             <div class="amount-thb">฿50</div>
-            <div class="amount-crystal">💎 50</div>
+            <div class="amount-crystal">50 Crystal</div>
             <div class="amount-bonus">&nbsp;</div>
           </div>
           <div class="amount-card" data-thb="100" data-crystal="110" onclick="selectAmount(this)">
             <div class="amount-thb">฿100</div>
-            <div class="amount-crystal">💎 110</div>
+            <div class="amount-crystal">110 Crystal</div>
             <div class="amount-bonus">+10% BONUS</div>
             <div class="amount-badge">POPULAR</div>
           </div>
           <div class="amount-card" data-thb="300" data-crystal="345" onclick="selectAmount(this)">
             <div class="amount-thb">฿300</div>
-            <div class="amount-crystal">💎 345</div>
+            <div class="amount-crystal">345 Crystal</div>
             <div class="amount-bonus">+15% BONUS</div>
           </div>
           <div class="amount-card" data-thb="500" data-crystal="600" onclick="selectAmount(this)">
             <div class="amount-thb">฿500</div>
-            <div class="amount-crystal">💎 600</div>
+            <div class="amount-crystal">600 Crystal</div>
             <div class="amount-bonus">+20% BONUS</div>
             <div class="amount-badge best">BEST VALUE</div>
           </div>
@@ -267,27 +267,27 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div class="summary-row">
         <div class="summary-label">Crystal ฐาน</div>
-        <div class="summary-value crystal" id="sumBase">— 💎</div>
+        <div class="summary-value crystal" id="sumBase">— Crystal</div>
       </div>
       <div class="summary-row">
         <div class="summary-label">โบนัส</div>
-        <div class="summary-value bonus" id="sumBonus">+0 💎</div>
+        <div class="summary-value bonus" id="sumBonus">+0 Crystal</div>
       </div>
       <div class="summary-row summary-total">
         <div class="summary-label">TOTAL CRYSTAL</div>
-        <div class="summary-value crystal" id="sumTotal">— 💎</div>
+        <div class="summary-value crystal" id="sumTotal">— Crystal</div>
       </div>
 
       <div class="bonus-table">
         <div class="bonus-table-title">// BONUS RATES</div>
-        <div class="bonus-row"><span class="bonus-row-thb">฿50</span><span class="bonus-row-crystal">50 💎</span><span class="bonus-row-pct">—</span></div>
-        <div class="bonus-row"><span class="bonus-row-thb">฿100</span><span class="bonus-row-crystal">110 💎</span><span class="bonus-row-pct">+10%</span></div>
-        <div class="bonus-row"><span class="bonus-row-thb">฿300</span><span class="bonus-row-crystal">345 💎</span><span class="bonus-row-pct">+15%</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿50</span><span class="bonus-row-crystal">50 Crystal</span><span class="bonus-row-pct">—</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿100</span><span class="bonus-row-crystal">110 Crystal</span><span class="bonus-row-pct">+10%</span></div>
+        <div class="bonus-row"><span class="bonus-row-thb">฿300</span><span class="bonus-row-crystal">345 Crystal</span><span class="bonus-row-pct">+15%</span></div>
         <div class="bonus-row"><span class="bonus-row-thb">฿500+</span><span class="bonus-row-crystal">×1.20</span><span class="bonus-row-pct">+20%</span></div>
       </div>
 
       <div class="policy-note">
-        <strong>⚠ POLICY</strong><br>
+        <strong id="policyTitle">POLICY</strong><br>
         Crystal ที่ซื้อคืนไม่ได้<br>
         วงเงินสูงสุด 3,000 ฿/วัน<br>
         ห้ามโอน Crystal ให้ผู้อื่น
@@ -368,9 +368,9 @@ function calcCrystal(thb) {
 function updateSummary(thb, crystal) {
   const bonus = crystal - thb
   document.getElementById('sumThb').textContent = thb ? `${thb.toLocaleString()} ฿` : '— ฿'
-  document.getElementById('sumBase').textContent = thb ? `${thb} 💎` : '— 💎'
-  document.getElementById('sumBonus').textContent = bonus > 0 ? `+${bonus} 💎` : '+0 💎'
-  document.getElementById('sumTotal').textContent = crystal ? `${crystal} 💎` : '— 💎'
+  document.getElementById('sumBase').textContent = thb ? `${thb} Crystal` : '— Crystal'
+  document.getElementById('sumBonus').textContent = bonus > 0 ? `+${bonus} Crystal` : '+0 Crystal'
+  document.getElementById('sumTotal').textContent = crystal ? `${crystal} Crystal` : '— Crystal'
 }
 
 function updateQR() {
@@ -507,6 +507,14 @@ window.submitTopup = async function() {
 async function init() {
   initCursor()
   updateDate()
+
+  // Inject page icons
+  const titleEl = document.getElementById('topupPageTitle')
+  if (titleEl) titleEl.innerHTML = getIcon('diamond', 18) + ' เติม <span>CRYSTAL</span>'
+  const shopBtn = document.getElementById('btnShopBack')
+  if (shopBtn) shopBtn.innerHTML = getIcon('cart', 14) + ' SHOP'
+  const policyTitle = document.getElementById('policyTitle')
+  if (policyTitle) policyTitle.innerHTML = getIcon('shield', 12) + ' POLICY'
 
   const { user } = await initSidebar('wallet')
   if (!user) return
