@@ -318,26 +318,26 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- ======= NO GUILD VIEW ======= -->
   <div class="no-guild-view" id="noGuildView" style="display:none">
     <div class="no-guild-hero">
-      <div class="no-guild-icon">⚔️</div>
+      <div class="no-guild-icon" id="noGuildHeroIcon"></div>
       <div class="no-guild-title">ยังไม่มี Guild</div>
       <div class="no-guild-sub">// เข้าร่วมหรือสร้าง Guild เพื่อทำ Quest ร่วมกัน</div>
       <div class="no-guild-btns">
-        <button class="btn-primary" onclick="showTab('browse')">🔍 ค้นหา Guild</button>
-        <button class="btn-secondary" onclick="showTab('create')">⚒️ สร้าง Guild ใหม่</button>
+        <button class="btn-primary" id="btnShowBrowse" onclick="showTab('browse')">ค้นหา Guild</button>
+        <button class="btn-secondary" id="btnShowCreate" onclick="showTab('create')">สร้าง Guild ใหม่</button>
       </div>
     </div>
 
     <!-- TABS: BROWSE / CREATE -->
     <div class="view-tabs">
-      <button class="vtab active" id="tabBrowse" onclick="showTab('browse')">🔍 ค้นหา Guild</button>
-      <button class="vtab" id="tabCreate" onclick="showTab('create')">⚒️ สร้าง Guild</button>
+      <button class="vtab active" id="tabBrowse" onclick="showTab('browse')">ค้นหา Guild</button>
+      <button class="vtab" id="tabCreate" onclick="showTab('create')">สร้าง Guild</button>
     </div>
 
     <!-- BROWSE -->
     <div id="panelBrowse">
       <div class="box">
         <div class="box-header">
-          <div class="box-title">🔍 GUILD ทั้งหมด</div>
+          <div class="box-title" id="browseTitleEl">GUILD ทั้งหมด</div>
           <div class="box-tag" id="guildCountTag">— guilds</div>
         </div>
         <div class="box-body">
@@ -345,7 +345,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <input class="guild-search" id="guildSearch" type="text" placeholder="ค้นหาชื่อ Guild..." oninput="filterGuilds(this.value)">
           </div>
           <div class="guild-browse-list" id="guildBrowseList">
-            <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด Guild...</div></div>
+            <div class="empty-state"><div class="empty-state-icon" style="font-size:20px;opacity:0.4">...</div><div class="empty-state-txt">กำลังโหลด Guild...</div></div>
           </div>
         </div>
       </div>
@@ -355,7 +355,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div id="panelCreate" style="display:none">
       <div class="box">
         <div class="box-header">
-          <div class="box-title">⚒️ สร้าง GUILD ใหม่</div>
+          <div class="box-title" id="createTitleEl">สร้าง GUILD ใหม่</div>
           <div class="box-tag">// LV.10+ เท่านั้น</div>
         </div>
         <div class="box-body">
@@ -389,11 +389,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <div class="form-cost">
               <div>
                 <div class="form-cost-label">ค่าสร้าง Guild</div>
-                <div class="form-cost-val">500 ⭐ Gold</div>
+                <div class="form-cost-val">500 Gold</div>
               </div>
               <div class="form-cost-warn" id="goldBalance">คงเหลือ: — Gold</div>
             </div>
-            <button class="create-submit-btn" onclick="createGuild()">⚒️ สร้าง GUILD</button>
+            <button class="create-submit-btn" id="createSubmitBtn" onclick="createGuild()">สร้าง GUILD</button>
           </div>
         </div>
       </div>
@@ -406,7 +406,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- GUILD BANNER -->
     <div class="guild-banner" id="guildBanner">
       <div class="guild-banner-inner">
-        <div class="guild-icon" id="gBannerIcon">⚔️</div>
+        <div class="guild-icon" id="gBannerIcon"></div>
         <div class="guild-info">
           <div class="guild-name" id="gBannerName">—</div>
           <div class="guild-tag" id="gBannerTag">[—]</div>
@@ -418,7 +418,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <div class="guild-role-badge" id="myRoleBadge">MEMBER</div>
           </div>
           <div id="territoryBadge" style="display:none">
-            <div class="territory-badge">👑 ครอง Territory: <span id="territoryCity">—</span></div>
+            <div class="territory-badge" id="territoryBadgeInner">ครอง Territory: <span id="territoryCity">—</span></div>
           </div>
         </div>
       </div>
@@ -438,23 +438,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div>
         <div class="box">
           <div class="inner-tabs">
-            <button class="itab active" onclick="switchInnerTab('members',this)">👥 สมาชิก <span class="itab-count" id="memberCount">0</span></button>
-            <button class="itab" onclick="switchInnerTab('quests',this)">⚔️ Guild Quest</button>
-            <button class="itab" onclick="switchInnerTab('chat',this)">💬 Chat</button>
-            <button class="itab" onclick="switchInnerTab('feed',this)">📡 Feed</button>
+            <button class="itab active" id="itabMembers" onclick="switchInnerTab('members',this)">สมาชิก <span class="itab-count" id="memberCount">0</span></button>
+            <button class="itab" id="itabQuests" onclick="switchInnerTab('quests',this)">Guild Quest</button>
+            <button class="itab" id="itabChat" onclick="switchInnerTab('chat',this)">Chat</button>
+            <button class="itab" id="itabFeed" onclick="switchInnerTab('feed',this)">Feed</button>
           </div>
 
           <!-- MEMBERS TAB -->
           <div class="box-body" id="tabMembers">
             <div class="member-list" id="memberList">
-              <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลดสมาชิก...</div></div>
+              <div class="empty-state"><div class="empty-state-txt">กำลังโหลดสมาชิก...</div></div>
             </div>
           </div>
 
           <!-- QUESTS TAB -->
           <div class="box-body" id="tabQuests" style="display:none">
             <div class="gquest-list" id="guestList">
-              <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด Quest...</div></div>
+              <div class="empty-state"><div class="empty-state-txt">กำลังโหลด Quest...</div></div>
             </div>
           </div>
 
@@ -462,7 +462,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           <div class="box-body" id="tabChat" style="display:none">
             <div class="chat-wrap">
               <div class="chat-messages" id="chatMessages">
-                <div class="empty-state" style="margin:auto"><div class="empty-state-icon">💬</div><div class="empty-state-txt">ยังไม่มีข้อความ</div></div>
+                <div class="empty-state" style="margin:auto"><div class="empty-state-icon" id="chatEmptyIcon"></div><div class="empty-state-txt">ยังไม่มีข้อความ</div></div>
               </div>
               <div class="chat-input-row">
                 <input class="chat-input" id="chatInput" type="text" placeholder="พิมพ์ข้อความ..." maxlength="300" onkeydown="if(event.key==='Enter')sendChat()">
@@ -474,7 +474,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           <!-- FEED TAB -->
           <div class="box-body" id="tabFeed" style="display:none">
             <div class="gfeed-list" id="gfeedList">
-              <div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>
+              <div class="empty-state"><div class="empty-state-icon" id="feedEmptyIcon"></div><div class="empty-state-txt">ยังไม่มีกิจกรรม</div></div>
             </div>
           </div>
 
@@ -487,23 +487,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <!-- RANKING -->
         <div class="box">
           <div class="box-header">
-            <div class="box-title">🏆 RANKING ในเดือนนี้</div>
+            <div class="box-title" id="rankingTitleEl">RANKING ในเดือนนี้</div>
             <div class="box-tag">// XP/MO</div>
           </div>
           <div class="box-body" style="padding:0 20px">
             <div class="rank-list" id="rankList">
-              <div class="empty-state" style="padding:24px 0"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">โหลด...</div></div>
+              <div class="empty-state" style="padding:24px 0"><div class="empty-state-txt">โหลด...</div></div>
             </div>
           </div>
         </div>
 
         <!-- LEAVE GUILD -->
         <div class="box">
-          <div class="box-header"><div class="box-title">⚙️ การจัดการ</div></div>
+          <div class="box-header"><div class="box-title" id="mgmtTitleEl">การจัดการ</div></div>
           <div class="box-body" style="display:flex;flex-direction:column;gap:8px">
             <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-bottom:4px">// MASTER สามารถแก้ไขข้อมูล Guild ได้</div>
-            <button class="btn-secondary" id="editGuildBtn" style="display:none;width:100%;padding:10px" onclick="openEditModal()">✏️ แก้ไข Guild</button>
-            <button class="leave-btn" id="leaveGuildBtn" onclick="confirmLeave()">🚪 ออกจาก Guild</button>
+            <button class="btn-secondary" id="editGuildBtn" style="display:none;width:100%;padding:10px" onclick="openEditModal()">แก้ไข Guild</button>
+            <button class="leave-btn" id="leaveGuildBtn" onclick="confirmLeave()">ออกจาก Guild</button>
           </div>
         </div>
 
@@ -520,7 +520,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">✏️ แก้ไข Guild</div>
+      <div class="modal-title" id="editModalTitle">แก้ไข Guild</div>
       <button class="modal-close" onclick="closeModal('editModal')">×</button>
     </div>
     <div class="modal-body">
@@ -536,7 +536,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <span style="font-size:12px;color:var(--text-dim)">ให้ทุกคนเห็นและสมัครเข้า Guild ได้</span>
           </label>
         </div>
-        <button class="create-submit-btn" onclick="saveGuildEdit()">💾 บันทึก</button>
+        <button class="create-submit-btn" id="saveGuildBtn" onclick="saveGuildEdit()">บันทึก</button>
       </div>
     </div>
   </div>
@@ -581,7 +581,7 @@ let MY_GUILD = null    // guilds row
 let MY_MEMBER = null   // guild_members row
 let ALL_GUILDS = []
 let CHAT_CHANNEL = null
-let SELECTED_ICON = '⚔️'
+let SELECTED_ICON = ''
 
 const ICONS = ['⚔️','🔮','🗺️','💰','🎨','🤝','🐉','🦁','🦊','🌟','🔥','💎','🏰','⚡','🌙','🛡️','🗡️','👑']
 const GUILD_XP_PER_LEVEL = 1000
@@ -657,7 +657,7 @@ async function loadNavBadges() {
   const { data: pendingInCity } = await sb.from('user_quests')
     .select('id, users!inner(city)')
     .eq('status', 'pending_review')
-    .eq('users.city', ME.city || 'กรุงเทพมหานคร')  // ✅ fallback city
+    .eq('users.city', ME.city || 'กรุงเทพมหานคร')  // fallback city
     .neq('user_id', ME.id)
   const vCount = (pendingInCity || []).filter(p => !votedSet.has(p.id)).length
   if (vCount > 0) {
@@ -674,6 +674,29 @@ function showNoGuildView() {
   document.getElementById('noGuildView').style.display = 'block'
   document.getElementById('hasGuildView').style.display = 'none'
   document.getElementById('guildStatusSub').textContent = '// ยังไม่ได้เข้าร่วม Guild ใด'
+
+  // inject hero icon
+  const heroIcon = document.getElementById('noGuildHeroIcon')
+  if (heroIcon) heroIcon.innerHTML = getIcon('guild', 48)
+
+  // inject tab/btn icons
+  const btnBrowse = document.getElementById('btnShowBrowse')
+  if (btnBrowse) btnBrowse.innerHTML = getIcon('search', 14) + ' ค้นหา Guild'
+  const btnCreate = document.getElementById('btnShowCreate')
+  if (btnCreate) btnCreate.innerHTML = getIcon('hammer', 14) + ' สร้าง Guild ใหม่'
+  const tabBrowse = document.getElementById('tabBrowse')
+  if (tabBrowse) tabBrowse.innerHTML = getIcon('search', 13) + ' ค้นหา Guild'
+  const tabCreate = document.getElementById('tabCreate')
+  if (tabCreate) tabCreate.innerHTML = getIcon('hammer', 13) + ' สร้าง Guild'
+
+  // inject box titles
+  const browseTitle = document.getElementById('browseTitleEl')
+  if (browseTitle) browseTitle.innerHTML = getIcon('search', 13) + ' GUILD ทั้งหมด'
+  const createTitle = document.getElementById('createTitleEl')
+  if (createTitle) createTitle.innerHTML = getIcon('hammer', 13) + ' สร้าง GUILD ใหม่'
+  const createBtn = document.getElementById('createSubmitBtn')
+  if (createBtn) createBtn.innerHTML = getIcon('hammer', 14) + ' สร้าง GUILD'
+
   loadAllGuilds()
 }
 
@@ -697,7 +720,7 @@ async function loadAllGuilds() {
 function renderGuildBrowse(list) {
   const el = document.getElementById('guildBrowseList')
   if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏰</div><div class="empty-state-txt">ไม่พบ Guild ที่ตรงกัน</div></div>`
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="browseEmptyIcon"></div><div class="empty-state-txt">ไม่พบ Guild ที่ตรงกัน</div></div>`
     return
   }
   el.innerHTML = list.map(g => {
@@ -706,7 +729,7 @@ function renderGuildBrowse(list) {
     return `
     <div class="guild-browse-card">
       <div class="gbc-top">
-        <div class="gbc-icon">${g.metadata?.icon || '⚔️'}</div>
+        <div class="gbc-icon">${g.metadata?.icon || getIcon('guild', 20)}</div>
         <div>
           <div class="gbc-name">${escHtml(g.name)}</div>
           <div class="gbc-tag">[${escHtml(g.tag)}] · LV.${gLv}</div>
@@ -715,12 +738,12 @@ function renderGuildBrowse(list) {
       <div class="gbc-desc">${escHtml(g.description || 'ไม่มีคำอธิบาย')}</div>
       <div class="gbc-bottom">
         <div class="gbc-meta">
-          <div class="gbc-meta-item">👥 <span>${memberCount}/${g.member_limit}</span></div>
-          <div class="gbc-meta-item">⭐ XP <span>${g.guild_xp.toLocaleString()}</span></div>
+          <div class="gbc-meta-item"><span id="gbcMembersIcon${g.id}"></span><span>${memberCount}/${g.member_limit}</span></div>
+          <div class="gbc-meta-item">XP <span>${g.guild_xp.toLocaleString()}</span></div>
         </div>
         <button class="join-btn" onclick="joinGuild(${g.id},'${escHtml(g.name)}')"
           ${memberCount >= g.member_limit ? 'disabled' : ''}>
-          ${memberCount >= g.member_limit ? '🔒 เต็ม' : '➕ เข้าร่วม'}
+          ${memberCount >= g.member_limit ? 'เต็ม' : '+ เข้าร่วม'}
         </button>
       </div>
     </div>`
@@ -756,7 +779,7 @@ window.joinGuild = async (guildId, guildName) => {
 
   // activity feed + notification
   await sb.from('activity_feed').insert({ user_id: ME.id, type: 'guild_join', data: { guild_id: guildId, guild_name: guildName } })
-  await sb.from('notifications').insert({ user_id: ME.id, title: '🤝 เข้าร่วม Guild สำเร็จ!', body: `คุณได้เข้าร่วม Guild "${guildName}" แล้ว` })
+  await sb.from('notifications').insert({ user_id: ME.id, title: 'เข้าร่วม Guild สำเร็จ!', body: `คุณได้เข้าร่วม Guild "${guildName}" แล้ว` })
 
   toast(`เข้าร่วม ${guildName} สำเร็จ! `, 'success')
   setTimeout(() => location.reload(), 1200)
@@ -811,7 +834,7 @@ window.createGuild = async () => {
   await sb.from('users').update({ gold: currentGold - 500 }).eq('id', ME.id)
 
   // Notification + activity
-  await sb.from('notifications').insert({ user_id: ME.id, title: '🏰 สร้าง Guild สำเร็จ!', body: `Guild "${name}" ถูกสร้างแล้ว` })
+  await sb.from('notifications').insert({ user_id: ME.id, title: 'สร้าง Guild สำเร็จ!', body: `Guild "${name}" ถูกสร้างแล้ว` })
 
   toast(`สร้าง Guild "${name}" สำเร็จ!`, 'success')
   setTimeout(() => location.reload(), 1200)
@@ -828,7 +851,7 @@ async function showHasGuildView() {
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
   const gXpPct = Math.min(100, ((MY_GUILD.guild_xp % GUILD_XP_PER_LEVEL) / GUILD_XP_PER_LEVEL) * 100)
-  document.getElementById('gBannerIcon').innerHTML = MY_GUILD.metadata?.icon || '⚔️'
+  document.getElementById('gBannerIcon').innerHTML = MY_GUILD.metadata?.icon || getIcon('guild', 32)
   document.getElementById('gBannerName').textContent = MY_GUILD.name
   document.getElementById('gBannerTag').textContent = `[${MY_GUILD.tag}]`
   document.getElementById('gBannerDesc').textContent = MY_GUILD.description || 'ไม่มีคำอธิบาย'
@@ -838,17 +861,57 @@ async function showHasGuildView() {
   document.getElementById('gXpNext').textContent = (gLv * GUILD_XP_PER_LEVEL).toLocaleString()
   setTimeout(() => { document.getElementById('gXpFill').style.width = gXpPct + '%' }, 100)
 
-  // Role badge
+  // inject inner tab icons
   const role = MY_MEMBER.role
+  const itabMembers = document.getElementById('itabMembers')
+  if (itabMembers) itabMembers.innerHTML = getIcon('users', 13) + ' สมาชิก <span class="itab-count" id="memberCount">0</span>'
+  const itabQuests = document.getElementById('itabQuests')
+  if (itabQuests) itabQuests.innerHTML = getIcon('sword', 13) + ' Guild Quest'
+  const itabChat = document.getElementById('itabChat')
+  if (itabChat) itabChat.innerHTML = getIcon('chat', 13) + ' Chat'
+  const itabFeed = document.getElementById('itabFeed')
+  if (itabFeed) itabFeed.innerHTML = getIcon('signal', 13) + ' Feed'
+
+  // inject right panel box titles
+  const rankTitle = document.getElementById('rankingTitleEl')
+  if (rankTitle) rankTitle.innerHTML = getIcon('trophy', 13) + ' RANKING ในเดือนนี้'
+  const mgmtTitle = document.getElementById('mgmtTitleEl')
+  if (mgmtTitle) mgmtTitle.innerHTML = getIcon('wrench', 13) + ' การจัดการ'
+
+  // inject management btns
+  const editBtn = document.getElementById('editGuildBtn')
+  if (editBtn) editBtn.innerHTML = getIcon('edit', 13) + ' แก้ไข Guild'
+  const leaveBtn = document.getElementById('leaveGuildBtn')
+  if (leaveBtn) leaveBtn.innerHTML = getIcon('door', 13) + ' ออกจาก Guild'
+
+  // inject edit modal title and save btn
+  const editModalTitle = document.getElementById('editModalTitle')
+  if (editModalTitle) editModalTitle.innerHTML = getIcon('edit', 13) + ' แก้ไข Guild'
+  const saveBtn = document.getElementById('saveGuildBtn')
+  if (saveBtn) saveBtn.innerHTML = getIcon('save', 14) + ' บันทึก'
+
+  // inject territory badge icon
+  const terrBadge = document.getElementById('territoryBadgeInner')
+  if (terrBadge) terrBadge.innerHTML = getIcon('crown', 12) + ' ครอง Territory: <span id="territoryCity">—</span>'
+
+  // inject role badge icon
   const roleBadge = document.getElementById('myRoleBadge')
   roleBadge.className = `guild-role-badge ${role}`
-  roleBadge.textContent = role === 'master' ? '👑 MASTER' : role === 'officer' ? '⭐ OFFICER' : '🤝 MEMBER'
+  if (role === 'master') roleBadge.innerHTML = getIcon('crown', 11) + ' MASTER'
+  else if (role === 'officer') roleBadge.innerHTML = getIcon('star', 11) + ' OFFICER'
+  else roleBadge.innerHTML = getIcon('users', 11) + ' MEMBER'
 
   // show edit / leave
   if (role === 'master') {
     document.getElementById('editGuildBtn').style.display = 'block'
     document.getElementById('leaveGuildBtn').style.display = 'none'
   }
+
+  // inject chat/feed empty icons
+  const chatEmpty = document.getElementById('chatEmptyIcon')
+  if (chatEmpty) chatEmpty.innerHTML = getIcon('chat', 24)
+  const feedEmpty = document.getElementById('feedEmptyIcon')
+  if (feedEmpty) feedEmpty.innerHTML = getIcon('signal', 24)
 
   // load data
   await Promise.all([loadMembers(), loadGuildQuests(), loadGuildFeed()])
@@ -874,7 +937,8 @@ async function loadMembers() {
     .eq('guild_id', MY_GUILD.id)
     .order('role')
 
-  document.getElementById('memberCount').textContent = data?.length || 0
+  const mcEl = document.getElementById('memberCount') || document.querySelector('.itab-count')
+  if (mcEl) mcEl.textContent = data?.length || 0
   document.getElementById('gBannerMembers').textContent = `${data?.length || 0}/${MY_GUILD.member_limit}`
 
   const el = document.getElementById('memberList')
@@ -937,7 +1001,7 @@ async function loadGuildQuests() {
   if (!data?.length) {
     el.innerHTML = `
       <div class="gquest-card" style="text-align:center;padding:32px">
-        <div style="font-size:36px;margin-bottom:12px">⏰</div>
+        <div style="margin-bottom:12px;opacity:0.5">${getIcon('calendar', 32)}</div>
         <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px">GUILD QUEST รีเซ็ตทุก 3 วัน</div>
         <div style="font-size:12px;color:var(--text-dim);margin-top:8px">ยังไม่มี Guild Quest ในขณะนี้</div>
       </div>`
@@ -953,7 +1017,7 @@ async function loadGuildQuests() {
     <div class="gquest-card">
       <div class="gquest-header">
         <div class="gquest-name">${escHtml(q?.title || 'Guild Quest')}</div>
-        <div class="gquest-timer">⏱️ 72h</div>
+        <div class="gquest-timer">72h</div>
       </div>
       <div class="gquest-desc">${escHtml(q?.description || '')}</div>
       <div class="gquest-progress">
@@ -977,7 +1041,7 @@ async function loadGuildQuests() {
 
 window.joinGuildQuest = async (guildQuestId, questId, btn) => {
   btn.disabled = true
-  btn.textContent = '⏳...'
+  btn.textContent = '...'
 
   // upsert เข้า user_quests ด้วย quest_id (ตาราง quests) จริงๆ
   const { error } = await sb.from('user_quests').upsert({
@@ -997,7 +1061,7 @@ window.joinGuildQuest = async (guildQuestId, questId, btn) => {
   }).catch(() => {})
 
   btn.classList.add('joined')
-  btn.textContent = '✅ เข้าร่วมแล้ว'
+  btn.textContent = 'เข้าร่วมแล้ว'
   toast('เข้าร่วม Guild Quest แล้ว! ไปทำ Quest ที่หน้า Quests', 'success')
   await loadGuildQuests()
 }
@@ -1125,7 +1189,7 @@ window.kickMember = async (userId, uname) => {
   if (!confirm(`Kick ${uname} ออกจาก Guild?`)) return
   const { error } = await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
   if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
-  await sb.from('notifications').insert({ user_id: userId, title: '🚪 ถูก Kick', body: `คุณถูก Kick ออกจาก Guild "${MY_GUILD.name}"` })
+  await sb.from('notifications').insert({ user_id: userId, title: 'ถูก Kick', body: `คุณถูก Kick ออกจาก Guild "${MY_GUILD.name}"` })
   toast(`Kick ${uname} ออกแล้ว`, 'info')
   loadMembers()
 }
@@ -1141,7 +1205,7 @@ window.promoteOfficer = async (userId, uname, currentRole) => {
   if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
   await sb.from('notifications').insert({
     user_id: userId,
-    title: newRole === 'officer' ? '⭐ ได้รับตำแหน่ง Officer!' : '📝 ถูก Demote เป็น Member',
+    title: newRole === 'officer' ? 'ได้รับตำแหน่ง Officer!' : 'ถูก Demote เป็น Member',
     body: `สถานะของคุณใน Guild "${MY_GUILD.name}" เปลี่ยนแปลงแล้ว`
   })
   toast(`${uname} → ${newRole.toUpperCase()}`, 'success')
