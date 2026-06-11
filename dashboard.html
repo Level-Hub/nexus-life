@@ -1320,6 +1320,20 @@ document.getElementById('proofModal').addEventListener('click', function(e) {
 // ============================================================
 // START
 // ============================================================
+
+// ============================================================
+// NOTIFICATION BADGE
+// ============================================================
+async function loadNotifBadge() {
+  try {
+    const { count } = await supabase.from('notifications')
+      .select('*', { count:'exact', head:true })
+      .eq('user_id', currentUser.id).eq('is_read', false)
+    const dot = document.getElementById('notifDot')
+    if (dot) dot.style.display = (count > 0) ? 'block' : 'none'
+  } catch(e) {}
+}
+
 init()
 </script>
 </body>
