@@ -319,13 +319,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon } from './icons.js'
-import { renderTitleBadge, injectTitleStyles } from './titles.js'
+// titles.js inlined to avoid import error
 
 // ===== AUTH CHECK =====
 const { user } = await initSidebar('feed')
 if (!user) { window.location.href = './login.html'; throw new Error('no session') }
 
-injectTitleStyles()
+// injectTitleStyles() removed
 
 // inject static icon-wrap elements
 document.querySelectorAll('.icon-wrap[data-icon]').forEach(el => {
@@ -354,6 +354,13 @@ function getAvatarUrl(avatarSeed, size = 80) {
     return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
   }
   return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+}
+
+// ===== INLINE TITLE BADGE =====
+function renderTitleBadge(t) {
+  const colors = { common:'#aaa', uncommon:'#44ff88', rare:'#00f5ff', epic:'#b044ff', legendary:'#ffd700' }
+  const c = colors[t.rarity] || '#aaa'
+  return `<span style="border:1px solid ${c};color:${c};font-size:9px;padding:1px 7px;font-family:'Orbitron',monospace;letter-spacing:1px">${t.icon ? t.icon + ' ' : ''}${t.name}</span>`
 }
 
 // ===== LOAD USER PROFILE =====
