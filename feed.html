@@ -174,11 +174,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<!-- SIDEBAR OVERLAY -->
-<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-<div class="mobile-nav-bar">
-  <button class="burger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-</div>
 
 <div id="sidebar-root"></div>
 <!-- ===== MAIN ===== -->
@@ -313,7 +308,7 @@ import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ===== AUTH CHECK =====
 const { user } = await initSidebar('feed')
-if (!user) throw new Error('no session')
+if (!user) { window.location.href = './login.html'; throw new Error('no session') }
 
 injectTitleStyles()
 
@@ -808,7 +803,8 @@ function escHtml(str) {
 }
 
 // ===== SIGN OUT =====
-document.getElementById('signOutBtn').addEventListener('click', async () => {
+const signOutEl = document.getElementById('signoutBtn')
+if (signOutEl) signOutEl.addEventListener('click', async () => {
   await supabase.auth.signOut()
   window.location.href = './login.html'
 })
@@ -833,16 +829,6 @@ function animRing() {
   requestAnimationFrame(animRing)
 }
 animRing()
-
-// SIDEBAR MOBILE
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open')
-  document.getElementById('sidebarOverlay').classList.add('open')
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open')
-  document.getElementById('sidebarOverlay').classList.remove('open')
-}
 </script>
 </body>
 </html>
