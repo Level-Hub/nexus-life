@@ -79,10 +79,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .feed-proof{margin-top:10px;border-radius:2px;overflow:hidden;max-height:160px}
 .feed-proof img{width:100%;height:160px;object-fit:cover;display:block;filter:brightness(0.85)}
 .feed-actions{display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:color 0.2s;font-family:'Sarabun',sans-serif;padding:0}
+.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Sarabun',sans-serif;padding:0}
 .feed-action-btn:hover{color:var(--cyan)}
 .feed-action-btn.liked{color:var(--red)}
 .feed-action-btn svg{flex-shrink:0}
+.cheer-btn{padding:5px 12px;border:1px solid rgba(255,215,0,0.25);border-radius:2px;background:rgba(255,215,0,0.05);color:var(--gold);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;transition:all 0.2s}
+.cheer-btn:hover{background:rgba(255,215,0,0.15);border-color:var(--gold)}
+.cheer-btn.cheered{background:rgba(255,215,0,0.12);border-color:var(--gold);color:var(--gold)}
 .feed-tag{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;padding:2px 7px;border-radius:0;margin-right:6px;margin-top:4px}
 .feed-tag.quest{background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);color:var(--cyan)}
 .feed-tag.levelup{background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.3);color:var(--gold)}
@@ -445,7 +448,7 @@ async function loadCityProject() {
 async function loadActivePlayers() {
   const { data: players } = await supabase
     .from('users')
-    .select('id, username, avatar_seed, class, level, xp_this_month')
+    .select('id, username, avatar_seed, avatar_url, class, level, xp_this_month')
     .eq('city', myCity)
     .order('xp_this_month', { ascending: false })
     .limit(6)
@@ -460,7 +463,7 @@ async function loadActivePlayers() {
     <div class="active-item cls-${p.class || 'warrior'}">
       <div class="active-dot"></div>
       <div class="active-avatar">
-        <img src="${getAvatarUrl(p.avatar_seed || p.username, 28)}" alt="">
+        <img src="${p.avatar_url || getAvatarUrl(p.avatar_seed || p.username, 28)}" alt="">
       </div>
       <div class="active-name">${p.username || '—'}</div>
       <div class="active-xp">${(p.xp_this_month || 0).toLocaleString()} XP</div>
@@ -596,7 +599,7 @@ function renderEmptyFeed(msg) {
 }
 
 function renderFeedCard(item) {
-  const avatarSrc = getAvatarUrl(item.avatar_seed || item.username, 38)
+  const avatarSrc = item.avatar_url || getAvatarUrl(item.avatar_seed || item.username, 38)
 
   const avatarHtml = `<img src="${avatarSrc}" alt="">`
 
@@ -689,7 +692,7 @@ function renderFeedCard(item) {
           <span class="comment-count">${commentCount > 0 ? commentCount : 'ความคิดเห็น'}</span>
         </button>
         <button class="feed-action-btn cheer-btn${userCheered ? ' cheered' : ''}" data-id="${item.id}" data-cheered="${userCheered}" style="margin-left:auto${userCheered ? ';color:var(--gold)' : ''}">
-          <span id="cheer-icon-${item.id}"></span> <span class="cheer-label">${userCheered ? 'Cheered!' : 'Cheer'}</span>${cheerCount > 0 ? ` <span class="cheer-count">${cheerCount}</span>` : ''}
+          <span id="cheer-icon-${item.id}"></span> <span class="cheer-label">${userCheered ? '👏 เชียร์แล้ว' : '👏 เชียร์'}</span>${cheerCount > 0 ? ` <span class="cheer-count">${cheerCount}</span>` : ''}
         </button>
       </div>
       <div class="comment-area" id="comments-${item.id}">
@@ -767,7 +770,7 @@ function attachCardListeners() {
         .insert({ feed_id: feedId, user_id: userId })
       if (!error) {
         if (iconEl) iconEl.innerHTML = getIcon('check_circle', 14)
-        btn.querySelector('.cheer-label').textContent = 'Cheered!'
+        btn.querySelector('.cheer-label').textContent = '👏 เชียร์แล้ว'
         btn.style.color = 'var(--gold)'
         btn.dataset.cheered = 'true'
         btn.disabled = true
