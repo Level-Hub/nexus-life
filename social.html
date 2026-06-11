@@ -223,9 +223,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- LEFT: USER LIST -->
     <div>
       <div class="tab-bar">
-        <button class="tab-btn active" id="tab-discover" onclick="switchTab('discover')">🌐 ค้นพบ <span class="tab-count" id="cntDiscover">0</span></button>
-        <button class="tab-btn" id="tab-following" onclick="switchTab('following')">✅ ติดตาม <span class="tab-count" id="cntFollowing">0</span></button>
-        <button class="tab-btn" id="tab-followers" onclick="switchTab('followers')">👤 ผู้ติดตาม <span class="tab-count" id="cntFollowers">0</span></button>
+        <button class="tab-btn active" id="tab-discover" onclick="switchTab('discover')">ค้นพบ <span class="tab-count" id="cntDiscover">0</span></button>
+        <button class="tab-btn" id="tab-following" onclick="switchTab('following')">ติดตาม <span class="tab-count" id="cntFollowing">0</span></button>
+        <button class="tab-btn" id="tab-followers" onclick="switchTab('followers')">ผู้ติดตาม <span class="tab-count" id="cntFollowers">0</span></button>
       </div>
       <div class="user-grid" id="userGrid">
         <div class="skel" style="height:84px"></div>
@@ -287,11 +287,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
 
 function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
-const CLASS_COLOR = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
-const RANK_LABEL  = { bronze:'🥉 BRONZE', silver:'🥈 SILVER', gold:'🥇 GOLD', platinum:'💠 PLATINUM', diamond:'💎 DIAMOND', legendary:'👑 LEGENDARY' }
+
+const RANK_LABEL  = { bronze:'BRONZE', silver:'SILVER', gold:'GOLD', platinum:'PLATINUM', diamond:'DIAMOND', legendary:'LEGENDARY' }
 const RANK_CLS    = { bronze:'rank-bronze', silver:'rank-silver', gold:'rank-gold', platinum:'rank-platinum', diamond:'rank-diamond', legendary:'rank-legendary' }
 
 let currentUser = null
@@ -319,6 +319,28 @@ async function init() {
   const { user } = await initSidebar('social')
   if (!user) return
   currentUser = user
+
+  // inject static icons
+  const tabDiscover = document.getElementById('tab-discover')
+  if (tabDiscover) {
+    const cnt = tabDiscover.querySelector('.tab-count')
+    tabDiscover.innerHTML = getIcon('globe', 12) + ' ค้นพบ '
+    if (cnt) tabDiscover.appendChild(cnt)
+  }
+  const tabFollowing = document.getElementById('tab-following')
+  if (tabFollowing) {
+    const cnt = tabFollowing.querySelector('.tab-count')
+    tabFollowing.innerHTML = getIcon('check_circle', 12) + ' ติดตาม '
+    if (cnt) tabFollowing.appendChild(cnt)
+  }
+  const tabFollowers = document.getElementById('tab-followers')
+  if (tabFollowers) {
+    const cnt = tabFollowers.querySelector('.tab-count')
+    tabFollowers.innerHTML = getIcon('users', 12) + ' ผู้ติดตาม '
+    if (cnt) tabFollowers.appendChild(cnt)
+  }
+  const socialEmptyIcon = document.getElementById('socialEmptyIcon')
+  if (socialEmptyIcon) socialEmptyIcon.innerHTML = getIcon('users', 28)
 
   await loadFollowingIds()
   await Promise.all([
@@ -409,7 +431,7 @@ function renderUserGrid(users) {
   const grid = document.getElementById('userGrid')
   if (!users.length) {
     grid.innerHTML = `<div class="empty-state">
-      <span class="empty-icon">👤</span>
+      <span class="empty-icon" id="socialEmptyIcon"></span>
       <div class="empty-txt">ไม่พบผู้เล่น</div>
       <div class="empty-sub">ลองค้นหาด้วยคำอื่น หรือเปลี่ยน filter</div>
     </div>`
@@ -430,15 +452,15 @@ function renderUserGrid(users) {
         <div class="user-card-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
         <div class="user-card-meta">
           <span><span class="rank-badge ${rankCls}">${(RANK_LABEL[u.rank]||'BRONZE').replace(/.*? /,'')}</span></span>
-          <span>🏙️ ${esc(u.city||'—')}</span>
-          <span>⚡ Streak ${u.streak_current||0}</span>
-          <span>👤 ${(u.followers_count||0).toLocaleString()} ผู้ติดตาม</span>
+          <span>${getIcon('city',11)} ${esc(u.city||'—')}</span>
+          <span>${getIcon('lightning',11)} Streak ${u.streak_current||0}</span>
+          <span>${getIcon('users',11)} ${(u.followers_count||0).toLocaleString()} ผู้ติดตาม</span>
         </div>
       </div>
       <div class="user-card-actions" onclick="event.stopPropagation()">
         <button class="follow-btn ${isFollowing ? 'following' : ''}" id="fbtn-${u.id}"
           onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
-          ${isFollowing ? '✓ ติดตาม' : '+ ติดตาม'}
+          ${isFollowing ? 'ติดตาม' : '+ ติดตาม'}
         </button>
         <button class="profile-btn" onclick="goProfile('${u.id}')">ดูโปรไฟล์</button>
       </div>
@@ -475,9 +497,9 @@ window.toggleFollow = async function(userId, displayName) {
     })
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); btn.disabled = false; return }
     followingIds.add(userId)
-    btn.textContent = '✓ ติดตาม'
+    btn.innerHTML = getIcon('check',11) + ' ติดตาม'
     btn.classList.add('following')
-    showToast(`ติดตาม ${displayName} แล้ว! 🎉`, 'success')
+    showToast(`ติดตาม ${displayName} แล้ว!`, 'success')
 
     // notification ถูกสร้างโดย follow_user RPC อัตโนมัติ
     const cur = parseInt(document.getElementById('myFollowing').textContent.replace(/,/g,'')) || 0
@@ -525,7 +547,7 @@ async function loadSuggested() {
         <div class="suggest-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
       </div>
       <button class="suggest-follow-btn" id="sfbtn-${u.id}"
-        onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}');this.textContent='✓';this.classList.add('following')">
+        onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}');this.innerHTML=getIcon('check',11)+' ติดตาม';this.classList.add('following')">
         + Follow
       </button>
     </div>`
@@ -546,7 +568,7 @@ async function loadCityRank() {
   data.forEach(u => { cityCount[u.city] = (cityCount[u.city]||0) + 1 })
   const sorted = Object.entries(cityCount).sort((a,b) => b[1]-a[1]).slice(0, 5)
 
-  const MEDAL = ['🥇','🥈','🥉','4️⃣','5️⃣']
+  const MEDAL = ['#1','#2','#3','#4','#5']
   document.getElementById('cityRankList').innerHTML = sorted.map(([city, count], i) => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
       <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text)">${MEDAL[i]} ${esc(city)}</div>

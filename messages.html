@@ -245,10 +245,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
 
 function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
-const CLASS_COLOR = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
+
 
 let currentUser = null
 let myProfile   = null
@@ -263,6 +263,10 @@ async function init() {
   const { user } = await initSidebar('messages')
   if (!user) return
   currentUser = user
+
+  // inject static icons
+  const chatEmptyWave = document.getElementById('chatEmptyWave')
+  if (chatEmptyWave) chatEmptyWave.innerHTML = getIcon('chat', 36)
 
   await loadMyProfile()
   await loadInbox()
@@ -490,7 +494,7 @@ async function loadChatHistory() {
   if (error) { msgEl.innerHTML = `<div style="color:var(--red);padding:20px">${error.message}</div>`; return }
   if (!data?.length) {
     msgEl.innerHTML = `<div class="chat-empty" style="flex:1">
-      <div class="chat-empty-icon">👋</div>
+      <div class="chat-empty-icon" id="chatEmptyWave"></div>
       <div class="chat-empty-txt">เริ่มบทสนทนาใหม่</div>
       <div class="chat-empty-sub">ส่งข้อความแรกเพื่อเริ่มคุยกับ ${esc(activePeer.display_name || activePeer.username)}</div>
     </div>`

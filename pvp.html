@@ -494,7 +494,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 <!-- ===================== MAIN ===================== -->
 <div id="loadingScreen" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity 0.4s ease;">
-  <div style="font-family:'Orbitron',monospace;font-size:14px;letter-spacing:4px;color:var(--red);text-shadow:0 0 20px rgba(255,0,60,0.5);">⚔️ PVP ARENA</div>
+  <div style="font-family:'Orbitron',monospace;font-size:14px;letter-spacing:4px;color:var(--red);text-shadow:0 0 20px rgba(255,0,60,0.5);">PVP ARENA</div>
   <div style="width:200px;height:2px;background:rgba(255,0,60,0.1);overflow:hidden;position:relative;">
     <div style="position:absolute;left:-50%;width:50%;height:100%;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:loadSlide 1s infinite linear;"></div>
   </div>
@@ -520,7 +520,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="pvp-hero">
     <div class="pvp-hero-inner">
       <div>
-        <div class="pvp-hero-title">⚔️ PVP ARENA</div>
+        <div class="pvp-hero-title" id="pvpHeroTitle">PVP ARENA</div>
         <div class="pvp-hero-sub">// PROVE YOUR WORTH IN BATTLE</div>
       </div>
       <div class="pvp-hero-stats">
@@ -544,16 +544,16 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('duels',this)">
-      ⚔️ <span>1v1 DUELS</span>
+      <span id="tab1v1">1v1 DUELS</span>
     </button>
     <button class="tab-btn" onclick="switchTab('guildwar',this)">
-      🏰 <span>GUILD WAR</span>
+      <span id="tabGuildWar">GUILD WAR</span>
     </button>
     <button class="tab-btn" onclick="switchTab('tournament',this)">
-      🏆 <span>TOURNAMENT</span>
+      <span id="tabTournament">TOURNAMENT</span>
     </button>
     <button class="tab-btn" onclick="switchTab('history',this)">
-      📜 <span>HISTORY</span>
+      <span id="tabHistory">HISTORY</span>
     </button>
   </div>
 
@@ -567,12 +567,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <!-- INCOMING CHALLENGES -->
         <div class="box red-box" style="margin-bottom:16px">
           <div class="box-header">
-            <div class="box-title red">⚡ INCOMING CHALLENGES</div>
+            <div class="box-title red" id="incomingTitle">INCOMING CHALLENGES</div>
             <div class="box-tag" id="incomingCount">0 คำท้า</div>
           </div>
           <div class="box-body" style="padding:16px 20px" id="incomingList">
             <div class="empty-state">
-              <div class="empty-state-icon">⚔️</div>
+              <div class="empty-state-icon" id="pvpEmptySearch"></div>
               <div class="empty-state-txt">ไม่มีคำท้าใหม่</div>
               <div class="empty-state-sub">รอรับศัตรูหน้าใหม่...</div>
             </div>
@@ -582,12 +582,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <!-- ACTIVE DUELS -->
         <div class="box" style="margin-bottom:16px">
           <div class="box-header">
-            <div class="box-title">🔥 ACTIVE DUELS</div>
+            <div class="box-title" id="activeDuelsTitle">ACTIVE DUELS</div>
             <div class="box-tag" id="activeCount">0 กำลังดำเนิน</div>
           </div>
           <div class="box-body" style="padding:16px 20px" id="activeDuelList">
             <div class="empty-state">
-              <div class="empty-state-icon">🔥</div>
+              <div class="empty-state-icon" id="pvpEmptyActive"></div>
               <div class="empty-state-txt">ไม่มี Duel ที่กำลังดำเนินอยู่</div>
               <div class="empty-state-sub">ท้าผู้เล่นคนอื่นเพื่อเริ่มต้น</div>
             </div>
@@ -596,7 +596,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
         <!-- CHALLENGE PLAYER -->
         <div class="challenge-area">
-          <div class="box-title red" style="margin-bottom:12px;font-size:11px;letter-spacing:3px;">⚔️ CHALLENGE PLAYER</div>
+          <div class="box-title red" id="challengeBoxTitle" style="margin-bottom:12px;font-size:11px;letter-spacing:3px;">CHALLENGE PLAYER</div>
           <div class="box-tag" style="margin-bottom:14px;">ท้าผู้เล่นที่ Level ใกล้เคียงกัน (±5)</div>
           <div class="search-input-wrap">
             <input class="search-input" id="searchInput" type="text" placeholder="ค้นหาชื่อผู้เล่น..." onkeydown="if(event.key==='Enter')searchPlayers()">
@@ -604,7 +604,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
           </div>
           <div class="player-results" id="playerResults">
             <div class="empty-state" style="padding:20px 0">
-              <div class="empty-state-icon" style="font-size:24px">🔍</div>
+              <div class="empty-state-icon" id="pvpSearchIcon"></div>
               <div class="empty-state-txt" style="font-size:9px">พิมพ์ชื่อผู้เล่นเพื่อค้นหา</div>
             </div>
           </div>
@@ -618,7 +618,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <!-- MY PVP STATS -->
         <div class="box">
           <div class="box-header">
-            <div class="box-title">📊 MY STATS</div>
+            <div class="box-title" id="myStatsTitle">MY STATS</div>
           </div>
           <div class="pvp-my-stats">
             <div class="pvp-stat-row">
@@ -645,13 +645,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <!-- PVP LEADERBOARD -->
         <div class="box">
           <div class="box-header">
-            <div class="box-title">👑 ARENA RANKING</div>
+            <div class="box-title" id="arenaRankTitle">ARENA RANKING</div>
             <div class="box-tag">// THIS MONTH</div>
           </div>
           <div class="box-body" style="padding:12px 20px">
             <div class="pvp-rank-list" id="pvpRankList">
               <div class="empty-state" style="padding:20px 0">
-                <div class="empty-state-icon" style="font-size:24px">👑</div>
+                <div class="empty-state-icon" id="pvpRankIcon"></div>
                 <div class="empty-state-txt" style="font-size:9px">กำลังโหลด...</div>
               </div>
             </div>
@@ -661,12 +661,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <!-- REWARDS -->
         <div class="box gold-box">
           <div class="box-header">
-            <div class="box-title gold">🏆 DUEL REWARDS</div>
+            <div class="box-title gold" id="duelRewardsTitle">DUEL REWARDS</div>
           </div>
           <div class="box-body">
             <div class="reward-list">
               <div class="reward-item">
-                <div class="reward-icon">⭐</div>
+                <div class="reward-icon" id="rwIconXP1"></div>
                 <div class="reward-text">
                   <div class="reward-name">WIN REWARD</div>
                   <div class="reward-desc">ชนะ 1v1 Duel</div>
@@ -674,23 +674,23 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                 <div class="reward-amount">+50 XP</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">🔥</div>
+                <div class="reward-icon" id="rwIconStreak"></div>
                 <div class="reward-text">
                   <div class="reward-name">3-WIN STREAK</div>
                   <div class="reward-desc">ชนะติดกัน 3 ครั้ง</div>
                 </div>
-                <div class="reward-amount">🏅 Badge</div>
+                <div class="reward-amount" id="rwBadge">Badge</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">💎</div>
+                <div class="reward-icon" id="rwIconCrystal"></div>
                 <div class="reward-text">
                   <div class="reward-name">TOURNAMENT WIN</div>
                   <div class="reward-desc">ชนะ Monthly Tournament</div>
                 </div>
-                <div class="reward-amount">👑 Title</div>
+                <div class="reward-amount" id="rwTitle">Title</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">⭐</div>
+                <div class="reward-icon" id="rwIconXP2"></div>
                 <div class="reward-text">
                   <div class="reward-name">GOLD REWARD</div>
                   <div class="reward-desc">ชนะ Duel ได้ Gold</div>
@@ -711,7 +711,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div>
         <div id="guildWarContent">
           <div class="empty-state" style="padding:60px 0">
-            <div class="empty-state-icon">🏰</div>
+            <div class="empty-state-icon" id="pvpGwEmpty1"></div>
             <div class="empty-state-txt">กำลังโหลด Guild War...</div>
           </div>
         </div>
@@ -719,33 +719,33 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="right-col">
         <div class="box purple-box">
           <div class="box-header">
-            <div class="box-title purple">📜 GUILD WAR RULES</div>
+            <div class="box-title purple" id="gwRulesTitle">GUILD WAR RULES</div>
           </div>
           <div class="box-body">
             <div class="reward-list">
               <div class="reward-item">
-                <div class="reward-icon">⏱️</div>
+                <div class="reward-icon" id="gwRwTime"></div>
                 <div class="reward-text">
                   <div class="reward-name">DURATION</div>
                   <div class="reward-desc">สงครามกินเวลา 3 วัน</div>
                 </div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">📊</div>
+                <div class="reward-icon" id="gwRwStats"></div>
                 <div class="reward-text">
                   <div class="reward-name">SCORING</div>
                   <div class="reward-desc">นับ XP รวมของทีมในช่วงสงคราม</div>
                 </div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">🏅</div>
+                <div class="reward-icon" id="gwRwBadge"></div>
                 <div class="reward-text">
                   <div class="reward-name">REWARD</div>
                   <div class="reward-desc">Guild XP + Badge "Guild War Victor"</div>
                 </div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">👥</div>
+                <div class="reward-icon" id="gwRwTeam"></div>
                 <div class="reward-text">
                   <div class="reward-name">REQUIREMENT</div>
                   <div class="reward-desc">สมาชิกเท่ากันขึ้นไปทั้งสองฝ่าย</div>
@@ -762,7 +762,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="tab-panel" id="tab-tournament">
     <div class="tournament-header">
       <div>
-        <div class="tournament-title">🏆 MONTHLY TOURNAMENT</div>
+        <div class="tournament-title" id="tournamentTitle">MONTHLY TOURNAMENT</div>
         <div class="tournament-sub">// JUNE 2026 · BRACKET TOURNAMENT</div>
       </div>
       <div class="tournament-status">
@@ -775,7 +775,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div>
         <div class="box" style="margin-bottom:16px">
           <div class="box-header">
-            <div class="box-title gold">🏆 TOURNAMENT BRACKET</div>
+            <div class="box-title gold" id="bracketTitle">TOURNAMENT BRACKET</div>
             <div class="box-tag">// 8 PLAYERS</div>
           </div>
           <div class="box-body">
@@ -788,7 +788,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </div>
         <div class="box">
           <div class="box-header">
-            <div class="box-title">👤 PARTICIPANTS</div>
+            <div class="box-title" id="participantsTitle">PARTICIPANTS</div>
             <div class="box-tag" id="participantCount">0 / 8 ผู้เล่น</div>
           </div>
           <div class="box-body" style="padding:0 20px">
@@ -799,12 +799,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="right-col">
         <div class="box gold-box">
           <div class="box-header">
-            <div class="box-title gold">🎖️ TOURNAMENT REWARDS</div>
+            <div class="box-title gold" id="tournRewardsTitle">TOURNAMENT REWARDS</div>
           </div>
           <div class="box-body">
             <div class="reward-list">
               <div class="reward-item">
-                <div class="reward-icon">🥇</div>
+                <div class="reward-icon" id="rwGold"></div>
                 <div class="reward-text">
                   <div class="reward-name">CHAMPION</div>
                   <div class="reward-desc">Title "Champion" + Trophy Frame</div>
@@ -812,7 +812,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                 <div class="reward-amount">500 Crystal</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">🥈</div>
+                <div class="reward-icon" id="rwSilver"></div>
                 <div class="reward-text">
                   <div class="reward-name">RUNNER-UP</div>
                   <div class="reward-desc">Silver Medal Badge</div>
@@ -820,7 +820,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                 <div class="reward-amount">200 Crystal</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">🥉</div>
+                <div class="reward-icon" id="rwBronze"></div>
                 <div class="reward-text">
                   <div class="reward-name">THIRD PLACE</div>
                   <div class="reward-desc">Bronze Medal Badge</div>
@@ -828,7 +828,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                 <div class="reward-amount">100 Crystal</div>
               </div>
               <div class="reward-item">
-                <div class="reward-icon">📅</div>
+                <div class="reward-icon" id="rwDate"></div>
                 <div class="reward-text">
                   <div class="reward-name">REGISTRATION</div>
                   <div class="reward-desc">ปิดรับสมัครวันที่ 5 ของเดือน</div>
@@ -841,7 +841,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
           <div class="box-body" style="text-align:center;padding:24px">
             <div style="font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-bottom:16px">ลงทะเบียนแข่งขัน</div>
             <button class="modal-submit" id="registerBtn" onclick="registerTournament()" style="max-width:200px;margin:0 auto;display:block;font-size:10px;padding:12px">
-              ⚔️ REGISTER NOW
+              <span id="regBtnTournText">REGISTER NOW</span>
             </button>
           </div>
         </div>
@@ -853,13 +853,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="tab-panel" id="tab-history">
     <div class="box">
       <div class="box-header">
-        <div class="box-title">📜 DUEL HISTORY</div>
+        <div class="box-title" id="duelHistoryTitle">DUEL HISTORY</div>
         <div class="box-tag" id="historyCount">0 รายการ</div>
       </div>
       <div class="box-body" style="padding:0">
         <div id="historyContent">
           <div class="empty-state" style="padding:40px 0">
-            <div class="empty-state-icon">📜</div>
+            <div class="empty-state-icon" id="historyEmptyIcon"></div>
             <div class="empty-state-txt">กำลังโหลดประวัติ...</div>
           </div>
         </div>
@@ -873,13 +873,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <div class="modal-overlay" id="challengeModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">⚔️ SEND CHALLENGE</div>
-      <button class="modal-close" onclick="closeChallengeModal()">✕</button>
+      <div class="modal-title" id="challengeModalTitle">SEND CHALLENGE</div>
+      <button class="modal-close" id="closeChallengeBtn" onclick="closeChallengeModal()"></button>
     </div>
     <div class="modal-body">
       <div class="modal-target-info" id="challengeTargetInfo">
         <div class="modal-target-avatar" id="challengeTargetAvatar">
-          <div class="duel-avatar-placeholder">⚔️</div>
+          <div class="duel-avatar-placeholder" id="duelAvatarPlaceholder"></div>
         </div>
         <div>
           <div class="modal-target-name" id="challengeTargetName">—</div>
@@ -912,7 +912,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       </div>
 
       <button class="modal-submit" id="sendChallengeBtn" onclick="sendChallenge()">
-        ⚔️ SEND CHALLENGE →
+        <span id="sendChallengeText">SEND CHALLENGE →</span>
       </button>
     </div>
   </div>
@@ -958,6 +958,116 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  // inject static icons
+  const pvpHeroTitle = document.getElementById('pvpHeroTitle')
+  if (pvpHeroTitle) pvpHeroTitle.innerHTML = getIcon('sword', 16) + ' PVP ARENA'
+  const tab1v1 = document.getElementById('tab1v1')
+  if (tab1v1) tab1v1.innerHTML = getIcon('sword',12) + ' 1v1 DUELS'
+  const tabGuildWar = document.getElementById('tabGuildWar')
+  if (tabGuildWar) tabGuildWar.innerHTML = getIcon('guild',12) + ' GUILD WAR'
+  const tabTournament = document.getElementById('tabTournament')
+  if (tabTournament) tabTournament.innerHTML = getIcon('trophy',12) + ' TOURNAMENT'
+  const tabHistory = document.getElementById('tabHistory')
+  if (tabHistory) tabHistory.innerHTML = getIcon('scroll',12) + ' HISTORY'
+  const incomingTitle = document.getElementById('incomingTitle')
+  if (incomingTitle) incomingTitle.innerHTML = getIcon('lightning',12) + ' INCOMING CHALLENGES'
+  const activeDuelsTitle = document.getElementById('activeDuelsTitle')
+  if (activeDuelsTitle) activeDuelsTitle.innerHTML = getIcon('fire',12) + ' ACTIVE DUELS'
+  const challengeBoxTitle = document.getElementById('challengeBoxTitle')
+  if (challengeBoxTitle) challengeBoxTitle.innerHTML = getIcon('sword',11) + ' CHALLENGE PLAYER'
+  const myStatsTitle = document.getElementById('myStatsTitle')
+  if (myStatsTitle) myStatsTitle.innerHTML = getIcon('chart',12) + ' MY STATS'
+  const arenaRankTitle = document.getElementById('arenaRankTitle')
+  if (arenaRankTitle) arenaRankTitle.innerHTML = getIcon('crown',12) + ' ARENA RANKING'
+  const duelRewardsTitle = document.getElementById('duelRewardsTitle')
+  if (duelRewardsTitle) duelRewardsTitle.innerHTML = getIcon('trophy',12) + ' DUEL REWARDS'
+  const rwIconXP1 = document.getElementById('rwIconXP1')
+  if (rwIconXP1) rwIconXP1.innerHTML = getIcon('levelup', 20)
+  const rwIconStreak = document.getElementById('rwIconStreak')
+  if (rwIconStreak) rwIconStreak.innerHTML = getIcon('fire', 20)
+  const rwBadge = document.getElementById('rwBadge')
+  if (rwBadge) rwBadge.innerHTML = getIcon('medal',12) + ' Badge'
+  const rwIconCrystal = document.getElementById('rwIconCrystal')
+  if (rwIconCrystal) rwIconCrystal.innerHTML = getIcon('diamond', 20)
+  const rwTitle = document.getElementById('rwTitle')
+  if (rwTitle) rwTitle.innerHTML = getIcon('crown',12) + ' Title'
+  const rwIconXP2 = document.getElementById('rwIconXP2')
+  if (rwIconXP2) rwIconXP2.innerHTML = getIcon('levelup', 20)
+  const pvpEmptySearch = document.getElementById('pvpEmptySearch')
+  if (pvpEmptySearch) pvpEmptySearch.innerHTML = getIcon('sword', 24)
+  const pvpEmptyActive = document.getElementById('pvpEmptyActive')
+  if (pvpEmptyActive) pvpEmptyActive.innerHTML = getIcon('fire', 24)
+  const pvpSearchIcon = document.getElementById('pvpSearchIcon')
+  if (pvpSearchIcon) pvpSearchIcon.innerHTML = getIcon('search', 24)
+  const pvpRankIcon = document.getElementById('pvpRankIcon')
+  if (pvpRankIcon) pvpRankIcon.innerHTML = getIcon('crown', 24)
+  const pvpGwEmpty1 = document.getElementById('pvpGwEmpty1')
+  if (pvpGwEmpty1) pvpGwEmpty1.innerHTML = getIcon('guild', 24)
+  const pvpGwEmpty2 = document.getElementById('pvpGwEmpty2')
+  if (pvpGwEmpty2) pvpGwEmpty2.innerHTML = getIcon('guild', 24)
+  // inject tab span icons (HTML tabs)
+  const tab1v1 = document.getElementById('tab1v1')
+  if (tab1v1) tab1v1.innerHTML = getIcon('sword',12) + ' 1v1 DUELS'
+  const tabGuildWar = document.getElementById('tabGuildWar')
+  if (tabGuildWar) tabGuildWar.innerHTML = getIcon('guild',12) + ' GUILD WAR'
+  const tabTournament = document.getElementById('tabTournament')
+  if (tabTournament) tabTournament.innerHTML = getIcon('trophy',12) + ' TOURNAMENT'
+  const tabHistory = document.getElementById('tabHistory')
+  if (tabHistory) tabHistory.innerHTML = getIcon('scroll',12) + ' HISTORY'
+  const regBtnTournText = document.getElementById('regBtnTournText')
+  if (regBtnTournText) regBtnTournText.innerHTML = getIcon('sword',13) + ' REGISTER NOW'
+  const sendChallengeText = document.getElementById('sendChallengeText')
+  if (sendChallengeText) sendChallengeText.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE →'
+  const pvpTournEmpty = document.getElementById('pvpTournEmpty')
+  if (pvpTournEmpty) pvpTournEmpty.innerHTML = getIcon('sword', 28)
+  const pvpResultEmptyIcon = document.getElementById('pvpResultEmptyIcon')
+  if (pvpResultEmptyIcon) pvpResultEmptyIcon.innerHTML = getIcon('refresh', 20)
+  const gwRulesTitle = document.getElementById('gwRulesTitle')
+  if (gwRulesTitle) gwRulesTitle.innerHTML = getIcon('scroll',12) + ' GUILD WAR RULES'
+  const gwRwTime = document.getElementById('gwRwTime')
+  if (gwRwTime) gwRwTime.innerHTML = getIcon('calendar', 20)
+  const gwRwStats = document.getElementById('gwRwStats')
+  if (gwRwStats) gwRwStats.innerHTML = getIcon('chart', 20)
+  const gwRwBadge = document.getElementById('gwRwBadge')
+  if (gwRwBadge) gwRwBadge.innerHTML = getIcon('medal', 20)
+  const gwRwTeam = document.getElementById('gwRwTeam')
+  if (gwRwTeam) gwRwTeam.innerHTML = getIcon('users', 20)
+  const gwMainTitle = document.getElementById('gwMainTitle')
+  if (gwMainTitle) gwMainTitle.innerHTML = getIcon('guild',14) + ' GUILD WAR'
+  const tournamentTitle = document.getElementById('tournamentTitle')
+  if (tournamentTitle) tournamentTitle.innerHTML = getIcon('trophy',14) + ' MONTHLY TOURNAMENT'
+  const bracketTitle = document.getElementById('bracketTitle')
+  if (bracketTitle) bracketTitle.innerHTML = getIcon('trophy',12) + ' TOURNAMENT BRACKET'
+  const participantsTitle = document.getElementById('participantsTitle')
+  if (participantsTitle) participantsTitle.innerHTML = getIcon('users',12) + ' PARTICIPANTS'
+  const tournRewardsTitle = document.getElementById('tournRewardsTitle')
+  if (tournRewardsTitle) tournRewardsTitle.innerHTML = getIcon('medal',12) + ' TOURNAMENT REWARDS'
+  const rwGold = document.getElementById('rwGold')
+  if (rwGold) rwGold.innerHTML = getIcon('trophy', 20)
+  const rwSilver = document.getElementById('rwSilver')
+  if (rwSilver) rwSilver.innerHTML = getIcon('medal', 20)
+  const rwBronze = document.getElementById('rwBronze')
+  if (rwBronze) rwBronze.innerHTML = getIcon('star', 20)
+  const rwDate = document.getElementById('rwDate')
+  if (rwDate) rwDate.innerHTML = getIcon('calendar', 20)
+  const duelHistoryTitle = document.getElementById('duelHistoryTitle')
+  if (duelHistoryTitle) duelHistoryTitle.innerHTML = getIcon('scroll',12) + ' DUEL HISTORY'
+  const historyEmptyIcon = document.getElementById('historyEmptyIcon')
+  if (historyEmptyIcon) historyEmptyIcon.innerHTML = getIcon('scroll', 24)
+  const challengeModalTitle = document.getElementById('challengeModalTitle')
+  if (challengeModalTitle) challengeModalTitle.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE'
+  const closeChallengeBtn = document.getElementById('closeChallengeBtn')
+  if (closeChallengeBtn) closeChallengeBtn.innerHTML = getIcon('close', 16)
+  const duelAvatarPlaceholder = document.getElementById('duelAvatarPlaceholder')
+  if (duelAvatarPlaceholder) duelAvatarPlaceholder.innerHTML = getIcon('sword', 28)
+  // inject accept/decline btn icons
+  document.querySelectorAll('.duel-btn.accept').forEach(b => {
+    b.innerHTML = getIcon('check_circle',13) + ' ACCEPT'
+  })
+  document.querySelectorAll('.duel-btn.decline').forEach(b => {
+    b.innerHTML = getIcon('x_circle',13) + ' DECLINE'
+  })
+
   setPageDate()
   await loadProfile()
   await Promise.all([loadIncomingChallenges(), loadActiveDuels(), loadPvPRanking(), loadHistory()])
@@ -978,7 +1088,7 @@ async function init() {
       filter: `defender_id=eq.${currentUser.id}`
     }, () => {
       loadIncomingChallenges()
-      showToast('⚔️ มีคนท้า Duel คุณ!')
+      showToast('มีคนท้า Duel คุณ!')
     })
     .subscribe()
 
@@ -992,7 +1102,7 @@ async function init() {
     }, (payload) => {
       if (payload.new?.status === 'completed') {
         const isWinner = payload.new?.winner_id === currentUser.id
-        showToast(isWinner ? '🏆 Duel จบแล้ว — คุณชนะ!' : '💀 Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+        showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ!' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
         setTimeout(() => location.reload(), 1500)
       }
     })
@@ -1007,7 +1117,7 @@ async function init() {
     }, (payload) => {
       if (payload.new?.status === 'completed') {
         const isWinner = payload.new?.winner_id === currentUser.id
-        showToast(isWinner ? '🏆 Duel จบแล้ว — คุณชนะ!' : '💀 Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+        showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ!' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
         setTimeout(() => location.reload(), 1500)
       }
     })
@@ -1063,11 +1173,11 @@ async function loadProfile() {
 }
 
 function getPvPRankLabel(wins) {
-  if (wins >= 50) return '👑 ARENA LEGEND'
-  if (wins >= 25) return '💠 DIAMOND DUELIST'
-  if (wins >= 10) return '🥇 GOLD FIGHTER'
-  if (wins >= 5)  return '🥈 SILVER BRAWLER'
-  if (wins >= 1)  return '🥉 BRONZE ROOKIE'
+  if (wins >= 50) return 'ARENA LEGEND'
+  if (wins >= 25) return 'DIAMOND DUELIST'
+  if (wins >= 10) return 'GOLD FIGHTER'
+  if (wins >= 5)  return 'SILVER BRAWLER'
+  if (wins >= 1)  return 'BRONZE ROOKIE'
   return 'UNRANKED'
 }
 
@@ -1089,7 +1199,7 @@ async function loadIncomingChallenges() {
   count.textContent = `${items.length} คำท้า`
 
   if (!items.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚔️</div><div class="empty-state-txt">ไม่มีคำท้าใหม่</div><div class="empty-state-sub">รอรับศัตรูหน้าใหม่...</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="pvpEmptySearch"></div><div class="empty-state-txt">ไม่มีคำท้าใหม่</div><div class="empty-state-sub">รอรับศัตรูหน้าใหม่...</div></div>`
     return
   }
 
@@ -1121,12 +1231,12 @@ async function loadIncomingChallenges() {
         <div class="duel-status-badge pending">INCOMING</div>
       </div>
       <div class="duel-meta">
-        <div class="duel-tag time">⏰ หมดเวลาใน ${expireH} ชม.</div>
-        <div class="duel-tag reward">🏆 +50 XP ถ้าชนะ</div>
+        <div class="duel-tag time">หมดเวลาใน ${expireH} ชม.</div>
+        <div class="duel-tag reward">+50 XP ถ้าชนะ</div>
       </div>
       <div class="duel-actions">
-        <button class="duel-btn accept" onclick="respondChallenge('${d.id}','accept')">✅ ACCEPT</button>
-        <button class="duel-btn decline" onclick="respondChallenge('${d.id}','decline')">❌ DECLINE</button>
+        <button class="duel-btn accept" onclick="respondChallenge('${d.id}','accept')">ACCEPT</button>
+        <button class="duel-btn decline" onclick="respondChallenge('${d.id}','decline')">DECLINE</button>
       </div>
     </div>`
   }).join('')
@@ -1145,11 +1255,11 @@ async function respondChallenge(duelId, action) {
     const expiresAt = new Date(Date.now() + 24 * 3600000).toISOString()
     const { error } = await supabase.from('pvp_duels').update({ status:'active', started_at:startAt, expires_at:expiresAt }).eq('id', duelId)
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
-    showToast('✅ รับคำท้าแล้ว! การแข่งขันเริ่มต้น', 'success')
+    showToast('รับคำท้าแล้ว! การแข่งขันเริ่มต้น', 'success')
   } else {
     const { error } = await supabase.from('pvp_duels').update({ status:'declined' }).eq('id', duelId)
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
-    showToast('❌ ปฏิเสธคำท้าแล้ว')
+    showToast('ปฏิเสธคำท้าแล้ว')
   }
   await Promise.all([loadIncomingChallenges(), loadActiveDuels()])
 }
@@ -1171,7 +1281,7 @@ async function loadActiveDuels() {
   count.textContent = `${items.length} กำลังดำเนิน`
 
   if (!items.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔥</div><div class="empty-state-txt">ไม่มี Duel ที่กำลังดำเนินอยู่</div><div class="empty-state-sub">ท้าผู้เล่นคนอื่นเพื่อเริ่มต้น</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="pvpEmptyActive"></div><div class="empty-state-txt">ไม่มี Duel ที่กำลังดำเนินอยู่</div><div class="empty-state-sub">ท้าผู้เล่นคนอื่นเพื่อเริ่มต้น</div></div>`
     return
   }
 
@@ -1228,9 +1338,9 @@ async function loadActiveDuels() {
         </div>
       </div>
       <div class="duel-meta">
-        <div class="duel-tag time">⏰ เหลือ ${remH} ชม. ${remM} น.</div>
-        <div class="duel-tag">🏆 รางวัล: +50 XP</div>
-        ${myXP > theirXP ? `<div class="duel-tag reward">🔥 นำอยู่!</div>` : theirXP > myXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">⚠️ ตามหลัง</div>` : `<div class="duel-tag">🤝 เสมอ</div>`}
+        <div class="duel-tag time">เหลือ ${remH} ชม. ${remM} น.</div>
+        <div class="duel-tag">รางวัล: +50 XP</div>
+        ${myXP > theirXP ? `<div class="duel-tag reward">นำอยู่!</div>` : theirXP > myXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">ตามหลัง</div>` : `<div class="duel-tag">เสมอ</div>`}
       </div>
     </div>`
   }).join('')
@@ -1242,9 +1352,9 @@ async function loadActiveDuels() {
 window.searchPlayers = async function() {
   const q = document.getElementById('searchInput').value.trim()
   const results = document.getElementById('playerResults')
-  if (!q) { results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" style="font-size:24px">🔍</div><div class="empty-state-txt" style="font-size:9px">พิมพ์ชื่อผู้เล่นเพื่อค้นหา</div></div>`; return }
+  if (!q) { results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" id="pvpSearchIcon"></div><div class="empty-state-txt" style="font-size:9px">พิมพ์ชื่อผู้เล่นเพื่อค้นหา</div></div>`; return }
 
-  results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" style="font-size:20px">⏳</div><div class="empty-state-txt" style="font-size:9px">กำลังค้นหา...</div></div>`
+  results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" style="font-size:20px" id="pvpResultEmptyIcon"></div><div class="empty-state-txt" style="font-size:9px">กำลังค้นหา...</div></div>`
 
   const { data: players } = await supabase.from('users')
     .select('id,username,display_name,class,level,avatar_seed,rank')
@@ -1254,7 +1364,7 @@ window.searchPlayers = async function() {
     .limit(8)
 
   if (!players?.length) {
-    results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" style="font-size:24px">🔍</div><div class="empty-state-txt" style="font-size:9px">ไม่พบผู้เล่น</div></div>`
+    results.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" id="pvpSearchIcon"></div><div class="empty-state-txt" style="font-size:9px">ไม่พบผู้เล่น</div></div>`
     return
   }
 
@@ -1275,7 +1385,7 @@ window.searchPlayers = async function() {
         </div>
       </div>
       <button class="challenge-btn" ${!canChallenge ? 'disabled title="Level ห่างกันเกิน 5"' : ''} onclick='openChallengeModal(${JSON.stringify(p)})'>
-        ${canChallenge ? '⚔️ CHALLENGE' : '🔒 LOCKED'}
+        ${canChallenge ? 'CHALLENGE' : 'LOCKED'}
       </button>
     </div>`
   }).join('')
@@ -1324,7 +1434,7 @@ window.sendChallenge = async function() {
     defender_xp: 0
   })
 
-  btn.disabled = false; btn.textContent = '⚔️ SEND CHALLENGE →'
+  btn.disabled = false; btn.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE →'
 
   if (error) {
     if (error.code === '23505') showToast('คุณมี Duel กับผู้เล่นคนนี้อยู่แล้ว', 'error')
@@ -1332,14 +1442,14 @@ window.sendChallenge = async function() {
     return
   }
 
-  showToast(`✅ ส่งคำท้าถึง ${challengeTarget.display_name || challengeTarget.username} แล้ว!`, 'success')
+  showToast(`ส่งคำท้าถึง ${challengeTarget.display_name || challengeTarget.username} แล้ว!`, 'success')
   closeChallengeModal()
   await loadIncomingChallenges()
 
   // Add notification for target
   await supabase.from('notifications').insert({
     user_id: challengeTarget.id,
-    title: '⚔️ มีคนท้า PvP!',
+    title: 'มีคนท้า PvP!',
     body: `${myProfile?.display_name || myProfile?.username || 'ผู้เล่น'} ท้า Duel กับคุณ! ตอบรับภายใน 24 ชม.`
   })
 }
@@ -1369,7 +1479,7 @@ async function loadPvPRanking() {
   const list = document.getElementById('pvpRankList')
 
   if (!topIds.length) {
-    list.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" style="font-size:24px">👑</div><div class="empty-state-txt" style="font-size:9px">ยังไม่มีข้อมูล</div></div>`
+    list.innerHTML = `<div class="empty-state" style="padding:20px 0"><div class="empty-state-icon" id="pvpRankIcon"></div><div class="empty-state-txt" style="font-size:9px">ยังไม่มีข้อมูล</div></div>`
     return
   }
 
@@ -1388,7 +1498,7 @@ async function loadPvPRanking() {
     const isMe = p.id === currentUser.id
     return `
     <div class="pvp-rank-item" ${isMe ? 'style="background:rgba(0,245,255,0.04)"' : ''}>
-      <div class="pvp-rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':'other'}">${rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank}</div>
+      <div class="pvp-rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':'other'}">${rank===1?'#1':rank===2?'#2':rank===3?'#3':rank}</div>
       <div class="pvp-rank-avatar" style="border-color:${CLASS_COLOR[cls]}">
         ${avatarHtml(p)}
       </div>
@@ -1421,7 +1531,7 @@ async function loadHistory() {
   countEl.textContent = `${items.length} รายการ`
 
   if (!items.length) {
-    wrap.innerHTML = `<div class="empty-state" style="padding:40px 0"><div class="empty-state-icon">📜</div><div class="empty-state-txt">ยังไม่มีประวัติ Duel</div></div>`
+    wrap.innerHTML = `<div class="empty-state" style="padding:40px 0"><div class="empty-state-icon" id="historyEmptyIcon"></div><div class="empty-state-txt">ยังไม่มีประวัติ Duel</div></div>`
     return
   }
 
@@ -1474,7 +1584,7 @@ async function loadGuildWar() {
     wrap.innerHTML = `
     <div class="gw-card" style="border-color:rgba(255,255,255,0.06)">
       <div class="empty-state" style="padding:40px 0">
-        <div class="empty-state-icon">🏰</div>
+        <div class="empty-state-icon" style="opacity:0.4"></div>
         <div class="empty-state-txt">คุณยังไม่ได้อยู่ใน Guild</div>
         <div class="empty-state-sub">เข้าร่วม Guild เพื่อเข้าร่วม Guild War</div>
         <br>
@@ -1496,7 +1606,7 @@ async function loadGuildWar() {
     wrap.innerHTML = `
     <div class="gw-card">
       <div class="empty-state" style="padding:40px 0">
-        <div class="empty-state-icon">🏰</div>
+        <div class="empty-state-icon" style="opacity:0.4"></div>
         <div class="empty-state-txt">ไม่มี Guild War ที่กำลังดำเนิน</div>
         <div class="empty-state-sub">Guild: ${member.guilds?.name || '—'}</div>
       </div>
@@ -1520,7 +1630,7 @@ async function loadGuildWar() {
     return `
     <div class="gw-card">
       <div class="gw-header">
-        <div class="gw-title">🏰 GUILD WAR</div>
+        <div class="gw-title" id="gwMainTitle">GUILD WAR</div>
         <div class="gw-status">${remD > 0 ? `เหลือ ${remD} วัน ${remH} ชม.` : `เหลือ ${remH} ชม.`}</div>
       </div>
       <div class="gw-vs-row">
@@ -1547,8 +1657,8 @@ async function loadGuildWar() {
         </div>
       </div>
       <div class="duel-meta">
-        ${myXP > theirXP ? `<div class="duel-tag reward">🔥 ทีมเรานำอยู่!</div>` : myXP < theirXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">⚠️ ตามหลังอยู่ — ทำ Quest เพิ่ม!</div>` : `<div class="duel-tag">🤝 เสมอกัน</div>`}
-        <div class="duel-tag reward">🏅 รางวัล: Guild XP + Badge</div>
+        ${myXP > theirXP ? `<div class="duel-tag reward">ทีมเรานำอยู่!</div>` : myXP < theirXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">ตามหลังอยู่ — ทำ Quest เพิ่ม!</div>` : `<div class="duel-tag">เสมอกัน</div>`}
+        <div class="duel-tag reward">รางวัล: Guild XP + Badge</div>
       </div>
     </div>`
   }).join('')
@@ -1592,7 +1702,7 @@ async function loadTournament() {
   pCount.textContent = `${pItems.length} / 8 ผู้เล่น`
 
   if (!pItems.length) {
-    pList.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-state-icon" style="font-size:28px">⚔️</div><div class="empty-state-txt" style="font-size:9px">ยังไม่มีผู้เล่นลงทะเบียน</div></div>`
+    pList.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-state-icon" style="font-size:28px" id="pvpTournEmpty"></div><div class="empty-state-txt" style="font-size:9px">ยังไม่มีผู้เล่นลงทะเบียน</div></div>`
   } else {
     pList.innerHTML = pItems.map((p, i) => {
       const u = p.users || {}
@@ -1619,10 +1729,10 @@ async function loadTournament() {
   const alreadyIn = pItems.some(p => p.users?.id === currentUser.id)
   const regBtn = document.getElementById('registerBtn')
   if (alreadyIn) {
-    regBtn.textContent = '✅ ลงทะเบียนแล้ว'
+    regBtn.innerHTML = getIcon('check',13) + ' ลงทะเบียนแล้ว'
     regBtn.disabled = true
   } else if (!isOpen || pItems.length >= 8) {
-    regBtn.textContent = pItems.length >= 8 ? '🔒 เต็มแล้ว' : '🔒 ปิดรับสมัคร'
+    regBtn.textContent = pItems.length >= 8 ? 'เต็มแล้ว' : 'ปิดรับสมัคร'
     regBtn.disabled = true
   }
 }
@@ -1660,7 +1770,7 @@ function renderBracket(participants) {
     </div>
     <div class="bracket-round">
       <div class="bracket-round-label">CHAMPION</div>
-      <div class="bracket-match"><div class="bracket-slot tbd" style="background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.3)"><span style="color:var(--gold)">👑 TBD</span><span class="bracket-slot-xp">—</span></div></div>
+      <div class="bracket-match"><div class="bracket-slot tbd" style="background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.3)"><span style="color:var(--gold)">TBD</span><span class="bracket-slot-xp">—</span></div></div>
     </div>`
 }
 
@@ -1677,11 +1787,11 @@ window.registerTournament = async function() {
   if (error) {
     if (error.code === '23505') showToast('คุณลงทะเบียนแล้ว', 'error')
     else showToast('เกิดข้อผิดพลาด: ' + error.message, 'error')
-    btn.disabled = false; btn.textContent = '⚔️ REGISTER NOW'
+    btn.disabled = false; btn.innerHTML = getIcon('sword',13) + ' REGISTER NOW'
     return
   }
-  showToast('✅ ลงทะเบียน Tournament สำเร็จ!', 'success')
-  btn.textContent = '✅ ลงทะเบียนแล้ว'
+  showToast('ลงทะเบียน Tournament สำเร็จ!', 'success')
+  btn.innerHTML = getIcon('check',13) + ' ลงทะเบียนแล้ว'
   loadTournament()
 }
 

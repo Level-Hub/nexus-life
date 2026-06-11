@@ -447,6 +447,55 @@ export const SYSTEM_ICONS = {
 
   // Title badge / Achievement label (🎖)
   title_badge: `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+
+  // Dice — 6-face die (🎲)
+  dice: `<rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/>
+         <circle cx="5" cy="5" r="1" fill="currentColor"/>
+         <circle cx="11" cy="5" r="1" fill="currentColor"/>
+         <circle cx="5" cy="11" r="1" fill="currentColor"/>
+         <circle cx="11" cy="11" r="1" fill="currentColor"/>
+         <circle cx="5" cy="8" r="1" fill="currentColor"/>
+         <circle cx="11" cy="8" r="1" fill="currentColor"/>`,
+
+  // Lightning bolt (⚡)
+  lightning: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+
+  // Check circle — approve (✅)
+  check_circle: `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/>
+                 <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>`,
+
+  // X circle — reject (❌)
+  x_circle: `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/>
+             <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>`,
+
+  // Zoom — magnifying glass with plus (🔍)
+  zoom: `<circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.2"/>
+         <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
+         <path d="M5 6.5h3M6.5 5v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>`,
+
+  // Target — bullseye (🎯)
+  target: `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/>
+           <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/>
+           <circle cx="8" cy="8" r="1" fill="currentColor"/>`,
+
+  // Calendar — date grid (📅)
+  calendar: `<rect x="2" y="3" width="12" height="11" stroke="currentColor" stroke-width="1.2"/>
+             <path d="M2 7h12M6 3V1M10 3V1" stroke="currentColor" stroke-width="1.2"/>
+             <rect x="5" y="9" width="2" height="2" fill="currentColor" opacity="0.7"/>
+             <rect x="9" y="9" width="2" height="2" fill="currentColor" opacity="0.4"/>`,
+
+  // Pioneer compass — for pioneer check-in (🧭)
+  pioneer: `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/>
+            <polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/>
+            <polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.35"/>
+            <path d="M8 2v1M8 13v1M2 8h1M13 8h1" stroke="currentColor" stroke-width="1" opacity="0.5"/>`,
+
+  // Hide — eye with slash (🙈)
+  hide: `<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2" fill="none"/>
+         <path d="M2 2l12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/>`,
+
+  // Star filled — solid star (★)
+  star_filled: `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="currentColor"/>`,
 }
 
 
@@ -469,12 +518,61 @@ export const ICONS = {
   class_merchant:   CLASS_ICONS.merchant,
   class_artist:     CLASS_ICONS.artist,
   class_diplomat:   CLASS_ICONS.diplomat,
+  // new system icons
+  dice:             SYSTEM_ICONS.dice,
+  lightning:        SYSTEM_ICONS.lightning,
+  check_circle:     SYSTEM_ICONS.check_circle,
+  x_circle:         SYSTEM_ICONS.x_circle,
+  zoom:             SYSTEM_ICONS.zoom,
+  target:           SYSTEM_ICONS.target,
+  calendar:         SYSTEM_ICONS.calendar,
+  pioneer:          SYSTEM_ICONS.pioneer,
+  hide:             SYSTEM_ICONS.hide,
+  star_filled:      SYSTEM_ICONS.star_filled,
   // stat icons (shorthand aliases)
   str:              SYSTEM_ICONS.strength,
   int:              SYSTEM_ICONS.intel,
   biz:              SYSTEM_ICONS.biz,
   exp_stat:         SYSTEM_ICONS.explore_stat,
   dip:              SYSTEM_ICONS.diplo_stat,
+  // full-name aliases (used by HTML files)
+  strength:         SYSTEM_ICONS.strength,
+  intel:            SYSTEM_ICONS.intel,
+  explore_stat:     SYSTEM_ICONS.explore_stat,
+  diplo_stat:       SYSTEM_ICONS.diplo_stat,
+  // convenience aliases
+  chart:            SYSTEM_ICONS.stats,
+  upload:           SYSTEM_ICONS.send,
+  palette:          SYSTEM_ICONS.artist,
+  warning:          SYSTEM_ICONS.warning,
+  settings:         SYSTEM_ICONS.settings,
+  copy:             SYSTEM_ICONS.copy,
+  announce:         SYSTEM_ICONS.announce,
+  clipboard:        SYSTEM_ICONS.clipboard,
+  bank:             SYSTEM_ICONS.bank,
+  axes:             SYSTEM_ICONS.axes,
+  skull:            SYSTEM_ICONS.skull,
+  xp:               SYSTEM_ICONS.xp,
+  crystal:          SYSTEM_ICONS.crystal,
+  gold:             SYSTEM_ICONS.gold,
+  chest:            SYSTEM_ICONS.chest,
+  tag:              SYSTEM_ICONS.tag,
+  rank1:            SYSTEM_ICONS.rank1,
+  rank2:            SYSTEM_ICONS.rank2,
+  rank3:            SYSTEM_ICONS.rank3,
+  phone:            SYSTEM_ICONS.phone,
+  doc:              SYSTEM_ICONS.doc,
+  paw:              SYSTEM_ICONS.paw,
+  wrench:           SYSTEM_ICONS.wrench,
+  wave:             SYSTEM_ICONS.wave,
+  title_badge:      SYSTEM_ICONS.title_badge,
+  upload_img:       SYSTEM_ICONS.upload_img,
+  checkin:          SYSTEM_ICONS.checkin,
+  pin:              SYSTEM_ICONS.pin,
+  compass:          SYSTEM_ICONS.compass,
+  axes:             SYSTEM_ICONS.axes,
+  signal:           SYSTEM_ICONS.signal,
+  group:            SYSTEM_ICONS.group,
 }
 
 

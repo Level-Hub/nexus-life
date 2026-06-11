@@ -309,7 +309,7 @@ function detectType(notif) {
   if (t.includes('badge') || t.includes('แบดจ์')) return 'badge'
   if (t.includes('title') || t.includes('ฉายา')) return 'title'
   if (t.includes('guild') || t.includes('กิลด์')) return 'guild'
-  if (t.includes('crystal') || t.includes('💎')) return 'crystal'
+  if (t.includes('crystal')) return 'crystal'
   if (t.includes('ติดตาม') || t.includes('follow')) return 'social'
   return 'default'
 }
@@ -347,7 +347,7 @@ function renderNotifs() {
           <div class="notif-text">${esc(n.body||'')}</div>
           <div class="notif-time">${timeAgo(n.created_at)}</div>
         </div>
-        <button class="notif-delete" onclick="deleteNotif(event,${n.id})" title="ลบ">✕</button>
+        <button class="notif-delete" onclick="deleteNotif(event,${n.id})" title="ลบ">${getIcon('close',14)}</button>
       </div>`
   }).join('')
 }
