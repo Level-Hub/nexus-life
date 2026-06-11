@@ -1005,15 +1005,11 @@ async function init() {
   if (pvpGwEmpty1) pvpGwEmpty1.innerHTML = getIcon('guild', 24)
   const pvpGwEmpty2 = document.getElementById('pvpGwEmpty2')
   if (pvpGwEmpty2) pvpGwEmpty2.innerHTML = getIcon('guild', 24)
-  // inject tab span icons (HTML tabs)
-  const tab1v1 = document.getElementById('tab1v1')
-  if (tab1v1) tab1v1.innerHTML = getIcon('sword',12) + ' 1v1 DUELS'
-  const tabGuildWar = document.getElementById('tabGuildWar')
-  if (tabGuildWar) tabGuildWar.innerHTML = getIcon('guild',12) + ' GUILD WAR'
-  const tabTournament = document.getElementById('tabTournament')
-  if (tabTournament) tabTournament.innerHTML = getIcon('trophy',12) + ' TOURNAMENT'
-  const tabHistory = document.getElementById('tabHistory')
-  if (tabHistory) tabHistory.innerHTML = getIcon('scroll',12) + ' HISTORY'
+  // inject tab span icons (HTML tabs) -- no re-declaration
+  document.getElementById('tab1v1').innerHTML = getIcon('sword',12) + ' 1v1 DUELS'
+  document.getElementById('tabGuildWar').innerHTML = getIcon('guild',12) + ' GUILD WAR'
+  document.getElementById('tabTournament').innerHTML = getIcon('trophy',12) + ' TOURNAMENT'
+  document.getElementById('tabHistory').innerHTML = getIcon('scroll',12) + ' HISTORY'
   const regBtnTournText = document.getElementById('regBtnTournText')
   if (regBtnTournText) regBtnTournText.innerHTML = getIcon('sword',13) + ' REGISTER NOW'
   const sendChallengeText = document.getElementById('sendChallengeText')

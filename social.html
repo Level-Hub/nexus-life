@@ -94,13 +94,20 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .user-card-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:1px;margin-bottom:4px}
 .user-card-meta{font-size:11px;color:var(--text-dim);display:flex;gap:12px;flex-wrap:wrap}
 .user-card-meta span{display:flex;align-items:center;gap:4px}
-.user-card-actions{display:flex;gap:8px;flex-shrink:0}
-.follow-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.user-card-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:120px}
+.follow-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 10px;border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;width:100%}
 .follow-btn:hover{background:var(--cyan);color:var(--bg)}
 .follow-btn.following{border-color:var(--border);color:var(--text-dim)}
 .follow-btn.following:hover{border-color:var(--red);color:var(--red)}
-.profile-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.profile-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 10px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;width:100%}
 .profile-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+@media(max-width:600px){
+  .user-card{flex-wrap:wrap;gap:12px}
+  .user-card-actions{max-width:none;width:100%;flex-direction:row;justify-content:flex-start}
+  .follow-btn,.profile-btn{width:auto;flex:1}
+  .social-layout{grid-template-columns:1fr}
+}
 .rank-badge{font-family:'Orbitron',monospace;font-size:8px;padding:2px 8px;border:1px solid;letter-spacing:1px}
 
 /* SKELETON */

@@ -554,7 +554,7 @@ function closeSidebar() {
   var overlay = document.getElementById('sidebarOverlay')
   if (overlay) overlay.classList.remove('open')
 }
-// Safety timeout - if module doesn't load in 8s, show error
+// Safety timeout - if module doesn't load in 20s, show error
 setTimeout(function() {
   var sub = document.getElementById('guildStatusSub')
   if (sub && sub.textContent.includes('กำลังโหลด')) {
@@ -566,7 +566,7 @@ setTimeout(function() {
       document.getElementById('noGuildView').style.display = 'block'
     }
   }
-}, 8000)
+}, 20000)
 </script>
 <script type="module">
 import { supabase as sb } from './supabase.js'
@@ -1273,6 +1273,7 @@ window.closeModal = id => document.getElementById(id).classList.remove('open')
 // ============================================
 // SIGN OUT
 // ============================================
+window.signOut = async function() {
   await sb.auth.signOut()
   window.location.href = './login.html'
 }
