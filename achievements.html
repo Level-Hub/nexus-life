@@ -120,51 +120,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .title-grid {
   display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;
 }
-.title-card {
-  background:rgba(0,245,255,0.02);border:1px solid var(--border);
-  padding:16px;transition:all 0.25s;position:relative;overflow:hidden;
-}
-.title-card.unlocked { border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.03); }
-.title-card.equipped { border-color:var(--gold);background:rgba(255,215,0,0.06);box-shadow:0 0 16px rgba(255,215,0,0.08); }
-.title-card:hover { border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04); }
-.title-card.locked { opacity:0.45; }
-.title-card-top { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px; }
-.title-emoji { font-size:22px; }
-.title-status {
-  font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
-  padding:3px 8px;border:1px solid;border-radius:0;
-}
-.title-status.equipped-badge { color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,0.1); }
-.title-status.unlocked-badge { color:var(--green);border-color:rgba(68,255,136,0.4);background:rgba(68,255,136,0.06); }
-.title-status.locked-badge { color:var(--text-dim);border-color:var(--border); }
-.title-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;margin-bottom:4px; }
-.title-cond { font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:10px; }
-.title-type { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);color:var(--cyan);display:inline-block; }
-.equip-btn {
-  margin-top:10px;width:100%;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  padding:7px;background:transparent;border:1px solid rgba(255,215,0,0.4);color:var(--gold);
-  cursor:pointer;transition:all 0.3s;
-}
-.equip-btn:hover { background:rgba(255,215,0,0.1); }
-.equip-btn.current { border-color:var(--gold);background:rgba(255,215,0,0.15);color:var(--gold);cursor:default; }
+/* .title-card, .title-emoji, .equip-btn etc. → moved to titles.js (nx-title-card, nx-equip-btn) */
 
 /* BADGE GRID */
 .badge-grid {
   display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;
 }
-.badge-card {
-  background:rgba(0,245,255,0.02);border:1px solid var(--border);
-  padding:20px 16px;text-align:center;
-  transition:all 0.25s;position:relative;overflow:hidden;
-}
-.badge-card.unlocked { border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04); }
-.badge-card.locked { opacity:0.4;filter:grayscale(1); }
-.badge-icon { font-size:32px;margin-bottom:8px;display:block; }
-.badge-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:4px; }
-.badge-cond { font-size:11px;color:var(--text-dim);line-height:1.4; }
-.badge-unlocked-date { font-family:'Orbitron',monospace;font-size:8px;color:var(--cyan);margin-top:6px; }
-.badge-lock-icon { position:absolute;top:8px;right:8px;font-size:12px;opacity:0.4; }
-.badge-cat { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 6px;background:rgba(176,68,255,0.08);border:1px solid rgba(176,68,255,0.2);color:var(--purple);margin-top:6px;display:inline-block; }
+/* .badge-card, .badge-icon, .badge-name etc. → moved to titles.js (nx-badge-item) */
 
 /* RIGHT: EQUIPPED TITLE + PROGRESS */
 .right-col { display:flex;flex-direction:column;gap:16px; }
@@ -384,6 +346,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, getIcon } from './icons.js'
+import { renderTitleCard, renderBadgeItem, renderTitleBadge, injectTitleStyles } from './titles.js'
 
 let currentUser = null
 let userProfile = null
@@ -407,6 +370,7 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  injectTitleStyles()
   await loadProfile()
   await loadAchievements()
 
@@ -504,9 +468,15 @@ async function loadAchievements() {
   const equippedDef = equipped
     ? allTitlesDB.find(t => t.id === equipped.title_id)
     : null
-  document.getElementById('epTitleBadge').textContent = equippedDef
-    ? `${equippedDef.icon || ''} ${equippedDef.name}`
-    : '— ไม่มีฉายา —'
+  const epBadgeEl = document.getElementById('epTitleBadge')
+  if (equippedDef) {
+    epBadgeEl.innerHTML = renderTitleBadge(equippedDef)
+    epBadgeEl.style.background = 'none'
+    epBadgeEl.style.border = 'none'
+    epBadgeEl.style.padding = '0'
+  } else {
+    epBadgeEl.textContent = '— ไม่มีฉายา —'
+  }
 
   // Summary
   document.getElementById('sumTitles').textContent = myTitles.length
@@ -561,20 +531,9 @@ function renderTitles() {
     return
   }
 
-  // FIX 1: เปรียบเทียบ integer กับ integer (allTitlesDB.id vs myIds)
   grid.innerHTML = allTitlesDB.filter(t => myIds.has(t.id)).map(t => {
     const isEquipped = t.id === equippedId
-    return `
-    <div class="title-card ${isEquipped ? 'equipped' : 'unlocked'}">
-      <div class="title-card-top">
-        <div class="title-emoji">${t.icon || '<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>'}</div>
-        <span class="title-status ${isEquipped ? 'equipped-badge' : 'unlocked-badge'}">${isEquipped ? 'EQUIPPED' : 'UNLOCKED'}</span>
-      </div>
-      <div class="title-name">${t.name}</div>
-      <div class="title-cond">${t.description || ''}</div>
-      <span class="title-type">${(t.category || '').toUpperCase()}</span>
-      <button class="equip-btn ${isEquipped ? 'current' : ''}" onclick="equipTitle(${t.id})">${isEquipped ? 'ใส่อยู่แล้ว' : '+ ใส่ฉายานี้'}</button>
-    </div>`
+    return renderTitleCard(t, { unlocked: true, equipped: isEquipped }, { isOwnProfile: true, onEquipFn: 'equipTitle' })
   }).join('')
 }
 
@@ -587,18 +546,7 @@ function renderAllTitles() {
   grid.innerHTML = allTitlesDB.map(t => {
     const unlocked = myIds.has(t.id)
     const isEquipped = t.id === equippedId
-    return `
-    <div class="title-card ${isEquipped ? 'equipped' : unlocked ? 'unlocked' : 'locked'}">
-      <div class="title-card-top">
-        <div class="title-emoji">${t.icon || '<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>'}</div>
-        <span class="title-status ${isEquipped ? 'equipped-badge' : unlocked ? 'unlocked-badge' : 'locked-badge'}">${isEquipped ? 'EQUIPPED' : unlocked ? 'UNLOCKED' : 'LOCKED'}</span>
-      </div>
-      <div class="title-name">${t.name}</div>
-      <div class="title-cond">${t.description || ''}</div>
-      <span class="title-type">${(t.category || '').toUpperCase()}</span>
-      ${unlocked && !isEquipped ? `<button class="equip-btn" onclick="equipTitle(${t.id})">+ ใส่ฉายานี้</button>` : ''}
-      ${isEquipped ? `<button class="equip-btn current">ใส่อยู่แล้ว</button>` : ''}
-    </div>`
+    return renderTitleCard(t, { unlocked, equipped: isEquipped }, { isOwnProfile: true, onEquipFn: 'equipTitle' })
   }).join('')
 }
 
@@ -615,20 +563,9 @@ function renderBadges() {
     return
   }
 
-  // FIX 1: เปรียบเทียบ integer กับ integer
   grid.innerHTML = allBadgesDB.filter(b => myIds.has(b.id)).map(b => {
     const myB = myBadges.find(mb => mb.badge_id === b.id)
-    const dateStr = myB?.unlocked_at
-      ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' })
-      : ''
-    return `
-    <div class="badge-card unlocked">
-      <span class="badge-icon">${b.icon || '<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'}</span>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-cond">${b.description || ''}</div>
-      <div class="badge-cat">${(b.category || '').toUpperCase()}</div>
-      ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
-    </div>`
+    return renderBadgeItem(b, true, { showDate: true, unlockedAt: myB?.unlocked_at })
   }).join('')
 }
 
@@ -640,18 +577,7 @@ function renderAllBadges() {
   grid.innerHTML = allBadgesDB.map(b => {
     const unlocked = myIds.has(b.id)
     const myB = myBadges.find(mb => mb.badge_id === b.id)
-    const dateStr = myB?.unlocked_at
-      ? new Date(myB.unlocked_at).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' })
-      : ''
-    return `
-    <div class="badge-card ${unlocked ? 'unlocked' : 'locked'}">
-      ${!unlocked ? '<div class="badge-lock-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.7"/></svg></div>' : ''}
-      <span class="badge-icon">${b.icon || '<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'}</span>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-cond">${b.description || ''}</div>
-      <div class="badge-cat">${(b.category || '').toUpperCase()}</div>
-      ${dateStr ? `<div class="badge-unlocked-date">${dateStr}</div>` : ''}
-    </div>`
+    return renderBadgeItem(b, unlocked, { showDate: true, unlockedAt: myB?.unlocked_at })
   }).join('')
 }
 
@@ -683,9 +609,15 @@ window.equipTitle = async function(titleId) {
     myTitles = myTitles.map(t => ({ ...t, is_equipped: t.title_id === titleIdInt }))
 
     const def = allTitlesDB.find(t => t.id === titleIdInt)
-    document.getElementById('epTitleBadge').textContent = def
-      ? `${def.icon || ''} ${def.name}`
-      : '—'
+    const epBadgeEl = document.getElementById('epTitleBadge')
+    if (def) {
+      epBadgeEl.innerHTML = renderTitleBadge(def)
+      epBadgeEl.style.background = 'none'
+      epBadgeEl.style.border = 'none'
+      epBadgeEl.style.padding = '0'
+    } else {
+      epBadgeEl.textContent = '—'
+    }
 
     renderTitles()
     renderAllTitles()

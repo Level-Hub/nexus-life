@@ -220,35 +220,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* BADGES GRID */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px}
-.badge-item{
-  background:rgba(0,245,255,0.02);border:1px solid var(--border);
-  padding:14px 8px;text-align:center;transition:all 0.3s;position:relative;
-}
-.badge-item:hover{border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.04)}
-.badge-item.locked{opacity:0.3;filter:grayscale(1)}
-.badge-icon{font-size:28px;margin-bottom:6px}
-.badge-name{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);line-height:1.3}
-.badge-rarity{
-  position:absolute;top:4px;right:4px;
-  font-family:'Orbitron',monospace;font-size:6px;letter-spacing:1px;
-  padding:1px 5px;
-}
-.badge-rarity.common{color:var(--text-dim);border:1px solid var(--border)}
-.badge-rarity.rare{color:#44aaff;border:1px solid rgba(68,170,255,0.3)}
-.badge-rarity.epic{color:var(--purple);border:1px solid rgba(176,68,255,0.3)}
-.badge-rarity.legendary{color:var(--gold);border:1px solid rgba(255,215,0,0.4);animation:legendaryGlow 2s ease-in-out infinite}
-@keyframes legendaryGlow{0%,100%{box-shadow:0 0 4px rgba(255,215,0,0.3)}50%{box-shadow:0 0 10px rgba(255,215,0,0.6)}}
+/* .badge-item, .badge-icon, .badge-rarity → moved to titles.js (nx-badge-item) */
 
 /* TITLES LIST */
 .titles-list{display:flex;flex-direction:column;gap:8px}
-.title-item{
-  display:flex;align-items:center;gap:14px;
-  padding:12px 16px;background:rgba(0,245,255,0.02);border:1px solid var(--border);
-  transition:all 0.2s;
-}
-.title-item:hover{border-color:rgba(0,245,255,0.25)}
-.title-item.equipped{border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.06)}
-.title-icon{font-size:20px}
+/* .title-item, .title-icon → moved to titles.js (nx-title-card) */
 .title-info{flex:1}
 .title-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff}
 .title-desc{font-size:11px;color:var(--text-dim);margin-top:2px}
@@ -837,6 +813,7 @@ function getAvatarUrl(avatarSeed, size=80) {
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon } from './icons.js'
+import { renderTitleBadge, renderTitleCard, renderBadgeItem, injectTitleStyles } from './titles.js'
 
 let currentUser  = null   // logged-in user
 let viewedUser   = null   // profile being viewed (may differ)
@@ -855,6 +832,8 @@ async function init() {
   const { user } = await initSidebar('profile')
   if (!user) return
   currentUser = user
+
+  injectTitleStyles()
 
   // inject static icons
   const heroCityIcon = document.getElementById('heroCityIcon')
@@ -1082,11 +1061,7 @@ function renderBadges() {
   }
   grid.innerHTML = allBadges.map(b => {
     const unlocked = userBadges.includes(b.id)
-    return `<div class="badge-item ${unlocked ? '' : 'locked'}" title="${b.description || b.name}">
-      <span class="badge-rarity ${b.rarity}">${b.rarity?.toUpperCase()}</span>
-      <div class="badge-icon">${b.icon || getIcon('medal',20)}</div>
-      <div class="badge-name">${b.name}</div>
-    </div>`
+    return renderBadgeItem(b, unlocked)
   }).join('')
   document.getElementById('qsBadges').textContent = userBadges.length
 }
@@ -1103,10 +1078,17 @@ async function loadTitles() {
   userTitles = userT || []
   renderTitles()
 
-  // set equipped title badge
+  // set equipped title badge with full shimmer effect
   if (window.__equippedTitleId) {
     const t = allTitles.find(t => t.id === window.__equippedTitleId)
-    if (t) document.getElementById('heroTitleBadge').textContent = t.icon + ' ' + t.name
+    const badgeEl = document.getElementById('heroTitleBadge')
+    if (t && badgeEl) {
+      badgeEl.innerHTML = renderTitleBadge(t)
+      badgeEl.style.background = 'none'
+      badgeEl.style.border = 'none'
+      badgeEl.style.padding = '0'
+      badgeEl.style.clipPath = 'none'
+    }
   }
   document.getElementById('qsTitles').textContent = userTitles.length
 }
@@ -1120,22 +1102,7 @@ function renderTitles() {
   list.innerHTML = userTitles.map(ut => {
     const t = allTitles.find(t => t.id === ut.title_id)
     if (!t) return ''
-    const isEquipped = ut.is_equipped
-    return `<div class="title-item ${isEquipped ? 'equipped' : ''}">
-      <div class="title-icon">${t.icon || getIcon('crown',20)}</div>
-      <div class="title-info">
-        <div class="title-name">${t.name}</div>
-        <div class="title-desc">${t.description || ''}</div>
-      </div>
-      ${isOwnProfile
-        ? isEquipped
-          ? `<div class="title-equip-tag">EQUIPPED</div>`
-          : `<button class="title-equip-btn" onclick="equipTitle(${ut.title_id})">EQUIP</button>`
-        : isEquipped
-          ? `<div class="title-equip-tag">EQUIPPED</div>`
-          : ''
-      }
-    </div>`
+    return renderTitleCard(t, { unlocked: true, equipped: ut.is_equipped }, { isOwnProfile, onEquipFn: 'equipTitle' })
   }).join('')
 }
 
