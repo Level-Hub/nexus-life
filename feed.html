@@ -158,9 +158,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .comment-send{background:var(--cyan);border:none;color:var(--bg);padding:8px 14px;cursor:pointer;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;transition:opacity 0.2s}
 .comment-send:hover{opacity:0.85}
 .comment-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.comment-item{display:flex;gap:8px;font-size:12px}
-.comment-user{font-weight:700;color:var(--cyan);white-space:nowrap}
+.comment-item{display:flex;gap:8px;font-size:12px;align-items:flex-start}
+.comment-avatar{width:26px;height:26px;border-radius:50%;overflow:hidden;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
+.comment-avatar img{width:100%;height:100%;object-fit:cover}
+.comment-body{flex:1}
+.comment-user{font-weight:700;color:var(--cyan);white-space:nowrap;font-size:11px}
 .comment-text{color:var(--text-dim)}
+.comment-reply-btn{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);background:none;border:none;cursor:pointer;padding:2px 0;letter-spacing:1px}
+.comment-reply-btn:hover{color:var(--cyan)}
+.reply-item{display:flex;gap:8px;font-size:11px;align-items:flex-start;margin-left:34px;padding-left:10px;border-left:1px solid var(--border)}
+.reply-avatar{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
+.reply-avatar img{width:100%;height:100%;object-fit:cover}
+.reply-input-wrap{display:flex;gap:6px;margin-left:34px;margin-top:4px}
+.reply-input{flex:1;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:11px;padding:6px 10px;outline:none}
+.reply-input:focus{border-color:var(--cyan)}
+.reply-send{background:rgba(0,245,255,0.15);border:1px solid var(--cyan);color:var(--cyan);padding:6px 10px;cursor:pointer;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px}
 
 /* ===== REALTIME BADGE ===== */
 .live-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1.5px;color:var(--green);padding:3px 8px;border:1px solid rgba(68,255,136,0.3);background:rgba(68,255,136,0.05)}
@@ -327,6 +339,7 @@ const userId = user.id
 let myCity = 'กรุงเทพมหานคร'
 let myClass = 'warrior'
 let myUsername = ''
+let myProfile = null''
 let currentFilter = 'city'
 let feedOffset = 0
 const PAGE_SIZE = 15
@@ -351,6 +364,7 @@ async function loadProfile() {
   myCity = u.city || 'กรุงเทพมหานคร'
   myClass = u.class || 'warrior'
   myUsername = u.username || u.display_name || 'คุณ'
+  myProfile = u
 
   const clsClass = 'cls-' + (u.class || 'warrior')
 
@@ -562,9 +576,16 @@ async function loadFeed(reset = true) {
   ;(commentsRes.data || []).forEach(r => { commentCounts[r.feed_id] = (commentCounts[r.feed_id] || 0) + 1 })
   ;(cheersRes.data || []).forEach(r => { cheerCounts[r.feed_id] = (cheerCounts[r.feed_id] || 0) + 1 })
 
+  // batch-fetch avatar_url จาก users table (social_feed_view อาจไม่มี column นี้)
+  const userIds = [...new Set(feed.map(f => f.user_id).filter(Boolean))]
+  const { data: avatarRows } = await supabase.from('users').select('id,avatar_url').in('id', userIds)
+  const avatarMap = {}
+  ;(avatarRows || []).forEach(u => { avatarMap[u.id] = u.avatar_url })
+
   // เพิ่ม count ลงใน item ก่อน render
   const enriched = feed.map(item => ({
     ...item,
+    avatar_url:    avatarMap[item.user_id] || item.avatar_url || null,
     like_count:    likeCounts[item.id] || 0,
     comment_count: commentCounts[item.id] || 0,
     cheer_count:   cheerCounts[item.id] || 0,
@@ -784,16 +805,66 @@ async function loadComments(feedId) {
   if (!list) return
   const { data: comments } = await supabase
     .from('activity_feed_comments')
-    .select('content, user_id, created_at, users(username)')
+    .select('id, content, user_id, created_at, reply_to_id, users(username, avatar_seed, avatar_url)')
     .eq('feed_id', feedId)
     .order('created_at', { ascending: true })
   if (!comments || comments.length === 0) return
-  list.innerHTML = comments.map(c => `
-    <div class="comment-item">
-      <span class="comment-user">${escHtml(c.users?.username || '—')}</span>
-      <span class="comment-text">${escHtml(c.content)}</span>
-    </div>
-  `).join('')
+
+  // แยก top-level vs replies
+  const topLevel = comments.filter(c => !c.reply_to_id)
+  const replies  = comments.filter(c => c.reply_to_id)
+  const replyMap = {}
+  replies.forEach(r => {
+    if (!replyMap[r.reply_to_id]) replyMap[r.reply_to_id] = []
+    replyMap[r.reply_to_id].push(r)
+  })
+
+  function commentHTML(c, isReply = false) {
+    const u = c.users || {}
+    const av = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 26)
+    const cls = isReply ? 'reply' : 'comment'
+    const avSize = isReply ? 'reply-avatar' : 'comment-avatar'
+    return `
+      <div class="${cls}-item" data-id="${c.id}">
+        <div class="${avSize}"><img src="${av}" alt=""></div>
+        <div class="comment-body">
+          <span class="comment-user">${escHtml(u.username || '—')}</span>
+          <span class="comment-text"> ${escHtml(c.content)}</span>
+          ${!isReply ? `<button class="comment-reply-btn" onclick="toggleReplyInput('${feedId}','${c.id}')">↩ ตอบกลับ</button>` : ''}
+        </div>
+      </div>
+      ${!isReply && replyMap[c.id] ? replyMap[c.id].map(r => commentHTML(r, true)).join('') : ''}
+      ${!isReply ? `<div class="reply-input-wrap" id="reply-wrap-${c.id}" style="display:none">
+        <input class="reply-input" placeholder="ตอบกลับ..." id="reply-input-${c.id}">
+        <button class="reply-send" onclick="sendReply('${feedId}','${c.id}')">ส่ง</button>
+      </div>` : ''}
+    `
+  }
+
+  list.innerHTML = topLevel.map(c => commentHTML(c)).join('')
+}
+
+window.toggleReplyInput = function(feedId, commentId) {
+  const wrap = document.getElementById(`reply-wrap-${commentId}`)
+  if (!wrap) return
+  const isOpen = wrap.style.display !== 'none'
+  wrap.style.display = isOpen ? 'none' : 'flex'
+  if (!isOpen) wrap.querySelector('input').focus()
+}
+
+window.sendReply = async function(feedId, replyToId) {
+  const input = document.getElementById(`reply-input-${replyToId}`)
+  const val = input.value.trim()
+  if (!val) return
+  const btn = input.nextElementSibling
+  btn.disabled = true
+  const { error } = await supabase.from('activity_feed_comments')
+    .insert({ feed_id: parseInt(feedId), user_id: userId, content: val, reply_to_id: replyToId })
+  btn.disabled = false
+  if (error) { btn.textContent = 'ผิดพลาด'; return }
+  input.value = ''
+  document.getElementById(`reply-wrap-${replyToId}`).style.display = 'none'
+  await loadComments(feedId)
 }
 
 window.sendComment = async function(feedId) {
@@ -813,10 +884,15 @@ window.sendComment = async function(feedId) {
 
   input.value = ''
   const list = document.getElementById(`comment-list-${feedId}`)
+  const myAv = myProfile?.avatar_url || getAvatarUrl(myProfile?.avatar_seed || myUsername, 26)
   list.insertAdjacentHTML('beforeend', `
     <div class="comment-item">
-      <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
-      <span class="comment-text">${escHtml(val)}</span>
+      <div class="comment-avatar"><img src="${myAv}" alt=""></div>
+      <div class="comment-body">
+        <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
+        <span class="comment-text"> ${escHtml(val)}</span>
+        <button class="comment-reply-btn" style="opacity:0.4" disabled>↩ ตอบกลับ</button>
+      </div>
     </div>
   `)
   // update comment count badge
