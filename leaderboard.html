@@ -685,7 +685,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="modal-title" id="cityModalTitle">—</div>
         <div class="modal-subtitle" id="cityModalSub">TOP PLAYERS IN CITY</div>
       </div>
-      <button class="modal-close" onclick="closeCityModal()">✕</button>
+      <button class="modal-close" id="closeLbModalBtn" onclick="closeCityModal()"></button>
     </div>
     <div class="modal-body" id="cityModalBody">
       <div class="lb-loading">
@@ -739,6 +739,10 @@ async function init() {
   const { user } = await initSidebar('leaderboard')
   if (!user) return
   currentUser = user
+
+  // inject static icons
+  const closeLbModalBtn = document.getElementById('closeLbModalBtn')
+  if (closeLbModalBtn) closeLbModalBtn.innerHTML = getIcon('close', 16)
 
   const { data: profile } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
   userProfile = profile
@@ -948,7 +952,7 @@ function renderCities(cities) {
     const rankClass = rank <= 3 ? `r${rank}` : 'rother'
     const pct = Math.round((c.xp_contributed_weekly / maxXP)*100)
     const stars = Array.from({length:10}, (_,si) =>
-      `<span class="pstar ${si < (c.prosperity_level||1) ? 'on' : 'off'}">★</span>`
+      `<span class="pstar ${si < (c.prosperity_level||1) ? 'on' : 'off'}">${getIcon('star_filled',10)}</span>`
     ).join('')
     const buff = c.active_buffs?.xp_bonus ? `+${Math.round(c.active_buffs.xp_bonus*100)}% XP BUFF` : ''
     const isMyCity = userProfile?.city === c.city_name
@@ -982,9 +986,9 @@ function renderCities(cities) {
           <span>0</span>
           <span>${fmtNum(c.xp_threshold_next||1000)} target</span>
         </div>
-        ${buff ? `<div class="city-buff">⚡ ${buff}</div>` : ''}
+        ${buff ? `<div class="city-buff">${getIcon('lightning',11)} ${buff}</div>` : ''}
       </div>`
-  }).join('') || `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌆</div><div class="empty-title">ยังไม่มีข้อมูลเมือง</div></div>`
+  }).join('') || `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-title">ยังไม่มีข้อมูลเมือง</div></div>`
 
   // Animate bars after DOM paint
   requestAnimationFrame(() => {
@@ -1181,7 +1185,7 @@ window.filterCityPlayers = async function(cityName) {
 
   if (error || !data?.length) {
     document.getElementById('cityModalBody').innerHTML =
-      `<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">ยังไม่มีผู้เล่นในเมืองนี้</div></div>`
+      `<div class="empty-state"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-title">ยังไม่มีผู้เล่นในเมืองนี้</div></div>`
     return
   }
 
