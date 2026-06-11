@@ -51,19 +51,20 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tab-count.green{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.2);color:var(--green)}
 
 /* PROGRESS BAR */
-.progress-banner{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:20px;animation:fadeInUp 0.5s 0.08s ease both}
+.progress-banner{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;animation:fadeInUp 0.5s 0.08s ease both}
 .pb-left{flex-shrink:0;text-align:center}
 .pb-circle{width:56px;height:56px;position:relative}
 .pb-circle svg{transform:rotate(-90deg)}
 .pb-circle-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--cyan)}
-.pb-info{flex:1}
-.pb-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px}
+.pb-info{width:100%}
+.pb-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px}
 .pb-track{height:4px;background:rgba(0,245,255,0.08);margin-bottom:4px;overflow:hidden}
 .pb-fill{height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:width 1s ease}
-.pb-stats{display:flex;gap:12px;align-items:flex-end}
-.pb-stat{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:40px}
-.pb-stat span{color:var(--cyan);font-size:16px;font-weight:900;line-height:1}
-.pb-xp{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--gold);flex-shrink:0;align-self:center}
+.pb-stats{display:flex;gap:0;margin-top:12px}
+.pb-stat{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:8px 0;border:1px solid var(--border);border-right:none;background:rgba(0,245,255,0.02)}
+.pb-stat:last-child{border-right:1px solid var(--border)}
+.pb-stat span{color:var(--cyan);font-size:18px;font-weight:900;line-height:1}
+.pb-xp{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--gold);text-align:right;margin-top:10px}
 
 /* FILTER ROW */
 .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.1s ease both}
@@ -239,9 +240,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- PROGRESS BANNER -->
   <div class="progress-banner">
-    <div class="pb-left">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px">
       <div class="pb-circle">
-        <svg width="56" height="56" viewBox="0 0 56 56">
+        <svg width="52" height="52" viewBox="0 0 56 56">
           <circle cx="28" cy="28" r="22" stroke="rgba(0,245,255,0.08)" stroke-width="4" fill="none"/>
           <circle cx="28" cy="28" r="22" stroke="var(--cyan)" stroke-width="4" fill="none"
             stroke-dasharray="138.2" id="progressCircle" stroke-dashoffset="138.2"
@@ -249,17 +250,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </svg>
         <div class="pb-circle-num" id="progressPct">0%</div>
       </div>
-    </div>
-    <div class="pb-info">
-      <div class="pb-label">ความคืบหน้าวันนี้</div>
-      <div class="pb-track"><div class="pb-fill" id="pbFill" style="width:0%"></div></div>
-      <div class="pb-stats">
-        <div class="pb-stat"><span id="pbDone">0</span>สำเร็จ</div>
-        <div class="pb-stat"><span id="pbPending">0</span>รอ Review</div>
-        <div class="pb-stat"><span id="pbTotal">0</span>ทั้งหมด</div>
+      <div style="flex:1">
+        <div class="pb-label">ความคืบหน้าวันนี้</div>
+        <div class="pb-track"><div class="pb-fill" id="pbFill" style="width:0%"></div></div>
       </div>
+      <div class="pb-xp" id="pbXP">+0 XP<br>วันนี้</div>
     </div>
-    <div class="pb-xp" id="pbXP">+0 XP วันนี้</div>
+    <div class="pb-stats">
+      <div class="pb-stat"><span id="pbDone">0</span>สำเร็จ</div>
+      <div class="pb-stat"><span id="pbPending">0</span>รอ Review</div>
+      <div class="pb-stat"><span id="pbTotal">0</span>ทั้งหมด</div>
+    </div>
   </div>
 
   <!-- TABS -->
