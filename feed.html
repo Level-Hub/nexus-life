@@ -578,9 +578,11 @@ async function loadFeed(reset = true) {
 
   // batch-fetch avatar_url จาก users table (social_feed_view อาจไม่มี column นี้)
   const userIds = [...new Set(feed.map(f => f.user_id).filter(Boolean))]
-  const { data: avatarRows } = await supabase.from('users').select('id,avatar_url').in('id', userIds)
   const avatarMap = {}
-  ;(avatarRows || []).forEach(u => { avatarMap[u.id] = u.avatar_url })
+  if (userIds.length > 0) {
+    const { data: avatarRows } = await supabase.from('users').select('id,avatar_url').in('id', userIds)
+    ;(avatarRows || []).forEach(u => { if (u.avatar_url) avatarMap[u.id] = u.avatar_url })
+  }
 
   // เพิ่ม count ลงใน item ก่อน render
   const enriched = feed.map(item => ({
@@ -596,7 +598,7 @@ async function loadFeed(reset = true) {
   document.getElementById('loadMoreBtn').style.display = 'flex'
   if (feed.length < PAGE_SIZE) document.getElementById('loadMoreBtn').style.display = 'none'
 
-  const html = enriched.map(item => renderFeedCard(item)).join('')
+  const html = enriched.map(item => { try { return renderFeedCard(item) } catch(e) { console.error('[renderFeedCard]', e, item); return '' } }).join('')
 
   if (reset) {
     document.getElementById('feedList').innerHTML = html
