@@ -252,7 +252,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 .pm-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#fff;margin-bottom:2px; }
 .pm-title { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);margin-bottom:4px; }
-.pm-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);margin-bottom:16px; }
+.pm-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));margin-bottom:16px; }
 
 .pm-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border); }
 .pm-stat { background:var(--bg2);padding:10px 6px;text-align:center; }
@@ -681,21 +681,29 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <button class="modal-close" onclick="closeModal()" id="modalCloseBtn"></button>
     </div>
     <div class="modal-body">
+      <div class="modal-cls-bar" id="modalClsBar" style="height:3px;width:100%;margin-bottom:16px;background:var(--cyan)"></div>
       <div class="modal-quest-name" id="modalQuestName">—</div>
       <div class="modal-quest-desc" id="modalQuestDesc">—</div>
       <div class="modal-rewards" id="modalRewards"></div>
       <div class="modal-msg" id="modalMsg"></div>
 
+      <span style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:10px" id="proofLabel">หลักฐาน</span>
+
       <!-- Upload area (image proof) -->
-      <div class="upload-area" id="uploadArea" style="display:none">
-        <input type="file" id="proofFile" accept="image/*" onchange="previewFile(this)">
-        <img class="upload-preview" id="uploadPreview">
-        <div class="upload-icon"><svg width="24" height="24" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
-        <div class="upload-txt">แตะเพื่อเลือกรูป หรือลากวางที่นี่</div>
+      <div id="imageProof" style="display:none">
+        <img class="upload-preview" id="uploadPreview" style="width:100%;max-height:200px;object-fit:cover;display:none;margin-bottom:12px;border:1px solid var(--border)">
+        <div class="upload-area" id="uploadArea" style="border:2px dashed rgba(0,245,255,0.18);padding:36px;text-align:center;cursor:pointer;position:relative;transition:all 0.3s;margin-bottom:16px">
+          <input type="file" id="proofFile" accept="image/*" capture="environment" onchange="previewFile(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+          <div style="font-size:32px;margin-bottom:8px" id="uploadIconBox">📷</div>
+          <div class="upload-txt">แตะเพื่อถ่ายรูปหลักฐาน</div>
+          <div style="font-size:11px;color:var(--text-dim);opacity:0.6;margin-top:4px">ต้องถ่ายสด — ระบบจะประทับ timestamp อัตโนมัติ</div>
+        </div>
       </div>
 
       <!-- Text proof -->
-      <textarea class="text-proof" id="proofText" placeholder="เขียนรายละเอียด / บันทึกที่นี่..." rows="4"></textarea>
+      <div id="textProof" style="display:none">
+        <textarea class="text-proof" id="proofText" placeholder="เขียนรายละเอียด / บันทึกที่นี่..." rows="4" style="width:100%;background:rgba(0,245,255,0.03);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;padding:12px;outline:none;resize:vertical;min-height:80px;margin-bottom:12px"></textarea>
+      </div>
 
       <button class="submit-btn" id="submitBtn" onclick="submitProof()">
         ส่งหลักฐาน →
@@ -1088,17 +1096,27 @@ window.openQuestModal = function(questId) {
     ${q.stat_type ? `<span class="modal-reward-tag" style="color:var(--green);border-color:rgba(68,255,136,0.3)">+${q.stat_points} ${q.stat_type.toUpperCase()}</span>` : ''}
   `
 
-  const uploadArea = document.getElementById('uploadArea')
-  const textProof  = document.getElementById('proofText')
+  const imageProof = document.getElementById('imageProof')
+  const textProof  = document.getElementById('textProof')
   const preview    = document.getElementById('uploadPreview')
+  const proofLabel = document.getElementById('proofLabel')
+  const clsBar     = document.getElementById('modalClsBar')
+
+  // cls bar color
+  const clsColors = {warrior:'#ff4444',mage:'#aa44ff',explorer:'#44ff88',merchant:'#ffaa00',artist:'#ff66aa',diplomat:'#00ccff'}
+  if (clsBar && userProfile?.class) clsBar.style.background = clsColors[userProfile.class] || 'var(--cyan)'
 
   if (q.proof_type === 'image' || q.proof_type === 'screenshot') {
-    uploadArea.style.display = ''; textProof.style.display = 'none'
-    preview.style.display = 'none'; preview.src = ''
-    document.getElementById('proofFile').value = ''
+    imageProof.style.display = 'block'; textProof.style.display = 'none'
+    if (preview) { preview.style.display = 'none'; preview.src = '' }
+    const fi = document.getElementById('proofFile')
+    if (fi) fi.value = ''
+    if (proofLabel) proofLabel.textContent = 'อัปโหลดรูปหลักฐาน'
   } else {
-    uploadArea.style.display = 'none'; textProof.style.display = ''
-    textProof.value = ''
+    imageProof.style.display = 'none'; textProof.style.display = 'block'
+    const ta = document.getElementById('proofText')
+    if (ta) ta.value = ''
+    if (proofLabel) proofLabel.textContent = 'เขียนรายละเอียดหลักฐาน'
   }
 
   clearModalMsg()
@@ -1118,8 +1136,10 @@ window.previewFile = function(input) {
     const preview = document.getElementById('uploadPreview')
     preview.src = e.target.result
     preview.style.display = 'block'
-    document.querySelector('.upload-icon').style.display = 'none'
-    document.querySelector('.upload-txt').style.display = 'none'
+    const iconBox = document.getElementById('uploadIconBox')
+    if (iconBox) iconBox.style.display = 'none'
+    const uploadTxt = document.querySelector('#uploadArea .upload-txt')
+    if (uploadTxt) uploadTxt.style.display = 'none'
   }
   reader.readAsDataURL(file)
 }
