@@ -127,6 +127,14 @@ export function injectTitleStyles() {
   0%   { left: -120%; }
   100% { left: 120%; }
 }
+@keyframes nxLegRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes nxEpicRing {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
 
 /* ──────────────────────────────
    .nx-title-badge  (small hero badge)
@@ -590,10 +598,9 @@ export function renderTitleCard(title, state = {}, options = {}) {
     statusHtml = `<span style="font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(90,138,144,0.3);color:#5a8a90">LOCKED</span>`
   }
 
-  // icon
-  const iconHtml = title.icon
-    ? `<span style="font-size:22px">${title.icon}</span>`
-    : DEFAULT_TITLE_SVG
+  // icon — use SVG map, fallback to default star
+  const titleSvgPath = TITLE_SVG_MAP[title.name] || `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`
+  const iconHtml = renderIconFrame(titleSvgPath, r, 52)
 
   // equip button
   let btnHtml = ''
@@ -641,9 +648,8 @@ export function renderBadgeItem(badge, unlocked = false, options = {}) {
   const r = badge.rarity || 'common'
   const lockedClass = !unlocked ? ' nx-locked' : ''
 
-  const iconHtml = badge.icon
-    ? `<span class="nx-badge-icon">${badge.icon}</span>`
-    : `<span class="nx-badge-icon">${DEFAULT_BADGE_SVG}</span>`
+  const svgPath = BADGE_SVG_MAP[badge.name] || `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/>`
+  const iconHtml = renderIconFrame(svgPath, r, 56)
 
   let dateHtml = ''
   if (showDate && unlocked && unlockedAt) {
@@ -666,4 +672,61 @@ export function renderBadgeItem(badge, unlocked = false, options = {}) {
   ${badge.category ? `<div class="nx-badge-cat">${(badge.category || '').toUpperCase()}</div>` : ''}
   ${dateHtml}
 </div>`
+}
+
+// ============================================================
+// BADGE ICON MAP  (keyed by badge name)
+// ============================================================
+const BADGE_SVG_MAP = {
+  'First Blood': `<circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="0.8" fill="currentColor"/><path d="M8 1v2M8 11v2M1 8h2M11 8h2" stroke="currentColor" stroke-width="1.2"/>`,
+  'Week Warrior': `<path d="M8 13c-2.5 0-4-1.6-4-4 0-1.2.4-2.4 1.6-3.6 0 1.6.8 2.4.8 2.4s.4-2 1.6-3.6c.4 1.6 1.6 2.8 1.6 2.8s.8-.8.4-2C11.6 6.4 12 7.6 12 9c0 2.4-1.6 4-4 4z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M6.5 10.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5" stroke="currentColor" stroke-width="1" opacity="0.6"/>`,
+  'Monthly Crusher': `<path d="M8 1v3M8 12v3M1 8h3M12 8h3M3 3l2 2M11 11l2 2M3 13l2-2M11 5l2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/>`,
+  'Gold Walker': `<circle cx="8" cy="9" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 5.5L3.5 2h9L10.5 5.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M8 7v2.5l1.5 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>`,
+  'Globe Trotter': `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 2c-1.6 1.6-1.6 8.4 0 12M8 2c1.6 1.6 1.6 8.4 0 12" stroke="currentColor" stroke-width="1" fill="none"/><path d="M2 8h12" stroke="currentColor" stroke-width="1"/><path d="M3 5.5h10M3 10.5h10" stroke="currentColor" stroke-width="1" opacity="0.5"/>`,
+  'Social Butterfly': `<circle cx="8" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="12" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="13" cy="12" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="currentColor" stroke-width="1" opacity="0.7"/>`,
+  'Proof Master': `<rect x="2" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 9.5l1 1 2-2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>`,
+  'Founder': `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="currentColor" opacity="0.35"/>`,
+}
+
+// ============================================================
+// TITLE ICON MAP  (keyed by title name)
+// ============================================================
+const TITLE_SVG_MAP = {
+  'The Unbreakable': `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 6v3l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>`,
+  'นักวิ่งมือใหม่': `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+  'นักอ่านมือใหม่': `<path d="M8 13V4" stroke="currentColor" stroke-width="1.2"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+  'จอมเวทแห่งการเรียนรู้': `<circle cx="8" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 3v2M8 13v1M3 9H2M13 9h1M4.5 5.5l1.2 1.2M10.3 11.3l1.2 1.2M4.5 12.5l1.2-1.2M10.3 6.7l1.2-1.2" stroke="currentColor" stroke-width="1.1"/><circle cx="8" cy="9" r="1.2" fill="currentColor"/>`,
+  'นักสำรวจผู้กล้า': `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.4"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1" stroke="currentColor" stroke-width="1" opacity="0.4"/>`,
+  'Pathfinder': `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="5" r="1.5" fill="currentColor"/><path d="M3.5 11.5c-1.5.5-2.5 1-2.5 1.5s3 1.5 7 1.5 7-1 7-1.5-1-.9-2.5-1.4" stroke="currentColor" stroke-width="1" opacity="0.5"/>`,
+  'นักวางแผนการเงิน': `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3.5 5v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3.5 8v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V8" stroke="currentColor" stroke-width="1.2" fill="none"/>`,
+  'เสน่ห์ล้นเหลือ': `<circle cx="5" cy="5" r="2.2" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 14c0-2.5 1.5-4 3.5-4M14.5 14c0-2.5-1.5-4-3.5-4M5 10c1 0 3 .5 3 2s2-2 3-2" stroke="currentColor" stroke-width="1.1"/>`,
+  'จ้าวแห่งเดือน': `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.3"/><circle cx="2" cy="5" r="1.2" fill="currentColor"/><circle cx="8" cy="3" r="1.2" fill="currentColor"/><circle cx="14" cy="5" r="1.2" fill="currentColor"/>`,
+  'Founder': `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="currentColor" opacity="0.35"/>`,
+}
+
+// ============================================================
+// HEXAGON FRAME RENDERER
+// ============================================================
+function renderIconFrame(svgPath, rarity = 'common', size = 48) {
+  const cfg = RARITY_CONFIG[rarity] || RARITY_CONFIG.common
+  const hex = `polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)`
+  const innerSize = Math.round(size * 0.52)
+
+  let extraRing = ''
+  if (rarity === 'legendary') {
+    extraRing = `<div style="position:absolute;inset:-4px;background:conic-gradient(from 0deg,${cfg.color},${cfg.colorAlt},${cfg.colorAlt2||cfg.colorAlt},${cfg.color});clip-path:${hex};animation:nxLegRing 3s linear infinite;opacity:0.55;"></div>`
+  } else if (rarity === 'epic') {
+    extraRing = `<div style="position:absolute;inset:-3px;background:conic-gradient(from 0deg,${cfg.color},transparent,${cfg.color});clip-path:${hex};animation:nxEpicRing 4s linear infinite;opacity:0.4;"></div>`
+  }
+
+  return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+    ${extraRing}
+    <div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.bgGradient};"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(1,10,15,0.8);"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};box-shadow:inset 0 0 ${rarity==='legendary'?'18':'10'}px ${cfg.color}44;"></div>
+    <svg width="${innerSize}" height="${innerSize}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style="position:relative;z-index:1;color:${cfg.color};filter:drop-shadow(0 0 ${rarity==='common'?'2':'5'}px ${cfg.color}${rarity==='legendary'?'cc':'88'})">
+      ${svgPath}
+    </svg>
+  </div>`
 }

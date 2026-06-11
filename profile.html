@@ -846,6 +846,7 @@ function getAvatarUrl(avatarSeed, size=80) {
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon } from './icons.js'
+import { renderBadgeItem, renderTitleCard, injectTitleStyles } from './titles.js'
 
 let currentUser  = null   // logged-in user
 let viewedUser   = null   // profile being viewed (may differ)
@@ -864,8 +865,7 @@ async function init() {
   const { user } = await initSidebar('profile')
   if (!user) return
   currentUser = user
-
-  // inject static icons
+  injectTitleStyles()
   const heroCityIcon = document.getElementById('heroCityIcon')
   if (heroCityIcon) heroCityIcon.innerHTML = getIcon('checkin', 12)
   const currIconXP = document.getElementById('currIconXP')
@@ -1153,16 +1153,12 @@ async function loadBadges() {
 function renderBadges() {
   const grid = document.getElementById('badgesGrid')
   if (!allBadges.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon" id="emptyBadgesIcon"></div><div class="empty-state-txt">ยังไม่มี Badge</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon"></div><div class="empty-state-txt">ยังไม่มี Badge</div></div>`
     return
   }
   grid.innerHTML = allBadges.map(b => {
     const unlocked = userBadges.includes(b.id)
-    return `<div class="badge-item ${unlocked ? '' : 'locked'}" title="${b.description || b.name}">
-      <span class="badge-rarity ${b.rarity}">${b.rarity?.toUpperCase()}</span>
-      <div class="badge-icon">${b.icon || getIcon('medal',20)}</div>
-      <div class="badge-name">${b.name}</div>
-    </div>`
+    return renderBadgeItem(b, unlocked)
   }).join('')
   document.getElementById('qsBadges').textContent = userBadges.length
 }
@@ -1190,28 +1186,13 @@ async function loadTitles() {
 function renderTitles() {
   const list = document.getElementById('titlesList')
   if (!userTitles.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="emptyTitlesIcon"></div><div class="empty-state-txt">ยังไม่มี Title</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon"></div><div class="empty-state-txt">ยังไม่มี Title</div></div>`
     return
   }
   list.innerHTML = userTitles.map(ut => {
     const t = allTitles.find(t => t.id === ut.title_id)
     if (!t) return ''
-    const isEquipped = ut.is_equipped
-    return `<div class="title-item ${isEquipped ? 'equipped' : ''}">
-      <div class="title-icon">${t.icon || getIcon('crown',20)}</div>
-      <div class="title-info">
-        <div class="title-name">${t.name}</div>
-        <div class="title-desc">${t.description || ''}</div>
-      </div>
-      ${isOwnProfile
-        ? isEquipped
-          ? `<div class="title-equip-tag">EQUIPPED</div>`
-          : `<button class="title-equip-btn" onclick="equipTitle(${ut.title_id})">EQUIP</button>`
-        : isEquipped
-          ? `<div class="title-equip-tag">EQUIPPED</div>`
-          : ''
-      }
-    </div>`
+    return renderTitleCard(t, { unlocked: true, equipped: !!ut.is_equipped }, { isOwnProfile, onEquipFn: 'equipTitle' })
   }).join('')
 }
 
