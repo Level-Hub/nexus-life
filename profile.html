@@ -465,7 +465,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="hero-class-city">
           <div class="hero-class-tag" id="heroClassTag">—</div>
           <div class="hero-city-tag" id="heroCityTag">
-            <span>📍</span><span id="heroCityName">—</span>
+            <span id="heroCityIcon"></span><span id="heroCityName">—</span>
           </div>
         </div>
         <div class="hero-signature" id="heroSignature"></div>
@@ -508,14 +508,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- CURRENCIES -->
     <div class="hero-currencies" id="heroCurrencies" style="display:none">
       <div class="hero-currency">
-        <div class="hero-currency-icon">⭐</div>
+        <div class="hero-currency-icon" id="currIconXP"></div>
         <div>
           <div class="hero-currency-val" id="heroGold" style="color:var(--gold)">0</div>
           <div class="hero-currency-label">GOLD</div>
         </div>
       </div>
       <div class="hero-currency">
-        <div class="hero-currency-icon">💎</div>
+        <div class="hero-currency-icon" id="currIconCrystal"></div>
         <div>
           <div class="hero-currency-val" id="heroCrystal" style="color:var(--cyan)">0</div>
           <div class="hero-currency-label">CRYSTAL</div>
@@ -533,49 +533,49 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- ATTRIBUTES -->
       <div class="box" style="margin-bottom:16px">
         <div class="box-header">
-          <div class="box-title">⚡ ATTRIBUTES</div>
+          <div class="box-title" id="attrBoxTitle">ATTRIBUTES</div>
           <div class="box-tag">// BASE STATS</div>
         </div>
         <div class="box-body">
           <div class="stats-grid">
             <div class="stat-item stat-str">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">💪</div>
+              <div class="stat-item-icon" id="statIconStr"></div>
               <div class="stat-item-name">STR</div>
               <div class="stat-item-val" id="statStr">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statStrBar" style="width:0%"></div></div>
             </div>
             <div class="stat-item stat-int">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">🧠</div>
+              <div class="stat-item-icon" id="statIconInt"></div>
               <div class="stat-item-name">INT</div>
               <div class="stat-item-val" id="statInt">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statIntBar" style="width:0%"></div></div>
             </div>
             <div class="stat-item stat-exp">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">🗺️</div>
+              <div class="stat-item-icon" id="statIconExp"></div>
               <div class="stat-item-name">EXP</div>
               <div class="stat-item-val" id="statExp">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statExpBar" style="width:0%"></div></div>
             </div>
             <div class="stat-item stat-biz">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">💼</div>
+              <div class="stat-item-icon" id="statIconBiz"></div>
               <div class="stat-item-name">BIZ</div>
               <div class="stat-item-val" id="statBiz">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statBizBar" style="width:0%"></div></div>
             </div>
             <div class="stat-item stat-cre">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">🎨</div>
+              <div class="stat-item-icon" id="statIconCre"></div>
               <div class="stat-item-name">CRE</div>
               <div class="stat-item-val" id="statCre">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statCreBar" style="width:0%"></div></div>
             </div>
             <div class="stat-item stat-soc">
               <div class="stat-item-glow"></div>
-              <div class="stat-item-icon">🤝</div>
+              <div class="stat-item-icon" id="statIconSoc"></div>
               <div class="stat-item-name">SOC</div>
               <div class="stat-item-val" id="statSoc">0</div>
               <div class="stat-item-bar"><div class="stat-item-fill" id="statSocBar" style="width:0%"></div></div>
@@ -587,17 +587,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- TABS: BADGES / TITLES / QUESTS / ACTIVITY -->
       <div class="box">
         <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('badges',this)">🏅 BADGES</button>
-          <button class="tab-btn" onclick="switchTab('titles',this)">👑 TITLES</button>
-          <button class="tab-btn" onclick="switchTab('quests',this)">⚔️ QUESTS</button>
-          <button class="tab-btn" onclick="switchTab('activity',this)">📡 ACTIVITY</button>
+          <button class="tab-btn active" onclick="switchTab('badges',this)" id="tabBadges">BADGES</button>
+          <button class="tab-btn" onclick="switchTab('titles',this)" id="tabTitles">TITLES</button>
+          <button class="tab-btn" onclick="switchTab('quests',this)" id="tabQuestsProf">QUESTS</button>
+          <button class="tab-btn" onclick="switchTab('activity',this)" id="tabActivity">ACTIVITY</button>
         </div>
 
         <!-- BADGES -->
         <div class="tab-panel active" id="tabBadges">
           <div class="badges-grid" id="badgesGrid">
             <div class="empty-state" style="grid-column:1/-1;padding:32px 0">
-              <div class="empty-state-icon">🏅</div>
+              <div class="empty-state-icon" id="emptyBadgesIcon"></div>
               <div class="empty-state-txt">กำลังโหลด...</div>
             </div>
           </div>
@@ -607,7 +607,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="tab-panel" id="tabTitles">
           <div class="titles-list" id="titlesList">
             <div class="empty-state">
-              <div class="empty-state-icon">👑</div>
+              <div class="empty-state-icon" id="emptyTitlesIcon"></div>
               <div class="empty-state-txt">กำลังโหลด...</div>
             </div>
           </div>
@@ -617,7 +617,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="tab-panel" id="tabQuests">
           <div class="quest-history-list" id="questHistList">
             <div class="empty-state">
-              <div class="empty-state-icon">⚔️</div>
+              <div class="empty-state-icon" id="emptyQuestsIcon"></div>
               <div class="empty-state-txt">กำลังโหลด...</div>
             </div>
           </div>
@@ -627,7 +627,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="tab-panel" id="tabActivity">
           <div class="activity-list" id="activityList">
             <div class="empty-state">
-              <div class="empty-state-icon">📡</div>
+              <div class="empty-state-icon" id="emptyActivityIcon"></div>
               <div class="empty-state-txt">กำลังโหลด...</div>
             </div>
           </div>
@@ -642,11 +642,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- STREAK -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">🔥 STREAK</div>
+          <div class="box-title" id="streakBoxTitle">STREAK</div>
           <div class="box-tag" id="streakTag">— วัน</div>
         </div>
         <div class="streak-section">
-          <div class="streak-fire">🔥</div>
+          <div class="streak-fire" id="streakFireIcon"></div>
           <div>
             <div class="streak-val" id="streakVal">0</div>
             <div class="streak-label">วันติดต่อกัน</div>
@@ -667,7 +667,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- QUEST STATS -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">📊 QUEST STATS</div>
+          <div class="box-title" id="questStatsTitle">QUEST STATS</div>
           <div class="box-tag">// รวม</div>
         </div>
         <div class="box-body" style="padding:16px">
@@ -695,12 +695,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- GUILD -->
       <div class="box" id="guildBox">
         <div class="box-header">
-          <div class="box-title">⚔️ GUILD</div>
+          <div class="box-title" id="guildBoxTitle">GUILD</div>
           <div class="box-tag">// MEMBER</div>
         </div>
         <div id="guildInfo">
           <div class="empty-state" style="padding:24px 16px">
-            <div class="empty-state-icon">⚔️</div>
+            <div class="empty-state-icon" id="emptyQuestsIcon"></div>
             <div class="empty-state-txt">ยังไม่ได้เข้า Guild</div>
           </div>
         </div>
@@ -709,12 +709,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- CITY -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title">🏙️ CITY</div>
+          <div class="box-title" id="cityBoxTitle">CITY</div>
           <div class="box-tag">// HOME</div>
         </div>
         <div class="box-body" style="padding:16px 20px">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:28px">🏙️</div>
+            <div style="font-size:28px" id="cityHeroIconProf"></div>
             <div>
               <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fff" id="cityNameBig">—</div>
               <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);margin-top:3px">CITY MEMBER</div>
@@ -735,8 +735,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">✏️ EDIT PROFILE</div>
-      <button class="modal-close" onclick="closeEditModal()">✕</button>
+      <div class="modal-title" id="editModalTitleProf">EDIT PROFILE</div>
+      <button class="modal-close" id="closeEditModalBtn" onclick="closeEditModal()"></button>
     </div>
     <div class="modal-body">
       <div class="modal-msg" id="editMsg"></div>
@@ -767,12 +767,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="form-group">
         <label class="form-label">CLASS</label>
         <select class="form-select" id="editClass">
-          <option value="warrior">⚔️ Warrior — นักรบ</option>
-          <option value="mage">🧙 Mage — จอมเวท</option>
-          <option value="explorer">🗺️ Explorer — นักสำรวจ</option>
-          <option value="merchant">💼 Merchant — พ่อค้า</option>
-          <option value="artist">🎨 Artist — ศิลปิน</option>
-          <option value="diplomat">🤝 Diplomat — นักการทูต</option>
+          <option value="warrior">Warrior — นักรบ</option>
+          <option value="mage">Mage — จอมเวท</option>
+          <option value="explorer">Explorer — นักสำรวจ</option>
+          <option value="merchant">Merchant — พ่อค้า</option>
+          <option value="artist">Artist — ศิลปิน</option>
+          <option value="diplomat">Diplomat — นักการทูต</option>
         </select>
       </div>
       <div class="form-group">
@@ -856,6 +856,57 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  // inject static icons
+  const heroCityIcon = document.getElementById('heroCityIcon')
+  if (heroCityIcon) heroCityIcon.innerHTML = getIcon('checkin', 12)
+  const currIconXP = document.getElementById('currIconXP')
+  if (currIconXP) currIconXP.innerHTML = getIcon('levelup', 18)
+  const currIconCrystal = document.getElementById('currIconCrystal')
+  if (currIconCrystal) currIconCrystal.innerHTML = getIcon('diamond', 18)
+  const attrBoxTitle = document.getElementById('attrBoxTitle')
+  if (attrBoxTitle) attrBoxTitle.innerHTML = getIcon('lightning', 12) + ' ATTRIBUTES'
+  const statIcons = { statIconStr:'strength', statIconInt:'intel', statIconExp:'explore_stat', statIconBiz:'biz', statIconCre:'palette', statIconSoc:'diplo_stat' }
+  Object.entries(statIcons).forEach(([id, key]) => {
+    const el = document.getElementById(id)
+    if (el) el.innerHTML = getIcon(key, 16)
+  })
+  const tabBadges = document.getElementById('tabBadges')
+  if (tabBadges) tabBadges.innerHTML = getIcon('medal', 12) + ' BADGES'
+  const tabTitles = document.getElementById('tabTitles')
+  if (tabTitles) tabTitles.innerHTML = getIcon('crown', 12) + ' TITLES'
+  const tabQuestsProf = document.getElementById('tabQuestsProf')
+  if (tabQuestsProf) tabQuestsProf.innerHTML = getIcon('sword', 12) + ' QUESTS'
+  const tabActivity = document.getElementById('tabActivity')
+  if (tabActivity) tabActivity.innerHTML = getIcon('signal', 12) + ' ACTIVITY'
+  const emptyBadgesIcon = document.getElementById('emptyBadgesIcon')
+  if (emptyBadgesIcon) emptyBadgesIcon.innerHTML = getIcon('medal', 24)
+  const emptyTitlesIcon = document.getElementById('emptyTitlesIcon')
+  if (emptyTitlesIcon) emptyTitlesIcon.innerHTML = getIcon('crown', 24)
+  const emptyQuestsIcon = document.getElementById('emptyQuestsIcon')
+  if (emptyQuestsIcon) emptyQuestsIcon.innerHTML = getIcon('sword', 24)
+  const emptyActivityIcon = document.getElementById('emptyActivityIcon')
+  if (emptyActivityIcon) emptyActivityIcon.innerHTML = getIcon('signal', 24)
+  const streakBoxTitle = document.getElementById('streakBoxTitle')
+  if (streakBoxTitle) streakBoxTitle.innerHTML = getIcon('fire', 12) + ' STREAK'
+  const streakFireIcon = document.getElementById('streakFireIcon')
+  if (streakFireIcon) streakFireIcon.innerHTML = getIcon('fire', 28)
+  const questStatsTitle = document.getElementById('questStatsTitle')
+  if (questStatsTitle) questStatsTitle.innerHTML = getIcon('chart', 12) + ' QUEST STATS'
+  const guildBoxTitle = document.getElementById('guildBoxTitle')
+  if (guildBoxTitle) guildBoxTitle.innerHTML = getIcon('guild', 12) + ' GUILD'
+  const emptyGuildIcon = document.getElementById('emptyGuildIcon')
+  if (emptyGuildIcon) emptyGuildIcon.innerHTML = getIcon('guild', 24)
+  const cityBoxTitle = document.getElementById('cityBoxTitle')
+  if (cityBoxTitle) cityBoxTitle.innerHTML = getIcon('city', 12) + ' CITY'
+  const cityHeroIconProf = document.getElementById('cityHeroIconProf')
+  if (cityHeroIconProf) cityHeroIconProf.innerHTML = getIcon('city', 28)
+  const editModalTitleProf = document.getElementById('editModalTitleProf')
+  if (editModalTitleProf) editModalTitleProf.innerHTML = getIcon('edit', 13) + ' EDIT PROFILE'
+  const closeEditModalBtn = document.getElementById('closeEditModalBtn')
+  if (closeEditModalBtn) closeEditModalBtn.innerHTML = getIcon('close', 16)
+  const profGuildIcon = document.getElementById('profGuildIcon')
+  if (profGuildIcon) profGuildIcon.innerHTML = getIcon('guild', 22)
+
   // ?uid=xxx → view other profile, else own
   const params = new URLSearchParams(window.location.search)
   const uid = params.get('uid')
@@ -920,7 +971,7 @@ function renderHero(u) {
   document.getElementById('pageSub').textContent       = `// @${u.username || '—'}`
 
   // rank badge
-  const rankLabels = { bronze:'🥉 BRONZE', silver:'🥈 SILVER', gold:'🥇 GOLD', platinum:'💎 PLATINUM', diamond:'💠 DIAMOND', legendary:'👑 LEGENDARY' }
+  const rankLabels = { bronze:'BRONZE', silver:'SILVER', gold:'GOLD', platinum:'PLATINUM', diamond:'DIAMOND', legendary:'LEGENDARY' }
   document.getElementById('heroRankBadge').textContent = rankLabels[u.rank] || u.rank?.toUpperCase() || 'BRONZE'
 
   // level
@@ -934,7 +985,7 @@ function renderHero(u) {
   }
 
   // class tag
-  const classLabels = { warrior:'⚔️ WARRIOR', mage:'🧙 MAGE', explorer:'🗺️ EXPLORER', merchant:'💼 MERCHANT', artist:'🎨 ARTIST', diplomat:'🤝 DIPLOMAT' }
+  const classLabels = { warrior:'WARRIOR', mage:'MAGE', explorer:'EXPLORER', merchant:'MERCHANT', artist:'ARTIST', diplomat:'DIPLOMAT' }
   document.getElementById('heroClassTag').textContent = classLabels[cls] || cls.toUpperCase()
   document.getElementById('heroClassTag').className   = `hero-class-tag cls-${cls}`
 
@@ -1026,7 +1077,7 @@ async function loadBadges() {
 function renderBadges() {
   const grid = document.getElementById('badgesGrid')
   if (!allBadges.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏅</div><div class="empty-state-txt">ยังไม่มี Badge</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon" id="emptyBadgesIcon"></div><div class="empty-state-txt">ยังไม่มี Badge</div></div>`
     return
   }
   grid.innerHTML = allBadges.map(b => {
@@ -1063,7 +1114,7 @@ async function loadTitles() {
 function renderTitles() {
   const list = document.getElementById('titlesList')
   if (!userTitles.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👑</div><div class="empty-state-txt">ยังไม่มี Title</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="emptyTitlesIcon"></div><div class="empty-state-txt">ยังไม่มี Title</div></div>`
     return
   }
   list.innerHTML = userTitles.map(ut => {
@@ -1104,7 +1155,7 @@ window.equipTitle = async function(titleId) {
   if (equipErr) { showToast('เกิดข้อผิดพลาด: ' + equipErr.message, 'error'); return }
 
   await supabase.from('users').update({ equipped_title_id: titleId }).eq('id', currentUser.id)
-  showToast('👑 เปลี่ยน Title แล้ว!', 'success')
+  showToast('เปลี่ยน Title แล้ว!', 'success')
   await loadTitles()
   await loadProfile()
 }
@@ -1122,7 +1173,7 @@ async function loadQuestHistory() {
 
   const list = document.getElementById('questHistList')
   if (!data || !data.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚔️</div><div class="empty-state-txt">ยังไม่มี Quest</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="emptyQuestsIcon"></div><div class="empty-state-txt">ยังไม่มี Quest</div></div>`
     return
   }
 
@@ -1165,11 +1216,11 @@ async function loadActivity() {
 
   const list = document.getElementById('activityList')
   if (error) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="emptyActivityIcon"></div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
     return
   }
   if (!data || !data.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon" id="emptyActivityIcon"></div><div class="empty-state-txt">ยังไม่มี Activity</div></div>`
     return
   }
 
@@ -1221,7 +1272,7 @@ async function loadGuild() {
   if (!guild) return
 
   document.getElementById('guildInfo').innerHTML = `<div class="guild-info-card">
-    <div class="guild-icon">⚔️</div>
+    <div class="guild-icon" id="profGuildIcon"></div>
     <div>
       <div class="guild-name">${guild.name} [${guild.tag}]</div>
       <div class="guild-tag">LV.${guild.guild_level} Guild</div>
@@ -1249,10 +1300,10 @@ async function checkFollowing() {
 function renderActions() {
   const div = document.getElementById('heroActions')
   if (isOwnProfile) {
-    div.innerHTML = `<button class="btn-edit" onclick="openEditModal()">✏️ EDIT PROFILE</button>`
+    div.innerHTML = `<button class="btn-edit" id="editProfileBtn" onclick="openEditModal()">EDIT PROFILE</button>`
   } else {
     div.innerHTML = `<button class="btn-follow ${isFollowing ? 'following' : ''}" id="followBtn" onclick="toggleFollow()">
-      ${isFollowing ? '✓ FOLLOWING' : '+ FOLLOW'}
+      ${isFollowing ? 'FOLLOWING' : '+ FOLLOW'}
     </button>`
   }
 }
@@ -1276,7 +1327,7 @@ window.toggleFollow = async function() {
   } else {
     await supabase.rpc('follow_user', { p_follower_id: currentUser.id, p_following_id: viewedUser })
     isFollowing = true
-    showToast('✅ Follow แล้ว!', 'success')
+    showToast('Follow แล้ว!', 'success')
   }
 
   await loadProfile()
@@ -1411,7 +1462,7 @@ window.saveProfile = async function() {
     btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
   }
 
-  showToast('✅ บันทึกโปรไฟล์แล้ว!', 'success')
+  showToast('บันทึกโปรไฟล์แล้ว!', 'success')
   closeEditModal()
   await loadProfile()
   btn.disabled = false; btn.textContent = 'SAVE CHANGES →'

@@ -104,7 +104,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .season-card::after{content:'SEASON PASS';position:absolute;top:14px;right:14px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--purple);opacity:0.7}
 .season-features{display:flex;flex-direction:column;gap:6px}
 .season-feature{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim)}
-.season-feature::before{content:'▸';color:var(--cyan);font-size:10px;flex-shrink:0}
+.season-feature::before{content:'>';color:var(--cyan);font-size:10px;flex-shrink:0}
 
 /* SECTION HEADER */
 .section-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px}
@@ -178,7 +178,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">🛒 <span>SHOP</span></div>
+      <div class="page-title" id="shopPageTitle">// <span>SHOP</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
     <div class="wallet-bar">
@@ -190,13 +190,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- FEATURED -->
   <div class="featured-banner" id="featuredBanner" style="display:none">
-    <div class="featured-banner-icon" id="featuredIcon">🌟</div>
+    <div class="featured-banner-icon" id="featuredIcon"></div>
     <div class="featured-banner-info">
       <div class="featured-banner-label">// LIMITED TIME OFFER</div>
       <div class="featured-banner-title" id="featuredTitle">—</div>
       <div class="featured-banner-desc" id="featuredDesc">—</div>
       <div class="featured-banner-price">
-        <div class="price-new" id="featuredPrice">💎 —</div>
+        <div class="price-new" id="featuredPrice">—</div>
       </div>
     </div>
     <button class="btn-buy-featured" id="featuredBtn" onclick="openConfirm(0)">GET NOW →</button>
@@ -205,17 +205,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- CATEGORY TABS -->
   <div class="cat-tabs">
     <button class="cat-tab active" onclick="filterCat('all',this)">ALL</button>
-    <button class="cat-tab" onclick="filterCat('frame',this)">🖼 FRAMES</button>
-    <button class="cat-tab" onclick="filterCat('pet',this)">🐾 PETS</button>
-    <button class="cat-tab" onclick="filterCat('avatar',this)">🎨 AVATAR</button>
-    <button class="cat-tab" onclick="filterCat('booster',this)">⚡ BOOSTERS</button>
-    <button class="cat-tab" onclick="filterCat('utility',this)">🔧 UTILITY</button>
-    <button class="cat-tab" onclick="filterCat('season_pass',this)">👑 SEASON PASS</button>
+    <button class="cat-tab" onclick="filterCat('frame',this)">FRAMES</button>
+    <button class="cat-tab" onclick="filterCat('pet',this)">PETS</button>
+    <button class="cat-tab" onclick="filterCat('avatar',this)">AVATAR</button>
+    <button class="cat-tab" onclick="filterCat('booster',this)">BOOSTERS</button>
+    <button class="cat-tab" onclick="filterCat('utility',this)">UTILITY</button>
+    <button class="cat-tab" onclick="filterCat('season_pass',this)">SEASON PASS</button>
   </div>
 
   <!-- SHOP GRID -->
   <div class="shop-grid" id="shopGrid">
-    <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">ยังไม่มีสินค้า</div></div>
+    <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" id="shopEmptyIcon"></div><div class="empty-text">ยังไม่มีสินค้า</div></div>
   </div>
 </main>
 
@@ -223,8 +223,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">💎 CONFIRM PURCHASE</div>
-      <button class="modal-close" onclick="closeConfirm()">✕</button>
+      <div class="modal-title" id="confirmModalTitle">CONFIRM PURCHASE</div>
+      <button class="modal-close" id="closeConfirmBtn" onclick="closeConfirm()"></button>
     </div>
     <div class="modal-body">
       <div class="confirm-item-preview">
@@ -236,7 +236,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div class="confirm-cost">
         <div class="confirm-cost-label">TOTAL COST</div>
-        <div class="confirm-cost-amount">💎 <span id="confirmCost">0</span></div>
+        <div class="confirm-cost-amount" id="confirmCostWrap"><span id="confirmCost">0</span></div>
       </div>
       <div class="confirm-balance">ยอด Crystal คงเหลือหลังซื้อ: <span id="confirmAfter">—</span></div>
       <div class="modal-msg" id="confirmMsg"></div>
@@ -353,7 +353,7 @@ function renderShop() {
   const filtered = currentCat === 'all' ? allItems : allItems.filter(i => i.category === currentCat)
 
   if (!filtered.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">NO ITEMS IN THIS CATEGORY</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-text">NO ITEMS IN THIS CATEGORY</div></div>`
     return
   }
 
@@ -363,7 +363,7 @@ function renderShop() {
     const icon = getItemIcon(item)
     const tags = []
     if (item.is_consumable) tags.push(`<span class="item-tag consumable">CONSUMABLE</span>`)
-    if (item.duration_hours) tags.push(`<span class="item-tag duration">⏱ ${item.duration_hours}H</span>`)
+    if (item.duration_hours) tags.push(`<span class="item-tag duration">${item.duration_hours}H</span>`)
 
     if (item.category === 'season_pass') {
       const feats = item.description ? item.description.split('+').map(f => f.trim()) : []
@@ -378,9 +378,9 @@ function renderShop() {
             ${feats.map(f => `<div class="season-feature">${f}</div>`).join('')}
           </div>
           <div class="item-footer">
-            <div class="item-price">💎 ${item.crystal_cost}</div>
+            <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
             <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned?'disabled':''}>
-              ${owned ? 'OWNED ✓' : 'GET →'}
+              ${owned ? 'OWNED' : 'GET →'}
             </button>
           </div>
         </div>`
@@ -388,7 +388,7 @@ function renderShop() {
 
     return `
       <div class="item-card rarity-${rarity}" data-cat="${item.category}">
-        ${owned ? '<div class="item-owned-badge">OWNED ✓</div>' : ''}
+        ${owned ? '<div class="item-owned-badge">OWNED</div>' : ''}
         <div class="item-rarity ${rarity}">${rarityMap[rarity]}</div>
         <div class="item-icon">${icon}</div>
         <div>
@@ -398,7 +398,7 @@ function renderShop() {
         <div class="item-desc">${item.description || '—'}</div>
         ${tags.length ? `<div class="item-tags">${tags.join('')}</div>` : ''}
         <div class="item-footer">
-          <div class="item-price">💎 ${item.crystal_cost}</div>
+          <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
           <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned&&!item.is_consumable?'disabled':''}>
             ${owned && !item.is_consumable ? 'OWNED' : 'BUY →'}
           </button>
@@ -516,7 +516,7 @@ window.doPurchase = async function() {
     }).eq('user_id', currentUser.id)
   }
 
-  showToast(`✅ ซื้อ ${selectedItem.name} สำเร็จ!`, 'success')
+  showToast(`ซื้อ ${selectedItem.name} สำเร็จ!`, 'success')
   closeConfirm()
   await loadData()
   renderShop()
@@ -542,6 +542,19 @@ async function loadData() {
 async function init() {
   initCursor()
   updateDate()
+
+  // inject static icons
+  const shopTitle = document.getElementById('shopPageTitle')
+  if (shopTitle) shopTitle.innerHTML = getIcon('cart',18) + ' <span>SHOP</span>'
+  document.getElementById('featuredIcon').innerHTML = getIcon('star', 28)
+  const confirmTitle = document.getElementById('confirmModalTitle')
+  if (confirmTitle) confirmTitle.innerHTML = getIcon('diamond',13) + ' CONFIRM PURCHASE'
+  const closeConfirmBtn = document.getElementById('closeConfirmBtn')
+  if (closeConfirmBtn) closeConfirmBtn.innerHTML = getIcon('close', 16)
+  const confirmCostWrap = document.getElementById('confirmCostWrap')
+  if (confirmCostWrap) confirmCostWrap.innerHTML = getIcon('diamond',14) + ' <span id="confirmCost">0</span>'
+  const shopEmptyIcon = document.getElementById('shopEmptyIcon')
+  if (shopEmptyIcon) shopEmptyIcon.innerHTML = getIcon('package', 28)
 
   try {
     const { user } = await initSidebar('shop')
@@ -592,7 +605,7 @@ async function init() {
   } catch (err) {
     console.error('Shop init error:', err)
     const grid = document.getElementById('shopGrid')
-    if (grid) grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
+    if (grid) grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
   }
 }
 

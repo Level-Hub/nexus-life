@@ -120,7 +120,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">💎 <span>WALLET</span></div>
+      <div class="page-title" id="walletPageTitle">// <span>WALLET</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
     <a class="btn-topup" href="./topup.html">+ เติม Crystal</a>
@@ -132,25 +132,25 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="balance-label">// CRYSTAL BALANCE</div>
       <div class="balance-amount" id="crystalBalance">0</div>
       <div class="balance-sub">Crystal คงเหลือ</div>
-      <div class="balance-card-icon">💎</div>
+      <div class="balance-card-icon" id="balIconCrystal"></div>
     </div>
     <div class="balance-card gold">
       <div class="balance-label">// GOLD BALANCE</div>
       <div class="balance-amount" id="goldBalance">0</div>
       <div class="balance-sub">Gold จาก Gameplay</div>
-      <div class="balance-card-icon">⭐</div>
+      <div class="balance-card-icon" id="balIconXP"></div>
     </div>
     <div class="balance-card earned">
       <div class="balance-label">// CRYSTAL PURCHASED</div>
       <div class="balance-amount" id="crystalPurchased">0</div>
       <div class="balance-sub">ซื้อด้วยเงินจริงทั้งหมด</div>
-      <div class="balance-card-icon">💰</div>
+      <div class="balance-card-icon" id="balIconGold"></div>
     </div>
     <div class="balance-card spent">
       <div class="balance-label">// CRYSTAL SPENT</div>
       <div class="balance-amount" id="crystalSpent">0</div>
       <div class="balance-sub">ใช้ไปในร้านค้า</div>
-      <div class="balance-card-icon">🛒</div>
+      <div class="balance-card-icon" id="balIconShop"></div>
     </div>
   </div>
 
@@ -164,10 +164,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- FILTER TABS -->
   <div class="filter-tabs">
     <button class="filter-tab active" onclick="filterTx('all',this)">ALL</button>
-    <button class="filter-tab" onclick="filterTx('topup',this)">💚 เติมเงิน</button>
-    <button class="filter-tab" onclick="filterTx('spend',this)">🔴 ใช้จ่าย</button>
-    <button class="filter-tab" onclick="filterTx('bonus',this)">⭐ โบนัส</button>
-    <button class="filter-tab" onclick="filterTx('refund',this)">🔄 คืนเงิน</button>
+    <button class="filter-tab" onclick="filterTx('topup',this)">เติมเงิน</button>
+    <button class="filter-tab" onclick="filterTx('spend',this)">ใช้จ่าย</button>
+    <button class="filter-tab" onclick="filterTx('bonus',this)">โบนัส</button>
+    <button class="filter-tab" onclick="filterTx('refund',this)">คืนเงิน</button>
   </div>
 
   <!-- TRANSACTION LIST -->
@@ -177,7 +177,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)" id="txCountLabel">—</div>
   </div>
   <div class="tx-panel">
-    <div id="txList"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ยังไม่มีรายการ</div></div></div>
+    <div id="txList"><div class="empty-state"><div class="empty-icon" id="txEmptyIcon"></div><div class="empty-text">ยังไม่มีรายการ</div></div></div>
   </div>
 
   <!-- PURCHASES -->
@@ -188,7 +188,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div style="font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)" id="purchaseCountLabel">—</div>
     </div>
     <div class="purchase-grid" id="purchaseGrid">
-      <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🛒</div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>
+      <div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" id="ownedEmptyIcon"></div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>
     </div>
   </div>
 </main>
@@ -243,7 +243,7 @@ function renderTxList() {
   document.getElementById('txCountLabel').textContent = `${filtered.length} รายการ`
 
   if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ไม่มีรายการ</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-text">ไม่มีรายการ</div></div>`
     return
   }
 
@@ -262,7 +262,7 @@ function renderTxList() {
           </div>
         </div>
         <div>
-          <div class="tx-amount ${amountClass}">${amountSign}${tx.crystal_amount} 💎</div>
+          <div class="tx-amount ${amountClass}">${amountSign}${tx.crystal_amount} Crystal</div>
           <div class="tx-date">${fmtDate(tx.created_at)}</div>
         </div>
       </div>`
@@ -299,7 +299,7 @@ function renderPurchases(purchases, items) {
   document.getElementById('purchaseCountLabel').textContent = `${active.length} รายการ (active)`
 
   if (!display.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🛒</div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" id="ownedEmptyIcon"></div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>`
     return
   }
 
@@ -328,6 +328,22 @@ function renderPurchases(purchases, items) {
 async function init() {
   initCursor()
   updateDate()
+
+  // inject static icons
+  const walletTitle = document.getElementById('walletPageTitle')
+  if (walletTitle) walletTitle.innerHTML = getIcon('diamond',18) + ' <span>WALLET</span>'
+  const balIconCrystal = document.getElementById('balIconCrystal')
+  if (balIconCrystal) balIconCrystal.innerHTML = getIcon('diamond', 22)
+  const balIconXP = document.getElementById('balIconXP')
+  if (balIconXP) balIconXP.innerHTML = getIcon('levelup', 22)
+  const balIconGold = document.getElementById('balIconGold')
+  if (balIconGold) balIconGold.innerHTML = getIcon('gold', 22)
+  const balIconShop = document.getElementById('balIconShop')
+  if (balIconShop) balIconShop.innerHTML = getIcon('cart', 22)
+  const txEmptyIcon = document.getElementById('txEmptyIcon')
+  if (txEmptyIcon) txEmptyIcon.innerHTML = getIcon('scroll', 24)
+  const ownedEmptyIcon = document.getElementById('ownedEmptyIcon')
+  if (ownedEmptyIcon) ownedEmptyIcon.innerHTML = getIcon('cart', 24)
 
   try {
     const { user } = await initSidebar('wallet')
@@ -402,7 +418,7 @@ async function init() {
   } catch (err) {
     console.error('Wallet init error:', err)
     const txList = document.getElementById('txList')
-    if (txList) txList.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
+    if (txList) txList.innerHTML = '<div class="empty-state"><div class="empty-icon" style="opacity:0.4"></div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
   }
 }
 

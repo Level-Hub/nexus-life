@@ -339,7 +339,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="page-title">// <span id="cityPageTitle">CITY</span></div>
       <div class="page-sub" id="cityPageSub">LOADING...</div>
     </div>
-    <button class="city-switch-btn" onclick="openCityModal()">🏙️ เปลี่ยนเมือง</button>
+    <button class="city-switch-btn" id="citySwitchBtn" onclick="openCityModal()">เปลี่ยนเมือง</button>
   </div>
 
   <!-- CITY HERO -->
@@ -347,7 +347,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="city-hero-glow"></div>
     <div class="city-hero-inner">
       <div class="city-name-row">
-        <div class="city-icon">🏙️</div>
+        <div class="city-icon" id="cityHeroIcon"></div>
         <div class="city-name-info">
           <div class="city-name" id="heroName">—</div>
           <div class="city-province" id="heroProvince">—</div>
@@ -381,7 +381,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
         <div class="pros-track"><div class="pros-fill" id="prosFill" style="width:10%"></div></div>
         <div class="pros-segments" id="prosSegs"></div>
-        <div class="xp-bonus-tag" id="xpBonusTag">⚡ XP BONUS +5%</div>
+        <div class="xp-bonus-tag" id="xpBonusTag">XP BONUS +5%</div>
       </div>
     </div>
   </div>
@@ -395,7 +395,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- CITY PROJECT -->
       <div class="project-card" id="projectCard">
         <div class="project-card-header">
-          <div class="project-card-title">🏗️ CITY PROJECT — WEEKLY</div>
+          <div class="project-card-title" id="projCardTitle">CITY PROJECT — WEEKLY</div>
           <div class="project-timer"><div class="project-timer-dot"></div><span id="projectTimer">—</span></div>
         </div>
         <div class="project-body">
@@ -412,23 +412,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           </div>
 
           <div class="project-reward">
-            <div class="proj-reward-icon">💎</div>
+            <div class="proj-reward-icon" id="projRewardIcon"></div>
             <div class="proj-reward-info">
               <div class="proj-reward-label">รางวัลเมื่อสำเร็จ</div>
               <div class="proj-reward-val" id="projReward">—</div>
             </div>
           </div>
 
-          <button class="join-project-btn" id="joinProjectBtn" onclick="joinProject()">⚡ เข้าร่วมโครงการ</button>
+          <button class="join-project-btn" id="joinProjectBtn" onclick="joinProject()">เข้าร่วมโครงการ</button>
         </div>
       </div>
 
       <!-- TABS: CHAT / RANKING / NEIGHBORHOOD -->
       <div class="card">
         <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab('chat',this)">💬 CITY CHAT</button>
-          <button class="tab-btn" onclick="switchTab('ranking',this)">🏆 CITY RANKING</button>
-          <button class="tab-btn" onclick="switchTab('neighborhood',this)">🤝 HELP REQUEST</button>
+          <button class="tab-btn active" id="tabChat" onclick="switchTab('chat',this)">CITY CHAT</button>
+          <button class="tab-btn" id="tabRanking" onclick="switchTab('ranking',this)">CITY RANKING</button>
+          <button class="tab-btn" id="tabNeighborhood" onclick="switchTab('neighborhood',this)">HELP REQUEST</button>
         </div>
 
         <!-- CHAT TAB -->
@@ -453,14 +453,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <!-- RANKING TAB -->
         <div class="tab-content" id="tab-ranking">
           <div class="rank-list" id="rankList">
-            <div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-txt">กำลังโหลด...</div></div>
+            <div class="empty-state"><div class="empty-icon" id="rankLoadingIcon"></div><div class="empty-txt">กำลังโหลด...</div></div>
           </div>
         </div>
 
         <!-- NEIGHBORHOOD TAB -->
         <div class="tab-content" id="tab-neighborhood">
           <div class="request-list" id="requestList">
-            <div class="empty-state"><div class="empty-icon">🤝</div><div class="empty-txt">กำลังโหลด...</div></div>
+            <div class="empty-state"><div class="empty-icon" id="neighLoadingIcon"></div><div class="empty-txt">กำลังโหลด...</div></div>
           </div>
           <div style="padding:0 14px 14px">
             <button class="add-request-btn" onclick="openRequestModal()">+ ขอความช่วยเหลือ</button>
@@ -483,25 +483,25 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
       <!-- CITY BUFFS -->
       <div class="card">
-        <div class="card-header"><div class="card-title">⚡ ACTIVE BUFFS</div></div>
+        <div class="card-header"><div class="card-title" id="buffCardTitle">ACTIVE BUFFS</div></div>
         <div class="buff-grid" id="buffGrid">
           <div class="buff-item active-buff">
-            <div class="buff-icon">⚡</div>
+            <div class="buff-icon" id="buffIconXP"></div>
             <div class="buff-name">XP BONUS</div>
             <div class="buff-val" id="buffXP">+5%</div>
           </div>
           <div class="buff-item" id="buffStreak">
-            <div class="buff-icon">🔥</div>
+            <div class="buff-icon" id="buffIconStreak"></div>
             <div class="buff-name">CITY STREAK</div>
             <div class="buff-val" id="buffStreakVal">—</div>
           </div>
           <div class="buff-item" id="buffProject">
-            <div class="buff-icon">🏗️</div>
+            <div class="buff-icon" id="buffIconProject"></div>
             <div class="buff-name">PROJECT</div>
             <div class="buff-val" id="buffProjectVal">ACTIVE</div>
           </div>
           <div class="buff-item">
-            <div class="buff-icon">👥</div>
+            <div class="buff-icon" id="buffIconPop"></div>
             <div class="buff-name">POPULATION</div>
             <div class="buff-val" id="buffPop">—</div>
           </div>
@@ -511,7 +511,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- TOP CONTRIBUTORS -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🏅 TOP CONTRIBUTORS</div>
+          <div class="card-title" id="contribCardTitle">TOP CONTRIBUTORS</div>
           <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)">สัปดาห์นี้</div>
         </div>
         <div class="contrib-list" id="contribList">
@@ -527,13 +527,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="modal-overlay" id="cityModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">🏙️ เลือกเมืองของคุณ</div>
-      <button class="modal-close" onclick="closeCityModal()">✕</button>
+      <div class="modal-title" id="cityModalTitle">เลือกเมืองของคุณ</div>
+      <button class="modal-close" id="closeCityModalBtn" onclick="closeCityModal()"></button>
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6">เมืองที่เลือกจะกำหนด XP Buff, City Project และ City Chat ที่คุณเห็น</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px" id="citySelectGrid"></div>
-      <button class="submit-btn" id="saveCityBtn" onclick="saveCity()">💾 บันทึกเมือง</button>
+      <button class="submit-btn" id="saveCityBtn" onclick="saveCity()">บันทึกเมือง</button>
     </div>
   </div>
 </div>
@@ -542,16 +542,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="modal-overlay" id="requestModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">🤝 ขอความช่วยเหลือ</div>
-      <button class="modal-close" onclick="closeRequestModal()">✕</button>
+      <div class="modal-title" id="requestModalTitle">ขอความช่วยเหลือ</div>
+      <button class="modal-close" id="closeRequestModalBtn" onclick="closeRequestModal()"></button>
     </div>
     <div class="modal-body">
       <div class="form-field">
         <label class="form-label">ประเภทคำขอ</label>
         <select class="form-select" id="reqType">
-          <option value="verify_quest">✅ ช่วย Verify Quest</option>
-          <option value="find_partner">🤝 หาคู่ออกกำลังกาย</option>
-          <option value="general">💬 ทั่วไป</option>
+          <option value="verify_quest">ช่วย Verify Quest</option>
+          <option value="find_partner">หาคู่ออกกำลังกาย</option>
+          <option value="general">ทั่วไป</option>
         </select>
       </div>
       <div class="form-field">
@@ -562,7 +562,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <label class="form-label">รายละเอียด (ถ้ามี)</label>
         <input type="text" class="form-input" id="reqBody" placeholder="รายละเอียดเพิ่มเติม..." maxlength="200">
       </div>
-      <button class="submit-btn" onclick="submitRequest()">📤 ส่งคำขอ</button>
+      <button class="submit-btn" id="submitRequestBtn" onclick="submitRequest()">ส่งคำขอ</button>
     </div>
   </div>
 </div>
@@ -598,6 +598,72 @@ async function init() {
   currentUser = user
 
   const { data:u } = await supabase.from('users').select('*').eq('id',currentUser.id).single()
+
+  // ── INJECT STATIC ICONS ──────────────────────
+  // City hero icon
+  const cityHeroIcon = document.getElementById('cityHeroIcon')
+  if (cityHeroIcon) cityHeroIcon.innerHTML = getIcon('city', 28)
+
+  // City switch btn
+  const citySwitchBtn = document.getElementById('citySwitchBtn')
+  if (citySwitchBtn) citySwitchBtn.innerHTML = getIcon('city', 13) + ' เปลี่ยนเมือง'
+
+  // Project card title
+  const projCardTitle = document.getElementById('projCardTitle')
+  if (projCardTitle) projCardTitle.innerHTML = getIcon('hammer', 12) + ' CITY PROJECT — WEEKLY'
+
+  // Project reward icon
+  const projRewardIcon = document.getElementById('projRewardIcon')
+  if (projRewardIcon) projRewardIcon.innerHTML = getIcon('diamond', 16)
+
+  // Join project btn
+  const joinProjectBtn = document.getElementById('joinProjectBtn')
+  if (joinProjectBtn) joinProjectBtn.innerHTML = getIcon('lightning', 13) + ' เข้าร่วมโครงการ'
+
+  // Tab buttons
+  const tabChat = document.getElementById('tabChat')
+  if (tabChat) tabChat.innerHTML = getIcon('chat', 12) + ' CITY CHAT'
+  const tabRanking = document.getElementById('tabRanking')
+  if (tabRanking) tabRanking.innerHTML = getIcon('trophy', 12) + ' CITY RANKING'
+  const tabNeighborhood = document.getElementById('tabNeighborhood')
+  if (tabNeighborhood) tabNeighborhood.innerHTML = getIcon('users', 12) + ' HELP REQUEST'
+
+  // Loading empty icons
+  const rankLoadingIcon = document.getElementById('rankLoadingIcon')
+  if (rankLoadingIcon) rankLoadingIcon.innerHTML = getIcon('trophy', 20)
+  const neighLoadingIcon = document.getElementById('neighLoadingIcon')
+  if (neighLoadingIcon) neighLoadingIcon.innerHTML = getIcon('users', 20)
+
+  // Buff card title + icons
+  const buffCardTitle = document.getElementById('buffCardTitle')
+  if (buffCardTitle) buffCardTitle.innerHTML = getIcon('lightning', 12) + ' ACTIVE BUFFS'
+  const buffIconXP = document.getElementById('buffIconXP')
+  if (buffIconXP) buffIconXP.innerHTML = getIcon('lightning', 18)
+  const buffIconStreak = document.getElementById('buffIconStreak')
+  if (buffIconStreak) buffIconStreak.innerHTML = getIcon('fire', 18)
+  const buffIconProject = document.getElementById('buffIconProject')
+  if (buffIconProject) buffIconProject.innerHTML = getIcon('hammer', 18)
+  const buffIconPop = document.getElementById('buffIconPop')
+  if (buffIconPop) buffIconPop.innerHTML = getIcon('users', 18)
+
+  // Contributors card title
+  const contribCardTitle = document.getElementById('contribCardTitle')
+  if (contribCardTitle) contribCardTitle.innerHTML = getIcon('medal', 12) + ' TOP CONTRIBUTORS'
+
+  // Modal titles & close buttons
+  const cityModalTitle = document.getElementById('cityModalTitle')
+  if (cityModalTitle) cityModalTitle.innerHTML = getIcon('city', 13) + ' เลือกเมืองของคุณ'
+  const closeCityModalBtn = document.getElementById('closeCityModalBtn')
+  if (closeCityModalBtn) closeCityModalBtn.innerHTML = getIcon('close', 16)
+  const requestModalTitle = document.getElementById('requestModalTitle')
+  if (requestModalTitle) requestModalTitle.innerHTML = getIcon('users', 13) + ' ขอความช่วยเหลือ'
+  const closeRequestModalBtn = document.getElementById('closeRequestModalBtn')
+  if (closeRequestModalBtn) closeRequestModalBtn.innerHTML = getIcon('close', 16)
+  const saveCityBtn = document.getElementById('saveCityBtn')
+  if (saveCityBtn) saveCityBtn.innerHTML = getIcon('save', 13) + ' บันทึกเมือง'
+  const submitRequestBtn = document.getElementById('submitRequestBtn')
+  if (submitRequestBtn) submitRequestBtn.innerHTML = getIcon('upload', 13) + ' ส่งคำขอ'
+  // ── END INJECT ───────────────────────────────
   userProfile = u
   if (!u) return
 
@@ -671,7 +737,7 @@ async function loadCityData(city) {
   document.getElementById('prosperityBadge').textContent = `PROSPERITY LV.${lv}`
   document.getElementById('prosLv').textContent = lv
   document.getElementById('buffXP').textContent = `+${bonus}%`
-  document.getElementById('xpBonusTag').textContent = `⚡ XP BONUS +${bonus}%`
+  document.getElementById('xpBonusTag').textContent = `XP BONUS +${bonus}%`
   document.getElementById('buffStreakVal').textContent = (data.city_streak_days || 0) + 'd'
   document.getElementById('buffPop').textContent = fmtNum(data.population || 0)
 
@@ -733,7 +799,7 @@ async function loadCityProject(city) {
   document.getElementById('projCur').textContent      = fmtNum(data.current_value || 0)
   document.getElementById('projTarget').textContent   = fmtNum(data.target_value)
   document.getElementById('projUnit').textContent     = TYPE_LABEL[data.target_type] || 'XP'
-  document.getElementById('projReward').textContent   = `${data.reward_crystal} 💎 Crystal สำหรับทุกคน`
+  document.getElementById('projReward').textContent   = `${data.reward_crystal} Crystal สำหรับทุกคน`
   document.getElementById('statProject').textContent  = pct + '%'
   setTimeout(() => { document.getElementById('projFill').style.width = pct + '%' }, 600)
 
@@ -752,7 +818,7 @@ async function loadCityProject(city) {
     .maybeSingle()
   if (contrib) {
     const btn = document.getElementById('joinProjectBtn')
-    btn.textContent = '✓ เข้าร่วมแล้ว'
+    btn.innerHTML = getIcon('check', 13) + ' เข้าร่วมแล้ว'
     btn.className = 'join-project-btn joined'
     btn.disabled = true
   }
@@ -768,7 +834,7 @@ async function loadCityRanking() {
 
   const el = document.getElementById('rankList')
   if (!data || !data.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-txt">ยังไม่มีข้อมูล</div></div>`
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.3">${getIcon('trophy',24)}</div><div class="empty-txt">ยังไม่มีข้อมูล</div></div>`
     return
   }
 
@@ -781,7 +847,7 @@ async function loadCityRanking() {
     <div class="rank-city-item ${isMe?'my-city':''}">
       <div class="rank-city-pos ${posCls[i]||'pn'}">#${i+1}</div>
       <div class="rank-city-info">
-        <div class="rank-city-name">${isMe?'⭐ ':''}${c.city_name}</div>
+        <div class="rank-city-name">${isMe ? getIcon('star_filled',10)+' ' : ''}${c.city_name}</div>
         <div class="rank-city-lv">Lv.${lv} Prosperity</div>
       </div>
       <div>
@@ -866,9 +932,9 @@ async function loadWarData(city) {
       <div class="war-fill-a" style="width:${myPct}%"></div>
       <div class="war-fill-b"></div>
     </div>
-    <div class="war-time">⏱ เหลือ ${h}h ${m}m</div>
+    <div class="war-time">เหลือ ${h}h ${m}m</div>
     ${data.status === 'active'
-      ? `<button class="war-join-btn" onclick="joinWar(${data.id})">⚔️ เข้าร่วมสงคราม</button>`
+      ? `<button class="war-join-btn" onclick="joinWar(${data.id})">${getIcon('sword',13)} เข้าร่วมสงคราม</button>`
       : `<div class="war-upcoming">เริ่มใน ${new Date(data.starts_at).toLocaleDateString('th')}</div>`
     }`
 }
@@ -885,7 +951,7 @@ async function loadNeighborhoodRequests(city) {
 
   const el = document.getElementById('requestList')
   if (!data || !data.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🤝</div><div class="empty-txt">ยังไม่มีคำขอในเมืองนี้</div></div>`
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.3">${getIcon('users',24)}</div><div class="empty-txt">ยังไม่มีคำขอในเมืองนี้</div></div>`
     return
   }
 
@@ -907,7 +973,7 @@ async function loadNeighborhoodRequests(city) {
       </div>
       ${r.body ? `<div style="font-size:11px;color:var(--text-dim);margin-top:4px">${r.body}</div>` : ''}
       ${r.user_id !== currentUser.id
-        ? `<button class="req-help-btn" onclick="helpRequest(${r.id})">✋ ช่วย</button>`
+        ? `<button class="req-help-btn" onclick="helpRequest(${r.id})">ช่วย</button>`
         : ''}
     </div>`
   }).join('')
@@ -998,11 +1064,11 @@ window.joinProject = async function() {
 
   if (error) {
     showToast('เกิดข้อผิดพลาด', 'error')
-    btn.disabled = false; btn.textContent = '⚡ เข้าร่วมโครงการ'
+    btn.disabled = false; btn.innerHTML = getIcon('lightning', 13) + ' เข้าร่วมโครงการ'
   } else {
-    btn.textContent = '✓ เข้าร่วมแล้ว'
+    btn.innerHTML = getIcon('check', 13) + ' เข้าร่วมแล้ว'
     btn.className = 'join-project-btn joined'
-    showToast('เข้าร่วมโครงการเมืองแล้ว! 🏗️', 'success')
+    showToast('เข้าร่วมโครงการเมืองแล้ว!', 'success')
 
     // add activity
     await supabase.from('activity_feed').insert({
@@ -1032,7 +1098,7 @@ window.joinWar = async function(warId) {
   }, { onConflict: 'war_id,user_id' })
 
   if (!error) {
-    showToast('เข้าร่วม City War แล้ว! ⚔️', 'success')
+    showToast('เข้าร่วม City War แล้ว!', 'success')
     await loadWarData(selectedCity)
   } else {
     showToast('เกิดข้อผิดพลาด: ' + error.message, 'error')
@@ -1089,13 +1155,13 @@ window.submitRequest = async function() {
   if (error) {
     showToast('เกิดข้อผิดพลาด','error')
   } else {
-    showToast('ส่งคำขอสำเร็จ! 🤝','success')
+    showToast('ส่งคำขอสำเร็จ!','success')
     closeRequestModal()
     await loadNeighborhoodRequests(selectedCity)
     document.getElementById('reqTitle').value = ''
     document.getElementById('reqBody').value = ''
   }
-  btn.disabled = false; btn.textContent = '📤 ส่งคำขอ'
+  btn.disabled = false; btn.innerHTML = getIcon('upload', 13) + ' ส่งคำขอ'
 }
 
 // ─── CITY CHANGE ─────────────────────────────
@@ -1107,7 +1173,7 @@ function buildCitySelectGrid() {
   const grid = document.getElementById('citySelectGrid')
   grid.innerHTML = CITIES.map(c => `
     <button onclick="selectPendingCity('${c}',this)" style="padding:10px;background:${c===selectedCity?'rgba(0,245,255,0.1)':'var(--panel)'};border:1px solid ${c===selectedCity?'var(--cyan)':'var(--border)'};color:${c===selectedCity?'var(--cyan)':'var(--text-dim)'};font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;transition:all 0.2s;text-align:left">
-      ${c===selectedCity?'✓ ':''} ${c}
+      ${c===selectedCity ? getIcon('check',11)+' ' : ''} ${c}
     </button>`
   ).join('')
 }
@@ -1128,7 +1194,7 @@ window.saveCity = async function() {
   await supabase.from('users').update({ city: pendingCity }).eq('id', currentUser.id)
   selectedCity = pendingCity
   closeCityModal()
-  showToast(`ย้ายไป ${selectedCity} แล้ว! 🏙️`, 'success')
+  showToast(`ย้ายไป ${selectedCity} แล้ว!`, 'success')
 
   // reload everything
   await Promise.all([
@@ -1143,7 +1209,7 @@ window.saveCity = async function() {
   subscribeChat(selectedCity)
   buildCitySelectGrid()
 
-  btn.disabled = false; btn.textContent = '💾 บันทึกเมือง'
+  btn.disabled = false; btn.innerHTML = getIcon('save', 13) + ' บันทึกเมือง'
 }
 
 // ─── PROJECT TIMER ───────────────────────────

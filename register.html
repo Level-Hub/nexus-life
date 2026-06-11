@@ -242,7 +242,7 @@
   .class-card:hover::before { opacity:1; }
   .class-card.selected { border-color:var(--cc-solid) !important; }
   .class-card.selected::before { opacity:1 !important; }
-  .class-card.selected::after { content:'✓';position:absolute;top:10px;right:12px;font-size:12px;color:var(--cc-solid);font-weight:700; }
+  .class-card.selected::after { content:'';position:absolute;top:10px;right:10px;width:14px;height:14px;border:2px solid var(--cc-solid);border-radius:50%;background:var(--cc-solid);clip-path:polygon(20% 50%,45% 75%,80% 25%); }
 
   .class-card.warrior  { --cc:rgba(255,68,68,0.12);  --cc-solid:#ff4444; }
   .class-card.mage     { --cc:rgba(170,68,255,0.12); --cc-solid:#aa44ff; }
@@ -251,7 +251,7 @@
   .class-card.artist   { --cc:rgba(255,102,170,0.12);--cc-solid:#ff66aa; }
   .class-card.diplomat { --cc:rgba(0,204,255,0.12);  --cc-solid:#00ccff; }
 
-  .class-emoji { font-size:28px; display:block; margin-bottom:10px; }
+  .class-icon-slot { display:flex; align-items:center; justify-content:center; height:36px; margin-bottom:10px; }
   .class-name  { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--cc-solid);margin-bottom:4px; }
   .class-th    { font-size:15px;font-weight:600;color:#fff;margin-bottom:6px; }
   .class-desc  { font-size:12px;color:var(--text-dim);line-height:1.6; }
@@ -474,46 +474,46 @@
 
       <div class="class-grid">
         <div class="class-card warrior" onclick="selectClass('warrior',this)">
-          <span class="class-emoji">⚔️</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">WARRIOR</div>
           <div class="class-th">นักรบ</div>
           <div class="class-desc">ออกกำลังกาย วิ่ง เล่นกีฬา — ชนะด้วยร่างกาย</div>
-          <div class="class-bonus">💪 STR +15% XP</div>
+          <div class="class-bonus" id="bonus-warrior">STR +15% XP</div>
         </div>
         <div class="class-card mage" onclick="selectClass('mage',this)">
-          <span class="class-emoji">🔮</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">MAGE</div>
           <div class="class-th">จอมเวท</div>
           <div class="class-desc">อ่านหนังสือ เรียน บันทึก — เติบโตด้วยความรู้</div>
-          <div class="class-bonus">🧠 INT +15% XP</div>
+          <div class="class-bonus" id="bonus-mage">INT +15% XP</div>
         </div>
         <div class="class-card explorer" onclick="selectClass('explorer',this)">
-          <span class="class-emoji">🗺️</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">EXPLORER</div>
           <div class="class-th">นักสำรวจ</div>
           <div class="class-desc">เดินทาง Check-in สถานที่ใหม่ — ยิ่งออกไปยิ่งแกร่ง</div>
-          <div class="class-bonus">🗺️ EXP +15% XP</div>
+          <div class="class-bonus" id="bonus-explorer">EXP +15% XP</div>
         </div>
         <div class="class-card merchant" onclick="selectClass('merchant',this)">
-          <span class="class-emoji">💰</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">MERCHANT</div>
           <div class="class-th">พ่อค้า</div>
           <div class="class-desc">ออมเงิน ทำธุรกิจ Networking — สร้าง value จากทุกการกระทำ</div>
-          <div class="class-bonus">💼 BIZ +15% XP</div>
+          <div class="class-bonus" id="bonus-merchant">BIZ +15% XP</div>
         </div>
         <div class="class-card artist" onclick="selectClass('artist',this)">
-          <span class="class-emoji">🎨</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">ARTIST</div>
           <div class="class-th">ศิลปิน</div>
           <div class="class-desc">วาด เขียน ถ่ายรูป ดนตรี — สร้างสรรค์สิ่งใหม่ทุกวัน</div>
-          <div class="class-bonus">🎨 CRE +15% XP</div>
+          <div class="class-bonus" id="bonus-artist">CRE +15% XP</div>
         </div>
         <div class="class-card diplomat" onclick="selectClass('diplomat',this)">
-          <span class="class-emoji">🤝</span>
+          <div class="class-icon-slot"></div>
           <div class="class-name">DIPLOMAT</div>
           <div class="class-th">นักการทูต</div>
           <div class="class-desc">ช่วยเหลือ Guild Referral — ยิ่งมีคนรู้จักมากยิ่งแกร่ง</div>
-          <div class="class-bonus">🤝 SOC +15% XP</div>
+          <div class="class-bonus" id="bonus-diplomat">SOC +15% XP</div>
         </div>
       </div>
 
@@ -579,8 +579,8 @@
         <!-- SEED / RANDOMIZE -->
         <span class="avatar-section-title">// AVATAR SEED</span>
         <div class="seed-row">
-          <input type="text" class="seed-input" id="avatar-seed" placeholder="พิมพ์ seed หรือกด 🎲 เพื่อสุ่ม">
-          <button class="btn-random" onclick="randomSeed()" title="สุ่ม Avatar">🎲</button>
+          <input type="text" class="seed-input" id="avatar-seed" placeholder="พิมพ์ seed หรือกดปุ่มสุ่ม">
+          <button class="btn-random" onclick="randomSeed()" title="สุ่ม Avatar" id="btnRandom"></button>
         </div>
 
         <!-- BG COLOR -->
@@ -602,25 +602,25 @@
       <span class="avatar-section-title">// เลือกเมืองที่อยู่</span>
       <div class="field-wrap" style="margin-bottom:16px;">
         <select class="field-input" id="s3-city" style="padding-left:14px;cursor:pointer;">
-          <option value="กรุงเทพมหานคร">🏙️ กรุงเทพมหานคร</option>
-          <option value="เชียงใหม่">🌿 เชียงใหม่</option>
-          <option value="ขอนแก่น">⚡ ขอนแก่น</option>
-          <option value="ชลบุรี">🌊 ชลบุรี</option>
-          <option value="ภูเก็ต">🏝️ ภูเก็ต</option>
-          <option value="นครราชสีมา">🔥 นครราชสีมา</option>
-          <option value="หาดใหญ่">🌞 หาดใหญ่</option>
-          <option value="อุดรธานี">💫 อุดรธานี</option>
-          <option value="เชียงราย">❄️ เชียงราย</option>
-          <option value="นนทบุรี">🏯 นนทบุรี</option>
-          <option value="ปทุมธานี">🌆 ปทุมธานี</option>
-          <option value="สมุทรปราการ">⚓ สมุทรปราการ</option>
+          <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+          <option value="เชียงใหม่">เชียงใหม่</option>
+          <option value="ขอนแก่น">ขอนแก่น</option>
+          <option value="ชลบุรี">ชลบุรี</option>
+          <option value="ภูเก็ต">ภูเก็ต</option>
+          <option value="นครราชสีมา">นครราชสีมา</option>
+          <option value="หาดใหญ่">หาดใหญ่</option>
+          <option value="อุดรธานี">อุดรธานี</option>
+          <option value="เชียงราย">เชียงราย</option>
+          <option value="นนทบุรี">นนทบุรี</option>
+          <option value="ปทุมธานี">ปทุมธานี</option>
+          <option value="สมุทรปราการ">สมุทรปราการ</option>
         </select>
       </div>
 
       <div class="btn-row" style="margin-top:8px;">
         <button class="btn-ghost" onclick="goStep(2)">← BACK</button>
         <button class="btn-primary" id="btn-finish" onclick="handleFinish()">
-          <span class="btn-text">⚡ ENTER THE NEXUS</span>
+          <span class="btn-text" id="enterBtnText">ENTER THE NEXUS</span>
           <div class="spinner"></div>
         </button>
       </div>
@@ -631,9 +631,41 @@
 
 <script type="module">
 import { supabase, signUp, redirectIfLoggedIn } from './supabase.js'
+import { CLASS_ICONS, CLASS_COLOR, SYSTEM_ICONS, getIcon } from './icons.js'
 
 // redirect ถ้า login แล้ว
-redirectIfLoggedIn('./dashboard.html')
+await redirectIfLoggedIn('./dashboard.html')
+
+// ==================== INJECT CLASS ICONS (แทน emoji) ====================
+const classKeys = ['warrior','mage','explorer','merchant','artist','diplomat']
+classKeys.forEach(cls => {
+  const el = document.querySelector(`.class-card.${cls} .class-icon-slot`)
+  if (el && CLASS_ICONS[cls]) {
+    el.innerHTML = `<svg width="32" height="32" viewBox="0 0 20 20" fill="none" style="color:${CLASS_COLOR[cls]}">${CLASS_ICONS[cls]}</svg>`
+  }
+})
+
+// ==================== INJECT BONUS ICON PREFIX ====================
+const bonusIconMap = {
+  'bonus-warrior': getIcon('strength', 12),
+  'bonus-mage':    getIcon('intel', 12),
+  'bonus-explorer':getIcon('explore_stat', 12),
+  'bonus-merchant':getIcon('biz', 12),
+  'bonus-artist':  getIcon('diamond', 12),
+  'bonus-diplomat':getIcon('diplo_stat', 12),
+}
+Object.entries(bonusIconMap).forEach(([id, svg]) => {
+  const el = document.getElementById(id)
+  if (el) el.innerHTML = svg + ' ' + el.textContent
+})
+
+// ==================== INJECT ENTER BTN ICON ====================
+const enterBtnText = document.getElementById('enterBtnText')
+if (enterBtnText) enterBtnText.innerHTML = getIcon('lightning', 14) + ' ENTER THE NEXUS'
+
+// ==================== INJECT DICE BTN ICON ====================
+const btnRandom = document.getElementById('btnRandom')
+if (btnRandom) btnRandom.innerHTML = getIcon('dice', 18)
 
 // ==================== STATE ====================
 const state = {
@@ -712,7 +744,7 @@ document.getElementById('s1-username').addEventListener('input', function(){
   usernameTimer=setTimeout(async()=>{
     const { data } = await supabase.from('users').select('id').eq('username',val.toLowerCase()).maybeSingle()
     if(data){ st.className='username-status err'; st.textContent='Username นี้ถูกใช้ไปแล้ว' }
-    else { st.className='username-status ok'; st.textContent='✓ Username ว่างอยู่'; state.usernameOk=true }
+    else { st.className='username-status ok'; st.textContent='Username ว่างอยู่'; state.usernameOk=true }
   }, 500)
 })
 
@@ -723,6 +755,9 @@ document.getElementById('s1-username').addEventListener('input', function(){
 })
 document.getElementById('s1-displayname').addEventListener('input', function(){ this.dataset.manual='1' })
 document.getElementById('s3-city').addEventListener('change', function(){ state.city = this.value })
+
+// sync initial city value from DOM (ป้องกัน state ไม่ตรงกับ select default)
+state.city = document.getElementById('s3-city').value || 'กรุงเทพมหานคร'
 
 // ==================== STEP NAVIGATION ====================
 function goStep(n){
@@ -736,7 +771,7 @@ function goStep(n){
     const sl=document.getElementById('sl'+i)
     sn.classList.remove('active','done')
     sl.classList.remove('active')
-    if(i<n){ sn.classList.add('done'); sn.textContent='✓' }
+    if(i<n){ sn.classList.add('done'); sn.innerHTML = getIcon('check',14) }
     else if(i===n){ sn.classList.add('active'); sn.textContent=i; sl.classList.add('active') }
     else { sn.textContent=i }
   }
@@ -773,12 +808,12 @@ window.goStep2 = async function(){
 
 // ==================== STEP 2 — CLASS ====================
 const classSkills = {
-  warrior:  { title:'⚔️ WARRIOR — Class Skill', skill:'<b>Grace Day</b> — Streak ไม่ขาดแม้ข้ามวัน 1 ครั้ง/เดือน<br>ได้ <b>+15% XP</b> จากทุก Physical Quest' },
-  mage:     { title:'🔮 MAGE — Class Skill', skill:'<b>Scholar\'s Flow</b> — อ่านหนังสือติดกัน 7 วันได้ Bonus XP <b>+20%</b><br>ได้ <b>+15% XP</b> จากทุก Knowledge Quest' },
-  explorer: { title:'🗺️ EXPLORER — Class Skill', skill:'<b>Pioneer</b> — Check-in สถานที่ใหม่คนแรกได้ Pioneer Badge ทันที<br>ได้ <b>+15% XP</b> จากทุก Exploration Quest' },
-  merchant: { title:'💰 MERCHANT — Class Skill', skill:'<b>Gold Rush</b> — ทุก 10,000 บาทที่ออมได้ Bonus XP พิเศษ<br>ได้ <b>+15% XP</b> จากทุก Business Quest' },
-  artist:   { title:'🎨 ARTIST — Class Skill', skill:'<b>Crowd Favorite</b> — ผลงานที่ได้ Like จากคนอื่นได้ Bonus XP เพิ่ม<br>ได้ <b>+15% XP</b> จากทุก Creative Quest' },
-  diplomat: { title:'🤝 DIPLOMAT — Class Skill', skill:'<b>Guild Bond</b> — ทุกคนใน Guild ที่ชวนมา Level Up → ได้ XP ด้วย<br>ได้ <b>+15% XP</b> จากทุก Social Quest' },
+  warrior:  { title:'WARRIOR — Class Skill', skill:'<b>Grace Day</b> — Streak ไม่ขาดแม้ข้ามวัน 1 ครั้ง/เดือน<br>ได้ <b>+15% XP</b> จากทุก Physical Quest' },
+  mage:     { title:'MAGE — Class Skill', skill:'<b>Scholar\'s Flow</b> — อ่านหนังสือติดกัน 7 วันได้ Bonus XP <b>+20%</b><br>ได้ <b>+15% XP</b> จากทุก Knowledge Quest' },
+  explorer: { title:'EXPLORER — Class Skill', skill:'<b>Pioneer</b> — Check-in สถานที่ใหม่คนแรกได้ Pioneer Badge ทันที<br>ได้ <b>+15% XP</b> จากทุก Exploration Quest' },
+  merchant: { title:'MERCHANT — Class Skill', skill:'<b>Gold Rush</b> — ทุก 10,000 บาทที่ออมได้ Bonus XP พิเศษ<br>ได้ <b>+15% XP</b> จากทุก Business Quest' },
+  artist:   { title:'ARTIST — Class Skill', skill:'<b>Crowd Favorite</b> — ผลงานที่ได้ Like จากคนอื่นได้ Bonus XP เพิ่ม<br>ได้ <b>+15% XP</b> จากทุก Creative Quest' },
+  diplomat: { title:'DIPLOMAT — Class Skill', skill:'<b>Guild Bond</b> — ทุกคนใน Guild ที่ชวนมา Level Up → ได้ XP ด้วย<br>ได้ <b>+15% XP</b> จากทุก Social Quest' },
 }
 
 window.selectClass = function(cls, el){
@@ -845,6 +880,9 @@ window.handleFinish = async function(){
   clearMsg('msg3')
   setLoading('btn-finish',true)
 
+  // อ่านค่า city จาก select โดยตรง (ไม่พึ่งแค่ change event)
+  state.city = document.getElementById('s3-city').value || 'กรุงเทพมหานคร'
+
   // 1. Sign up
   const { data, error } = await signUp(state.email, state.password)
   if(error){
@@ -875,12 +913,22 @@ window.handleFinish = async function(){
       rank: 'bronze',
       gold: 100,
       crystal: 0,
-      // FIX: ใส่ค่า default ให้ privacy fields ชัดเจน ไม่พึ่ง DB default
+      // Privacy fields
       profile_public: true,
       stats_public: true,
       feed_public: true,
       location_public: true,
       map_visible: true,
+      // FIX: เพิ่ม fields ที่ขาดหายไป — ต้องใส่ explicit defaults
+      status_emoji: '',
+      status_text: '',
+      streak_current: 0,
+      streak_longest: 0,
+      grace_day_used: false,
+      pvp_win_streak: 0,
+      class_changed_at: new Date().toISOString(),
+      equipped_frame_id: null,
+      equipped_pet_id: null,
     })
 
     // FIX: ถ้า insert users ไม่สำเร็จ ให้ stop ไม่ redirect
@@ -892,7 +940,7 @@ window.handleFinish = async function(){
   }
 
   setLoading('btn-finish',false)
-  showMsg('msg3','success','🎉 ยินดีต้อนรับสู่ NEXUS LIFE — กำลังเข้าสู่โลก...')
+  showMsg('msg3','success','ยินดีต้อนรับสู่ NEXUS LIFE — กำลังเข้าสู่โลก...')
   setTimeout(()=>{ window.location.href='./dashboard.html' }, 1500)
 }
 </script>
