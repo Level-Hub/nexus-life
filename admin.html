@@ -365,19 +365,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="loading-logo">NEXUS LIFE</div>
   <div class="loading-sub">ADMIN CONTROL PANEL</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-denied" id="loadingDenied">⛔ ACCESS DENIED — NOT ADMIN</div>
+  <div class="loading-denied" id="loadingDenied">ACCESS DENIED — NOT ADMIN</div>
 </div>
 
 <!-- TOPBAR MOBILE -->
 <div class="topbar-mobile" id="topbarMobile">
-  <div class="topbar-logo">⚙️ ADMIN</div>
+  <div class="topbar-logo" id="topbarLogo">ADMIN</div>
   <button class="burger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
 </div>
 
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-top">
-    <div class="sidebar-badge"><span class="sidebar-badge-txt">⚙️ ADMIN PANEL</span></div>
+    <div class="sidebar-badge"><span class="sidebar-badge-txt" id="sidebarBadgeTxt">ADMIN PANEL</span></div>
     <div class="sidebar-logo-txt">NEXUS LIFE</div>
     <div class="sidebar-logo-sub">CONTROL CENTER v1.0</div>
   </div>
@@ -385,7 +385,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="sidebar-admin-card">
     <div class="sac-avatar"><img id="adminAvatar" src="" alt=""></div>
     <div class="sac-name" id="adminName">—</div>
-    <div class="sac-role">⚙️ ADMINISTRATOR</div>
+    <div class="sac-role" id="sacRole">ADMINISTRATOR</div>
   </div>
 
   <div class="nav-section">DASHBOARD</div>
@@ -438,7 +438,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title">⚙️ <span>ADMIN</span> PANEL</div>
+      <div class="page-title" id="adminPageTitle">// <span>ADMIN</span> PANEL</div>
       <div class="page-sub" id="currentTabLabel">OVERVIEW — NEXUS LIFE CONTROL CENTER</div>
     </div>
     <div class="header-right">
@@ -453,28 +453,28 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- STAT CARDS -->
     <div class="stat-grid">
       <div class="stat-card" style="--card-color:var(--cyan)">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon" id="statIconUsers"></div>
         <div class="stat-label">TOTAL USERS</div>
         <div class="stat-value"><span id="totalUsers">—</span></div>
         <div class="stat-sub">ผู้เล่นทั้งหมด</div>
         <div class="stat-trend up" id="newUsersToday">+0 วันนี้</div>
       </div>
       <div class="stat-card" style="--card-color:var(--gold)">
-        <div class="stat-icon">💎</div>
+        <div class="stat-icon" id="statIconRevenue"></div>
         <div class="stat-label">PENDING TOPUP</div>
         <div class="stat-value"><span id="pendingTxCount">—</span></div>
         <div class="stat-sub">รอยืนยันสลิป</div>
         <div class="stat-trend down" id="pendingTxAmt">0 บาท</div>
       </div>
       <div class="stat-card" style="--card-color:var(--green)">
-        <div class="stat-icon">⚔️</div>
+        <div class="stat-icon" id="statIconDuels"></div>
         <div class="stat-label">QUESTS TODAY</div>
         <div class="stat-value"><span id="questsToday">—</span></div>
         <div class="stat-sub">Quest สำเร็จวันนี้</div>
         <div class="stat-trend up" id="questsTrend">loading...</div>
       </div>
       <div class="stat-card" style="--card-color:var(--red)">
-        <div class="stat-icon">🎫</div>
+        <div class="stat-icon" id="statIconTickets"></div>
         <div class="stat-label">OPEN TICKETS</div>
         <div class="stat-value"><span id="openTickets">—</span></div>
         <div class="stat-sub">Support รอตอบ</div>
@@ -485,17 +485,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- QUICK ACTIONS -->
     <div class="quick-actions">
       <div class="qa-card" onclick="switchTab('transactions', document.querySelector('[onclick*=transactions]'))">
-        <div class="qa-icon">💳</div>
+        <div class="qa-icon" id="qaIconTx"></div>
         <div class="qa-label">PENDING TX</div>
         <div class="qa-val" id="qasPendingTx">0</div>
       </div>
       <div class="qa-card" onclick="switchTab('support', document.querySelector('[onclick*=support]'))">
-        <div class="qa-icon">🎫</div>
+        <div class="qa-icon" id="qaIconSupport"></div>
         <div class="qa-label">OPEN TICKETS</div>
         <div class="qa-val" id="qasOpenTickets">0</div>
       </div>
       <div class="qa-card" onclick="switchTab('announcements', document.querySelector('[onclick*=announcements]'))">
-        <div class="qa-icon">📢</div>
+        <div class="qa-icon" id="qaIconBroadcast"></div>
         <div class="qa-label">SEND BROADCAST</div>
         <div class="qa-val">→</div>
       </div>
@@ -504,11 +504,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- CHARTS -->
     <div class="chart-grid">
       <div class="box">
-        <div class="box-header"><div class="box-title">📈 XP / REVENUE (7 วัน)</div><div class="box-tag">WEEKLY CHART</div></div>
+        <div class="box-header"><div class="box-title" id="chartTitle">XP / REVENUE (7 วัน)</div><div class="box-tag">WEEKLY CHART</div></div>
         <div class="box-body"><div class="chart-wrap"><canvas id="chartWeekly"></canvas></div></div>
       </div>
       <div class="box">
-        <div class="box-header"><div class="box-title">🎮 CLASS DISTRIBUTION</div><div class="box-tag">ALL USERS</div></div>
+        <div class="box-header"><div class="box-title" id="classDistTitle">CLASS DISTRIBUTION</div><div class="box-tag">ALL USERS</div></div>
         <div class="box-body"><div class="chart-wrap"><canvas id="chartClass"></canvas></div></div>
       </div>
     </div>
@@ -516,18 +516,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <!-- OVERVIEW BOTTOM GRID -->
     <div class="overview-grid">
       <div class="box">
-        <div class="box-header"><div class="box-title">📡 ACTIVITY LOG</div><div class="box-tag">REAL-TIME</div></div>
+        <div class="box-header"><div class="box-title" id="activityLogTitle">ACTIVITY LOG</div><div class="box-tag">REAL-TIME</div></div>
         <div class="box-body">
           <div class="activity-log" id="activityLog">
-            <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div>
+            <div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">กำลังโหลด...</div></div>
           </div>
         </div>
       </div>
       <div class="box">
-        <div class="box-header"><div class="box-title">🏆 TOP USERS</div><div class="box-tag">THIS MONTH</div></div>
+        <div class="box-header"><div class="box-title" id="topUsersTitle">TOP USERS</div><div class="box-tag">THIS MONTH</div></div>
         <div class="box-body">
           <div id="topUsersList">
-            <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div>
+            <div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">กำลังโหลด...</div></div>
           </div>
         </div>
       </div>
@@ -538,43 +538,43 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- ===================== TAB: TRANSACTIONS ===================== -->
   <div class="tab-panel" id="tab-transactions">
     <div class="filter-row">
-      <input class="search-input" id="txSearch" type="text" placeholder="🔍 ค้นหา username หรือจำนวนเงิน..." oninput="filterTransactions()">
+      <input class="search-input" id="txSearch" type="text" placeholder="ค้นหา username หรือจำนวนเงิน..." oninput="filterTransactions()">
       <select class="filter-select" id="txFilter" onchange="filterTransactions()">
-        <option value="pending">⏳ รอยืนยัน</option>
-        <option value="completed">✅ ยืนยันแล้ว</option>
-        <option value="rejected">❌ ปฏิเสธ</option>
+        <option value="pending">รอยืนยัน</option>
+        <option value="completed">ยืนยันแล้ว</option>
+        <option value="rejected">ปฏิเสธ</option>
         <option value="all">ทั้งหมด</option>
       </select>
     </div>
     <div id="txList">
-      <div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div>
+      <div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">กำลังโหลด...</div></div>
     </div>
   </div>
 
   <!-- ===================== TAB: USERS ===================== -->
   <div class="tab-panel" id="tab-users">
     <div class="filter-row">
-      <input class="search-input" id="userSearch" type="text" placeholder="🔍 ค้นหา username..." oninput="filterUsers()">
+      <input class="search-input" id="userSearch" type="text" placeholder="ค้นหา username..." oninput="filterUsers()">
       <select class="filter-select" id="userFilter" onchange="filterUsers()">
         <option value="all">ทุก Class</option>
-        <option value="warrior">⚔️ Warrior</option>
-        <option value="mage">🔮 Mage</option>
-        <option value="explorer">🗺️ Explorer</option>
-        <option value="merchant">💰 Merchant</option>
-        <option value="artist">🎨 Artist</option>
-        <option value="diplomat">🤝 Diplomat</option>
+        <option value="warrior">Warrior</option>
+        <option value="mage">Mage</option>
+        <option value="explorer">Explorer</option>
+        <option value="merchant">Merchant</option>
+        <option value="artist">Artist</option>
+        <option value="diplomat">Diplomat</option>
       </select>
       <select class="filter-select" id="userStatusFilter" onchange="filterUsers()">
         <option value="all">สถานะทั้งหมด</option>
-        <option value="active">✅ Active</option>
-        <option value="banned">🚫 Banned</option>
-        <option value="admin">⚙️ Admin</option>
+        <option value="active">Active</option>
+        <option value="banned">Banned</option>
+        <option value="admin">Admin</option>
       </select>
     </div>
 
     <div class="box">
       <div class="box-header">
-        <div class="box-title">👥 USER MANAGEMENT</div>
+        <div class="box-title" id="userMgmtTitle">USER MANAGEMENT</div>
         <div class="box-tag" id="userCountLabel">—</div>
       </div>
       <div class="box-body-np">
@@ -595,7 +595,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
               </tr>
             </thead>
             <tbody id="usersTbody">
-              <tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-txt">กำลังโหลด...</div></div></td></tr>
+              <tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon" style="opacity:0.4"></div><div class="empty-state-txt">กำลังโหลด...</div></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -606,16 +606,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- ===================== TAB: SUPPORT ===================== -->
   <div class="tab-panel" id="tab-support">
     <div class="filter-row">
-      <input class="search-input" id="ticketSearch" type="text" placeholder="🔍 ค้นหา ticket..." oninput="filterTickets()">
+      <input class="search-input" id="ticketSearch" type="text" placeholder="ค้นหา ticket..." oninput="filterTickets()">
       <select class="filter-select" id="ticketFilter" onchange="filterTickets()">
-        <option value="open">🔴 Open</option>
-        <option value="in_progress">🟡 In Progress</option>
-        <option value="closed">✅ Closed</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In Progress</option>
+        <option value="closed">Closed</option>
         <option value="all">ทั้งหมด</option>
       </select>
     </div>
     <div id="ticketList">
-      <div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-txt">ไม่มี Support Ticket</div></div>
+      <div class="empty-state"><div class="empty-state-icon" id="ticketEmptyIconHtml" style="opacity:0.4"></div><div class="empty-state-txt">ไม่มี Support Ticket</div></div>
     </div>
   </div>
 
@@ -624,12 +624,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div style="display:grid;grid-template-columns:1fr 380px;gap:20px" class="announce-wrap">
 
       <div class="box">
-        <div class="box-header"><div class="box-title">📢 BROADCAST NOTIFICATION</div><div class="box-tag">ส่งถึงผู้เล่น</div></div>
+        <div class="box-header"><div class="box-title" id="broadcastTitle">BROADCAST NOTIFICATION</div><div class="box-tag">ส่งถึงผู้เล่น</div></div>
         <div class="box-body">
           <div class="announce-form">
             <div>
               <div class="form-label">TITLE (หัวข้อ)</div>
-              <input class="form-input" id="announceTitle" type="text" placeholder="เช่น 🔧 ระบบ Maintenance" oninput="updatePreview()">
+              <input class="form-input" id="announceTitle" type="text" placeholder="เช่น ระบบ Maintenance" oninput="updatePreview()">
             </div>
             <div>
               <div class="form-label">MESSAGE (ข้อความ)</div>
@@ -638,23 +638,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <div>
               <div class="form-label">NOTIFICATION TYPE</div>
               <select class="filter-select" id="announceType" style="width:100%">
-                <option value="system">📡 System</option>
-                <option value="guild">⚔️ Guild</option>
-                <option value="crystal">💎 Crystal</option>
-                <option value="quest">⚔️ Quest</option>
+                <option value="system">System</option>
+                <option value="guild">Guild</option>
+                <option value="crystal">Crystal</option>
+                <option value="quest">Quest</option>
               </select>
             </div>
             <div>
               <div class="form-label">SEND TO</div>
               <div class="target-grid">
                 <label class="target-opt selected" id="targetAll">
-                  <input type="radio" name="target" value="all" checked> <span class="target-opt-label">🌍 ทุกคน</span>
+                  <input type="radio" name="target" value="all" checked> <span class="target-opt-label">ทุกคน</span>
                 </label>
                 <label class="target-opt" id="targetCity">
-                  <input type="radio" name="target" value="city"> <span class="target-opt-label">🏙️ เฉพาะ City</span>
+                  <input type="radio" name="target" value="city"> <span class="target-opt-label">เฉพาะ City</span>
                 </label>
                 <label class="target-opt" id="targetClass">
-                  <input type="radio" name="target" value="class"> <span class="target-opt-label">🎮 เฉพาะ Class</span>
+                  <input type="radio" name="target" value="class"> <span class="target-opt-label">เฉพาะ Class</span>
                 </label>
               </div>
               <div id="targetCityInput" style="display:none;margin-top:8px">
@@ -662,16 +662,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
               </div>
               <div id="targetClassInput" style="display:none;margin-top:8px">
                 <select class="filter-select" id="targetClassVal" style="width:100%">
-                  <option value="warrior">⚔️ Warrior</option>
-                  <option value="mage">🔮 Mage</option>
-                  <option value="explorer">🗺️ Explorer</option>
-                  <option value="merchant">💰 Merchant</option>
-                  <option value="artist">🎨 Artist</option>
-                  <option value="diplomat">🤝 Diplomat</option>
+                  <option value="warrior">Warrior</option>
+                  <option value="mage">Mage</option>
+                  <option value="explorer">Explorer</option>
+                  <option value="merchant">Merchant</option>
+                  <option value="artist">Artist</option>
+                  <option value="diplomat">Diplomat</option>
                 </select>
               </div>
             </div>
-            <button class="submit-btn" onclick="sendAnnouncement()">📢 SEND BROADCAST</button>
+            <button class="submit-btn" id="sendBroadcastBtn" onclick="sendAnnouncement()">SEND BROADCAST</button>
           </div>
         </div>
       </div>
@@ -679,7 +679,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div style="display:flex;flex-direction:column;gap:16px">
         <!-- PREVIEW -->
         <div class="box">
-          <div class="box-header"><div class="box-title">👁️ PREVIEW</div></div>
+          <div class="box-header"><div class="box-title" id="previewTitle">PREVIEW</div></div>
           <div class="box-body">
             <div class="announce-preview">
               <div class="announce-preview-title" id="previewTitle">— ยังไม่มีหัวข้อ —</div>
@@ -689,10 +689,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
         <!-- HISTORY -->
         <div class="box" style="flex:1">
-          <div class="box-header"><div class="box-title">📜 HISTORY</div><div class="box-tag">ล่าสุด 10 รายการ</div></div>
+          <div class="box-header"><div class="box-title" id="historyTitle">HISTORY</div><div class="box-tag">ล่าสุด 10 รายการ</div></div>
           <div class="box-body">
             <div id="announceHistory">
-              <div class="empty-state"><div class="empty-state-icon">📢</div><div class="empty-state-txt">ยังไม่มีประกาศ</div></div>
+              <div class="empty-state"><div class="empty-state-icon" id="broadcastEmptyIconHtml" style="opacity:0.4"></div><div class="empty-state-txt">ยังไม่มีประกาศ</div></div>
             </div>
           </div>
         </div>
@@ -705,7 +705,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
       <div>
         <div class="music-player box">
-          <div class="box-header"><div class="box-title">🎵 MUSIC PLAYER</div><div class="box-tag">Admin Background Music</div></div>
+          <div class="box-header"><div class="box-title" id="musicTitle">MUSIC PLAYER</div><div class="box-tag">Admin Background Music</div></div>
           <div class="box-body">
             <!-- VISUALIZER -->
             <div class="music-visualizer" id="visualizer">
@@ -731,13 +731,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
             <!-- CONTROLS -->
             <div class="music-controls">
-              <button class="music-btn" onclick="prevTrack()" title="Previous">⏮</button>
-              <button class="music-btn play-btn" id="playBtn" onclick="togglePlay()">▶</button>
-              <button class="music-btn" onclick="nextTrack()" title="Next">⏭</button>
-              <button class="music-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">🔀</button>
-              <button class="music-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repeat">🔁</button>
+              <button class="music-btn" onclick="prevTrack()" title="Previous">|&lt;</button>
+              <button class="music-btn play-btn" id="playBtn" onclick="togglePlay()">&#9654;</button>
+              <button class="music-btn" onclick="nextTrack()" title="Next">&gt;|</button>
+              <button class="music-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
+              <button class="music-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repeat">↻</button>
               <div class="music-vol">
-                <span style="font-size:12px">🔊</span>
+                <span style="font-size:12px">vol</span>
                 <input class="music-vol-slider" type="range" id="volSlider" min="0" max="1" step="0.05" value="0.7" oninput="setVolume(this.value)">
               </div>
             </div>
@@ -757,11 +757,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="box">
         <div class="box-header"><div class="box-title">ℹ️ INFO</div></div>
         <div class="box-body" style="font-size:12px;color:var(--text-dim);line-height:1.9">
-          <p style="margin-bottom:12px;color:var(--text)">🎵 Admin Music Player</p>
+          <p style="margin-bottom:12px;color:var(--text)">Admin Music Player</p>
           <p>รองรับไฟล์: <strong style="color:var(--admin-accent)">MP3, WAV, OGG, FLAC, M4A</strong></p>
           <p style="margin-top:8px">เพลงเล่นเฉพาะใน session นี้ ไม่ได้ stream ไปที่ user คนอื่น</p>
-          <p style="margin-top:8px">🔀 Shuffle — สลับเพลงแบบสุ่ม</p>
-          <p>🔁 Repeat — เล่นซ้ำ playlist</p>
+          <p style="margin-top:8px">Shuffle — สลับเพลงแบบสุ่ม</p>
+          <p>Repeat — เล่นซ้ำ playlist</p>
           <p style="margin-top:12px;color:var(--admin-accent)">Tip: เพิ่มหลายไฟล์พร้อมกันได้โดย Ctrl+Click</p>
         </div>
       </div>
@@ -773,8 +773,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <!-- MODAL: SLIP IMAGE -->
 <div class="modal-overlay" id="slipModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('slipModal')">✕</button>
-    <div class="modal-title">🧾 SLIP — ตรวจสลิปเติมเงิน</div>
+    <button class="modal-close" id="closeSlipBtn" onclick="closeModal('slipModal')"></button>
+    <div class="modal-title" id="slipModalTitle">SLIP — ตรวจสลิปเติมเงิน</div>
     <img id="slipModalImg" src="" alt="slip">
   </div>
 </div>
@@ -784,6 +784,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { getIcon } from './icons.js'
 
 const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
@@ -801,7 +802,7 @@ let idleTimer
 function resetIdle() {
   clearTimeout(idleTimer)
   idleTimer = setTimeout(async () => {
-    toast('⏱ Session หมดอายุ — กำลัง Sign Out', 'warn')
+    toast('Session หมดอายุ — กำลัง Sign Out', 'warn')
     setTimeout(async () => { await sb.auth.signOut(); window.location.href = './login.html' }, 2000)
   }, 30 * 60 * 1000)
 }
@@ -830,6 +831,42 @@ async function init() {
   document.getElementById('adminAvatar').src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=80`
 
   document.getElementById('loadingScreen').classList.add('hidden')
+
+  // inject static icons
+  const adminPageTitle = document.getElementById('adminPageTitle')
+  if (adminPageTitle) adminPageTitle.innerHTML = getIcon('settings',16) + ' <span>ADMIN</span> PANEL'
+  const topbarLogo = document.getElementById('topbarLogo')
+  if (topbarLogo) topbarLogo.innerHTML = getIcon('settings',14) + ' ADMIN'
+  const sidebarBadgeTxt = document.getElementById('sidebarBadgeTxt')
+  if (sidebarBadgeTxt) sidebarBadgeTxt.innerHTML = getIcon('settings',12) + ' ADMIN PANEL'
+  const sacRole = document.getElementById('sacRole')
+  if (sacRole) sacRole.innerHTML = getIcon('settings',12) + ' ADMINISTRATOR'
+  const loadingDenied = document.getElementById('loadingDenied')
+  if (loadingDenied) loadingDenied.innerHTML = getIcon('lock',16) + ' ACCESS DENIED — NOT ADMIN'
+  // stat icons
+  const si = { statIconUsers:'users', statIconRevenue:'diamond', statIconDuels:'sword', statIconTickets:'tag' }
+  Object.entries(si).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.innerHTML=getIcon(key,22) })
+  // quick action icons
+  const qa = { qaIconTx:'wallet', qaIconSupport:'tag', qaIconBroadcast:'announce' }
+  Object.entries(qa).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.innerHTML=getIcon(key,20) })
+  // box titles
+  const bt = { chartTitle:'stats', classDistTitle:'bar', activityLogTitle:'signal', topUsersTitle:'trophy',
+               userMgmtTitle:'users', ticketsTitle:'tag', broadcastTitle:'announce', previewTitle:'person',
+               historyTitle:'scroll', musicTitle:'xp', sendBroadcastBtn:'announce' }
+  Object.entries(bt).forEach(([id,key]) => {
+    const el=document.getElementById(id)
+    if(el) el.innerHTML = getIcon(key,12) + ' ' + el.textContent
+  })
+  // modal
+  const closeSlipBtn = document.getElementById('closeSlipBtn')
+  if (closeSlipBtn) closeSlipBtn.innerHTML = getIcon('close',16)
+  const slipModalTitle = document.getElementById('slipModalTitle')
+  if (slipModalTitle) slipModalTitle.innerHTML = getIcon('doc',13) + ' SLIP — ตรวจสลิปเติมเงิน'
+  // static HTML empty icons
+  const ticketEmptyIconHtml = document.getElementById('ticketEmptyIconHtml')
+  if (ticketEmptyIconHtml) ticketEmptyIconHtml.innerHTML = getIcon('tag',24)
+  const broadcastEmptyIconHtml = document.getElementById('broadcastEmptyIconHtml')
+  if (broadcastEmptyIconHtml) broadcastEmptyIconHtml.innerHTML = getIcon('announce',24)
 
   await Promise.all([loadOverview(), loadTransactions(), loadUsers(), loadTickets(), loadAnnounceHistory()])
   startCharts()
@@ -890,18 +927,18 @@ async function loadOverview() {
   const logEl = document.getElementById('activityLog')
   if (feed && feed.length > 0) {
     logEl.innerHTML = feed.map(f => {
-      const icons = { quest_complete:'⚔️', level_up:'⬆️', badge_unlock:'🏅', checkin:'📍', guild_join:'⚔️', pvp_win:'🥊', title_unlock:'📜' }
+      const icons = { quest_complete:getIcon('sword',14), level_up:getIcon('levelup',14), badge_unlock:getIcon('medal',14), checkin:getIcon('checkin',14), guild_join:getIcon('guild',14), pvp_win:getIcon('sword',14), title_unlock:getIcon('crown',14) }
       const typeLabels = { quest_complete:'Quest สำเร็จ', level_up:'Level Up', badge_unlock:'ปลดล็อค Badge', checkin:'Check-in', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP', title_unlock:'ได้รับ Title' }
       const uname = f.users?.display_name || f.users?.username || '?'
       return `<div class="log-item">
-        <div class="log-icon">${icons[f.type]||'🔔'}</div>
+        <div class="log-icon">${icons[f.type]||getIcon('bell',14)}</div>
         <div class="log-txt"><strong>${escHtml(uname)}</strong> ${typeLabels[f.type]||f.type}
           <div class="log-time">${relTime(f.created_at)}</div>
         </div>
       </div>`
     }).join('')
   } else {
-    logEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📡</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>'
+    logEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('signal',24)+'</div><div class="empty-state-txt">ยังไม่มี Activity</div></div>'
   }
 
   // Top users
@@ -923,7 +960,7 @@ async function loadOverview() {
         </div>
       </div>`).join('')
   } else {
-    topEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-txt">ยังไม่มีข้อมูล</div></div>'
+    topEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('trophy',24)+'</div><div class="empty-state-txt">ยังไม่มีข้อมูล</div></div>'
   }
 }
 
@@ -999,7 +1036,7 @@ window.filterTransactions = function() {
 function renderTransactions(list) {
   const el = document.getElementById('txList')
   if (!list.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💳</div><div class="empty-state-txt">ไม่มีรายการ</div></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('wallet',24)+'</div><div class="empty-state-txt">ไม่มีรายการ</div></div>'
     return
   }
   el.innerHTML = list.map(t => {
@@ -1019,24 +1056,24 @@ function renderTransactions(list) {
         </div>
         <div class="tx-amount">
           <div class="tx-thb">${(t.amount_thb || 0).toLocaleString()} ฿</div>
-          <div class="tx-crystal">≈ ${crystalPreview} 💎 Crystal</div>
+          <div class="tx-crystal">≈ ${crystalPreview} Crystal</div>
           <div style="margin-top:4px"><span class="status ${statusCls[t.status] || 'pending'}">${statusTxt[t.status] || t.status}</span></div>
         </div>
       </div>
       ${t.slip_url ? `<div class="tx-slip" onclick="openSlip('${escHtml(t.slip_url)}')">
         <img src="${escHtml(t.slip_url)}" alt="slip" onerror="this.style.display='none'">
-        <div class="tx-slip-overlay"><span class="tx-slip-overlay-txt">🔍 ขยายสลิป</span></div>
+        <div class="tx-slip-overlay"><span class="tx-slip-overlay-txt">ขยายสลิป</span></div>
       </div>` : '<div class="tx-slip"><span style="font-size:11px;color:var(--text-dim)">ไม่มีสลิป</span></div>'}
       <div class="tx-meta">
-        <span>💳 ${t.payment_method || 'promptpay'}</span>
-        <span>🕐 ${new Date(t.created_at).toLocaleString('th-TH')}</span>
-        ${t.note ? `<span>📝 ${escHtml(t.note)}</span>` : ''}
+        <span>${t.payment_method || 'promptpay'}</span>
+        <span>${new Date(t.created_at).toLocaleString('th-TH')}</span>
+        ${t.note ? `<span>${escHtml(t.note)}</span>` : ''}
       </div>
       ${t.status === 'pending' ? `
       <textarea class="tx-note" id="txNote-${t.id}" placeholder="หมายเหตุ (ไม่บังคับ)..." rows="2"></textarea>
       <div class="tx-actions">
-        <button class="tx-approve-btn" onclick="approveTransaction(${t.id})">✅ APPROVE — เติม ${crystalPreview} Crystal</button>
-        <button class="tx-reject-btn" onclick="rejectTransaction(${t.id})">❌ REJECT</button>
+        <button class="tx-approve-btn" onclick="approveTransaction(${t.id})">APPROVE — เติม ${crystalPreview} Crystal</button>
+        <button class="tx-reject-btn" onclick="rejectTransaction(${t.id})">REJECT</button>
       </div>` : ''}
     </div>`
   }).join('')
@@ -1062,11 +1099,11 @@ window.approveTransaction = async (id) => {
         const cur = data?.[0]?.crystal || 0
         await sb.from('users').update({ crystal: cur + crystal }).eq('id', tx.user_id)
       })
-      await sb.from('notifications').insert({ user_id: tx.user_id, type: 'crystal', title: '💎 เติม Crystal สำเร็จ!', body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว` })
+      await sb.from('notifications').insert({ user_id: tx.user_id, type: 'crystal', title: 'เติม Crystal สำเร็จ!', body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว` })
     }
   }
   if (note) await sb.from('transactions').update({ note }).eq('id', id)
-  toast('✅ Approve สำเร็จ', 'success')
+  toast('Approve สำเร็จ', 'success')
   await loadTransactions()
   await loadOverview()
 }
@@ -1075,8 +1112,8 @@ window.rejectTransaction = async (id) => {
   if (!confirm('ปฏิเสธ transaction นี้?')) return
   await sb.from('transactions').update({ status: 'rejected', admin_verified_by: ME.id, verified_at: new Date().toISOString(), note }).eq('id', id)
   const { data: tx } = await sb.from('transactions').select('user_id').eq('id', id).single()
-  if (tx) await sb.from('notifications').insert({ user_id: tx.user_id, type: 'system', title: '❌ เติมเงินไม่สำเร็จ', body: 'ไม่สามารถยืนยันสลิปได้ กรุณาติดต่อ Admin' })
-  toast('❌ Reject แล้ว', 'info')
+  if (tx) await sb.from('notifications').insert({ user_id: tx.user_id, type: 'system', title: 'เติมเงินไม่สำเร็จ', body: 'ไม่สามารถยืนยันสลิปได้ กรุณาติดต่อ Admin' })
+  toast('Reject แล้ว', 'info')
   await loadTransactions()
   await loadOverview()
 }
@@ -1105,7 +1142,7 @@ window.filterUsers = function() {
 }
 function renderUsers(list) {
   const clsColors = { warrior: '#ff4444', mage: '#aa44ff', explorer: '#44ff88', merchant: '#ffaa00', artist: '#ff66aa', diplomat: '#00ccff' }
-  const clsEmoji = { warrior: '⚔️', mage: '🔮', explorer: '🗺️', merchant: '💰', artist: '🎨', diplomat: '🤝' }
+  const clsEmoji = { warrior: getIcon('sword',12), mage: getIcon('star',12), explorer: getIcon('compass',12), merchant: getIcon('gold',12), artist: getIcon('diamond',12), diplomat: getIcon('users',12) }
   document.getElementById('usersTbody').innerHTML = list.map((u, i) => `
     <tr>
       <td class="mono">${i + 1}</td>
@@ -1123,8 +1160,8 @@ function renderUsers(list) {
       <td><span class="class-tag" style="color:${clsColors[u.class]||'var(--text-dim)'};border-color:${clsColors[u.class]||'var(--border)'}33">${clsEmoji[u.class]||'?'} ${(u.class||'?').toUpperCase()}</span></td>
       <td class="mono">${u.level || 1}</td>
       <td class="mono">${(u.xp_total || 0).toLocaleString()}</td>
-      <td class="mono" style="color:var(--gold)">⭐ ${(u.gold || 0).toLocaleString()}</td>
-      <td class="mono" style="color:var(--cyan)">💎 ${(u.crystal || 0).toLocaleString()}</td>
+      <td class="mono" style="color:var(--gold)">${(u.gold || 0).toLocaleString()}</td>
+      <td class="mono" style="color:var(--cyan)">${(u.crystal || 0).toLocaleString()}</td>
       <td>
         ${u.is_admin ? '<span class="status admin-role">ADMIN</span>' : ''}
         ${u.is_banned ? '<span class="status banned">BANNED</span>' : (!u.is_admin ? '<span class="status active">ACTIVE</span>' : '')}
@@ -1134,21 +1171,21 @@ function renderUsers(list) {
         <div class="act-btn-row">
           ${u.id !== ME.id ? `
           <button class="act-btn ${u.is_admin ? 'warn' : 'primary'}" onclick="toggleAdmin('${u.id}', ${u.is_admin})">
-            ${u.is_admin ? '⚙️ Revoke Admin' : '⚙️ Set Admin'}
+            ${u.is_admin ? 'Revoke Admin' : 'Set Admin'}
           </button>
           <button class="act-btn ${u.is_banned ? 'success' : 'danger'}" onclick="toggleBan('${u.id}', ${u.is_banned}, '${escHtml(u.username)}')">
-            ${u.is_banned ? '✅ Unban' : '🚫 Ban'}
+            ${u.is_banned ? 'Unban' : 'Ban'}
           </button>` : '<span style="font-size:10px;color:var(--text-dim)">— YOU —</span>'}
         </div>
       </td>
-    </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-txt">ไม่พบ User</div></div></td></tr>'
+    </tr>`).join('') || '<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('users',24)+'</div><div class="empty-state-txt">ไม่พบ User</div></div></td></tr>'
 }
 window.toggleAdmin = async (userId, isAdmin) => {
   const action = isAdmin ? 'ถอด Admin' : 'แต่งตั้ง Admin'
   if (!confirm(`${action} user นี้?`)) return
   const { error } = await sb.from('users').update({ is_admin: !isAdmin }).eq('id', userId)
   if (error) { toast(error.message, 'error'); return }
-  toast(`✅ ${action} สำเร็จ`, 'success')
+  toast(`${action} สำเร็จ`, 'success')
   await loadUsers()
 }
 window.toggleBan = async (userId, isBanned, uname) => {
@@ -1156,9 +1193,9 @@ window.toggleBan = async (userId, isBanned, uname) => {
   if (!confirm(`${action} @${uname}?`)) return
   await sb.from('users').update({ is_banned: !isBanned }).eq('id', userId)
   if (!isBanned) {
-    await sb.from('notifications').insert({ user_id: userId, type: 'system', title: '🚫 บัญชีถูกระงับ', body: 'บัญชีของคุณถูกระงับโดย Admin กรุณาติดต่อ Support' })
+    await sb.from('notifications').insert({ user_id: userId, type: 'system', title: 'บัญชีถูกระงับ', body: 'บัญชีของคุณถูกระงับโดย Admin กรุณาติดต่อ Support' })
   }
-  toast(`${isBanned ? '✅ Unban' : '🚫 Ban'} @${uname} แล้ว`, isBanned ? 'success' : 'warn')
+  toast(`${isBanned ? 'Unban' : 'Ban'} @${uname} แล้ว`, isBanned ? 'success' : 'warn')
   await loadUsers()
 }
 
@@ -1183,11 +1220,11 @@ window.filterTickets = function() {
 function renderTickets(list) {
   const el = document.getElementById('ticketList')
   if (!list.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-txt">ไม่มี Ticket</div></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('tag',24)+'</div><div class="empty-state-txt">ไม่มี Ticket</div></div>'
     return
   }
   const stCls = { open: 'rejected', in_progress: 'pending', closed: 'completed' }
-  const stTxt = { open: '🔴 Open', in_progress: '🟡 In Progress', closed: '✅ Closed' }
+  const stTxt = { open: 'Open', in_progress: 'In Progress', closed: 'Closed' }
   el.innerHTML = list.map(t => `
     <div class="ticket-card">
       <div class="ticket-top">
@@ -1198,13 +1235,13 @@ function renderTickets(list) {
         <span class="status ${stCls[t.status] || 'pending'}">${stTxt[t.status] || t.status}</span>
       </div>
       <div class="ticket-body">${escHtml(t.body || '')}</div>
-      ${t.admin_reply ? `<div style="background:rgba(255,149,0,0.05);border:1px solid rgba(255,149,0,0.2);padding:12px;margin-bottom:12px;font-size:12px;color:var(--text)"><strong style="color:var(--admin-accent)">⚙️ Admin ตอบ:</strong><br>${escHtml(t.admin_reply)}</div>` : ''}
+      ${t.admin_reply ? `<div style="background:rgba(255,149,0,0.05);border:1px solid rgba(255,149,0,0.2);padding:12px;margin-bottom:12px;font-size:12px;color:var(--text)"><strong style="color:var(--admin-accent)">Admin ตอบ:</strong><br>${escHtml(t.admin_reply)}</div>` : ''}
       ${t.status !== 'closed' ? `
       <textarea class="ticket-reply-box" id="ticketReply-${t.id}" placeholder="ตอบกลับ ticket นี้..."></textarea>
       <div class="act-btn-row">
-        <button class="act-btn primary" onclick="replyTicket(${t.id}, 'in_progress')">💬 ตอบกลับ</button>
-        <button class="act-btn success" onclick="replyTicket(${t.id}, 'closed')">✅ ปิด Ticket</button>
-        ${t.status === 'open' ? `<button class="act-btn warn" onclick="updateTicketStatus(${t.id},'in_progress')">🟡 รับเรื่อง</button>` : ''}
+        <button class="act-btn primary" onclick="replyTicket(${t.id}, 'in_progress')">ตอบกลับ</button>
+        <button class="act-btn success" onclick="replyTicket(${t.id}, 'closed')">ปิด Ticket</button>
+        ${t.status === 'open' ? `<button class="act-btn warn" onclick="updateTicketStatus(${t.id},'in_progress')">รับเรื่อง</button>` : ''}
       </div>` : ''}
     </div>`).join('')
 }
@@ -1215,8 +1252,8 @@ window.replyTicket = async (id, newStatus) => {
   if (reply) update.admin_reply = reply
   await sb.from('support_tickets').update(update).eq('id', id)
   const { data: tk } = await sb.from('support_tickets').select('user_id, subject').eq('id', id).single()
-  if (tk && reply) await sb.from('notifications').insert({ user_id: tk.user_id, type: 'system', title: '💬 Admin ตอบ Ticket ของคุณ', body: reply.slice(0, 100) })
-  toast(newStatus === 'closed' ? '✅ ปิด Ticket แล้ว' : '💬 ตอบกลับแล้ว', 'success')
+  if (tk && reply) await sb.from('notifications').insert({ user_id: tk.user_id, type: 'system', title: 'Admin ตอบ Ticket ของคุณ', body: reply.slice(0, 100) })
+  toast(newStatus === 'closed' ? 'ปิด Ticket แล้ว' : 'ตอบกลับแล้ว', 'success')
   await loadTickets()
   await loadOverview()
 }
@@ -1232,7 +1269,7 @@ async function loadAnnounceHistory() {
   const { data } = await sb.from('admin_announcements').select('*').order('created_at', { ascending: false }).limit(10).catch(() => ({ data: [] }))
   const el = document.getElementById('announceHistory')
   if (!data || !data.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📢</div><div class="empty-state-txt">ยังไม่มีประกาศ</div></div>'
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon" style="opacity:0.4">'+getIcon('announce',24)+'</div><div class="empty-state-txt">ยังไม่มีประกาศ</div></div>'
     return
   }
   el.innerHTML = data.map(a => `
@@ -1280,7 +1317,7 @@ window.sendAnnouncement = async function() {
   // Save to announce history
   await sb.from('admin_announcements').insert({ title, body, type, target: targetRadio, admin_id: ME.id, sent_count: userIds.length }).catch(() => {})
 
-  toast(`📢 ส่งถึง ${userIds.length} คน สำเร็จ!`, 'success')
+  toast(`ส่งถึง ${userIds.length} คน สำเร็จ!`, 'success')
   document.getElementById('announceTitle').value = ''
   document.getElementById('announceBody').value = ''
   updatePreview()
@@ -1361,33 +1398,33 @@ window.togglePlay = function() {
   if (isPlaying) { audio.pause(); stopVisualizer() }
   else { audio.play(); startVisualizer() }
   isPlaying = !isPlaying
-  document.getElementById('playBtn').textContent = isPlaying ? '⏸' : '▶'
+  document.getElementById('playBtn').textContent = isPlaying ? '||' : '&#9654;'
 }
 
 window.prevTrack = function() {
   if (!playlist.length) return
   currentIdx = (currentIdx - 1 + playlist.length) % playlist.length
   loadTrack(currentIdx); audio.play(); isPlaying = true; startVisualizer()
-  document.getElementById('playBtn').textContent = '⏸'
+  document.getElementById('playBtn').innerHTML = '||'
 }
 
 window.nextTrack = function() {
   if (!playlist.length) return
   currentIdx = isShuffle ? Math.floor(Math.random() * playlist.length) : (currentIdx + 1) % playlist.length
   loadTrack(currentIdx); audio.play(); isPlaying = true; startVisualizer()
-  document.getElementById('playBtn').textContent = '⏸'
+  document.getElementById('playBtn').innerHTML = '||'
 }
 
 window.toggleShuffle = function() {
   isShuffle = !isShuffle
   document.getElementById('shuffleBtn').style.color = isShuffle ? 'var(--admin-accent)' : ''
-  toast(isShuffle ? '🔀 Shuffle ON' : '🔀 Shuffle OFF', 'info')
+  toast(isShuffle ? 'Shuffle ON' : 'Shuffle OFF', 'info')
 }
 
 window.toggleRepeat = function() {
   isRepeat = !isRepeat
   document.getElementById('repeatBtn').style.color = isRepeat ? 'var(--admin-accent)' : ''
-  toast(isRepeat ? '🔁 Repeat ON' : '🔁 Repeat OFF', 'info')
+  toast(isRepeat ? 'Repeat ON' : 'Repeat OFF', 'info')
 }
 
 window.setVolume = function(v) { audio.volume = parseFloat(v) }
@@ -1419,7 +1456,7 @@ audio.addEventListener('ended', () => {
   if (isRepeat) { audio.play(); return }
   if (isShuffle) { currentIdx = Math.floor(Math.random() * playlist.length) }
   else { currentIdx = (currentIdx + 1) % playlist.length }
-  if (currentIdx === 0 && !isRepeat) { isPlaying = false; stopVisualizer(); document.getElementById('playBtn').textContent = '▶'; return }
+  if (currentIdx === 0 && !isRepeat) { isPlaying = false; stopVisualizer(); document.getElementById('playBtn').innerHTML = '&#9654;'; return }
   loadTrack(currentIdx); audio.play()
 })
 
