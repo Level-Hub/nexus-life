@@ -207,11 +207,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .stat-soc .stat-item-glow{background:#00ccff}
 
 /* ===================== TABS ===================== */
-.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0;overflow-x:auto;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
 .tab-btn{
-  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  padding:12px 20px;background:transparent;border:none;border-bottom:2px solid transparent;
-  color:var(--text-dim);cursor:pointer;transition:all 0.2s;white-space:nowrap;
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
+  padding:12px 14px;background:transparent;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);cursor:pointer;transition:all 0.2s;white-space:nowrap;flex:1;min-width:0;
 }
 .tab-btn:hover{color:var(--cyan)}
 .tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
@@ -590,10 +591,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- TABS: BADGES / TITLES / QUESTS / ACTIVITY -->
       <div class="box">
         <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('badges',this)" id="tabBadges">BADGES</button>
-          <button class="tab-btn" onclick="switchTab('titles',this)" id="tabTitles">TITLES</button>
+          <button class="tab-btn active" onclick="switchTab('badges',this)" id="tabBtnBadges">BADGES</button>
+          <button class="tab-btn" onclick="switchTab('titles',this)" id="tabBtnTitles">TITLES</button>
           <button class="tab-btn" onclick="switchTab('quests',this)" id="tabQuestsProf">QUESTS</button>
-          <button class="tab-btn" onclick="switchTab('activity',this)" id="tabActivity">ACTIVITY</button>
+          <button class="tab-btn" onclick="switchTab('activity',this)" id="tabBtnActivity">ACTIVITY</button>
         </div>
 
         <!-- BADGES -->
