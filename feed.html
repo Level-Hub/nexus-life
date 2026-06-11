@@ -79,13 +79,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .feed-proof{margin-top:10px;border-radius:2px;overflow:hidden;max-height:160px}
 .feed-proof img{width:100%;height:160px;object-fit:cover;display:block;filter:brightness(0.85)}
 .feed-actions{display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Sarabun',sans-serif;padding:0}
+.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:color 0.2s;font-family:'Sarabun',sans-serif;padding:0}
 .feed-action-btn:hover{color:var(--cyan)}
 .feed-action-btn.liked{color:var(--red)}
 .feed-action-btn svg{flex-shrink:0}
-.cheer-btn{padding:5px 12px;border:1px solid rgba(255,215,0,0.25);border-radius:2px;background:rgba(255,215,0,0.05);color:var(--gold);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;transition:all 0.2s}
-.cheer-btn:hover{background:rgba(255,215,0,0.15);border-color:var(--gold)}
-.cheer-btn.cheered{background:rgba(255,215,0,0.12);border-color:var(--gold);color:var(--gold)}
 .feed-tag{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;padding:2px 7px;border-radius:0;margin-right:6px;margin-top:4px}
 .feed-tag.quest{background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);color:var(--cyan)}
 .feed-tag.levelup{background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.3);color:var(--gold)}
@@ -158,21 +155,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .comment-send{background:var(--cyan);border:none;color:var(--bg);padding:8px 14px;cursor:pointer;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;transition:opacity 0.2s}
 .comment-send:hover{opacity:0.85}
 .comment-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.comment-item{display:flex;gap:8px;font-size:12px;align-items:flex-start}
-.comment-avatar{width:26px;height:26px;border-radius:50%;overflow:hidden;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
-.comment-avatar img{width:100%;height:100%;object-fit:cover}
-.comment-body{flex:1}
-.comment-user{font-weight:700;color:var(--cyan);white-space:nowrap;font-size:11px}
+.comment-item{display:flex;gap:8px;font-size:12px}
+.comment-user{font-weight:700;color:var(--cyan);white-space:nowrap}
 .comment-text{color:var(--text-dim)}
-.comment-reply-btn{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);background:none;border:none;cursor:pointer;padding:2px 0;letter-spacing:1px}
-.comment-reply-btn:hover{color:var(--cyan)}
-.reply-item{display:flex;gap:8px;font-size:11px;align-items:flex-start;margin-left:34px;padding-left:10px;border-left:1px solid var(--border)}
-.reply-avatar{width:20px;height:20px;border-radius:50%;overflow:hidden;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
-.reply-avatar img{width:100%;height:100%;object-fit:cover}
-.reply-input-wrap{display:flex;gap:6px;margin-left:34px;margin-top:4px}
-.reply-input{flex:1;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:11px;padding:6px 10px;outline:none}
-.reply-input:focus{border-color:var(--cyan)}
-.reply-send{background:rgba(0,245,255,0.15);border:1px solid var(--cyan);color:var(--cyan);padding:6px 10px;cursor:pointer;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px}
 
 /* ===== REALTIME BADGE ===== */
 .live-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1.5px;color:var(--green);padding:3px 8px;border:1px solid rgba(68,255,136,0.3);background:rgba(68,255,136,0.05)}
@@ -319,13 +304,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon } from './icons.js'
-// titles.js inlined to avoid import error
+import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ===== AUTH CHECK =====
 const { user } = await initSidebar('feed')
 if (!user) { window.location.href = './login.html'; throw new Error('no session') }
 
-// injectTitleStyles() removed
+injectTitleStyles()
 
 // inject static icon-wrap elements
 document.querySelectorAll('.icon-wrap[data-icon]').forEach(el => {
@@ -339,7 +324,6 @@ const userId = user.id
 let myCity = 'กรุงเทพมหานคร'
 let myClass = 'warrior'
 let myUsername = ''
-let myProfile = null''
 let currentFilter = 'city'
 let feedOffset = 0
 const PAGE_SIZE = 15
@@ -356,13 +340,6 @@ function getAvatarUrl(avatarSeed, size = 80) {
   return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
 }
 
-// ===== INLINE TITLE BADGE =====
-function renderTitleBadge(t) {
-  const colors = { common:'#aaa', uncommon:'#44ff88', rare:'#00f5ff', epic:'#b044ff', legendary:'#ffd700' }
-  const c = colors[t.rarity] || '#aaa'
-  return `<span style="border:1px solid ${c};color:${c};font-size:9px;padding:1px 7px;font-family:'Orbitron',monospace;letter-spacing:1px">${t.icon ? t.icon + ' ' : ''}${t.name}</span>`
-}
-
 // ===== LOAD USER PROFILE =====
 async function loadProfile() {
   const { data: u } = await supabase.from('users').select('*').eq('id', userId).single()
@@ -371,7 +348,6 @@ async function loadProfile() {
   myCity = u.city || 'กรุงเทพมหานคร'
   myClass = u.class || 'warrior'
   myUsername = u.username || u.display_name || 'คุณ'
-  myProfile = u
 
   const clsClass = 'cls-' + (u.class || 'warrior')
 
@@ -583,18 +559,18 @@ async function loadFeed(reset = true) {
   ;(commentsRes.data || []).forEach(r => { commentCounts[r.feed_id] = (commentCounts[r.feed_id] || 0) + 1 })
   ;(cheersRes.data || []).forEach(r => { cheerCounts[r.feed_id] = (cheerCounts[r.feed_id] || 0) + 1 })
 
-  // batch-fetch avatar_url จาก users table (social_feed_view อาจไม่มี column นี้)
-  const userIds = [...new Set(feed.map(f => f.user_id).filter(Boolean))]
-  const avatarMap = {}
-  if (userIds.length > 0) {
-    const { data: avatarRows } = await supabase.from('users').select('id,avatar_url').in('id', userIds)
-    ;(avatarRows || []).forEach(u => { if (u.avatar_url) avatarMap[u.id] = u.avatar_url })
+  // batch-fetch avatar_url (social_feed_view อาจไม่มี column นี้)
+  const uids = [...new Set(feed.map(f => f.user_id).filter(Boolean))]
+  const avMap = {}
+  if (uids.length > 0) {
+    const { data: avRows } = await supabase.from('users').select('id,avatar_url').in('id', uids)
+    ;(avRows || []).forEach(u => { if (u.avatar_url) avMap[u.id] = u.avatar_url })
   }
 
   // เพิ่ม count ลงใน item ก่อน render
   const enriched = feed.map(item => ({
     ...item,
-    avatar_url:    avatarMap[item.user_id] || item.avatar_url || null,
+    avatar_url:    avMap[item.user_id] || item.avatar_url || null,
     like_count:    likeCounts[item.id] || 0,
     comment_count: commentCounts[item.id] || 0,
     cheer_count:   cheerCounts[item.id] || 0,
@@ -605,7 +581,7 @@ async function loadFeed(reset = true) {
   document.getElementById('loadMoreBtn').style.display = 'flex'
   if (feed.length < PAGE_SIZE) document.getElementById('loadMoreBtn').style.display = 'none'
 
-  const html = enriched.map(item => { try { return renderFeedCard(item) } catch(e) { console.error('[renderFeedCard]', e, item); return '' } }).join('')
+  const html = enriched.map(item => renderFeedCard(item)).join('')
 
   if (reset) {
     document.getElementById('feedList').innerHTML = html
@@ -722,7 +698,7 @@ function renderFeedCard(item) {
           <span class="comment-count">${commentCount > 0 ? commentCount : 'ความคิดเห็น'}</span>
         </button>
         <button class="feed-action-btn cheer-btn${userCheered ? ' cheered' : ''}" data-id="${item.id}" data-cheered="${userCheered}" style="margin-left:auto${userCheered ? ';color:var(--gold)' : ''}">
-          <span id="cheer-icon-${item.id}"></span> <span class="cheer-label">${userCheered ? '👏 เชียร์แล้ว' : '👏 เชียร์'}</span>${cheerCount > 0 ? ` <span class="cheer-count">${cheerCount}</span>` : ''}
+          <span id="cheer-icon-${item.id}"></span> <span class="cheer-label">${userCheered ? 'Cheered!' : 'Cheer'}</span>${cheerCount > 0 ? ` <span class="cheer-count">${cheerCount}</span>` : ''}
         </button>
       </div>
       <div class="comment-area" id="comments-${item.id}">
@@ -800,7 +776,7 @@ function attachCardListeners() {
         .insert({ feed_id: feedId, user_id: userId })
       if (!error) {
         if (iconEl) iconEl.innerHTML = getIcon('check_circle', 14)
-        btn.querySelector('.cheer-label').textContent = '👏 เชียร์แล้ว'
+        btn.querySelector('.cheer-label').textContent = 'Cheered!'
         btn.style.color = 'var(--gold)'
         btn.dataset.cheered = 'true'
         btn.disabled = true
@@ -819,60 +795,54 @@ async function loadComments(feedId) {
     .order('created_at', { ascending: true })
   if (!comments || comments.length === 0) return
 
-  // แยก top-level vs replies
   const topLevel = comments.filter(c => !c.reply_to_id)
-  const replies  = comments.filter(c => c.reply_to_id)
   const replyMap = {}
-  replies.forEach(r => {
+  comments.filter(c => c.reply_to_id).forEach(r => {
     if (!replyMap[r.reply_to_id]) replyMap[r.reply_to_id] = []
     replyMap[r.reply_to_id].push(r)
   })
 
-  function commentHTML(c, isReply = false) {
+  function cHTML(c, isReply) {
     const u = c.users || {}
-    const av = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 26)
-    const cls = isReply ? 'reply' : 'comment'
-    const avSize = isReply ? 'reply-avatar' : 'comment-avatar'
-    return `
-      <div class="${cls}-item" data-id="${c.id}">
-        <div class="${avSize}"><img src="${av}" alt=""></div>
-        <div class="comment-body">
-          <span class="comment-user">${escHtml(u.username || '—')}</span>
-          <span class="comment-text"> ${escHtml(c.content)}</span>
-          ${!isReply ? `<button class="comment-reply-btn" onclick="toggleReplyInput('${feedId}','${c.id}')">↩ ตอบกลับ</button>` : ''}
-        </div>
+    const av = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 24)
+    const indent = isReply ? 'margin-left:32px;padding-left:8px;border-left:1px solid var(--border);' : ''
+    const replyBtn = !isReply ? `<button onclick="toggleReply('${feedId}','${c.id}')" style="background:none;border:none;color:var(--text-dim);font-size:9px;font-family:'Orbitron',monospace;cursor:pointer;padding:2px 0;letter-spacing:1px">↩ ตอบ</button>` : ''
+    const sub = !isReply && replyMap[c.id] ? replyMap[c.id].map(r => cHTML(r, true)).join('') : ''
+    const replyInput = !isReply ? `<div id="ri-${c.id}" style="display:none;margin-left:32px;margin-top:4px;display:none;gap:6px">
+      <input id="rinput-${c.id}" placeholder="ตอบกลับ..." style="flex:1;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-size:11px;padding:5px 8px;font-family:'Sarabun',sans-serif">
+      <button onclick="sendReply('${feedId}','${c.id}')" style="background:rgba(0,245,255,0.15);border:1px solid var(--cyan);color:var(--cyan);padding:5px 10px;font-size:8px;font-family:'Orbitron',monospace;cursor:pointer">ส่ง</button>
+    </div>` : ''
+    return `<div style="${indent}display:flex;gap:8px;font-size:12px;margin-bottom:6px">
+      <img src="${av}" style="width:${isReply?'20':'26'}px;height:${isReply?'20':'26'}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
+      <div style="flex:1">
+        <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(u.username || '—')}</span>
+        <span style="color:var(--text-dim)"> ${escHtml(c.content)}</span>
+        ${replyBtn}
       </div>
-      ${!isReply && replyMap[c.id] ? replyMap[c.id].map(r => commentHTML(r, true)).join('') : ''}
-      ${!isReply ? `<div class="reply-input-wrap" id="reply-wrap-${c.id}" style="display:none">
-        <input class="reply-input" placeholder="ตอบกลับ..." id="reply-input-${c.id}">
-        <button class="reply-send" onclick="sendReply('${feedId}','${c.id}')">ส่ง</button>
-      </div>` : ''}
-    `
+    </div>${sub}${replyInput}`
   }
 
-  list.innerHTML = topLevel.map(c => commentHTML(c)).join('')
+  list.innerHTML = topLevel.map(c => cHTML(c, false)).join('')
 }
 
-window.toggleReplyInput = function(feedId, commentId) {
-  const wrap = document.getElementById(`reply-wrap-${commentId}`)
+window.toggleReply = function(feedId, commentId) {
+  const wrap = document.getElementById(`ri-${commentId}`)
   if (!wrap) return
-  const isOpen = wrap.style.display !== 'none'
-  wrap.style.display = isOpen ? 'none' : 'flex'
-  if (!isOpen) wrap.querySelector('input').focus()
+  const isHidden = wrap.style.display === 'none' || wrap.style.display === ''
+  wrap.style.display = isHidden ? 'flex' : 'none'
+  if (isHidden) document.getElementById(`rinput-${commentId}`)?.focus()
 }
 
 window.sendReply = async function(feedId, replyToId) {
-  const input = document.getElementById(`reply-input-${replyToId}`)
+  const input = document.getElementById(`rinput-${replyToId}`)
+  if (!input) return
   const val = input.value.trim()
   if (!val) return
-  const btn = input.nextElementSibling
-  btn.disabled = true
   const { error } = await supabase.from('activity_feed_comments')
-    .insert({ feed_id: parseInt(feedId), user_id: userId, content: val, reply_to_id: replyToId })
-  btn.disabled = false
-  if (error) { btn.textContent = 'ผิดพลาด'; return }
+    .insert({ feed_id: parseInt(feedId), user_id: userId, content: val, reply_to_id: parseInt(replyToId) })
+  if (error) return
   input.value = ''
-  document.getElementById(`reply-wrap-${replyToId}`).style.display = 'none'
+  document.getElementById(`ri-${replyToId}`).style.display = 'none'
   await loadComments(feedId)
 }
 
@@ -893,15 +863,10 @@ window.sendComment = async function(feedId) {
 
   input.value = ''
   const list = document.getElementById(`comment-list-${feedId}`)
-  const myAv = myProfile?.avatar_url || getAvatarUrl(myProfile?.avatar_seed || myUsername, 26)
   list.insertAdjacentHTML('beforeend', `
     <div class="comment-item">
-      <div class="comment-avatar"><img src="${myAv}" alt=""></div>
-      <div class="comment-body">
-        <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
-        <span class="comment-text"> ${escHtml(val)}</span>
-        <button class="comment-reply-btn" style="opacity:0.4" disabled>↩ ตอบกลับ</button>
-      </div>
+      <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
+      <span class="comment-text">${escHtml(val)}</span>
     </div>
   `)
   // update comment count badge
