@@ -309,10 +309,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon } from './icons.js'
+import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ===== AUTH CHECK =====
 const { user } = await initSidebar('feed')
 if (!user) throw new Error('no session')
+
+injectTitleStyles()
 
 // inject static icon-wrap elements
 document.querySelectorAll('.icon-wrap[data-icon]').forEach(el => {
@@ -589,11 +592,19 @@ function renderFeedCard(item) {
       break
     case 'badge_unlock':
       tag = `<span class="feed-tag badge">${getIcon('medal',10)} BADGE</span>`
-      content = `<strong>${escHtml(item.display_name || item.username)}</strong> ปลดล็อค Badge <span class="highlight">${data.badge_name || ''}</span> ${data.badge_icon || ''}`
+      content = `<strong>${escHtml(item.display_name || item.username)}</strong> ปลดล็อค Badge ${
+        data.badge_rarity
+          ? renderTitleBadge({ name: data.badge_name || '', rarity: data.badge_rarity, icon: data.badge_icon || '' })
+          : `<span class="highlight">${data.badge_name || ''} ${data.badge_icon || ''}</span>`
+      }`
       break
     case 'title_unlock':
       tag = `<span class="feed-tag badge">${getIcon('title_badge',10)} TITLE</span>`
-      content = `<strong>${escHtml(item.display_name || item.username)}</strong> ได้รับฉายา <span class="highlight">"${data.title_name || ''}"</span>`
+      content = `<strong>${escHtml(item.display_name || item.username)}</strong> ได้รับฉายา ${
+        data.title_rarity
+          ? renderTitleBadge({ name: data.title_name || '', rarity: data.title_rarity, icon: data.title_icon || '' })
+          : `<span class="highlight">"${data.title_name || ''}"</span>`
+      }`
       break
     case 'checkin':
       tag = `<span class="feed-tag checkin">${getIcon('checkin',10)} CHECK-IN</span>`

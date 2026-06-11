@@ -1069,7 +1069,7 @@ async function init() {
   await Promise.all([loadIncomingChallenges(), loadActiveDuels(), loadPvPRanking(), loadHistory()])
   loadGuildWar()
   loadTournament()
-  loadNotifBadge()
+  checkNotifications()
 
   // ✅ ซ่อน loading screen หลังข้อมูลโหลดเสร็จ
   const ls = document.getElementById('loadingScreen')
@@ -1794,12 +1794,57 @@ window.registerTournament = async function() {
 // ============================================================
 // NOTIFICATIONS BADGE
 // ============================================================
-async function loadNotifBadge() {
-  const { count } = await supabase.from('notifications')
-    .select('*', { count:'exact', head:true })
-    .eq('user_id', currentUser.id).eq('is_read', false)
-  if (count > 0) document.getElementById('notifDot').style.display = 'block'
+// ============================================================
+// NAV BADGES (navQuestBadge + navVerifyBadge)
+// ============================================================
+async function checkNotifications() {
+  try {
+    const { count: notifCount } = await supabase.from('notifications')
+      .select('*', { count:'exact', head:true })
+      .eq('user_id', currentUser.id).eq('is_read', false)
+    const notifDot = document.getElementById('notifDot')
+    if (notifDot && notifCount > 0) notifDot.style.display = 'block'
+
+    const { count: questCount } = await supabase
+      .from('user_quests')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .eq('status', 'in_progress')
+    const qb = document.getElementById('navQuestBadge')
+    if (qb && questCount > 0) {
+      qb.textContent = questCount > 99 ? '99+' : questCount
+      qb.style.display = 'inline'
+    }
+
+    const cityForVerify = (typeof myProfile !== 'undefined' ? myProfile?.city : null)
+      || (typeof userProfile !== 'undefined' ? userProfile?.city : null)
+      || 'กรุงเทพมหานคร'
+    const { data: pending } = await supabase
+      .from('user_quests')
+      .select('id, users!inner(city)')
+      .eq('status', 'pending_review')
+      .eq('users.city', cityForVerify)
+      .neq('user_id', currentUser.id)
+      .limit(99)
+    if (pending?.length) {
+      const { data: myVotes } = await supabase
+        .from('quest_verifications')
+        .select('user_quest_id')
+        .eq('voter_id', currentUser.id)
+        .in('user_quest_id', pending.map(p => p.id))
+      const votedIds = new Set((myVotes||[]).map(v => v.user_quest_id))
+      const notVoted = pending.filter(p => !votedIds.has(p.id)).length
+      const vb = document.getElementById('navVerifyBadge')
+      if (vb && notVoted > 0) {
+        vb.textContent = notVoted > 99 ? '99+' : notVoted
+        vb.style.display = 'inline'
+      }
+    }
+  } catch (e) {
+    console.warn('[checkNotifications]', e)
+  }
 }
+
 
 // ============================================================
 // UI UTILS

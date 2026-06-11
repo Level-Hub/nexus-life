@@ -285,7 +285,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .lb-avatar img { width:100%;height:100%;object-fit:cover; }
 .lb-user-info { overflow:hidden; }
 .lb-username { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.lb-title { font-size:10px;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.lb-title { font-size:10px;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px; }
 
 .lb-row-xp {
   display:flex;align-items:center;gap:8px;
@@ -703,6 +703,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, SYSTEM_ICONS, getIcon } from './icons.js'
+import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ============================================================
 // STATE
@@ -714,6 +715,7 @@ let citySortKey = 'xp'
 let globalPeriod = 'monthly'
 let selectedClass = 'all'
 let activeTab = 'global'
+let titlesMap = {}   // id → title def (สำหรับ resolve equipped_title_id)
 
 // ============================================================
 // AVATAR URL HELPER
@@ -740,6 +742,8 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  injectTitleStyles()
+
   // inject static icons
   const closeLbModalBtn = document.getElementById('closeLbModalBtn')
   if (closeLbModalBtn) closeLbModalBtn.innerHTML = getIcon('close', 16)
@@ -750,6 +754,10 @@ async function init() {
   if (profile) {
     renderMyRankCard(profile)
   }
+
+  // โหลด titles ทั้งหมดล่วงหน้า เพื่อ resolve equipped_title_id ใน rows
+  const { data: allTitles } = await supabase.from('titles').select('id, name, icon, category, rarity')
+  ;(allTitles || []).forEach(t => { titlesMap[t.id] = t })
 
   await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
   checkNotifications()
@@ -849,6 +857,7 @@ function renderGlobal(data) {
         <div class="podium-item podium-rank-${rank}">
           <div class="podium-name">${esc(u.display_name||u.username)}</div>
           <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
+          ${u.equipped_title_id && titlesMap[u.equipped_title_id] ? `<div style="margin-top:3px;display:flex;justify-content:center">${renderTitleBadge(titlesMap[u.equipped_title_id], {showIcon:false})}</div>` : ''}
           <div class="podium-avatar-wrap">
             ${crown}
             <div class="podium-avatar cls-${cls}">
@@ -892,7 +901,7 @@ function renderGlobal(data) {
           </div>
           <div class="lb-user-info">
             <div class="lb-username">${esc(u.display_name||u.username)}${streakBadge}</div>
-            <div class="lb-title">Lv.${u.level||1} · ${(u.rank||'bronze').toUpperCase()}</div>
+            <div class="lb-title">Lv.${u.level||1} · ${(u.rank||'bronze').toUpperCase()}${u.equipped_title_id && titlesMap[u.equipped_title_id] ? ' &nbsp;' + renderTitleBadge(titlesMap[u.equipped_title_id], {showIcon:false}) : ''}</div>
           </div>
         </div>
         <div class="lb-row-xp">
