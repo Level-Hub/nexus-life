@@ -197,21 +197,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- STATS BAR -->
   <div class="stats-bar">
     <div class="sbar-item">
-      <div class="sbar-icon">⏳</div>
+      <div class="sbar-icon" id="sbarPending"></div>
       <div>
         <div class="sbar-val" id="statPending">0</div>
         <div class="sbar-label">รอ VERIFY</div>
       </div>
     </div>
     <div class="sbar-item green">
-      <div class="sbar-icon">✅</div>
+      <div class="sbar-icon" id="sbarApproved"></div>
       <div>
         <div class="sbar-val" id="statVoted">0</div>
         <div class="sbar-label">ที่ฉัน VOTE แล้ว</div>
       </div>
     </div>
     <div class="sbar-item gold">
-      <div class="sbar-icon">⭐</div>
+      <div class="sbar-icon" id="sbarXP"></div>
       <div>
         <div class="sbar-val" id="statXPEarned">+0</div>
         <div class="sbar-label">XP จากการ VERIFY</div>
@@ -232,7 +232,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- GRID -->
   <div class="verify-grid" id="verifyGrid">
     <div class="empty-state">
-      <div class="empty-icon">⏳</div>
+      <div class="empty-icon" id="verifyLoadingIcon"></div>
       <div class="empty-txt">กำลังโหลด...</div>
     </div>
   </div>
@@ -240,7 +240,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-close" id="closeLightboxBtn" onclick="closeLightbox()"></button>
   <img id="lightboxImg" src="" alt="">
 </div>
 
@@ -291,6 +291,31 @@ async function init() {
   const { user } = await initSidebar('verify')
   if (!user) return
   currentUser = user
+
+  // inject static icons
+  const sbarPending = document.getElementById('sbarPending')
+  if (sbarPending) sbarPending.innerHTML = getIcon('refresh', 16)
+  const sbarApproved = document.getElementById('sbarApproved')
+  if (sbarApproved) sbarApproved.innerHTML = getIcon('check_circle', 16)
+  const sbarXP = document.getElementById('sbarXP')
+  if (sbarXP) sbarXP.innerHTML = getIcon('levelup', 16)
+  const verifyLoadingIcon = document.getElementById('verifyLoadingIcon')
+  if (verifyLoadingIcon) verifyLoadingIcon.innerHTML = getIcon('refresh', 28)
+  const closeLightboxBtn = document.getElementById('closeLightboxBtn')
+  if (closeLightboxBtn) closeLightboxBtn.innerHTML = getIcon('close', 18)
+  const verifyDoneIcon = document.getElementById('verifyDoneIcon')
+  if (verifyDoneIcon) verifyDoneIcon.innerHTML = getIcon('check_circle', 28)
+  const proofExpandIcon = document.getElementById('proofExpandIcon')
+  if (proofExpandIcon) proofExpandIcon.innerHTML = getIcon('zoom', 14)
+  const emptyCardIcon = document.getElementById('emptyCardIcon')
+  if (emptyCardIcon) emptyCardIcon.innerHTML = getIcon('scroll', 28)
+  // inject vote button icons
+  document.querySelectorAll('.vote-btn-approve').forEach(btn => {
+    btn.innerHTML = getIcon('check_circle', 14) + ' APPROVE'
+  })
+  document.querySelectorAll('.vote-btn-reject').forEach(btn => {
+    btn.innerHTML = getIcon('x_circle', 14) + ' REJECT'
+  })
 
   await loadProfile()
   await loadData()
@@ -423,7 +448,7 @@ function renderPending() {
   if (!pendingItems.length) {
     grid.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">✅</div>
+        <div class="empty-icon" id="verifyDoneIcon"></div>
         <div class="empty-txt">ไม่มี Quest รอ Verify</div>
         <div class="empty-sub">ในเมืองของคุณไม่มีหลักฐานรอตรวจสอบ หรือ vote ครบหมดแล้ว</div>
       </div>`
@@ -444,8 +469,8 @@ function renderVerifyCard(item) {
   const rejectCount = vc.reject
 
   const pips = [0,1,2].map(i => {
-    if (i < approveCount) return `<div class="vote-pip approve">✓</div>`
-    if (i < rejectCount) return `<div class="vote-pip reject">✗</div>`
+    if (i < approveCount) return `<div class="vote-pip approve">${getIcon('check',8)}</div>`
+    if (i < rejectCount) return `<div class="vote-pip reject">${getIcon('close',8)}</div>`
     return `<div class="vote-pip"></div>`
   }).join('')
 
@@ -453,9 +478,9 @@ function renderVerifyCard(item) {
     ? `<div class="vcard-proof" onclick="openLightbox('${item.proof_url}')">
         <img src="${item.proof_url}" alt="proof" loading="lazy" onerror="this.parentElement.style.display='none'">
         <div class="vcard-proof-overlay"></div>
-        <div class="vcard-proof-expand">🔍</div>
+        <div class="vcard-proof-expand" id="proofExpandIcon"></div>
        </div>`
-    : `<div class="vcard-no-proof"><div class="vcard-no-proof-txt">📝 หลักฐานข้อความ</div></div>`
+    : `<div class="vcard-no-proof"><div class="vcard-no-proof-txt">หลักฐานข้อความ</div></div>`
 
   return `
   <div class="vcard cls-${cls}" id="vcard-${item.id}">
@@ -484,10 +509,10 @@ function renderVerifyCard(item) {
       </div>
       <div class="vote-btns">
         <button class="vote-btn approve-btn" onclick="castVote(${item.id},'approve',this)">
-          ✅ APPROVE
+          APPROVE
         </button>
         <button class="vote-btn reject-btn" onclick="castVote(${item.id},'reject',this)">
-          ❌ REJECT
+          REJECT
         </button>
       </div>
     </div>
@@ -499,7 +524,7 @@ function renderHistory() {
   if (!myVoteHistory.length) {
     grid.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon" id="emptyCardIcon"></div>
         <div class="empty-txt">ยังไม่มีประวัติ</div>
         <div class="empty-sub">Vote หลักฐาน Quest ของผู้เล่นคนอื่นเพื่อสะสม XP</div>
       </div>`
@@ -519,7 +544,7 @@ function renderHistory() {
         <div class="hcard-meta">${u.display_name || u.username} · ${timeAgo(item.submitted_at)}</div>
         <div class="hcard-meta" style="margin-top:3px">${item.votes.approve}/3 approve · ${item.votes.reject}/3 reject</div>
       </div>
-      <div class="hcard-vote ${mv}">${mv === 'approve' ? '✅ APPROVE' : '❌ REJECT'}</div>
+      <div class="hcard-vote ${mv}">${mv === 'approve' ? 'APPROVE' : 'REJECT'}</div>
     </div>`
   }).join('')
 }
@@ -553,11 +578,11 @@ window.castVote = async function(uqId, vote, btn) {
     totalXPEarned += 10
 
     if (result.result === 'approved') {
-      showToast('✅ Quest ผ่านแล้ว! Community approved', 'success')
+      showToast('Quest ผ่านแล้ว! Community approved', 'success')
     } else if (result.result === 'rejected') {
-      showToast('❌ Quest ถูก reject โดย Community', 'error')
+      showToast('Quest ถูก reject โดย Community', 'error')
     } else {
-      showToast(vote === 'approve' ? '✅ Vote Approve! +10 XP' : '❌ Vote Reject! +10 XP', 'success')
+      showToast(vote === 'approve' ? 'Vote Approve! +10 XP' : 'Vote Reject! +10 XP', 'success')
     }
 
     // อนิเมชัน fade out การ์ด
