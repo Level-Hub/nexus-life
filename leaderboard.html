@@ -40,6 +40,14 @@ body {
   min-height:100vh;
 }
 
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0%}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+
 /* CURSOR */
 .cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
 .cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
@@ -199,7 +207,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   animation:fadeInUp 0.6s 0.2s ease both;
 }
 .podium-item {
-  display:flex;flex-direction:column;align-items:center;gap:8px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
   flex:1;max-width:140px;
 }
 .podium-rank-1 { order:2; }
@@ -246,6 +254,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .podium-rank-1 .podium-stand { height:80px;background:linear-gradient(180deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.03) 100%);border-color:var(--gold);box-shadow:inset 0 2px 12px rgba(255,215,0,0.08); }
 .podium-rank-2 .podium-stand { height:56px;background:linear-gradient(180deg,rgba(192,192,192,0.12) 0%,rgba(192,192,192,0.02) 100%);border-color:#c0c0c0; }
 .podium-rank-3 .podium-stand { height:40px;background:linear-gradient(180deg,rgba(205,127,50,0.12) 0%,rgba(205,127,50,0.02) 100%);border-color:#cd7f32; }
+
+/* info ใต้แท่น */
+.podium-info { display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 0;width:100%; }
+.podium-info .podium-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.podium-info .podium-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;text-align:center; }
+.podium-title-badge { display:flex;justify-content:center; }
 
 /* ===================== LEADERBOARD TABLE ===================== */
 .lb-table-wrap {
@@ -504,6 +518,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 </style>
 </head>
 <body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING LEADERBOARD...</div>
+</div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -785,6 +805,8 @@ async function init() {
   await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
   checkNotifications()
 
+  document.getElementById('loadingScreen').style.display = 'none'
+
   // Realtime polling — refresh ทุก 30 วิ อัพเดตอันดับแบบ real-time
   setInterval(async () => {
     try {
@@ -809,11 +831,13 @@ async function init() {
 // MY RANK CARD
 // ============================================================
 function renderMyRankCard(p) {
+  const cls = p.class || 'warrior'
   document.getElementById('myRankCard').style.display = 'flex'
+  document.getElementById('myRankCard').className = `my-rank-card cls-${cls}`
   document.getElementById('myRankAvatar').src = getAvatar(p, 80)
-  document.getElementById('myRankAvatarWrap').className = `my-rank-avatar cls-${p.class||'warrior'}`
+  document.getElementById('myRankAvatarWrap').className = `my-rank-avatar cls-${cls}`
   document.getElementById('myRankName').textContent = p.display_name || p.username
-  document.getElementById('myRankClass').textContent = (p.class||'—').toUpperCase()
+  document.getElementById('myRankClass').textContent = cls.toUpperCase()
   document.getElementById('myRankXP').textContent = fmtNum(p.xp_this_month||0)
   document.getElementById('myRankLv').textContent = p.level||1
   document.getElementById('myRankStreak').innerHTML = (p.streak_current||0) + '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-left:2px"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'
@@ -882,11 +906,9 @@ function renderGlobal(data) {
       const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
       const cls = u.class||'warrior'
       const crown = rank===1 ? '<div class="podium-crown">👑</div>' : ''
+      const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
       return `
         <div class="podium-item podium-rank-${rank}">
-          <div class="podium-name">${esc(u.display_name||u.username)}</div>
-          <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
-          ${u.equipped_title_id && titlesMap[u.equipped_title_id] ? `<div style="margin-top:3px;display:flex;justify-content:center">${renderTitleBadge(titlesMap[u.equipped_title_id], {showIcon:false})}</div>` : ''}
           <div class="podium-avatar-wrap">
             ${crown}
             <div class="podium-avatar cls-${cls}">
@@ -896,6 +918,11 @@ function renderGlobal(data) {
           </div>
           <div class="podium-xp">${fmtNum(xp)} XP</div>
           <div class="podium-stand"></div>
+          <div class="podium-info">
+            <div class="podium-name">${esc(u.display_name||u.username)}</div>
+            ${titleObj ? `<div class="podium-title-badge">${renderTitleBadge(titleObj, {showIcon:false})}</div>` : ''}
+            <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
+          </div>
         </div>`
     }).join('')
   }
