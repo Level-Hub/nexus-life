@@ -850,29 +850,30 @@ async function loadProfile() {
 
   if (!profile) return
 
-  // ดึง equipped title (ไม่ throw ถ้าไม่มี)
+  // ดึง equipped title — 2 ขั้น เพื่อหลีกเลี่ยง RLS block บน nested join
   let equippedTitle = null
   try {
-    if (profile.equipped_title_id) {
-      const { data: titleDef } = await supabase
-        .from('titles')
-        .select('id, name, icon, category, rarity')
-        .eq('id', profile.equipped_title_id)
-        .maybeSingle()
-      equippedTitle = titleDef || null
-    } else {
-      // fallback: query user_titles is_equipped — ใช้ maybeSingle() ไม่ใช่ single()
-      // single() จะ error ถ้าไม่มีแถว (user ยังไม่มี title เลย)
+    // หา title_id ที่ equipped อยู่ (จาก users.equipped_title_id ก่อน fallback user_titles)
+    let equippedTitleId = profile.equipped_title_id || null
+    if (!equippedTitleId) {
       const { data: utRow } = await supabase
         .from('user_titles')
-        .select('title_id, titles(id, name, icon, category, rarity)')
+        .select('title_id')
         .eq('user_id', currentUser.id)
         .eq('is_equipped', true)
         .maybeSingle()
-      equippedTitle = utRow?.titles || null
+      equippedTitleId = utRow?.title_id || null
+    }
+    // ดึงข้อมูล title แยก query — ไม่ใช้ nested join เพราะ RLS อาจ block
+    if (equippedTitleId) {
+      const { data: titleDef } = await supabase
+        .from('titles')
+        .select('id, name, icon, category, rarity')
+        .eq('id', equippedTitleId)
+        .maybeSingle()
+      equippedTitle = titleDef || null
     }
   } catch (e) {
-    // ไม่มี title — ปล่อยผ่าน
     equippedTitle = null
   }
 
@@ -1311,7 +1312,7 @@ window.submitProof = async function() {
           data: { old_level: oldLevel, new_level: userProfile.level }
         })
       }
-      await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
+      try { await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }) } catch(e) {}
       showToast('Quest สำเร็จ! XP และ Gold เข้าแล้ว', 'gold')
     } else {
       showToast('ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')
