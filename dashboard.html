@@ -881,13 +881,14 @@ async function loadProfile() {
   document.getElementById('pmGold').textContent = fmtNum(profile.gold)
   document.getElementById('pmCrystal').textContent = fmtNum(profile.crystal)
 
-  // Equipped title badge — ใช้ renderTitleBadge() จาก titles.js เป็น single source of truth
+  // Equipped title badge — แสดงแบบเดียวกับ profile.html (icon + name ตรงๆ)
   const pmTitleEl = document.getElementById('pmTitle')
   if (equippedTitle) {
-    pmTitleEl.innerHTML = renderTitleBadge(equippedTitle)
-    pmTitleEl.style.cssText = 'margin-bottom:6px'
+    const iconPart = equippedTitle.icon ? equippedTitle.icon + ' ' : ''
+    pmTitleEl.textContent = iconPart + (equippedTitle.name || '')
+    pmTitleEl.style.cssText = 'color:var(--cyan);font-size:11px;margin-bottom:6px'
   } else {
-    pmTitleEl.innerHTML = ''
+    pmTitleEl.textContent = '— ไม่มีฉายา —'
     pmTitleEl.style.cssText = ''
   }
 
@@ -951,11 +952,11 @@ async function loadQuests() {
     .or(`class_target.eq.${cls},class_target.is.null`)
 
   // FIX: ดึง user_quests เฉพาะวันนี้ ใส่ range ชัดๆ กันดึงวันพรุ่งนี้มาด้วย
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+  // ใช้ timezone ไทย UTC+7
+  const TZ_OFFSET = 7 * 60
+  const nowLocal   = new Date(Date.now() + TZ_OFFSET * 60000)
+  const todayStr   = nowLocal.toISOString().split('T')[0]
+  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
 
   const { data: userQuests } = await supabase
     .from('user_quests')
@@ -1248,11 +1249,11 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
-    // ป้องกัน XP ซ้ำ — เช็คเฉพาะวันนี้ (ใช้ created_at เหมือน quests.html)
-    const _td = new Date()
-    const _tdStr = _td.toISOString().split('T')[0]
-    const _tm = new Date(_td); _tm.setDate(_tm.getDate()+1)
-    const _tmStr = _tm.toISOString().split('T')[0]
+    // ป้องกัน XP ซ้ำ — เช็คเฉพาะวันนี้ (timezone ไทย UTC+7)
+    const _tz     = 7 * 60
+    const _now    = new Date(Date.now() + _tz * 60000)
+    const _tdStr  = _now.toISOString().split('T')[0]
+    const _tmStr  = new Date(_now.getTime() + 86400000).toISOString().split('T')[0]
 
     const { data: existingUQ } = await supabase
       .from('user_quests').select('id, status, xp_granted')
@@ -1326,7 +1327,8 @@ window.submitProof = async function() {
 // ============================================================
 function renderStreakDays(streak, lastDate) {
   const days  = ['อา','จ','อ','พ','พฤ','ศ','ส']
-  const today = new Date().getDay()
+  const nowThai = new Date(Date.now() + 7 * 60 * 60000)
+  const today = nowThai.getUTCDay()
   const items = document.querySelectorAll('.streak-day')
   items.forEach((el, i) => {
     el.classList.remove('done','today')
@@ -1346,10 +1348,10 @@ function renderStreakDays(streak, lastDate) {
 // HELPERS
 // ============================================================
 function updateDate() {
-  const d = new Date()
+  const d = new Date(Date.now() + 7 * 60 * 60000)
   const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
   const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`
+  document.getElementById('pageDate').textContent = `วัน${days[d.getUTCDay()]}ที่ ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear() + 543}`
 }
 
 function updateQuestResetTimer() {

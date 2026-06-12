@@ -433,17 +433,15 @@ async function loadProfile() {
 async function loadAllQuests() {
   const { data: quests } = await supabase.from('quests').select('*').eq('is_active', true).order('type').order('id')
 
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+  // ใช้ timezone ไทย UTC+7 ตลอด ให้ตรงกับ submitted_at ที่ถูก offset แล้ว
+  const TZ_OFFSET = 7 * 60 // นาที
+  const nowLocal = new Date(Date.now() + TZ_OFFSET * 60000)
+  const todayStr    = nowLocal.toISOString().split('T')[0]
+  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
 
-  // หา Monday ของสัปดาห์นี้
-  const monday = new Date(today)
-  const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay()
-  monday.setDate(today.getDate() - dayOfWeek + 1)
-  monday.setHours(0, 0, 0, 0)
+  // หา Monday ของสัปดาห์นี้ (ไทย)
+  const dayOfWeek = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
+  const monday = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
   const mondayStr = monday.toISOString().split('T')[0]
 
   // ดึง user_quests ทั้งหมดของ user (ไม่กรอง date ใน query)
@@ -458,18 +456,20 @@ async function loadAllQuests() {
   const uqAll = uqAllRaw || []
   window._historyQuests = uqAll
 
-  // แยก daily = submitted วันนี้ หรือ created วันนี้
-  const uqToday = uqAll.filter(uq => {
-    const d = (uq.submitted_at || uq.created_at || '').split('T')[0]
-    return d === todayStr
-  })
+  // helper: แปลง timestamp DB → วันที่ไทย (UTC+7)
+  const toThaiDate = (ts) => {
+    if (!ts) return ''
+    const d = new Date(new Date(ts).getTime() + TZ_OFFSET * 60000)
+    return d.toISOString().split('T')[0]
+  }
 
-  // weekly = submitted หรือ created ตั้งแต่ monday จนถึงพรุ่งนี้
-  // รวม pending_review ทุก record ด้วย ไม่ว่าจะส่งวันไหน
+  // แยก daily = submitted วันนี้ (เวลาไทย)
+  const uqToday = uqAll.filter(uq => toThaiDate(uq.submitted_at || uq.created_at) === todayStr)
+
+  // weekly = submitted ตั้งแต่ monday จนถึงพรุ่งนี้ (เวลาไทย)
   const uqWeek = uqAll.filter(uq => {
-    const d = (uq.submitted_at || uq.created_at || '').split('T')[0]
+    const d = toThaiDate(uq.submitted_at || uq.created_at)
     if (d >= mondayStr && d < tomorrowStr) return true
-    // pending_review ที่ยังไม่ expire ให้แสดงเสมอ
     if (uq.status === 'pending_review') return true
     return false
   })
