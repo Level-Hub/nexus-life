@@ -100,6 +100,14 @@ export function injectTitleStyles() {
   0%,100% { background-position: 0% 50%; }
   50%     { background-position: 100% 50%; }
 }
+@keyframes nxIconPulse {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.65; }
+}
+@keyframes nxRarePing {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.8; transform: scale(1.015); }
+}
 @keyframes legendaryPulse {
   0%,100% {
     border-color: rgba(255,215,0,0.55);
@@ -336,9 +344,41 @@ export function injectTitleStyles() {
   animation-duration: 2.5s;
 }
 
+/* ──────────────────────────────
+   Title card inner elements
+────────────────────────────── */
+.nx-title-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradientShift 4s ease infinite;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.nx-title-name.rarity-common {
+  background-image: linear-gradient(90deg, #aaaaaa, #cccccc, #aaaaaa);
+  animation-duration: 8s;
+}
+.nx-title-name.rarity-rare {
+  background-image: linear-gradient(90deg, #44aaff, #00ccff, #44aaff);
+  animation-duration: 5s;
+}
+.nx-title-name.rarity-epic {
+  background-image: linear-gradient(90deg, #b044ff, #dd88ff, #b044ff);
+  animation-duration: 3.5s;
+}
+.nx-title-name.rarity-legendary {
+  background-image: linear-gradient(90deg, #ffd700, #ff9500, #ff6b00, #ff9500, #ffd700);
+  animation-duration: 2.5s;
+}
+
+/* Rarity badge — now sits in the card-top row, not absolutely positioned */
 .nx-rarity-badge {
-  position: absolute;
-  top: 8px; right: 8px;
+  display: inline-block;
   font-family: 'Orbitron', monospace;
   font-size: 7px;
   letter-spacing: 1.5px;
@@ -346,6 +386,8 @@ export function injectTitleStyles() {
   border: 1px solid currentColor;
   text-transform: uppercase;
   opacity: 0.85;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nx-class-icon-wrap {
@@ -358,6 +400,7 @@ export function injectTitleStyles() {
   flex-shrink: 0;
 }
 
+/* Equip button — uses CSS variable so rarity JS can override */
 .nx-equip-btn {
   display: block;
   width: 100%;
@@ -365,22 +408,39 @@ export function injectTitleStyles() {
   font-family: 'Orbitron', monospace;
   font-size: 9px;
   letter-spacing: 2px;
-  padding: 7px;
+  padding: 8px;
   background: transparent;
-  border: 1px solid rgba(255,215,0,0.4);
-  color: #ffd700;
+  border: 1px solid var(--nx-btn-color, rgba(0,245,255,0.35));
+  color: var(--nx-btn-color, #00f5ff);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.nx-equip-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmerSlide 2.5s linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
 }
 .nx-equip-btn:hover {
-  background: rgba(255,215,0,0.1);
-  border-color: rgba(255,215,0,0.7);
+  background: rgba(var(--nx-btn-rgb, 0,245,255), 0.1);
+  border-color: var(--nx-btn-color, #00f5ff);
+  box-shadow: 0 0 10px rgba(var(--nx-btn-rgb, 0,245,255), 0.25);
 }
+.nx-equip-btn:hover::after { opacity: 1; }
 .nx-equip-btn.nx-btn-equipped {
-  border-color: #ffd700;
-  background: rgba(255,215,0,0.15);
+  border-color: var(--nx-btn-color, #ffd700);
+  background: rgba(var(--nx-btn-rgb, 0,245,255), 0.12);
   cursor: default;
+  opacity: 0.8;
 }
+.nx-equip-btn.nx-btn-equipped::after { display: none; }
 
 .nx-equipped-tag {
   display: inline-block;
@@ -391,6 +451,7 @@ export function injectTitleStyles() {
   background: rgba(255,215,0,0.1);
   border: 1px solid rgba(255,215,0,0.5);
   color: #ffd700;
+  animation: legendaryPulse 2s ease-in-out infinite;
 }
 
 .nx-lock-icon {
@@ -528,6 +589,20 @@ export function injectTitleStyles() {
   margin-bottom: 10px;
   gap: 8px;
 }
+.nx-title-card-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.nx-title-card-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
 .nx-title-card-body { position: relative; z-index: 1; }
 `
 
@@ -601,13 +676,22 @@ export function renderTitleCard(title, state = {}, options = {}) {
   const titleSvgPath = TITLE_SVG_MAP[title.name] || `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`
   const iconHtml = renderIconFrame(titleSvgPath, r, 52)
 
-  // equip button
+  // equip button — rarity-aware colors
+  const btnColorMap = {
+    common:    { color: '#aaaaaa', rgb: '170,170,170' },
+    rare:      { color: '#44aaff', rgb: '68,170,255' },
+    epic:      { color: '#dd88ff', rgb: '221,136,255' },
+    legendary: { color: '#ffd700', rgb: '255,215,0' },
+  }
+  const btnC = btnColorMap[r] || btnColorMap.common
+  const btnStyle = `style="--nx-btn-color:${btnC.color};--nx-btn-rgb:${btnC.rgb}"`
+
   let btnHtml = ''
   if (unlocked && isOwnProfile) {
     if (equipped) {
-      btnHtml = `<button class="nx-equip-btn nx-btn-equipped" disabled>ใส่อยู่แล้ว</button>`
+      btnHtml = `<button class="nx-equip-btn nx-btn-equipped" ${btnStyle} disabled>ใส่อยู่แล้ว</button>`
     } else {
-      btnHtml = `<button class="nx-equip-btn" onclick="${onEquipFn}(${title.id})">+ ใส่ฉายานี้</button>`
+      btnHtml = `<button class="nx-equip-btn" ${btnStyle} onclick="${onEquipFn}(${title.id})">+ ใส่ฉายานี้</button>`
     }
   }
 
@@ -620,14 +704,16 @@ export function renderTitleCard(title, state = {}, options = {}) {
 <div class="nx-title-card rarity-${r}${lockedClass}${equippedClass}" style="color:${cfg.color}">
   <div class="nx-card-shimmer"></div>
   ${lockHtml}
-  <span class="nx-rarity-badge" style="color:${cfg.color};border-color:${cfg.borderColor}">${rarityLabel}</span>
   <div class="nx-title-card-body">
     <div class="nx-title-card-top">
-      <div style="display:flex;align-items:center;gap:10px">
+      <div class="nx-title-card-top-left">
         ${classIconHtml}
         <div>${iconHtml}</div>
       </div>
-      ${statusHtml}
+      <div class="nx-title-card-badges">
+        <span class="nx-rarity-badge" style="color:${cfg.color};border-color:${cfg.borderColor}">${rarityLabel}</span>
+        ${statusHtml}
+      </div>
     </div>
     <div class="nx-title-name rarity-${r}">${title.name || '—'}</div>
     <div class="nx-title-desc">${title.description || ''}</div>
@@ -711,20 +797,35 @@ function renderIconFrame(svgPath, rarity = 'common', size = 48) {
   const hex = `polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)`
   const innerSize = Math.round(size * 0.52)
 
+  // Rotating ring for legendary/epic
   let extraRing = ''
   if (rarity === 'legendary') {
-    extraRing = `<div style="position:absolute;inset:-4px;background:conic-gradient(from 0deg,${cfg.color},${cfg.colorAlt},${cfg.colorAlt2||cfg.colorAlt},${cfg.color});clip-path:${hex};animation:nxLegRing 3s linear infinite;opacity:0.55;"></div>`
+    extraRing = `<div style="position:absolute;inset:-3px;background:conic-gradient(from 0deg,${cfg.color},${cfg.colorAlt},${cfg.colorAlt2||cfg.colorAlt},${cfg.color});clip-path:${hex};animation:nxLegRing 3s linear infinite;opacity:0.7;"></div>`
   } else if (rarity === 'epic') {
-    extraRing = `<div style="position:absolute;inset:-3px;background:conic-gradient(from 0deg,${cfg.color},transparent,${cfg.color});clip-path:${hex};animation:nxEpicRing 4s linear infinite;opacity:0.4;"></div>`
+    extraRing = `<div style="position:absolute;inset:-2px;background:conic-gradient(from 0deg,${cfg.color},transparent,${cfg.colorAlt},transparent,${cfg.color});clip-path:${hex};animation:nxEpicRing 4s linear infinite;opacity:0.55;"></div>`
   }
+
+  // Thin border ring (1.5px stroke simulation via clip-path layers)
+  const borderOpacity = rarity === 'common' ? '0.25' : rarity === 'rare' ? '0.5' : '0.65'
+
+  // Inner glow intensity
+  const glowSize = rarity === 'legendary' ? '20' : rarity === 'epic' ? '14' : rarity === 'rare' ? '8' : '4'
+  const glowOpacity = rarity === 'legendary' ? '55' : rarity === 'epic' ? '44' : rarity === 'rare' ? '33' : '22'
+
+  // SVG icon glow
+  const iconGlow = rarity === 'common'
+    ? `drop-shadow(0 0 2px ${cfg.color}66)`
+    : rarity === 'legendary'
+      ? `drop-shadow(0 0 6px ${cfg.color}ee) drop-shadow(0 0 12px ${cfg.colorAlt}88)`
+      : `drop-shadow(0 0 5px ${cfg.color}cc) drop-shadow(0 0 2px ${cfg.colorAlt||cfg.color}66)`
 
   return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
     ${extraRing}
-    <div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.bgGradient};"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(1,10,15,0.8);"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};box-shadow:inset 0 0 ${rarity==='legendary'?'18':'10'}px ${cfg.color}44;"></div>
+    <div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(2,8,14,0.92);"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 50% 30%,${cfg.color}${glowOpacity} 0%,transparent 70%);"></div>
     <svg width="${innerSize}" height="${innerSize}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style="position:relative;z-index:1;color:${cfg.color};filter:drop-shadow(0 0 ${rarity==='common'?'2':'5'}px ${cfg.color}${rarity==='legendary'?'cc':'88'})">
+      style="position:relative;z-index:1;color:${cfg.color};filter:${iconGlow}">
       ${svgPath}
     </svg>
   </div>`
