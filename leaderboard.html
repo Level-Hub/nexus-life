@@ -223,12 +223,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .podium-rank-3 .podium-avatar { width:60px;height:60px;border-color:#cd7f32;animation:bronzePulse 2.5s ease-in-out infinite; }
 .podium-avatar img { width:100%;height:100%;object-fit:cover; }
 
-/* มงกุฎ — เล็กลงหน่อย ไม่บัง */
+/* มงกุฎ — เล็กลง ไม่บัง filter */
 .podium-crown {
-  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
-  font-size:22px;line-height:1;
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  font-size:16px;line-height:1;
   animation:crownFloat 2.5s ease-in-out infinite;
-  filter:drop-shadow(0 0 6px rgba(255,215,0,0.9)) drop-shadow(0 2px 8px rgba(255,165,0,0.6));
+  filter:drop-shadow(0 0 4px rgba(255,215,0,0.7)) drop-shadow(0 1px 4px rgba(255,165,0,0.4));
   pointer-events:none;
 }
 
@@ -248,13 +248,25 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .podium-rank-2 .podium-stand { height:38px;background:linear-gradient(180deg,rgba(192,192,192,0.12) 0%,rgba(192,192,192,0.02) 100%);border-color:#c0c0c0; }
 .podium-rank-3 .podium-stand { height:26px;background:linear-gradient(180deg,rgba(205,127,50,0.12) 0%,rgba(205,127,50,0.02) 100%);border-color:#cd7f32; }
 
-/* XP — อยู่เหนือแท่น แสดงก่อน stand */
-.podium-xp { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;text-align:center;margin-bottom:6px; }
+/* XP ใต้ชื่อ — ในส่วน podium-info */
+.podium-xp { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;text-align:center;margin-top:3px; }
 .podium-rank-1 .podium-xp { color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.5); }
 .podium-rank-2 .podium-xp { color:#c0c0c0; }
 .podium-rank-3 .podium-xp { color:#cd7f32; }
 
-/* info ใต้แท่น — ชื่อ + ฉาย + class */
+/* LIVE INDICATOR */
+.live-dot {
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--green);
+}
+.live-dot::before {
+  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 6px var(--green);
+  animation:livePulse 1.5s ease-in-out infinite;
+}
+@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+
+/* info ใต้แท่น — ชื่อ + ฉาย + class + xp */
 .podium-info { display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 0;width:100%; }
 .podium-info .podium-name { font-family:'Orbitron',monospace;font-size:9px;font-weight:700;color:#fff;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .podium-info .podium-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;text-align:center; }
@@ -626,6 +638,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <button class="filter-chip active" onclick="setFilter('period','monthly',this)">เดือนนี้</button>
       <button class="filter-chip" onclick="setFilter('period','alltime',this)">All Time</button>
       <div class="filter-right">
+        <span class="live-dot">LIVE</span>
         <span class="filter-label">CLASS:</span>
         <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
           <option value="all">ทุก Class</option>
@@ -915,12 +928,12 @@ function renderGlobal(data) {
             </div>
             <div class="podium-rank-num">#${rank}</div>
           </div>
-          <div class="podium-xp">${fmtNum(xp)} XP</div>
           <div class="podium-stand"></div>
           <div class="podium-info">
             <div class="podium-name">${esc(u.display_name||u.username)}</div>
             ${titleObj ? `<div class="podium-title-badge">${renderTitleBadge(titleObj)}</div>` : ''}
             <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
+            <div class="podium-xp">${fmtNum(xp)} XP</div>
           </div>
         </div>`
     }).join('')
