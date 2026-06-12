@@ -439,42 +439,48 @@ async function loadAllQuests() {
   tomorrow.setDate(tomorrow.getDate() + 1)
   const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
-  // หา Monday ของสัปดาห์นี้ (สำหรับ weekly quest)
+  // หา Monday ของสัปดาห์นี้
   const monday = new Date(today)
   const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay()
   monday.setDate(today.getDate() - dayOfWeek + 1)
   monday.setHours(0, 0, 0, 0)
   const mondayStr = monday.toISOString().split('T')[0]
 
-  // ✅ BUG FIX: ใช้ created_at แทน submitted_at
-  // เหตุผล: quest ที่ in_progress ยังไม่มี submitted_at จะหายไปจาก tab ทำให้ปุ่มผิด
-  const { data: uqToday } = await supabase
-    .from('user_quests').select('*')
-    .eq('user_id', currentUser.id)
-    .gte('created_at', todayStr + 'T00:00:00')
-    .lt('created_at', tomorrowStr + 'T00:00:00')
-
-  // ✅ BUG FIX: weekly ใช้ created_at เช่นกัน ครอบ in_progress ที่ยังไม่ส่งหลักฐาน
-  const { data: uqWeek } = await supabase
-    .from('user_quests').select('*')
-    .eq('user_id', currentUser.id)
-    .gte('created_at', mondayStr + 'T00:00:00')
-    .lt('created_at', tomorrowStr + 'T00:00:00')
-
-  // history ทั้งหมด
-  const { data: uqAll } = await supabase
+  // ดึง user_quests ทั้งหมดของ user (ไม่กรอง date ใน query)
+  // เพราะ upsert เก่าไม่อัปเดต created_at ทำให้กรองด้วย date พลาด record เก่า
+  // แยก daily/weekly ด้วย JS แทน
+  const { data: uqAllRaw } = await supabase
     .from('user_quests').select('*,quests(*)')
     .eq('user_id', currentUser.id)
     .order('submitted_at', { ascending: false })
-    .limit(30)
+    .limit(100)
+
+  const uqAll = uqAllRaw || []
+  window._historyQuests = uqAll
+
+  // แยก daily = submitted วันนี้ หรือ created วันนี้
+  const uqToday = uqAll.filter(uq => {
+    const d = (uq.submitted_at || uq.created_at || '').split('T')[0]
+    return d === todayStr
+  })
+
+  // weekly = submitted หรือ created ตั้งแต่ monday จนถึงพรุ่งนี้
+  // รวม pending_review ทุก record ด้วย ไม่ว่าจะส่งวันไหน
+  const uqWeek = uqAll.filter(uq => {
+    const d = (uq.submitted_at || uq.created_at || '').split('T')[0]
+    if (d >= mondayStr && d < tomorrowStr) return true
+    // pending_review ที่ยังไม่ expire ให้แสดงเสมอ
+    if (uq.status === 'pending_review') return true
+    return false
+  })
 
   const uqMap = {}
-  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today (today มีความ fresh กว่า)
+  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today
   ;(uqWeek || []).forEach(uq => { uqMap[uq.quest_id] = uq })
   ;(uqToday || []).forEach(uq => { uqMap[uq.quest_id] = uq })
 
   allQuests = (quests || []).map(q => ({ quest: q, userQuest: uqMap[q.id] || null }))
-  window._historyQuests = uqAll || []
+  // window._historyQuests set above
 
   // ดึง vote counts สำหรับ quest ที่ pending_review (ครอบทั้ง daily + weekly)
   const allUQIds = [...new Set([

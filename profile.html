@@ -1082,21 +1082,32 @@ function renderHero(u) {
   document.getElementById('heroXpTotal').textContent   = fmtNum(u.xp_total)
 
   // xp bar — ใช้สูตรตาม Blueprint: XP(n) = XP(n-1) + (n*50) + (n^1.5 * 30)
-  function xpForLevel(n) {
-    if (n <= 1) return 0
-    let xp = 0
-    for (let i = 2; i <= n; i++) xp += (i * 50) + Math.round(Math.pow(i, 1.5) * 30)
-    return xp
+  // ใช้ LEVELS table เดียวกับ dashboard.html — single source of truth
+  const LEVELS = [
+    {lv:1,xp:0},{lv:2,xp:100},{lv:3,xp:250},
+    {lv:4,xp:500},{lv:5,xp:900},{lv:6,xp:1400},
+    {lv:7,xp:2100},{lv:8,xp:3000},{lv:9,xp:4100},
+    {lv:10,xp:5500},{lv:15,xp:15000},{lv:20,xp:30000},
+    {lv:25,xp:55000},{lv:30,xp:90000},{lv:40,xp:200000},
+    {lv:50,xp:400000}
+  ]
+  function getLevelInfo(xpTotal) {
+    let current = LEVELS[0], next = LEVELS[1]
+    for (let i = 0; i < LEVELS.length; i++) {
+      if (xpTotal >= LEVELS[i].xp) { current = LEVELS[i]; next = LEVELS[i+1] || null }
+    }
+    return { current, next }
   }
-  const lv          = u.level || 1
-  const xpThisLvl   = xpForLevel(lv)
-  const xpNextLvl   = xpForLevel(lv + 1)
-  const xpInLvl     = (u.xp_total || 0) - xpThisLvl
-  const xpNeeded    = xpNextLvl - xpThisLvl
-  const xpPct       = Math.min(100, Math.max(0, Math.round(xpInLvl / xpNeeded * 100)))
+  const lv            = u.level || 1
+  const xpTotal       = u.xp_total || 0
+  const { current, next } = getLevelInfo(xpTotal)
+  const xpInLvl       = xpTotal - current.xp
+  const xpNeeded      = next ? next.xp - current.xp : 1
+  const xpPct         = next ? Math.min(100, Math.max(0, Math.round(xpInLvl / xpNeeded * 100))) : 100
+  const xpNextLvl     = next ? next.xp : xpTotal
   document.getElementById('heroXpLevel').textContent      = lv
-  document.getElementById('heroXpNextLevel').textContent  = lv + 1
-  document.getElementById('heroXpCurrent').textContent    = fmtNum(u.xp_total)
+  document.getElementById('heroXpNextLevel').textContent  = next ? next.lv : lv
+  document.getElementById('heroXpCurrent').textContent    = fmtNum(xpTotal)
   document.getElementById('heroXpNext').textContent       = fmtNum(xpNextLvl)
   setTimeout(() => { document.getElementById('heroXpFill').style.width = xpPct + '%' }, 300)
 
