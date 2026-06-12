@@ -862,7 +862,7 @@ async function loadCityRanking() {
 async function loadContributors(city) {
   const { data } = await supabase
     .from('users')
-    .select('id, username, display_name, class, level, xp_this_month, avatar_seed')
+    .select('id, username, display_name, class, level, xp_this_month, avatar_seed, avatar_url')
     .eq('city', city)
     .order('xp_this_month', { ascending: false })
     .limit(5)
@@ -877,7 +877,7 @@ async function loadContributors(city) {
   el.innerHTML = data.map((u,i) => `
     <a class="contrib-item" href="./profile.html?uid=${u.id}">
       <div class="contrib-rank ${rCls[i]}">#${i+1}</div>
-      <div class="contrib-avatar cls-${u.class||'warrior'}"><img src="${getAvatarUrl(u.avatar_seed,40)}" alt=""></div>
+      <div class="contrib-avatar cls-${u.class||'warrior'}"><img src="${getAvatar(u,40)}" alt=""></div>
       <div class="contrib-info">
         <div class="contrib-name">${u.display_name || u.username}</div>
         <div class="contrib-class" style="display:flex;align-items:center;gap:3px">${clsIcon(u.class||'warrior')} LV.${u.level}</div>
@@ -946,7 +946,7 @@ async function loadWarData(city) {
 async function loadNeighborhoodRequests(city) {
   const { data } = await supabase
     .from('neighborhood_requests')
-    .select('*, users(username, display_name, avatar_seed, class)')
+    .select('*, users(username, display_name, avatar_seed, avatar_url, class)')
     .eq('city_name', city)
     .eq('status', 'open')
     .order('created_at', { ascending: false })
@@ -970,7 +970,7 @@ async function loadNeighborhoodRequests(city) {
         <div class="req-type ${r.request_type}">${typeLabel[r.request_type]||'GENERAL'}</div>
       </div>
       <div class="req-user">
-        <div class="req-avatar"><img src="${getAvatarUrl(u.avatar_seed,24)}" alt=""></div>
+        <div class="req-avatar"><img src="${getAvatar(u,24)}" alt=""></div>
         <span class="req-username">${u.display_name||u.username||'Unknown'}</span>
         <span class="req-expire">· หมดใน ${h}h</span>
       </div>
@@ -987,7 +987,7 @@ async function loadChatMessages(city) {
   const channel = `city:${city}`
   const { data } = await supabase
     .from('messages')
-    .select('*, users(username, display_name, avatar_seed, class)')
+    .select('*, users(username, display_name, avatar_seed, avatar_url, class)')
     .eq('channel', channel)
     .order('created_at', { ascending: true })
     .limit(50)
@@ -1015,7 +1015,7 @@ function appendChatMsg(msg) {
   const div = document.createElement('div')
   div.className = `chat-msg ${isOwn?'own':''}`
   div.innerHTML = `
-    <div class="chat-avatar"><img src="${getAvatarUrl(u.avatar_seed,28)}" alt=""></div>
+    <div class="chat-avatar"><img src="${getAvatar(u,28)}" alt=""></div>
     <div class="chat-bubble">
       ${!isOwn ? `<div class="chat-sender cls-${cls}" style="display:flex;align-items:center;gap:4px">${clsIcon(cls)} ${u.display_name||u.username||'?'}</div>` : ''}
       <div class="chat-text">${escHtml(msg.content)}</div>
@@ -1033,7 +1033,7 @@ function subscribeChat(city) {
       event:'INSERT', schema:'public', table:'messages', filter:`channel=eq.${ch}`
     }, async (payload) => {
       const msg = payload.new
-      const { data:u } = await supabase.from('users').select('username,display_name,avatar_seed,class').eq('id',msg.sender_id).single()
+      const { data:u } = await supabase.from('users').select('username,display_name,avatar_seed,avatar_url,class').eq('id',msg.sender_id).single()
       appendChatMsg({ ...msg, users: u })
     })
     .subscribe()
@@ -1306,6 +1306,11 @@ function getAvatarUrl(seed, size=100) {
   if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
   const [style,s,bg] = seed.split(':')
   return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+// ใช้รูปที่อัพโหลดจริงก่อน ถ้าไม่มีค่อย fallback ไป dicebear (เหมือน leaderboard.html)
+function getAvatar(user, size=100) {
+  if (user && user.avatar_url) return user.avatar_url
+  return getAvatarUrl(user && user.avatar_seed, size)
 }
 
 function fmtNum(n) { return (n||0).toLocaleString() }
