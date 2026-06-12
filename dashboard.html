@@ -337,24 +337,51 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .feed-main strong { color:var(--cyan); }
 .feed-time { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:3px; }
 
-/* LEADERBOARD MINI */
+/* LEADERBOARD MINI — matched to leaderboard.html rank-row style */
 .lb-list { display:flex;flex-direction:column;gap:0; }
 .lb-item {
   display:flex;align-items:center;gap:10px;
-  padding:10px 0;border-bottom:1px solid var(--border);
+  padding:9px 0;border-bottom:1px solid rgba(0,245,255,0.05);
+  position:relative;transition:background 0.15s;
 }
 .lb-item:last-child { border-bottom:none; }
-.lb-pos { font-family:'Orbitron',monospace;font-size:11px;font-weight:900;color:var(--text-dim);width:20px;flex-shrink:0;text-align:center; }
-.lb-pos.top1 { color:var(--gold); }
+.lb-item.lb-me { background:rgba(0,245,255,0.07); }
+.lb-item.lb-me::after { content:'YOU';position:absolute;right:0;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.45; }
+.lb-item.top1 {
+  background:linear-gradient(90deg,rgba(255,215,0,0.07) 0%,rgba(255,215,0,0.02) 100%);
+  border-bottom-color:rgba(255,215,0,0.15);
+  border-left:2px solid rgba(255,215,0,0.6);
+  padding-left:8px;
+}
+.lb-item.top2 {
+  background:linear-gradient(90deg,rgba(192,192,192,0.05) 0%,rgba(192,192,192,0.01) 100%);
+  border-bottom-color:rgba(192,192,192,0.1);
+  border-left:2px solid rgba(192,192,192,0.4);
+  padding-left:8px;
+}
+.lb-item.top3 {
+  background:linear-gradient(90deg,rgba(205,127,50,0.05) 0%,rgba(205,127,50,0.01) 100%);
+  border-bottom-color:rgba(205,127,50,0.1);
+  border-left:2px solid rgba(205,127,50,0.4);
+  padding-left:8px;
+}
+.lb-pos { font-family:'Orbitron',monospace;font-size:11px;font-weight:900;color:var(--text-dim);width:24px;flex-shrink:0;text-align:center; }
+.lb-pos.top1 { color:var(--gold);text-shadow:0 0 8px rgba(255,215,0,0.5); }
 .lb-pos.top2 { color:#c0c0c0; }
 .lb-pos.top3 { color:#cd7f32; }
-.lb-avatar { width:28px;height:28px;border-radius:50%;overflow:hidden;border:1px solid var(--border);flex-shrink:0;background:var(--panel); }
+.lb-avatar { width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--cls,var(--border)); }
 .lb-avatar img { width:100%;height:100%;object-fit:cover; }
+.lb-item.top1 .lb-avatar { border-color:var(--gold);box-shadow:0 0 6px rgba(255,215,0,0.25); }
+.lb-item.top2 .lb-avatar { border-color:#c0c0c0; }
+.lb-item.top3 .lb-avatar { border-color:#cd7f32; }
 .lb-info { flex:1;min-width:0; }
-.lb-name { font-family:'Orbitron',monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.lb-cls { font-family:'Orbitron',monospace;font-size:8px;color:var(--cls,var(--cyan)); }
-.lb-xp { font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);flex-shrink:0; }
-.lb-me { background:rgba(0,245,255,0.04);border-left:2px solid var(--cyan);padding-left:8px; }
+.lb-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.lb-cls { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--text-dim));margin-top:2px;display:flex;align-items:center;gap:5px; }
+.lb-xp { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan);flex-shrink:0;text-align:right; }
+.lb-item.top1 .lb-xp { color:var(--gold); }
+.lb-item.top2 .lb-xp { color:#c0c0c0; }
+.lb-item.top3 .lb-xp { color:#cd7f32; }
+.lb-xp-lbl { font-size:8px;color:var(--text-dim);margin-top:1px;text-align:right; }
 
 /* ===================== MODAL ===================== */
 .modal-overlay {
@@ -1251,14 +1278,17 @@ async function loadLeaderboard() {
     const posClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : ''
     const isMe = u.id === currentUser?.id
     return `
-    <div class="lb-item ${isMe ? 'lb-me' : ''}">
-      <div class="lb-pos ${posClass}">${pos === 1 ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="5" r="1" fill="currentColor"/><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="14" cy="5" r="1" fill="currentColor"/></svg>' : pos}</div>
-      <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 28)}" alt=""></div>
+    <div class="lb-item ${posClass} ${isMe ? 'lb-me' : ''}">
+      <div class="lb-pos ${posClass}">${pos === 1 ? '👑' : pos}</div>
+      <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 32)}" alt=""></div>
       <div class="lb-info">
         <div class="lb-name">${u.display_name || u.username}${isMe ? ' (คุณ)' : ''}</div>
         <div class="lb-cls cls-${u.class||'warrior'}">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>
       </div>
-      <div class="lb-xp">${fmtNum(u.xp_this_month)}</div>
+      <div>
+        <div class="lb-xp">${fmtNum(u.xp_this_month)}</div>
+        <div class="lb-xp-lbl">XP</div>
+      </div>
     </div>`
   }).join('')
   } catch (err) { console.error('[loadLeaderboard] error:', err) }
