@@ -195,64 +195,138 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .class-filter:focus { outline:none;border-color:var(--cyan); }
 .class-filter option { background:#010a0f; }
 
-/* ===================== PODIUM ===================== */
-@keyframes crownFloat { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-3px);} }
-@keyframes goldPulse { 0%,100%{box-shadow:0 0 20px rgba(255,215,0,0.5),0 0 40px rgba(255,215,0,0.2);} 50%{box-shadow:0 0 32px rgba(255,215,0,0.8),0 0 60px rgba(255,215,0,0.35);} }
-@keyframes silverPulse { 0%,100%{box-shadow:0 0 12px rgba(192,192,192,0.4);} 50%{box-shadow:0 0 22px rgba(192,192,192,0.7);} }
-@keyframes bronzePulse { 0%,100%{box-shadow:0 0 10px rgba(205,127,50,0.35);} 50%{box-shadow:0 0 18px rgba(205,127,50,0.6);} }
+/* ===================== FULL RANK LIST ===================== */
+.rank-list-wrap { animation:fadeInUp 0.5s 0.2s ease both; }
 
-.podium-section {
-  display:flex;align-items:flex-end;justify-content:center;gap:8px;
-  margin-top:40px;   /* เผื่อพื้นที่มงกุฎ ไม่บัง filter */
-  margin-bottom:24px;padding:0 4px;
-  animation:fadeInUp 0.6s 0.2s ease both;
+.rank-row {
+  display:flex;align-items:center;gap:12px;
+  padding:10px 16px;
+  border:1px solid transparent;
+  border-bottom:1px solid rgba(0,245,255,0.05);
+  transition:all 0.18s;cursor:pointer;
+  position:relative;
+  animation:slideIn 0.35s both;
 }
-.podium-item {
-  display:flex;flex-direction:column;align-items:center;gap:0;
-  flex:1;max-width:120px;
+.rank-row:hover { background:rgba(0,245,255,0.04);border-color:var(--border);padding-left:20px; }
+.rank-row.me { background:rgba(0,245,255,0.06);border-color:rgba(0,245,255,0.18); }
+.rank-row.me::after { content:'YOU';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.5; }
+
+/* top 3 highlight */
+.rank-row.top1 { border-bottom-color:rgba(255,215,0,0.12); }
+.rank-row.top2 { border-bottom-color:rgba(192,192,192,0.1); }
+.rank-row.top3 { border-bottom-color:rgba(205,127,50,0.1); }
+
+/* rank number */
+.rr-num {
+  min-width:36px;text-align:center;flex-shrink:0;
+  font-family:'Orbitron',monospace;font-size:12px;font-weight:900;
 }
-.podium-rank-1 { order:2; }
-.podium-rank-2 { order:1; }
-.podium-rank-3 { order:3; }
+.rr-num.r1 { color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.6); }
+.rr-num.r2 { color:#c0c0c0; }
+.rr-num.r3 { color:#cd7f32; }
+.rr-num.rn  { color:var(--text-dim);font-size:11px; }
 
-.podium-avatar-wrap { position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:8px; }
-.podium-avatar { border-radius:50%;overflow:hidden;border:3px solid;background:var(--panel);flex-shrink:0; }
-/* ขนาดรูป — #1 ใหญ่กว่า #2/#3 ชัดเจน */
-.podium-rank-1 .podium-avatar { width:76px;height:76px;border-color:var(--gold);animation:goldPulse 2s ease-in-out infinite; }
-.podium-rank-2 .podium-avatar { width:60px;height:60px;border-color:#c0c0c0;animation:silverPulse 2.5s ease-in-out infinite; }
-.podium-rank-3 .podium-avatar { width:60px;height:60px;border-color:#cd7f32;animation:bronzePulse 2.5s ease-in-out infinite; }
-.podium-avatar img { width:100%;height:100%;object-fit:cover; }
+/* avatar */
+.rr-avatar {
+  width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  border:2px solid var(--cls,var(--border));
+}
+.rr-avatar img { width:100%;height:100%;object-fit:cover; }
+.rank-row.top1 .rr-avatar { border-color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,0.3); }
+.rank-row.top2 .rr-avatar { border-color:#c0c0c0; }
+.rank-row.top3 .rr-avatar { border-color:#cd7f32; }
 
-/* มงกุฎ — เล็กลง ไม่บัง filter */
-.podium-crown {
-  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
-  font-size:16px;line-height:1;
-  animation:crownFloat 2.5s ease-in-out infinite;
-  filter:drop-shadow(0 0 4px rgba(255,215,0,0.7)) drop-shadow(0 1px 4px rgba(255,165,0,0.4));
-  pointer-events:none;
+/* info block */
+.rr-info { flex:1;min-width:0; }
+.rr-name {
+  font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rr-meta { display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap; }
+.rr-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--text-dim)); }
+.rr-title-text { font-size:9px;color:var(--text-dim);padding:1px 6px;border:1px solid rgba(255,255,255,0.08); }
+.rr-streak { display:flex;align-items:center;gap:2px;font-family:'Orbitron',monospace;font-size:8px;color:var(--gold); }
+
+/* XP right side */
+.rr-xp {
+  text-align:right;flex-shrink:0;
+}
+.rr-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan); }
+.rank-row.top1 .rr-xp-val { color:var(--gold); }
+.rank-row.top2 .rr-xp-val { color:#c0c0c0; }
+.rank-row.top3 .rr-xp-val { color:#cd7f32; }
+.rr-xp-label { font-size:9px;color:var(--text-dim);margin-top:1px; }
+
+/* bar under XP val */
+.rr-bar-wrap { width:60px;height:2px;background:rgba(0,245,255,0.08);margin-top:4px;overflow:hidden;margin-left:auto; }
+.rr-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
+.rank-row.top1 .rr-bar { background:linear-gradient(90deg,var(--gold),#ff9500); }
+
+/* top3 separator label */
+.rank-divider {
+  text-align:center;padding:8px 0;
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);
+  border-bottom:1px solid var(--border);margin-bottom:4px;
 }
 
-/* rank badge ใต้รูป */
-.podium-rank-num {
-  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
-  font-family:'Orbitron',monospace;font-size:9px;font-weight:900;
-  padding:2px 8px;border-radius:10px;white-space:nowrap;
+/* ===================== PLAYER POPUP ===================== */
+.player-popup-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+  z-index:700;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
 }
-.podium-rank-1 .podium-rank-num { background:var(--gold);color:#000;box-shadow:0 0 8px rgba(255,215,0,0.5); }
-.podium-rank-2 .podium-rank-num { background:#c0c0c0;color:#000; }
-.podium-rank-3 .podium-rank-num { background:#cd7f32;color:#000; }
+.player-popup-overlay.open { opacity:1;pointer-events:all; }
 
-/* แท่น — เล็กลง สัดส่วนชัด */
-.podium-stand { width:100%;border-top:2px solid; }
-.podium-rank-1 .podium-stand { height:56px;background:linear-gradient(180deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.03) 100%);border-color:var(--gold);box-shadow:inset 0 2px 10px rgba(255,215,0,0.08); }
-.podium-rank-2 .podium-stand { height:38px;background:linear-gradient(180deg,rgba(192,192,192,0.12) 0%,rgba(192,192,192,0.02) 100%);border-color:#c0c0c0; }
-.podium-rank-3 .podium-stand { height:26px;background:linear-gradient(180deg,rgba(205,127,50,0.12) 0%,rgba(205,127,50,0.02) 100%);border-color:#cd7f32; }
+.player-popup {
+  background:#010d14;border:1px solid var(--border);
+  width:min(340px,92vw);
+  position:relative;
+  transform:translateY(16px) scale(0.97);
+  transition:transform 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.player-popup-overlay.open .player-popup { transform:translateY(0) scale(1); }
 
-/* XP ใต้ชื่อ — ในส่วน podium-info */
-.podium-xp { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;text-align:center;margin-top:3px; }
-.podium-rank-1 .podium-xp { color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.5); }
-.podium-rank-2 .podium-xp { color:#c0c0c0; }
-.podium-rank-3 .podium-xp { color:#cd7f32; }
+.player-popup::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+.player-popup::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+
+.pp-header {
+  display:flex;align-items:center;gap:14px;padding:18px 18px 14px;
+  border-bottom:1px solid var(--border);
+}
+.pp-avatar { width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--cyan));flex-shrink:0; }
+.pp-avatar img { width:100%;height:100%;object-fit:cover; }
+.pp-name { font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:#fff; }
+.pp-handle { font-size:11px;color:var(--text-dim);margin-top:2px; }
+.pp-class { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;margin-top:4px; }
+.pp-close {
+  position:absolute;top:12px;right:12px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  cursor:pointer;font-size:14px;transition:all 0.2s;
+}
+.pp-close:hover { border-color:var(--red);color:var(--red); }
+
+.pp-stats { display:flex;border-bottom:1px solid var(--border); }
+.pp-stat { flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--border); }
+.pp-stat:last-child { border-right:none; }
+.pp-stat-val { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--cyan); }
+.pp-stat-lbl { font-size:9px;color:var(--text-dim);margin-top:3px; }
+
+.pp-title-row { padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;min-height:40px; }
+.pp-title-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim); }
+
+.pp-footer { display:flex;gap:0; }
+.pp-btn {
+  flex:1;padding:13px;
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  background:transparent;border:none;color:var(--text-dim);
+  border-top:1px solid var(--border);border-right:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;
+}
+.pp-btn:last-child { border-right:none; }
+.pp-btn:hover { background:rgba(0,245,255,0.06);color:var(--cyan); }
+.pp-btn.primary { color:var(--cyan); }
+.pp-btn.primary:hover { background:rgba(0,245,255,0.1); }
 
 /* LIVE INDICATOR */
 .live-dot {
@@ -265,12 +339,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   animation:livePulse 1.5s ease-in-out infinite;
 }
 @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
-
-/* info ใต้แท่น — ชื่อ + ฉาย + class + xp */
-.podium-info { display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 0;width:100%; }
-.podium-info .podium-name { font-family:'Orbitron',monospace;font-size:9px;font-weight:700;color:#fff;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.podium-info .podium-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;text-align:center; }
-.podium-title-badge { display:flex;justify-content:center;margin-top:1px; }
 
 /* ===================== LEADERBOARD TABLE ===================== */
 .lb-table-wrap {
@@ -518,12 +586,9 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   .guild-row { grid-template-columns:40px 1fr auto; }
   .guild-xp-col { display:none; }
   .guild-members { display:none; }
-  .podium-section { gap:8px; }
-  .podium-rank-1 .podium-avatar { width:72px;height:72px; }
-  .podium-rank-2 .podium-avatar { width:60px;height:60px; }
-  .podium-rank-3 .podium-avatar { width:52px;height:52px; }
+  .rr-bar-wrap { width:44px; }
   .my-rank-stats { display:none; }
-  .filter-right { display:none; }
+  .filter-right { margin-left:auto; }
   .season-timer { display:none; }
 }
 </style>
@@ -639,7 +704,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <button class="filter-chip" onclick="setFilter('period','alltime',this)">All Time</button>
       <div class="filter-right">
         <span class="live-dot">LIVE</span>
-        <span class="filter-label">CLASS:</span>
+        <span class="filter-label" style="margin-left:8px">CLASS:</span>
         <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
           <option value="all">ทุก Class</option>
           <option value="warrior">Warrior</option>
@@ -652,30 +717,11 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       </div>
     </div>
 
-    <!-- PODIUM TOP 3 -->
-    <div class="podium-section" id="podiumSection">
-      <div class="lb-loading" style="width:100%">
-        <div class="lb-skel" style="height:160px"></div>
-      </div>
-    </div>
-
-    <!-- TABLE HEADER -->
-    <div class="lb-table-header">
-      <div>#</div>
-      <div>PLAYER</div>
-      <div>XP</div>
-      <div>LEVEL</div>
-      <div>CLASS</div>
-    </div>
-
-    <!-- TABLE ROWS (rank 4+) -->
-    <div id="globalList">
+    <!-- RANK LIST -->
+    <div class="rank-list-wrap" id="globalList">
       <div class="lb-loading">
-        <div class="lb-skel"></div>
-        <div class="lb-skel"></div>
-        <div class="lb-skel"></div>
-        <div class="lb-skel"></div>
-        <div class="lb-skel"></div>
+        <div class="lb-skel"></div><div class="lb-skel"></div><div class="lb-skel"></div>
+        <div class="lb-skel"></div><div class="lb-skel"></div>
       </div>
     </div>
   </div>
@@ -725,6 +771,45 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   </div>
 
 </main>
+
+<!-- PLAYER PROFILE POPUP -->
+<div class="player-popup-overlay" id="playerPopup" onclick="closePlayerPopup(event)">
+  <div class="player-popup">
+    <button class="pp-close" onclick="closePlayerPopup()">✕</button>
+    <div class="pp-header">
+      <div class="pp-avatar cls-warrior" id="ppAvatarWrap">
+        <img id="ppAvatar" src="" alt="">
+      </div>
+      <div>
+        <div class="pp-name" id="ppName">—</div>
+        <div class="pp-handle" id="ppHandle">—</div>
+        <div class="pp-class" id="ppClass" style="color:var(--cls)">—</div>
+      </div>
+    </div>
+    <div class="pp-stats">
+      <div class="pp-stat">
+        <div class="pp-stat-val" id="ppXP">—</div>
+        <div class="pp-stat-lbl">XP เดือนนี้</div>
+      </div>
+      <div class="pp-stat">
+        <div class="pp-stat-val" id="ppLevel">—</div>
+        <div class="pp-stat-lbl">LEVEL</div>
+      </div>
+      <div class="pp-stat">
+        <div class="pp-stat-val" id="ppStreak">—</div>
+        <div class="pp-stat-lbl">STREAK</div>
+      </div>
+    </div>
+    <div class="pp-title-row" id="ppTitleRow">
+      <span class="pp-title-label">TITLE</span>
+      <span id="ppTitleBadge" style="margin-left:8px;font-size:10px;color:var(--text-dim)">—</span>
+    </div>
+    <div class="pp-footer">
+      <button class="pp-btn primary" id="ppProfileBtn" onclick="">ดูโปรไฟล์</button>
+      <button class="pp-btn" onclick="closePlayerPopup()">ปิด</button>
+    </div>
+  </div>
+</div>
 
 <!-- CITY PLAYERS MODAL -->
 <div class="modal-overlay" id="cityModal" onclick="closeCityModal(event)">
@@ -900,95 +985,62 @@ async function loadGlobal() {
 }
 
 function renderGlobal(data) {
-  // data ถูก filter class จาก DB แล้ว ไม่ต้อง filter ซ้ำใน JS
   const filtered = data
   const maxXP = filtered[0] ? (globalPeriod==='monthly' ? filtered[0].xp_this_month : filtered[0].xp_total||0) : 1
 
-  // PODIUM (top 3)
-  const podium = document.getElementById('podiumSection')
-  if (filtered.length === 0) {
-    podium.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" opacity="0.35"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2" opacity="0.35"/></svg></div><div class="empty-title">ยังไม่มีข้อมูล</div></div>'
-  } else {
-    const top3 = filtered.slice(0,3)
-    // reorder: 2nd, 1st, 3rd
-    const order = [top3[1], top3[0], top3[2]].filter(Boolean)
-    const ranks = top3[1] ? [2,1,3] : [1,3]
-    podium.innerHTML = order.map((u,i) => {
-      const rank = top3[1] ? [2,1,3][i] : i+1
-      const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
-      const cls = u.class||'warrior'
-      const crown = rank===1 ? '<div class="podium-crown">👑</div>' : ''
-      const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
-      return `
-        <div class="podium-item podium-rank-${rank}">
-          <div class="podium-avatar-wrap">
-            ${crown}
-            <div class="podium-avatar cls-${cls}">
-              <img src="${getAvatar(u, 88)}" alt="">
-            </div>
-            <div class="podium-rank-num">#${rank}</div>
-          </div>
-          <div class="podium-stand"></div>
-          <div class="podium-info">
-            <div class="podium-name">${esc(u.display_name||u.username)}</div>
-            ${titleObj ? `<div class="podium-title-badge">${renderTitleBadge(titleObj)}</div>` : ''}
-            <div class="podium-class cls-${cls}" style="color:var(--cls)">${cls.toUpperCase()}</div>
-            <div class="podium-xp">${fmtNum(xp)} XP</div>
-          </div>
-        </div>`
-    }).join('')
-  }
-
-  // LIST (rank 4+)
   const list = document.getElementById('globalList')
-  const rest = filtered.slice(3)
-  if (rest.length === 0 && filtered.length > 0) {
-    list.innerHTML = ''
-    return
-  }
-  if (rest.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" opacity="0.35"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2" opacity="0.35"/></svg></div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
     return
   }
 
-  list.innerHTML = rest.map((u, i) => {
-    const rank = i + 4
+  let html = ''
+  filtered.forEach((u, i) => {
+    const rank = i + 1
     const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
     const pct = Math.round((xp/maxXP)*100)
     const isMe = u.id === currentUser?.id
     const cls = u.class||'warrior'
-    const rankClass = rank<=3 ? `r${rank}` : 'rother'
-    const delay = (i*0.04).toFixed(2)
-    const streakBadge = (u.streak_current||0) >= 7 ? `<span style="color:var(--gold);font-size:9px;margin-left:4px"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" style="vertical-align:middle"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>${u.streak_current}</span>` : ''
-    return `
-      <div class="lb-row ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="goProfile('${u.id}')">
-        <div class="lb-row-rank ${rankClass}">${rank}</div>
-        <div class="lb-row-user">
-          <div class="lb-avatar cls-${cls}">
-            <img src="${getAvatar(u, 36)}" alt="">
-          </div>
-          <div class="lb-user-info">
-            <div class="lb-username">${esc(u.display_name||u.username)}${streakBadge}</div>
-            <div class="lb-title">Lv.${u.level||1} · ${(u.rank||'bronze').toUpperCase()}${u.equipped_title_id && titlesMap[u.equipped_title_id] ? ' &nbsp;' + renderTitleBadge(titlesMap[u.equipped_title_id], {showIcon:false}) : ''}</div>
-          </div>
-        </div>
-        <div class="lb-row-xp">
-          <div class="lb-xp-bar-wrap"><div class="lb-xp-bar" data-pct="${pct}"></div></div>
-          <div class="lb-xp-val">${fmtNum(xp)}</div>
-        </div>
-        <div class="lb-row-level">
-          <div class="lb-level-badge cls-${cls}">LV ${u.level||1}</div>
-        </div>
-        <div class="lb-row-class">
-          <div class="lb-class-tag cls-${cls}">${cls.toUpperCase()}</div>
-        </div>
-      </div>`
-  }).join('')
+    const delay = Math.min(i*0.03, 0.6).toFixed(2)
+    const rankCls = rank===1 ? 'r1' : rank===2 ? 'r2' : rank===3 ? 'r3' : 'rn'
+    const topCls  = rank===1 ? 'top1' : rank===2 ? 'top2' : rank===3 ? 'top3' : ''
+    const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
+    const titleText = titleObj ? `<span class="rr-title-text">${esc(titleObj.icon||'')} ${esc(titleObj.name)}</span>` : ''
+    const streakBadge = (u.streak_current||0) >= 7
+      ? `<span class="rr-streak"><svg width="9" height="9" viewBox="0 0 16 16" fill="none" style="vertical-align:middle"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>${u.streak_current}</span>` : ''
 
-  // Animate XP bars after DOM paint
+    // divider after top 3
+    const divider = rank === 4 ? `<div class="rank-divider">— อันดับ 4 และต่อไป —</div>` : ''
+
+    html += `${divider}
+    <div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s"
+         onclick="openPlayerPopup(${JSON.stringify({id:u.id,display_name:u.display_name,username:u.username,class:u.class,level:u.level,xp_this_month:u.xp_this_month,xp_total:u.xp_total,streak_current:u.streak_current,avatar_url:u.avatar_url,avatar_seed:u.avatar_seed,equipped_title_id:u.equipped_title_id}).replace(/"/g,'&quot;')})">
+      <div class="rr-num ${rankCls}">${rank<=3?rank:`#${rank}`}</div>
+      <div class="rr-avatar cls-${cls}">
+        <img src="${getAvatar(u,38)}" alt="" loading="lazy">
+      </div>
+      <div class="rr-info">
+        <div class="rr-name">${esc(u.display_name||u.username)}</div>
+        <div class="rr-meta">
+          <span class="rr-class cls-${cls}">${cls.toUpperCase()} · LV ${u.level||1}</span>
+          ${titleText}
+          ${streakBadge}
+        </div>
+      </div>
+      <div class="rr-xp">
+        <div class="rr-xp-val">${fmtNum(xp)}</div>
+        <div class="rr-xp-label">XP</div>
+        <div class="rr-bar-wrap"><div class="rr-bar" data-pct="${pct}"></div></div>
+      </div>
+    </div>`
+  })
+
+  list.innerHTML = html
+
+  // Animate bars
   requestAnimationFrame(() => {
-    document.querySelectorAll('#globalList .lb-xp-bar').forEach(el => {
-      el.style.width = (el.dataset.pct || 0) + '%'
+    document.querySelectorAll('#globalList .rr-bar').forEach(el => {
+      el.style.width = (el.dataset.pct||0) + '%'
     })
   })
 }
@@ -1291,6 +1343,43 @@ window.closeCityModal = function(e) {
   document.getElementById('cityModal').classList.remove('open')
 }
 
+
+// ============================================================
+// PLAYER POPUP
+// ============================================================
+window.openPlayerPopup = function(uObj) {
+  let u
+  try { u = typeof uObj === 'string' ? JSON.parse(uObj) : uObj } catch(e) { return }
+
+  const cls = u.class||'warrior'
+  const xp = globalPeriod==='monthly' ? (u.xp_this_month||0) : (u.xp_total||0)
+
+  document.getElementById('ppAvatar').src = getAvatar(u, 80)
+  document.getElementById('ppAvatarWrap').className = `pp-avatar cls-${cls}`
+  document.getElementById('ppName').textContent = u.display_name || u.username || '—'
+  document.getElementById('ppHandle').textContent = `@${u.username||'—'}`
+  document.getElementById('ppClass').textContent = cls.toUpperCase()
+  document.getElementById('ppClass').className = `pp-class cls-${cls}`
+  document.getElementById('ppXP').textContent = fmtNum(xp)
+  document.getElementById('ppLevel').textContent = u.level||1
+  document.getElementById('ppStreak').textContent = u.streak_current||0
+
+  const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
+  const ppTitle = document.getElementById('ppTitleBadge')
+  if (titleObj) {
+    ppTitle.innerHTML = renderTitleBadge(titleObj)
+  } else {
+    ppTitle.textContent = '—'
+  }
+
+  document.getElementById('ppProfileBtn').onclick = () => goProfile(u.id)
+  document.getElementById('playerPopup').classList.add('open')
+}
+
+window.closePlayerPopup = function(e) {
+  if (e && e.target !== document.getElementById('playerPopup')) return
+  document.getElementById('playerPopup').classList.remove('open')
+}
 
 // ============================================================
 // HELPERS
