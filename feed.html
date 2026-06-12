@@ -19,6 +19,13 @@
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
+/* LOADING */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
+.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
+@keyframes loadAnim{0%{width:0%}50%{width:70%}100%{width:100%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
 .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
 .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
@@ -183,6 +190,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </style>
 </head>
 <body>
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt">LOADING FEED...</div>
+</div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="grid-bg"></div>
@@ -1043,6 +1055,7 @@ if (signOutEl) signOutEl.addEventListener('click', async () => {
 
 // ===== INIT =====
 await loadProfile()
+document.getElementById('loadingScreen').style.display = 'none'
 subscribeRealtime()
 </script>
 
