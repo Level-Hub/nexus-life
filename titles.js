@@ -642,11 +642,9 @@ const DEFAULT_BADGE_SVG = `<svg width="24" height="24" viewBox="0 0 16 16" fill=
 // Used in hero profile section (small badge)
 // ============================================================
 export function renderTitleBadge(title, options = {}) {
-  const { showIcon = true } = options
   if (!title) return ''
   const r = title.rarity || 'common'
-  const icon = showIcon && title.icon ? `<span style="margin-right:5px">${title.icon}</span>` : ''
-  return `<span class="nx-title-badge rarity-${r}">${icon}${title.name || ''}</span>`
+  return `<span class="nx-title-badge rarity-${r}">${title.name || ''}</span>`
 }
 
 
