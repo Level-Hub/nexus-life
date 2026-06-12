@@ -1123,7 +1123,9 @@ async function loadStats() {
     .single()
   if (!data) return
 
-  const maxVal = Math.max(data.str_points, data.int_points, data.exp_points, data.biz_points, data.cre_points, data.soc_points, 1)
+  // ใช้ ceiling 100 เป็นฐาน — เหมือน dashboard.html
+  // ป้องกัน bar เต็ม 100% ทุกตัวเมื่อค่าใกล้กัน
+  const maxVal = Math.max(100, data.str_points, data.int_points, data.exp_points, data.biz_points, data.cre_points, data.soc_points)
 
   const stats = [
     { id:'Str', val:data.str_points },
@@ -1422,17 +1424,19 @@ window.switchTab = function(tab, btn) {
 // STREAK DAYS
 // ============================================================
 function renderStreakDays(streak) {
-  const days  = ['อา','จ','อ','พ','พฤ','ศ','ส']
-  const today = new Date().getDay()
-  const items = document.querySelectorAll('.streak-day')
+  const days    = ['อา','จ','อ','พ','พฤ','ศ','ส']
+  // ใช้ UTC+7 เหมือน dashboard.html — ไม่ใช้ local browser time
+  const nowThai = new Date(Date.now() + 7 * 3600000)
+  const today   = nowThai.getUTCDay()
+  const items   = document.querySelectorAll('.streak-day')
   items.forEach((el, i) => {
     el.classList.remove('done','today')
     el.textContent = days[i]
-    const diff = (today - i + 7) % 7
-    if (diff === 0) {
+    const daysAgo = (today - i + 7) % 7
+    if (daysAgo === 0) {
       el.classList.add('today')
       if (streak > 0) el.classList.add('done')
-    } else if (diff > 0 && diff < Math.min(streak, 7)) {
+    } else if (daysAgo > 0 && daysAgo < Math.min(streak, 7)) {
       el.classList.add('done')
     }
   })

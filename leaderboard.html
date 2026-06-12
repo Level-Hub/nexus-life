@@ -730,6 +730,12 @@ function getAvatarUrl(avatarSeed, size = 80) {
   return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
 }
 
+// ใช้ฟังก์ชันนี้ทุกที่แทน — เช็ค avatar_url (รูปจริง) ก่อนเสมอ
+function getAvatar(user, size = 80) {
+  if (user.avatar_url) return user.avatar_url
+  return getAvatarUrl(user.avatar_seed || user.username, size)
+}
+
 // ============================================================
 // INIT
 // ============================================================
@@ -761,6 +767,21 @@ async function init() {
 
   await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
   checkNotifications()
+
+  // Realtime polling — refresh ทุก 30 วิ อัพเดตอันดับแบบ real-time
+  setInterval(async () => {
+    try {
+      await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
+      // อัพเดต my rank card ด้วย
+      const { data: freshProfile } = await supabase.from('users')
+        .select('*').eq('id', currentUser.id).single()
+      if (freshProfile) {
+        userProfile = freshProfile
+        renderMyRankCard(freshProfile)
+        updateMyRankPosition(allGlobalData)
+      }
+    } catch(e) { console.warn('[leaderboard poll]', e) }
+  }, 30000)
 }
 
 // ============================================================
@@ -772,7 +793,7 @@ async function init() {
 // ============================================================
 function renderMyRankCard(p) {
   document.getElementById('myRankCard').style.display = 'flex'
-  document.getElementById('myRankAvatar').src = getAvatarUrl(p.avatar_seed || p.username)
+  document.getElementById('myRankAvatar').src = getAvatar(p, 80)
   document.getElementById('myRankAvatarWrap').className = `my-rank-avatar cls-${p.class||'warrior'}`
   document.getElementById('myRankName').textContent = p.display_name || p.username
   document.getElementById('myRankClass').textContent = (p.class||'—').toUpperCase()
@@ -852,7 +873,7 @@ function renderGlobal(data) {
           <div class="podium-avatar-wrap">
             ${crown}
             <div class="podium-avatar cls-${cls}">
-              <img src="${getAvatarUrl(u.avatar_seed||u.username, 88)}" alt="">
+              <img src="${getAvatar(u, 88)}" alt="">
             </div>
             <div class="podium-rank-num">#${rank}</div>
           </div>
@@ -888,7 +909,7 @@ function renderGlobal(data) {
         <div class="lb-row-rank ${rankClass}">${rank}</div>
         <div class="lb-row-user">
           <div class="lb-avatar cls-${cls}">
-            <img src="${getAvatarUrl(u.avatar_seed||u.username, 36)}" alt="">
+            <img src="${getAvatar(u, 36)}" alt="">
           </div>
           <div class="lb-user-info">
             <div class="lb-username">${esc(u.display_name||u.username)}${streakBadge}</div>
@@ -1198,7 +1219,7 @@ window.filterCityPlayers = async function(cityName) {
       <div class="modal-player-row cls-${cls}" onclick="goProfile('${u.id}')">
         <div class="modal-player-rank ${rankClass}">${rank}</div>
         <div class="modal-player-avatar cls-${cls}">
-          <img src="${getAvatarUrl(u.avatar_seed||u.username, 36)}" alt="">
+          <img src="${getAvatar(u, 36)}" alt="">
         </div>
         <div class="modal-player-info">
           <div class="modal-player-name">${esc(u.display_name||u.username)}</div>

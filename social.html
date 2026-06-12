@@ -309,17 +309,21 @@ let classFilter = ''
 let followingIds = new Set()
 
 // ─── HELPERS ────────────────────────────────────────────────
-function getAvatarUrl(seed, size=80) {
-  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
-  const [style, s, bg] = seed.split(':')
+function getAvatarUrl(avatarUrlOrSeed, size=80) {
+  if (!avatarUrlOrSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  if (avatarUrlOrSeed.startsWith('http') || avatarUrlOrSeed.startsWith('/'  )) return avatarUrlOrSeed
+  const [style, s, bg] = avatarUrlOrSeed.split(':')
   return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+function getAvatarSrc(u, size=80) {
+  return u.avatar_url ? u.avatar_url : getAvatarUrl(u.avatar_seed, size)
 }
 
 function updateDate() {
-  const d = new Date()
+  const d = new Date(Date.now() + 7*3600000) // UTC+7
   const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
   const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`
+  document.getElementById('pageDate').textContent = `วัน${days[d.getUTCDay()]}ที่ ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()+543}`
 }
 
 // ─── INIT ────────────────────────────────────────────────────
@@ -355,6 +359,15 @@ async function init() {
   myProfile = _myProf || null
 
   await loadFollowingIds()
+
+  // โหลด following/followers count สำหรับ MY NETWORK panel
+  const [followingData, followersData] = await Promise.all([
+    supabase.from('social_follows').select('*', { count: 'exact', head: true }).eq('follower_id', currentUser.id),
+    supabase.from('social_follows').select('*', { count: 'exact', head: true }).eq('following_id', currentUser.id)
+  ])
+  document.getElementById('myFollowing').textContent = (followingData.count || 0).toLocaleString()
+  document.getElementById('myFollowers').textContent = (followersData.count || 0).toLocaleString()
+
   await Promise.all([
     loadDiscover(),
     loadSuggested(),
@@ -430,7 +443,7 @@ async function loadFollowingIds() {
 // ─── LOAD DISCOVER ───────────────────────────────────────────
 async function loadDiscover() {
   let q = supabase.from('users')
-    .select('id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current')
+    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current')
     .eq('profile_public', true)
     .neq('id', currentUser.id)
     .order('followers_count', { ascending: false })
@@ -447,7 +460,7 @@ async function loadDiscover() {
 // ─── LOAD FOLLOWING ──────────────────────────────────────────
 async function loadFollowing() {
   const { data } = await supabase.from('social_follows')
-    .select('following_id, users!social_follows_following_id_fkey(id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current)')
+    .select('following_id, users!social_follows_following_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current)')
     .eq('follower_id', currentUser.id)
 
   const users = (data||[]).map(r => r.users).filter(Boolean)
@@ -460,7 +473,7 @@ async function loadFollowing() {
 // ─── LOAD FOLLOWERS ──────────────────────────────────────────
 async function loadFollowers() {
   const { data } = await supabase.from('social_follows')
-    .select('follower_id, users!social_follows_follower_id_fkey(id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current)')
+    .select('follower_id, users!social_follows_follower_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current)')
     .eq('following_id', currentUser.id)
 
   const users = (data||[]).map(r => r.users).filter(Boolean)
@@ -479,7 +492,7 @@ window.searchUsers = async function() {
   grid.innerHTML = '<div class="skel" style="height:84px"></div>'.repeat(3)
 
   let query = supabase.from('users')
-    .select('id,username,display_name,class,level,rank,avatar_seed,followers_count,city,streak_current')
+    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current')
     .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
     .eq('profile_public', true)
     .neq('id', currentUser.id)
@@ -511,7 +524,7 @@ function renderUserGrid(users) {
     <div class="user-card cls-${cls}">
       <div class="user-card-top" onclick="goProfile('${u.id}')">
         <div class="user-card-avatar">
-          <img src="${getAvatarUrl(u.avatar_seed, 52)}" alt="">
+          <img src="${getAvatarSrc(u, 52)}" alt="">
         </div>
         <div class="user-card-info">
           <div class="user-card-name">${esc(u.display_name || u.username)}</div>
@@ -587,7 +600,7 @@ async function loadSuggested() {
   const myCity = myProfile?.city || 'กรุงเทพมหานคร'
 
   const { data } = await supabase.from('users')
-    .select('id,username,display_name,class,level,avatar_seed,followers_count')
+    .select('id,username,display_name,class,level,avatar_seed,avatar_url,followers_count')
     .eq('city', myCity)
     .eq('profile_public', true)
     .neq('id', currentUser.id)
@@ -607,15 +620,15 @@ async function loadSuggested() {
     return `
     <div class="suggest-item">
       <div class="suggest-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-        <img src="${getAvatarUrl(u.avatar_seed, 36)}" alt="">
+        <img src="${getAvatarSrc(u, 36)}" alt="">
       </div>
       <div class="suggest-info">
         <div class="suggest-name">${esc(u.display_name || u.username)}</div>
         <div class="suggest-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
       </div>
-      <button class="suggest-follow-btn" id="sfbtn-${u.id}"
-        onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}');this.innerHTML=getIcon('check',11)+' ติดตาม';this.classList.add('following')">
-        + Follow
+      <button class="suggest-follow-btn ${followingIds.has(u.id)?'following':''}" id="sfbtn-${u.id}"
+        onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
+        ${followingIds.has(u.id) ? getIcon('check',11)+' ติดตาม' : '+ Follow'}
       </button>
     </div>`
   }).join('')

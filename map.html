@@ -112,7 +112,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   padding:6px 10px;background:transparent;
   border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s;white-space:nowrap;
 }
-.map-btn:hover,.map-btn.active { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+.map-btn:hover { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+.map-btn.active {
+  border-color:var(--cyan);color:var(--bg);
+  background:var(--cyan);
+  text-shadow:none;
+  box-shadow:0 0 10px rgba(0,245,255,0.3);
+}
 
 #map {
   height:520px;
@@ -642,8 +648,9 @@ let myLat        = null
 let myLng        = null
 let locationVisible = true
 let layers = { players: true, hotspots: false, territory: false }
-let playerMarkers   = []
-let hotspotMarkers  = []
+let playerMarkers    = []
+let hotspotMarkers   = []
+let territoryMarkers = []
 let territoryLayers = []
 
 const CLASS_COLORS = {
@@ -982,6 +989,45 @@ async function loadTerritories() {
       </div>
     `
   }).join('')
+
+  // สร้าง circle marker บนแผนที่ต่อ territory
+  // ดึง lat/lng จาก territories table ถ้ามี ไม่งั้น fallback geocode คร่าวๆ จาก city
+  const CITY_COORDS = {
+    'กรุงเทพมหานคร': [13.7563, 100.5018],
+    'เชียงใหม่':      [18.7883, 98.9853],
+    'ขอนแก่น':        [16.4419, 102.8360],
+    'นครราชสีมา':     [14.9799, 102.0978],
+    'ภูเก็ต':         [7.8804,  98.3923],
+    'ชลบุรี':         [13.3611, 100.9847],
+    'อุดรธานี':       [17.4139, 102.7871],
+    'สุราษฎร์ธานี':   [9.1382,  99.3214],
+    'หาดใหญ่':        [7.0086,  100.4747],
+    'นครสวรรค์':      [15.7030, 100.1368],
+  }
+  territoryMarkers.forEach(m => { try { mapInstance.removeLayer(m) } catch(e){} })
+  territoryMarkers = []
+  data.forEach((t, i) => {
+    const color = colors[i % colors.length]
+    const coords = CITY_COORDS[t.city] || CITY_COORDS[t.province]
+    if (!coords) return
+    const guild = t.guilds
+    const circle = L.circle(coords, {
+      radius: 18000,
+      color: color,
+      fillColor: color,
+      fillOpacity: 0.08,
+      weight: 1.5,
+      dashArray: '6,4',
+    }).bindPopup(`
+      <div style="font-family:Orbitron,monospace;min-width:150px">
+        <div style="color:${color};font-size:11px;font-weight:700">${t.city}</div>
+        <div style="color:#5a8a90;font-size:9px;margin-top:4px">[${guild?.tag||'???'}] ${guild?.name||'Unknown'}</div>
+        <div style="color:#ffd700;font-size:9px;margin-top:2px">+10% XP · ${t.guild_xp_this_week||0} XP/week</div>
+      </div>
+    `, { className: 'nexus-popup' })
+    territoryMarkers.push(circle)
+    if (layers.territory) circle.addTo(mapInstance)
+  })
 }
 
 // ============================================================
@@ -1031,11 +1077,14 @@ window.toggleLayer = function(layer, btn) {
   layers[layer] = !layers[layer]
   btn.classList.toggle('active', layers[layer])
 
+  if (layer === 'players') {
+    playerMarkers.forEach(m => layers.players ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
+  }
   if (layer === 'hotspots') {
     hotspotMarkers.forEach(m => layers.hotspots ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
   }
-  if (layer === 'players') {
-    playerMarkers.forEach(m => layers.players ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
+  if (layer === 'territory') {
+    territoryMarkers.forEach(m => layers.territory ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
   }
 }
 

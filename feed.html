@@ -82,6 +82,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:color 0.2s;font-family:'Sarabun',sans-serif;padding:0}
 .feed-action-btn:hover{color:var(--cyan)}
 .feed-action-btn.liked{color:var(--red)}
+.feed-action-btn.cheered{color:var(--gold) !important}
+.feed-action-btn.cheer-btn{
+  margin-left:auto;
+  padding:4px 12px;
+  border:1px solid rgba(255,215,0,0.25);
+  color:var(--text-dim);
+  border-radius:0;
+  font-family:'Orbitron',monospace;
+  font-size:9px;
+  letter-spacing:1px;
+  transition:all 0.2s;
+}
+.feed-action-btn.cheer-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.06)}
+.feed-action-btn.cheer-btn.cheered{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.08)}
+.cheer-count{font-family:'Orbitron',monospace;font-size:9px;margin-left:4px;opacity:0.8}
 .feed-action-btn svg{flex-shrink:0}
 .feed-tag{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;padding:2px 7px;border-radius:0;margin-right:6px;margin-top:4px}
 .feed-tag.quest{background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);color:var(--cyan)}
@@ -287,12 +302,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <!-- TRENDING -->
       <div class="widget">
         <div class="widget-title"><span class="icon-wrap" data-icon="fire"></span> TRENDING</div>
-        <div class="tag-list">
-          <div class="tag-item"><span class="tag-name">#วิ่งเช้า</span><span class="tag-count">42 posts</span></div>
-          <div class="tag-item"><span class="tag-name">#อ่านหนังสือ</span><span class="tag-count">38 posts</span></div>
-          <div class="tag-item"><span class="tag-name">#checkin</span><span class="tag-count">25 posts</span></div>
-          <div class="tag-item"><span class="tag-name">#streak30</span><span class="tag-count">18 posts</span></div>
-          <div class="tag-item"><span class="tag-name">#cityproject</span><span class="tag-count">11 posts</span></div>
+        <div class="tag-list" id="trendingList">
+          <div class="empty-txt" style="font-size:10px;color:var(--text-dim);padding:8px 0">กำลังโหลด...</div>
         </div>
       </div>
 
@@ -387,6 +398,7 @@ async function loadProfile() {
   loadCityProject()
   loadActivePlayers()
   loadCityStats()
+  loadTrending()
   loadFeed()
 }
 
@@ -396,14 +408,24 @@ async function loadCityBuff() {
   if (!cs) return
 
   const lvl = cs.prosperity_level || 1
-  const bonus = (lvl * 5)
-  const pct = Math.min(100, (cs.xp_contributed_weekly / cs.xp_threshold_next) * 100)
+
+  // อ่าน bonus จาก active_buffs JSON เป็น source of truth
+  // fallback: prosperity_level * 5 ถ้า active_buffs ยังไม่มีค่า
+  let bonusPct = lvl * 5
+  try {
+    const buffs = typeof cs.active_buffs === 'string' ? JSON.parse(cs.active_buffs) : (cs.active_buffs || {})
+    if (buffs.xp_bonus != null) bonusPct = Math.round(buffs.xp_bonus * 100)
+  } catch(e) {}
+
+  const xpContrib = cs.xp_contributed_weekly || 0
+  const xpNext    = cs.xp_threshold_next || 1000
+  const pct       = Math.min(100, Math.round(xpContrib / xpNext * 100))
 
   document.getElementById('buffCityName').textContent = `${cs.city_name} — PROSPERITY LV.${lvl}`
-  document.getElementById('buffLevel').textContent = `XP Bonus ทุกคนในเมือง +${bonus}% · อีก ${(cs.xp_threshold_next - cs.xp_contributed_weekly).toLocaleString()} XP → Lv.${lvl + 1}`
+  document.getElementById('buffLevel').textContent = `XP Bonus ทุกคนในเมือง +${bonusPct}% · อีก ${(xpNext - xpContrib).toLocaleString()} XP → Lv.${lvl + 1}`
   document.getElementById('buffBar').style.width = pct + '%'
-  document.getElementById('buffBarLabel').textContent = `${(cs.xp_contributed_weekly || 0).toLocaleString()} / ${(cs.xp_threshold_next || 1000).toLocaleString()} XP`
-  document.getElementById('buffBonus').textContent = `+${bonus}%`
+  document.getElementById('buffBarLabel').textContent = `${xpContrib.toLocaleString()} / ${xpNext.toLocaleString()} XP`
+  document.getElementById('buffBonus').textContent = `+${bonusPct}%`
 }
 
 // ===== CITY PROJECT =====
@@ -480,6 +502,53 @@ async function loadCityStats() {
     document.getElementById('statWeekXP').textContent = (cs.xp_contributed_weekly || 0).toLocaleString()
     document.getElementById('statProsperity').textContent = `LV.${cs.prosperity_level || 1}`
     document.getElementById('statCityStreak').textContent = `${cs.city_streak_days || 0}d`
+  }
+}
+
+// ===== TRENDING =====
+async function loadTrending() {
+  const trendList = document.getElementById('trendingList')
+  try {
+    // นับจาก activity_feed จริง — group by type แล้ว map เป็น label
+    const { data } = await supabase
+      .from('activity_feed')
+      .select('type')
+      .order('created_at', { ascending: false })
+      .limit(500)
+
+    if (!data || data.length === 0) {
+      trendList.innerHTML = `<div class="empty-txt" style="font-size:10px;color:var(--text-dim);padding:8px 0">ยังไม่มีข้อมูล</div>`
+      return
+    }
+
+    // นับ count ต่อ type
+    const counts = {}
+    data.forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1 })
+
+    // map type → hashtag label
+    const labelMap = {
+      checkin:          '#checkin',
+      quest_complete:   '#questcomplete',
+      level_up:         '#levelup',
+      streak_milestone: '#streak',
+      badge_unlock:     '#badge',
+      title_unlock:     '#title',
+      guild_join:       '#guild',
+      pvp_win:          '#pvp',
+    }
+
+    const sorted = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+
+    trendList.innerHTML = sorted.map(([type, count]) => `
+      <div class="tag-item">
+        <span class="tag-name">${labelMap[type] || '#' + type}</span>
+        <span class="tag-count">${count} posts</span>
+      </div>
+    `).join('')
+  } catch(e) {
+    trendList.innerHTML = `<div class="empty-txt" style="font-size:10px;color:var(--text-dim);padding:8px 0">โหลดไม่ได้</div>`
   }
 }
 
@@ -644,8 +713,8 @@ function renderFeedCard(item) {
       break
     case 'checkin':
       tag = `<span class="feed-tag checkin">${getIcon('checkin',10)} CHECK-IN</span>`
-      if (data.is_pioneer) tag += `<span class="feed-tag pioneer">${getIcon('star_filled',10)} PIONEER</span>`
-      content = `<strong>${escHtml(item.display_name || item.username)}</strong> Check-in ที่ <span class="highlight">${escHtml(data.place_name || data.city || '—')}</span>${data.is_pioneer ? ' <span class="xp-gain">PIONEER! +100 XP</span>' : ''}`
+      if (data.pioneer) tag += `<span class="feed-tag pioneer">${getIcon('star_filled',10)} PIONEER</span>`
+      content = `<strong>${escHtml(item.display_name || item.username)}</strong> Check-in ที่ <span class="highlight">${escHtml(data.place || data.place_name || data.city || '—')}</span>${data.pioneer ? ` <span class="xp-gain">PIONEER! +${data.xp || 100} XP</span>` : ''}`
       break
     case 'guild_join':
       tag = `<span class="feed-tag badge">${getIcon('sword',10)} GUILD</span>`

@@ -572,6 +572,8 @@ export const ICONS = {
   pin:              SYSTEM_ICONS.pin,
   compass:          SYSTEM_ICONS.compass,
   axes:             SYSTEM_ICONS.axes,
+  search:           SYSTEM_ICONS.search,
+  hammer:           SYSTEM_ICONS.hammer,
   signal:           SYSTEM_ICONS.signal,
   group:            SYSTEM_ICONS.group,
 }

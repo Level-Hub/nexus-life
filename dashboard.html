@@ -829,6 +829,7 @@ async function init() {
     await loadQuests()
     await loadVerifyBadge()
     loadNotifBadge()
+    await checkAndUpdateStreak()
   } catch (err) {
     console.error('[dashboard] init error:', err)
   }
@@ -838,6 +839,67 @@ async function init() {
   updateQuestResetTimer()
   setInterval(updateQuestResetTimer, 60000)
   initCursor()
+}
+
+// ============================================================
+// CHECK & UPDATE STREAK (ทำงานทุกครั้งที่เปิด dashboard)
+// ============================================================
+async function checkAndUpdateStreak() {
+  try {
+    if (!userProfile) return
+
+    // วันนี้ในเวลาไทย UTC+7
+    const nowThai   = new Date(Date.now() + 7 * 3600000)
+    const todayStr  = nowThai.toISOString().split('T')[0]              // "2026-06-12"
+    const lastDate  = userProfile.streak_last_date || ''               // "2026-06-11" หรือว่าง
+
+    // ถ้า login วันนี้ไปแล้ว — ไม่ต้องทำอะไร
+    if (lastDate === todayStr) return
+
+    const yesterdayThai = new Date(nowThai.getTime() - 86400000)
+    const yesterdayStr  = yesterdayThai.toISOString().split('T')[0]   // "2026-06-11"
+
+    let newStreak
+    if (lastDate === yesterdayStr) {
+      // login ต่อเนื่อง — เพิ่ม streak
+      newStreak = (userProfile.streak_current || 0) + 1
+    } else {
+      // ขาดไปอย่างน้อย 1 วัน — reset เป็น 1
+      newStreak = 1
+    }
+
+    const newLongest = Math.max(newStreak, userProfile.streak_longest || 0)
+
+    const { error } = await supabase.from('users').update({
+      streak_current:   newStreak,
+      streak_longest:   newLongest,
+      streak_last_date: todayStr,
+      last_seen:        new Date().toISOString(),
+    }).eq('id', currentUser.id)
+
+    if (error) {
+      console.warn('[streak] update error:', error.message)
+      return
+    }
+
+    // อัพเดต local profile object และ UI ทันที (ไม่ต้อง reload)
+    userProfile.streak_current   = newStreak
+    userProfile.streak_longest   = newLongest
+    userProfile.streak_last_date = todayStr
+
+    document.getElementById('streakNum').textContent     = newStreak
+    document.getElementById('streakLongest').textContent = `สถิติสูงสุด: ${newLongest} วัน`
+    document.getElementById('statStreak').textContent    = newStreak
+    document.getElementById('pmStreak').textContent      = newStreak
+    renderStreakDays(newStreak, todayStr)
+
+    // แจ้ง milestone ทุก 7 วัน
+    if (newStreak > 1 && newStreak % 7 === 0) {
+      showToast(`🔥 Streak ${newStreak} วัน! สุดยอด!`, 'success')
+    }
+  } catch (e) {
+    console.warn('[checkAndUpdateStreak]', e)
+  }
 }
 
 // ============================================================

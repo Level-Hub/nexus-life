@@ -933,7 +933,7 @@ async function showHasGuildView() {
 // ============================================
 async function loadMembers() {
   const { data } = await sb.from('guild_members')
-    .select('*, users(id,username,display_name,class,level,xp_this_month,avatar_seed)')
+    .select('*, users(id,username,display_name,class,level,xp_this_month,avatar_seed,avatar_url)')
     .eq('guild_id', MY_GUILD.id)
     .order('role')
 
@@ -950,7 +950,7 @@ async function loadMembers() {
     const canManage = MY_MEMBER.role === 'master' && !isMe
     return `
     <div class="member-item cls-${u.class || 'warrior'}">
-      <div class="member-avatar"><img src="${getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
+      <div class="member-avatar"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
       <div class="member-info">
         <div class="member-name">
           ${escHtml(u.display_name || u.username)}
@@ -1222,7 +1222,7 @@ window.confirmLeave = async () => {
     return
   }
   if (!confirm(`ออกจาก Guild "${MY_GUILD.name}"?`)) return
-  await sb.from('guild_members').delete().eq('user_id', ME.id)
+  await sb.from('guild_members').delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id)
   toast('ออกจาก Guild แล้ว', 'info')
   setTimeout(() => location.reload(), 1000)
 }
