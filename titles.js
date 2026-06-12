@@ -11,6 +11,8 @@
 //   renderBadgeItem(badge, unlocked)      → HTML string (badge card)
 // ============================================================
 
+import { CLASS_COLOR } from './icons.js'
+
 
 // ============================================================
 // RARITY CONFIG
@@ -74,10 +76,7 @@ export const CLASS_ICONS_SVG = {
   diplomat:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M3 12l-1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M17 12c0 0-2-3-4-3H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M17 12l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10V8a1 1 0 012 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
 }
 
-const CLASS_COLOR = {
-  warrior: '#ff4444', mage: '#aa44ff', explorer: '#44ff88',
-  merchant: '#ffaa00', artist: '#ff66aa', diplomat: '#00ccff',
-}
+// CLASS_COLOR imported from icons.js — single source of truth
 
 
 // ============================================================

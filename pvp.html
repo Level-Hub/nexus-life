@@ -1239,7 +1239,7 @@ async function loadIncomingChallenges() {
 }
 
 async function respondChallenge(duelId, action) {
-  // ✅ BUG FIX: ตรวจสอบว่าเป็น defender จริงและ status ยัง pending ก่อน update
+  // ตรวจสอบว่าเป็น defender จริงและ status ยัง pending ก่อน update
   const { data: duelCheck, error: checkErr } = await supabase
     .from('pvp_duels').select('defender_id, status').eq('id', duelId).single()
   if (checkErr || !duelCheck) { showToast('ไม่พบ Duel นี้', 'error'); return }
@@ -1249,15 +1249,34 @@ async function respondChallenge(duelId, action) {
   if (action === 'accept') {
     const startAt = new Date().toISOString()
     const expiresAt = new Date(Date.now() + 24 * 3600000).toISOString()
-    const { error } = await supabase.from('pvp_duels').update({ status:'active', started_at:startAt, expires_at:expiresAt }).eq('id', duelId)
+    // RLS policy "Participants can update duel" อนุญาต update โดยตรง
+    const { error } = await supabase.from('pvp_duels')
+      .update({ status: 'active', started_at: startAt, expires_at: expiresAt })
+      .eq('id', duelId)
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
     showToast('รับคำท้าแล้ว! การแข่งขันเริ่มต้น', 'success')
   } else {
-    const { error } = await supabase.from('pvp_duels').update({ status:'declined' }).eq('id', duelId)
+    const { error } = await supabase.from('pvp_duels')
+      .update({ status: 'declined' })
+      .eq('id', duelId)
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
     showToast('ปฏิเสธคำท้าแล้ว')
   }
   await Promise.all([loadIncomingChallenges(), loadActiveDuels()])
+}
+
+// ============================================================
+// RESOLVE DUEL — เรียกเมื่อ duel active และหมดเวลา หรือ user กด submit ผล
+// ใช้ resolve_pvp_duel(uuid) — คำนวณผู้ชนะ, ให้ XP, อัพเดต pvp_win_streak, insert notification
+// ============================================================
+async function resolveDuel(duelId) {
+  const { data, error } = await supabase.rpc('resolve_pvp_duel', { p_duel_id: duelId })
+  if (error) {
+    console.error('resolve_pvp_duel error:', error)
+    showToast('เกิดข้อผิดพลาดในการสรุปผล Duel', 'error')
+    return null
+  }
+  return data
 }
 
 // ============================================================
@@ -1334,12 +1353,25 @@ async function loadActiveDuels() {
         </div>
       </div>
       <div class="duel-meta">
-        <div class="duel-tag time">เหลือ ${remH} ชม. ${remM} น.</div>
+        <div class="duel-tag time">${remaining > 0 ? `เหลือ ${remH} ชม. ${remM} น.` : 'หมดเวลา'}</div>
         <div class="duel-tag">รางวัล: +50 XP</div>
         ${myXP > theirXP ? `<div class="duel-tag reward">นำอยู่!</div>` : theirXP > myXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">ตามหลัง</div>` : `<div class="duel-tag">เสมอ</div>`}
       </div>
+      ${remaining <= 0 ? `<button class="duel-btn" style="width:100%;margin-top:8px;border-color:var(--cyan);color:var(--cyan)" onclick="triggerResolveDuel('${d.id}')">สรุปผล Duel</button>` : ''}
     </div>`
   }).join('')
+}
+
+// ============================================================
+// TRIGGER RESOLVE DUEL — เรียกเมื่อ user กดปุ่ม "สรุปผล Duel"
+// ============================================================
+window.triggerResolveDuel = async function(duelId) {
+  const result = await resolveDuel(duelId)
+  if (result) {
+    const isWinner = result?.winner_id === currentUser.id
+    showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ! +50 XP' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+    setTimeout(() => location.reload(), 1500)
+  }
 }
 
 // ============================================================

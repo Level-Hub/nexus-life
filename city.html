@@ -934,7 +934,10 @@ async function loadWarData(city) {
     </div>
     <div class="war-time">เหลือ ${h}h ${m}m</div>
     ${data.status === 'active'
-      ? `<button class="war-join-btn" onclick="joinWar(${data.id})">${getIcon('sword',13)} เข้าร่วมสงคราม</button>`
+      ? `<div style="display:flex;gap:8px;flex-wrap:wrap">
+           <button class="war-join-btn" onclick="joinWar(${data.id})" style="flex:1">${getIcon('sword',13)} เข้าร่วมสงคราม</button>
+           <button class="war-join-btn" onclick="promptContributeXP(${data.id})" style="flex:1;border-color:var(--gold);color:var(--gold)">${getIcon('star',13)} ส่งพลัง XP</button>
+         </div>`
       : `<div class="war-upcoming">เริ่มใน ${new Date(data.starts_at).toLocaleDateString('th')}</div>`
     }`
 }
@@ -1080,9 +1083,9 @@ window.joinProject = async function() {
 }
 
 window.joinWar = async function(warId) {
-  // ✅ BUG FIX: ตรวจสอบว่า war ยัง active อยู่ก่อน join
+  // ตรวจสอบว่า war ยัง active อยู่ก่อน join
   const { data: warCheck } = await supabase
-    .from('city_wars').select('status, ends_at').eq('id', warId).single()
+    .from('city_wars').select('status, ends_at, city_a, city_b').eq('id', warId).single()
   if (!warCheck || warCheck.status !== 'active') {
     showToast('City War นี้ไม่ได้ active แล้ว', 'error'); return
   }
@@ -1090,6 +1093,7 @@ window.joinWar = async function(warId) {
     showToast('City War นี้หมดเวลาแล้ว', 'error'); return
   }
 
+  // register เข้าร่วม war (upsert กัน duplicate)
   const { error } = await supabase.from('city_war_participants').upsert({
     war_id: warId,
     user_id: currentUser.id,
@@ -1098,11 +1102,69 @@ window.joinWar = async function(warId) {
   }, { onConflict: 'war_id,user_id' })
 
   if (!error) {
-    showToast('เข้าร่วม City War แล้ว!', 'success')
+    showToast('เข้าร่วม City War แล้ว! กด "ส่งพลัง XP" เพื่อ contribute', 'success')
     await loadWarData(selectedCity)
   } else {
     showToast('เกิดข้อผิดพลาด: ' + error.message, 'error')
   }
+}
+
+// contribute XP เข้า city war — อัพเดต xp_contributed ของ participant และ city_a_xp/city_b_xp
+window.contributeWarXP = async function(warId, xpAmount) {
+  if (!xpAmount || xpAmount <= 0) { showToast('ระบุ XP ที่จะส่งไม่ถูกต้อง', 'error'); return }
+
+  // ตรวจสอบ war status
+  const { data: warData } = await supabase
+    .from('city_wars').select('status, ends_at, city_a, city_b, city_a_xp, city_b_xp')
+    .eq('id', warId).single()
+  if (!warData || warData.status !== 'active') { showToast('City War นี้ไม่ได้ active แล้ว', 'error'); return }
+  if (warData.ends_at && new Date(warData.ends_at) < new Date()) { showToast('City War นี้หมดเวลาแล้ว', 'error'); return }
+
+  // ตรวจว่า user เป็น participant แล้ว
+  const { data: participant } = await supabase
+    .from('city_war_participants')
+    .select('id, xp_contributed')
+    .eq('war_id', warId).eq('user_id', currentUser.id).maybeSingle()
+  if (!participant) { showToast('กรุณาเข้าร่วม City War ก่อน', 'error'); return }
+
+  // ตรวจ user มี XP พอไหม
+  const { data: me } = await supabase.from('users').select('xp_total').eq('id', currentUser.id).single()
+  if (!me || me.xp_total < xpAmount) { showToast('XP ของคุณไม่พอ', 'error'); return }
+
+  const isA = warData.city_a === selectedCity
+  const newCityXP = isA
+    ? warData.city_a_xp + xpAmount
+    : warData.city_b_xp + xpAmount
+
+  // อัพเดต xp_contributed ของ participant (atomic increment)
+  const { error: p1 } = await supabase.from('city_war_participants')
+    .update({ xp_contributed: participant.xp_contributed + xpAmount })
+    .eq('id', participant.id)
+  if (p1) { showToast('เกิดข้อผิดพลาด: ' + p1.message, 'error'); return }
+
+  // อัพเดต city_wars XP ของฝั่งเมือง
+  const cityXPField = isA ? 'city_a_xp' : 'city_b_xp'
+  await supabase.from('city_wars')
+    .update({ [cityXPField]: newCityXP })
+    .eq('id', warId)
+
+  // เพิ่ม city reputation
+  await supabase.rpc('add_city_reputation', {
+    p_user_id: currentUser.id,
+    p_city_name: selectedCity,
+    p_points: Math.floor(xpAmount / 10)
+  }).catch(() => {})
+
+  showToast(`ส่งพลัง ${fmtNum(xpAmount)} XP เข้าสงครามแล้ว!`, 'success')
+  await loadWarData(selectedCity)
+}
+
+// prompt ให้ user กรอก XP amount แล้วเรียก contributeWarXP
+window.promptContributeXP = function(warId) {
+  const xpStr = prompt('ส่งพลัง XP เข้าสงครามกี่ XP? (ใช้ XP ของคุณ)')
+  const xpAmount = parseInt(xpStr)
+  if (!xpStr || isNaN(xpAmount) || xpAmount <= 0) return
+  contributeWarXP(warId, xpAmount)
 }
 
 window.helpRequest = async function(reqId) {

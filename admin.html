@@ -463,7 +463,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 
   <div class="sidebar-bottom">
-    <button class="back-btn" onclick="window.location.href='./profile.html'">
+    <button class="back-btn" onclick="window.location.href='./dashboard.html'">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
       กลับหน้าหลัก
     </button>
@@ -1121,14 +1121,14 @@ async function loadOverview() {
   }
 
   // Top users
-  const { data: top } = await sb.from('users').select('username, display_name, class, level, xp_this_month, avatar_seed').order('xp_this_month', { ascending: false }).limit(5)
+  const { data: top } = await sb.from('users').select('username, display_name, class, level, xp_this_month, avatar_seed, avatar_url').order('xp_this_month', { ascending: false }).limit(5)
   const topEl = document.getElementById('topUsersList')
   if (top && top.length > 0) {
     const clsColors = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
     topEl.innerHTML = top.map((u, i) => `
       <div class="user-row">
         <div class="user-rank-num">${i + 1}</div>
-        <div class="user-av"><img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(u.avatar_seed||u.username)}&backgroundColor=0a1628&size=80" alt=""></div>
+        <div class="user-av"><img src="${getAvatarSrc(u)}" alt=""></div>
         <div class="user-info">
           <div class="user-uname">${escHtml(u.display_name || u.username)}</div>
           <div class="user-sub">Lv.${u.level} · ${u.class||'?'}</div>
@@ -1156,21 +1156,46 @@ function startCharts() {
     }
   }
 
-  // Weekly chart
+  // Weekly chart — ดึง quest สำเร็จรายวัน 7 วันย้อนหลัง
   const days = ['จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.']
-  const today = new Date().getDay()
-  const labels = Array.from({ length: 7 }, (_, i) => days[(today - 6 + i + 7) % 7])
+  const todayDay = new Date().getDay()
+  const labels = Array.from({ length: 7 }, (_, i) => days[(todayDay - 6 + i + 7) % 7])
 
   weeklyChart = new Chart(document.getElementById('chartWeekly'), {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        { label: 'Quest สำเร็จ', data: [12, 19, 14, 25, 22, 30, 18], backgroundColor: 'rgba(0,245,255,0.25)', borderColor: 'rgba(0,245,255,0.7)', borderWidth: 1 },
-        { label: 'Topup (฿ ×10)', data: [5, 8, 3, 12, 7, 15, 9], backgroundColor: 'rgba(255,215,0,0.25)', borderColor: 'rgba(255,215,0,0.7)', borderWidth: 1 }
+        { label: 'Quest สำเร็จ', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(0,245,255,0.25)', borderColor: 'rgba(0,245,255,0.7)', borderWidth: 1 },
+        { label: 'Topup (฿ ×10)', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(255,215,0,0.25)', borderColor: 'rgba(255,215,0,0.7)', borderWidth: 1 }
       ]
     },
     options: { ...chartOpts, plugins: { ...chartOpts.plugins } }
+  })
+
+  // โหลดข้อมูล quest สำเร็จ 7 วัน
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString()
+  sb.from('user_quests').select('reviewed_at').eq('status','approved').gte('reviewed_at', weekAgo).then(({ data }) => {
+    const questCounts = [0,0,0,0,0,0,0]
+    ;(data || []).forEach(q => {
+      const d = new Date(q.reviewed_at)
+      const diff = Math.floor((Date.now() - d.getTime()) / 86400000)
+      if (diff >= 0 && diff < 7) questCounts[6 - diff]++
+    })
+    weeklyChart.data.datasets[0].data = questCounts
+    weeklyChart.update()
+  })
+
+  // โหลดข้อมูล topup 7 วัน
+  sb.from('transactions').select('amount_thb, created_at').eq('status','completed').gte('created_at', weekAgo).then(({ data }) => {
+    const topupAmts = [0,0,0,0,0,0,0]
+    ;(data || []).forEach(t => {
+      const d = new Date(t.created_at)
+      const diff = Math.floor((Date.now() - d.getTime()) / 86400000)
+      if (diff >= 0 && diff < 7) topupAmts[6 - diff] += Math.round((t.amount_thb || 0) / 10)
+    })
+    weeklyChart.data.datasets[1].data = topupAmts
+    weeklyChart.update()
   })
 
   // Class chart
@@ -1227,7 +1252,7 @@ function renderTransactions(list) {
     return `<div class="tx-card" id="tx-${t.id}">
       <div class="tx-top">
         <div class="tx-user">
-          <div class="tx-avatar"><img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=80" alt=""></div>
+          <div class="tx-avatar"><img src="${getAvatarSrc(u)}" alt=""></div>
           <div>
             <div class="tx-uname">${escHtml(u.display_name || u.username || '?')}</div>
             <div class="tx-uid">ID: ${t.user_id?.slice(0, 8) || '?'}... · ${relTime(t.created_at)}</div>
@@ -1269,19 +1294,30 @@ window.approveTransaction = async (id) => {
   const note = document.getElementById(`txNote-${id}`)?.value || ''
   const { error } = await sb.rpc('confirm_topup', { p_transaction_id: id, p_admin_id: ME.id })
   if (error) {
-    // fallback manual
+    // fallback manual — ใช้ atomic SQL increment ป้องกัน race condition
     const { data: tx } = await sb.from('transactions').select('*').eq('id', id).single()
     if (tx) {
       const crystal = calcCrystal(tx.amount_thb)
-      await sb.from('transactions').update({ status: 'completed', crystal_amount: crystal, admin_verified_by: ME.id, verified_at: new Date().toISOString(), note }).eq('id', id)
-      await sb.from('users').select('crystal').eq('id', tx.user_id).then(async ({ data }) => {
-        const cur = data?.[0]?.crystal || 0
-        await sb.from('users').update({ crystal: cur + crystal }).eq('id', tx.user_id)
+      await sb.from('transactions').update({
+        status: 'completed',
+        crystal_amount: crystal,
+        admin_verified_by: ME.id,
+        verified_at: new Date().toISOString(),
+        note: note || null
+      }).eq('id', id)
+      // atomic increment — ไม่ต้อง read crystal ก่อน กัน double-credit
+      await sb.rpc('increment_stat', { p_user_id: tx.user_id, p_col: 'crystal', p_amount: crystal }).catch(async () => {
+        // ถ้า increment_stat ไม่รองรับ crystal ใช้ raw SQL แทน
+        await sb.from('users').update({ crystal: sb.raw(`crystal + ${crystal}`) }).eq('id', tx.user_id).catch(() => {})
       })
-      await sb.from('notifications').insert({ user_id: tx.user_id, title: 'เติม Crystal สำเร็จ!', body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว` })
+      await sb.from('notifications').insert({
+        user_id: tx.user_id,
+        title: 'เติม Crystal สำเร็จ!',
+        body: `ได้รับ ${crystal} Crystal เรียบร้อยแล้ว`
+      })
     }
   }
-  if (note) await sb.from('transactions').update({ note }).eq('id', id)
+  if (note && !error) await sb.from('transactions').update({ note }).eq('id', id)
   toast('Approve สำเร็จ', 'success')
   await loadTransactions()
   await loadOverview()
@@ -1328,7 +1364,7 @@ function renderUsers(list) {
       <td>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="user-av" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid ${clsColors[u.class]||'var(--border)'};background:var(--panel);flex-shrink:0">
-            <img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(u.avatar_seed||u.username)}&backgroundColor=0a1628&size=80" style="width:100%;height:100%;object-fit:cover" alt="">
+            <img src="${getAvatarSrc(u)}" style="width:100%;height:100%;object-fit:cover" alt="">
           </div>
           <div>
             <div style="font-family:Orbitron,monospace;font-size:9px;color:#fff">${escHtml(u.display_name || u.username)}</div>
@@ -1862,6 +1898,11 @@ function toast(msg, type = 'info') {
 }
 function escHtml(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+function getAvatarSrc(user) {
+  if (user?.avatar_url) return user.avatar_url
+  const seed = user?.avatar_seed || user?.username || 'default'
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=80`
 }
 function relTime(iso) {
   if (!iso) return '—'

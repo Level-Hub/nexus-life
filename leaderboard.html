@@ -795,38 +795,29 @@ function updateMyRankPosition(data) {
 // GLOBAL LEADERBOARD
 // ============================================================
 async function loadGlobal() {
-  // FIX 1: ใช้ leaderboard_monthly view — มี title join ครบ + profile_public filter แล้ว
-  // FIX 3: filter class ที่ DB ไม่ใช่ JS เพื่อไม่พลาดถ้ามีผู้เล่นมากกว่า limit
-  let query = supabase.from('leaderboard_monthly')
-    .select('*')
-    .order('xp_this_month', { ascending: false })
-    .limit(100)
+  let sorted = []
 
-  if (selectedClass !== 'all') {
-    query = query.eq('class', selectedClass)
-  }
-
-  const { data, error } = await query
-  if (error) { console.error(error); return }
-
-  // alltime mode — re-sort by xp_total client side (view sort by xp_this_month)
-  let sorted = data || []
   if (globalPeriod === 'alltime') {
-    // ดึง xp_total เพิ่มเติม เพราะ view มีแค่ xp_this_month
-    const ids = sorted.map(u => u.id)
-    if (ids.length) {
-      const { data: totals } = await supabase
-        .from('users')
-        .select('id,xp_total,streak_current')
-        .in('id', ids)
-      const totalMap = {}
-      ;(totals || []).forEach(u => { totalMap[u.id] = u })
-      sorted = sorted.map(u => ({
-        ...u,
-        xp_total: totalMap[u.id]?.xp_total || 0,
-        streak_current: totalMap[u.id]?.streak_current || 0
-      })).sort((a,b) => b.xp_total - a.xp_total)
-    }
+    // alltime: query users ตรง เรียง xp_total ถูกต้อง 100%
+    let query = supabase.from('users')
+      .select('id,username,display_name,class,level,rank,xp_total,xp_this_month,streak_current,avatar_seed,avatar_url,city,equipped_title_id')
+      .eq('profile_public', true)
+      .order('xp_total', { ascending: false })
+      .limit(100)
+    if (selectedClass !== 'all') query = query.eq('class', selectedClass)
+    const { data, error } = await query
+    if (error) { console.error(error); return }
+    sorted = (data || []).map(u => ({ ...u, position: null }))
+  } else {
+    // monthly: ใช้ leaderboard_monthly view — มี title join + profile_public filter แล้ว
+    let query = supabase.from('leaderboard_monthly')
+      .select('*')
+      .order('xp_this_month', { ascending: false })
+      .limit(100)
+    if (selectedClass !== 'all') query = query.eq('class', selectedClass)
+    const { data, error } = await query
+    if (error) { console.error(error); return }
+    sorted = data || []
   }
 
   allGlobalData = sorted
@@ -1150,7 +1141,7 @@ window.switchTab = function(tab) {
 window.setFilter = function(key, val, btn) {
   btn.closest('.filter-row').querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
-  if (key === 'period') { globalPeriod = val; renderGlobal(allGlobalData) }
+  if (key === 'period') { globalPeriod = val; loadGlobal() }
 }
 
 window.applyClassFilter = function(val) {
