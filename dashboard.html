@@ -853,6 +853,7 @@ async function loadProfile() {
   // ดึง equipped title (ไม่ throw ถ้าไม่มี)
   let equippedTitle = null
   try {
+    // ลอง equipped_title_id ก่อน (เร็วกว่า)
     if (profile.equipped_title_id) {
       const { data: titleDef } = await supabase
         .from('titles')
@@ -860,9 +861,9 @@ async function loadProfile() {
         .eq('id', profile.equipped_title_id)
         .maybeSingle()
       equippedTitle = titleDef || null
-    } else {
-      // fallback: query user_titles is_equipped — ใช้ maybeSingle() ไม่ใช่ single()
-      // single() จะ error ถ้าไม่มีแถว (user ยังไม่มี title เลย)
+    }
+    // Fallback: ถ้า equipped_title_id ไม่มีหรือ query ไม่เจอ ลอง user_titles
+    if (!equippedTitle) {
       const { data: utRow } = await supabase
         .from('user_titles')
         .select('title_id, titles(id, name, icon, category, rarity)')
@@ -870,9 +871,13 @@ async function loadProfile() {
         .eq('is_equipped', true)
         .maybeSingle()
       equippedTitle = utRow?.titles || null
+      // sync equipped_title_id กลับ users table ถ้าพบ title แต่ยังไม่ถูก sync
+      if (equippedTitle && !profile.equipped_title_id) {
+        supabase.from('users').update({ equipped_title_id: equippedTitle.id })
+          .eq('id', currentUser.id).then(() => {})
+      }
     }
   } catch (e) {
-    // ไม่มี title — ปล่อยผ่าน
     equippedTitle = null
   }
 
@@ -961,19 +966,25 @@ async function loadQuests() {
     .eq('type', 'daily')
     .or(`class_target.eq.${cls},class_target.is.null`)
 
-  // FIX: ดึง user_quests เฉพาะวันนี้ ใส่ range ชัดๆ กันดึงวันพรุ่งนี้มาด้วย
+  // FIX: filter ด้วย submitted_at (ไม่ใช่ created_at) เพราะ upsert ไม่อัปเดต created_at
+  // submitted_at ถูก set ใหม่ทุกครั้งที่ส่งหลักฐาน → ใช้กรอง "วันนี้" ได้ถูกต้อง
   const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
+  // ใช้ timezone local ของ user เพื่อกันปัญหา UTC offset
+  const todayStr = today.getFullYear() + '-' +
+    String(today.getMonth()+1).padStart(2,'0') + '-' +
+    String(today.getDate()).padStart(2,'0')
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+  const tomorrowStr = tomorrow.getFullYear() + '-' +
+    String(tomorrow.getMonth()+1).padStart(2,'0') + '-' +
+    String(tomorrow.getDate()).padStart(2,'0')
 
   const { data: userQuests } = await supabase
     .from('user_quests')
     .select('*')
     .eq('user_id', currentUser.id)
-    .gte('created_at', todayStr + 'T00:00:00')
-    .lt('created_at', tomorrowStr + 'T00:00:00')
+    .gte('submitted_at', todayStr + 'T00:00:00')
+    .lt('submitted_at', tomorrowStr + 'T00:00:00')
 
   const uqMap = {}
   ;(userQuests || []).forEach(uq => { uqMap[uq.quest_id] = uq })
