@@ -1313,13 +1313,19 @@ window.openPP = async function(encoded) {
       // อัพเดต XP ถ้าเป็น alltime mode
       if (globalPeriod === 'alltime')
         document.getElementById('ppXP').textContent = fmtNum(extra.xp_total||0)
-      // resolve title
-      const titleId = u.equipped_title_id || extra.equipped_title_id
-      const titleObj = titleId && titlesMap[titleId]
-      document.getElementById('ppTitle').innerHTML = titleObj
-        ? renderTitleBadge(titleObj)
-        : '<span style="opacity:0.4">—</span>'
     }
+
+    // resolve equipped title — ใช้ user_titles.is_equipped เป็นหลัก (ตรงกับ dashboard/profile)
+    let titleId = null
+    const { data: equippedUT } = await supabase
+      .from('user_titles')
+      .select('title_id')
+      .eq('user_id', u.id).eq('is_equipped', true).maybeSingle()
+    titleId = equippedUT?.title_id || u.equipped_title_id || extra?.equipped_title_id || null
+    const titleObj = titleId && titlesMap[titleId]
+    document.getElementById('ppTitle').innerHTML = titleObj
+      ? renderTitleBadge(titleObj)
+      : '<span style="opacity:0.4">—</span>'
   }
 }
 window.closePP = function(e) {
@@ -1331,7 +1337,7 @@ window.closePP = function(e) {
 // NAVIGATION
 // ============================================================
 window.goProfile = function(uid) {
-  window.location.href = `./profile.html?id=${uid}`
+  window.location.href = `./profile.html?uid=${uid}`
 }
 
 // ============================================================
