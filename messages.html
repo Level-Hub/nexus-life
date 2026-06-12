@@ -106,7 +106,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .msg-date-divider::before{left:0} .msg-date-divider::after{right:0}
 
 /* CHAT INPUT */
-.chat-input-area{padding:16px 24px;border-top:1px solid var(--border);background:rgba(1,10,15,0.9);flex-shrink:0}
+.chat-input-area{padding:12px 24px 16px;border-top:1px solid var(--border);background:rgba(1,10,15,0.9);flex-shrink:0}
+.chat-input-toolbar{display:flex;gap:6px;margin-bottom:8px;align-items:center}
+.toolbar-btn{width:32px;height:32px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:16px;flex-shrink:0}
+.toolbar-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .chat-input-row{display:flex;gap:10px;align-items:flex-end}
 .chat-input{flex:1;background:rgba(0,245,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;padding:11px 16px;outline:none;resize:none;transition:border-color 0.2s;max-height:100px;min-height:44px;line-height:1.5}
 .chat-input:focus{border-color:var(--cyan)}
@@ -115,6 +118,30 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .send-btn:hover{background:var(--cyan-dim)}
 .send-btn:disabled{opacity:0.4;cursor:not-allowed}
 .chat-hint{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:6px;letter-spacing:1px}
+/* EMOJI PICKER */
+.emoji-picker{position:absolute;bottom:110px;left:24px;background:#010d14;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:220px;overflow-y:auto}
+.emoji-picker.open{display:block}
+.emoji-picker-tabs{display:flex;gap:4px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.emoji-tab{font-size:18px;background:none;border:none;cursor:pointer;padding:3px 6px;opacity:0.5;transition:opacity 0.2s}
+.emoji-tab.active,.emoji-tab:hover{opacity:1}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:4px}
+.emoji-btn{font-size:22px;background:none;border:1px solid transparent;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all 0.15s}
+.emoji-btn:hover{background:rgba(0,245,255,0.08);border-color:var(--border)}
+/* STICKER PICKER */
+.sticker-picker{position:absolute;bottom:110px;left:24px;background:#010d14;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px}
+.sticker-picker.open{display:block}
+.sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sticker-btn{background:rgba(0,245,255,0.03);border:1px solid var(--border);cursor:pointer;padding:8px;font-size:32px;text-align:center;transition:all 0.2s;aspect-ratio:1}
+.sticker-btn:hover{border-color:var(--cyan);background:rgba(0,245,255,0.08)}
+/* IMAGE PREVIEW */
+.img-preview{margin-bottom:8px;display:none;position:relative;width:fit-content}
+.img-preview img{max-width:200px;max-height:140px;border:1px solid var(--border);display:block}
+.img-preview-rm{position:absolute;top:-8px;right:-8px;width:20px;height:20px;background:var(--red);border:none;color:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+/* MSG IMAGE */
+.msg-image{max-width:240px;max-height:180px;border:1px solid var(--border);cursor:pointer;display:block;margin-bottom:4px}
+.msg-image:hover{border-color:var(--cyan)}
+/* MSG STICKER */
+.msg-sticker{font-size:52px;display:block;line-height:1.2}
 
 /* EMPTY CHAT */
 .chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-dim)}
@@ -213,7 +240,35 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
       </div>
       <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-input-area">
+      <div class="chat-input-area" style="position:relative">
+        <!-- EMOJI PICKER -->
+        <div class="emoji-picker" id="emojiPicker">
+          <div class="emoji-picker-tabs">
+            <button class="emoji-tab active" onclick="showEmojiCat('faces',this)">😀</button>
+            <button class="emoji-tab" onclick="showEmojiCat('hearts',this)">❤️</button>
+            <button class="emoji-tab" onclick="showEmojiCat('hands',this)">👋</button>
+            <button class="emoji-tab" onclick="showEmojiCat('symbols',this)">⭐</button>
+          </div>
+          <div class="emoji-grid" id="emojiGrid"></div>
+        </div>
+        <!-- STICKER PICKER -->
+        <div class="sticker-picker" id="stickerPicker">
+          <div class="sticker-grid" id="stickerGrid"></div>
+        </div>
+        <!-- IMAGE PREVIEW -->
+        <div class="img-preview" id="imgPreview">
+          <img id="imgPreviewImg" src="" alt="">
+          <button class="img-preview-rm" onclick="clearImageUpload()">×</button>
+        </div>
+        <!-- TOOLBAR -->
+        <div class="chat-input-toolbar">
+          <button class="toolbar-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="Emoji">😊</button>
+          <button class="toolbar-btn" id="stickerBtn" onclick="toggleStickerPicker()" title="Sticker">🎭</button>
+          <button class="toolbar-btn" onclick="document.getElementById('imageUploadInput').click()" title="รูปภาพ">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.2"/><circle cx="5.5" cy="6.5" r="1.2" fill="currentColor" opacity="0.7"/><path d="M2 11l4-4 3 3 2-2 3 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <input type="file" id="imageUploadInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+        </div>
         <div class="chat-input-row">
           <textarea class="chat-input" id="chatInput" placeholder="พิมพ์ข้อความ..." rows="1"
             onkeydown="handleInputKey(event)" oninput="autoResize(this)"></textarea>
@@ -276,7 +331,7 @@ async function init() {
   const uidParam = params.get('uid')
   if (uidParam) {
     const { data: peer } = await supabase.from('users')
-      .select('id,username,display_name,class,level,avatar_seed').eq('id', uidParam).single()
+      .select('id,username,display_name,class,level,avatar_seed,avatar_url').eq('id', uidParam).single()
     if (peer) openChat(peer)
   }
 
@@ -334,7 +389,7 @@ async function loadInbox() {
   const { data: recv } = await supabase.from('messages')
     .select('channel, content, created_at, sender_id')
     .neq('sender_id', currentUser.id)
-    .like('channel', 'dm:%')
+    .like('channel', `dm:%${currentUser.id}%`)
     .order('created_at', { ascending: false })
 
   // รวม channels unique ล่าสุด
@@ -366,7 +421,7 @@ async function loadInbox() {
   }).filter(Boolean)
 
   const { data: peers } = await supabase.from('users')
-    .select('id,username,display_name,class,level,avatar_seed')
+    .select('id,username,display_name,class,level,avatar_seed,avatar_url')
     .in('id', peerIds)
 
   const peerMap = {}
@@ -399,7 +454,7 @@ function renderInbox(convs) {
     return `
     <div class="conv-item cls-${cls} ${isActive ? 'active' : ''}" onclick="openChat(${JSON.stringify(p).replace(/"/g,'&quot;')})">
       <div class="conv-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-        <img src="${getAvatarUrl(p.avatar_seed, 42)}" alt="">
+        <img src="${getAvatarSrc(p, 42)}" alt="">
       </div>
       <div class="conv-info">
         <div class="conv-name">${esc(p.display_name || p.username)}</div>
@@ -426,11 +481,11 @@ window.openChat = async function(peer) {
 
   // UI peer info
   const cls = peer.class || 'warrior'
-  document.getElementById('peerAvatar').src = getAvatarUrl(peer.avatar_seed, 38)
+  document.getElementById('peerAvatar').src = getAvatarSrc(peer, 38)
   document.getElementById('peerAvatarWrap').className = `chat-peer-avatar cls-${cls}`
   document.getElementById('peerAvatarWrap').style.borderColor = CLASS_COLOR[cls]
   document.getElementById('peerName').textContent = esc(peer.display_name || peer.username)
-  document.getElementById('peerSub').innerHTML = `${classIcon(cls)} ${cls.toUpperCase()} · LV.${peer.level||1}`
+  document.getElementById('peerSub').innerHTML = `<span style="color:${CLASS_COLOR[cls]}">${classIcon(cls)} ${cls.toUpperCase()} · LV.${peer.level||1}</span>`
 
   // Show chat panel
   document.getElementById('chatEmpty').style.display = 'none'
@@ -459,7 +514,7 @@ window.openChat = async function(peer) {
       // ดึง sender info ถ้าไม่ใช่ตัวเอง
       if (msg.sender_id !== currentUser.id) {
         const { data: senderData } = await supabase.from('users')
-          .select('username,display_name,avatar_seed,class').eq('id', msg.sender_id).single()
+          .select('username,display_name,avatar_seed,avatar_url,class').eq('id', msg.sender_id).single()
         msg.users = senderData
       } else {
         msg.users = myProfile
@@ -486,7 +541,7 @@ async function loadChatHistory() {
   lastDateLabel = ''
 
   const { data, error } = await supabase.from('messages')
-    .select('*, users(username, display_name, avatar_seed, class)')
+    .select('*, users(username, display_name, avatar_seed, avatar_url, class)')
     .eq('channel', activeChannel)
     .order('created_at', { ascending: true })
     .limit(100)
@@ -511,7 +566,8 @@ function appendMessage(msg, scroll=true) {
   const msgEl = document.getElementById('chatMessages')
   const isMine = msg.sender_id === currentUser.id
   const sender = msg.users
-  const cls = sender?.class || 'warrior'
+  const cls = sender?.class || (isMine ? (myProfile?.class||'warrior') : 'warrior')
+  const payload = msg.payload || {}
 
   // Date divider
   const msgDate = new Date(msg.created_at)
@@ -525,20 +581,36 @@ function appendMessage(msg, scroll=true) {
   }
 
   const timeStr = msgDate.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' })
+
+  // Content by type
+  let contentHtml = ''
+  if (payload.type === 'image') {
+    contentHtml = `<img class="msg-image" src="${esc(msg.content)}" alt="รูปภาพ" onclick="window.open('${esc(msg.content)}','_blank')">`
+  } else if (payload.type === 'sticker') {
+    contentHtml = `<span class="msg-sticker">${msg.content}</span>`
+  } else {
+    contentHtml = `<div class="msg-bubble">${escHtml(msg.content)}</div>`
+  }
+
+  const myAvSrc = myProfile?.avatar_url || getAvatarUrl(myProfile?.avatar_seed, 32)
+  const theirAvSrc = sender?.avatar_url || getAvatarUrl(sender?.avatar_seed, 32)
+  const myCls = myProfile?.class || 'warrior'
+
   const wrapper = document.createElement('div')
   wrapper.className = `msg ${isMine ? 'mine' : 'theirs'}`
   wrapper.innerHTML = `
-    ${!isMine ? `<div class="msg-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}"><img src="${getAvatarUrl(sender?.avatar_seed, 32)}" alt=""></div>` : ''}
+    ${!isMine ? `<div class="msg-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}"><img src="${theirAvSrc}" alt=""></div>` : ''}
     <div>
-      ${!isMine ? `<div class="msg-sender cls-${cls}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
-      <div class="msg-bubble">${escHtml(msg.content)}</div>
+      ${!isMine ? `<div class="msg-sender" style="color:${CLASS_COLOR[cls]}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
+      ${contentHtml}
       <div class="msg-time">${timeStr}</div>
     </div>
-    ${isMine ? `<div class="msg-avatar cls-${myProfile?.class||'warrior'}" style="border-color:${CLASS_COLOR[myProfile?.class||'warrior']}"><img src="${getAvatarUrl(myProfile?.avatar_seed, 32)}" alt=""></div>` : ''}`
+    ${isMine ? `<div class="msg-avatar cls-${myCls}" style="border-color:${CLASS_COLOR[myCls]}"><img src="${myAvSrc}" alt=""></div>` : ''}`
 
   msgEl.appendChild(wrapper)
   if (scroll) scrollToBottom()
 }
+
 
 function scrollToBottom() {
   const el = document.getElementById('chatMessages')
@@ -549,18 +621,25 @@ function scrollToBottom() {
 window.sendMessage = async function() {
   const input = document.getElementById('chatInput')
   const content = input.value.trim()
-  if (!content || !activeChannel) return
+  if ((!content && !pendingImageUrl) || !activeChannel) return
 
   const btn = document.getElementById('sendBtn')
   btn.disabled = true
-  input.value = ''
-  input.style.height = 'auto'
+  if (!pendingImageUrl) { // ถ้ามีรูป ไม่เคลียร์ text input
+    input.value = ''
+    input.style.height = 'auto'
+  }
 
+  const msgPayload = pendingImageUrl ? { type: 'image' } : {}
+  const msgContent = pendingImageUrl || content
   const { error } = await supabase.from('messages').insert({
     sender_id: currentUser.id,
     channel: activeChannel,
-    content
+    content: msgContent,
+    payload: Object.keys(msgPayload).length ? msgPayload : null
   })
+  pendingImageUrl = null
+  clearImageUploadUI()
 
   if (error) {
     showToast('ส่งข้อความไม่สำเร็จ: ' + error.message, 'error')
@@ -570,7 +649,8 @@ window.sendMessage = async function() {
     appendMessage({
       sender_id: currentUser.id,
       channel: activeChannel,
-      content,
+      content: msgContent,
+      payload: Object.keys(msgPayload).length ? msgPayload : null,
       created_at: new Date().toISOString(),
       users: myProfile
     })
@@ -623,7 +703,7 @@ window.searchDMTarget = function(q) {
       return `
       <div class="search-result-item" onclick="startDM(${JSON.stringify(u).replace(/"/g,'&quot;')})">
         <div class="sr-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-          <img src="${getAvatarUrl(u.avatar_seed, 36)}" alt="">
+          <img src="${getAvatarSrc(u, 36)}" alt="">
         </div>
         <div class="sr-info">
           <div class="sr-name">${esc(u.display_name || u.username)}</div>
@@ -654,10 +734,14 @@ function getDMChannel(uid1, uid2) {
   return `dm:${a}:${b}`
 }
 
-function getAvatarUrl(seed, size=80) {
-  if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
-  const [style, s, bg] = seed.split(':')
+function getAvatarUrl(avatarUrlOrSeed, size=80) {
+  if (!avatarUrlOrSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
+  if (avatarUrlOrSeed.startsWith('http') || avatarUrlOrSeed.startsWith('/')) return avatarUrlOrSeed
+  const [style, s, bg] = avatarUrlOrSeed.split(':')
   return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+}
+function getAvatarSrc(u, size=80) {
+  return u.avatar_url ? u.avatar_url : getAvatarUrl(u.avatar_seed, size)
 }
 
 function formatTime(ts) {
@@ -694,6 +778,132 @@ function initCursor() {
     el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px' })
   })
 }
+
+
+// ─── EMOJI / STICKER / IMAGE ─────────────────────────────────
+const EMOJI_CATS = {
+  faces: ['😀','😂','🥹','😊','😎','🤩','😍','🥰','😘','😜','🤔','😮','😢','😡','🥳','😴','🤯','🤗','😇','🫡'],
+  hearts: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','❤️‍🔥','💕','💞','💓','💗','💖','💘','💝','🫶','❣️','💟'],
+  hands: ['👋','🤚','✋','🖐','👌','🤌','✌️','🤞','🤙','👍','👎','👏','🙌','🤲','🫂','💪','🦾','🤜','🤛','👊'],
+  symbols: ['⭐','🌟','✨','💫','🔥','🎉','🎊','🎈','🏆','🥇','💎','👑','🎮','⚡','🌈','🌙','☀️','❄️','🌊','🎯']
+}
+const STICKERS = ['🐉','🦁','🦊','🐺','🐯','🦅','🔮','⚔️','🛡️','🗡️','💰','🗺️','🏰','🌋','🌌','🎭','🤖','👾','💥','🌀']
+
+let pendingImageUrl = null
+let emojiCatActive = 'faces'
+
+window.showEmojiCat = function(cat, btn) {
+  emojiCatActive = cat
+  document.querySelectorAll('.emoji-tab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  renderEmojiGrid()
+}
+
+function renderEmojiGrid() {
+  const emojis = EMOJI_CATS[emojiCatActive] || []
+  document.getElementById('emojiGrid').innerHTML = emojis.map(e =>
+    `<button class="emoji-btn" onclick="insertEmoji('${e}')">${e}</button>`
+  ).join('')
+}
+
+function renderStickerGrid() {
+  document.getElementById('stickerGrid').innerHTML = STICKERS.map(s =>
+    `<button class="sticker-btn" onclick="sendSticker('${s}')">${s}</button>`
+  ).join('')
+}
+
+window.toggleEmojiPicker = function() {
+  const ep = document.getElementById('emojiPicker')
+  const sp = document.getElementById('stickerPicker')
+  sp.classList.remove('open')
+  ep.classList.toggle('open')
+  if (ep.classList.contains('open')) renderEmojiGrid()
+}
+
+window.toggleStickerPicker = function() {
+  const sp = document.getElementById('stickerPicker')
+  const ep = document.getElementById('emojiPicker')
+  ep.classList.remove('open')
+  sp.classList.toggle('open')
+  if (sp.classList.contains('open')) renderStickerGrid()
+}
+
+window.insertEmoji = function(emoji) {
+  const input = document.getElementById('chatInput')
+  const pos = input.selectionStart
+  input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos)
+  input.selectionStart = input.selectionEnd = pos + emoji.length
+  input.focus()
+  document.getElementById('emojiPicker').classList.remove('open')
+}
+
+window.sendSticker = async function(sticker) {
+  document.getElementById('stickerPicker').classList.remove('open')
+  if (!activeChannel) return
+  const btn = document.getElementById('sendBtn')
+  btn.disabled = true
+  const { error } = await supabase.from('messages').insert({
+    sender_id: currentUser.id,
+    channel: activeChannel,
+    content: sticker,
+    payload: { type: 'sticker' }
+  })
+  if (!error) {
+    appendMessage({
+      sender_id: currentUser.id, channel: activeChannel,
+      content: sticker, payload: { type: 'sticker' },
+      created_at: new Date().toISOString(), users: myProfile
+    })
+    await loadInbox()
+  }
+  btn.disabled = false
+}
+
+window.handleImageSelect = async function(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  if (file.size > 5 * 1024 * 1024) { showToast('รูปใหญ่เกิน 5MB', 'error'); return }
+
+  // Preview
+  const reader = new FileReader()
+  reader.onload = ev => {
+    document.getElementById('imgPreviewImg').src = ev.target.result
+    document.getElementById('imgPreview').style.display = 'block'
+  }
+  reader.readAsDataURL(file)
+
+  // Upload to Supabase Storage
+  const ext = file.name.split('.').pop()
+  const path = `chat/${currentUser.id}/${Date.now()}.${ext}`
+  const { data, error } = await supabase.storage.from('nexuslife').upload(path, file, { upsert: true })
+  if (error) { showToast('อัปโหลดไม่สำเร็จ: ' + error.message, 'error'); clearImageUploadUI(); return }
+
+  const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
+  pendingImageUrl = urlData.publicUrl
+  showToast('เลือกรูปแล้ว — กดส่งเพื่อส่ง', 'success')
+  // reset input
+  e.target.value = ''
+}
+
+window.clearImageUpload = function() {
+  pendingImageUrl = null
+  clearImageUploadUI()
+}
+
+function clearImageUploadUI() {
+  document.getElementById('imgPreview').style.display = 'none'
+  document.getElementById('imgPreviewImg').src = ''
+}
+
+// ปิด picker เมื่อคลิกข้างนอก
+document.addEventListener('click', e => {
+  if (!e.target.closest('#emojiPicker') && !e.target.closest('#emojiBtn')) {
+    document.getElementById('emojiPicker')?.classList.remove('open')
+  }
+  if (!e.target.closest('#stickerPicker') && !e.target.closest('#stickerBtn')) {
+    document.getElementById('stickerPicker')?.classList.remove('open')
+  }
+})
 
 init()
 </script>
