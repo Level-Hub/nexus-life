@@ -322,15 +322,15 @@ let lastDateLabel = ''
 
 // ─── INIT ────────────────────────────────────────────────────
 async function init() {
-  const { user } = await initSidebar('messages')
+  const { user, profile } = await initSidebar('messages')
   if (!user) return
   currentUser = user
+  myProfile = profile  // ใช้ profile จาก sidebar.js โดยตรง
 
   // inject static icons
   const chatEmptyWave = document.getElementById('chatEmptyWave')
   if (chatEmptyWave) chatEmptyWave.innerHTML = getIcon('chat', 36)
 
-  await loadMyProfile()
   await loadInbox()
 
   // ถ้า URL มี ?uid= → เปิด DM กับ user นั้นทันที
@@ -344,43 +344,6 @@ async function init() {
 
   document.getElementById('loadingScreen').style.display = 'none'
   initCursor()
-}
-
-// ─── LOAD MY PROFILE ─────────────────────────────────────────
-async function loadMyProfile() {
-  const { data: p } = await supabase.from('users').select('*').eq('id', currentUser.id).single()
-  myProfile = p
-  if (!p) return
-
-  const cls = p.class || 'warrior'
-  document.getElementById('suAvatar').src = getAvatarUrl(p.avatar_seed)
-  document.getElementById('sidebarUser').className = 'sidebar-user cls-' + cls
-  document.getElementById('suAvatarWrap').className = 'su-avatar cls-' + cls
-  document.getElementById('suName').textContent = p.display_name || p.username
-  document.getElementById('suClass').innerHTML = classIcon(cls,12) + ' ' + cls.toUpperCase()
-  document.getElementById('suLv').textContent = 'LV.' + p.level
-
-  // navQuestBadge
-  const { count: qc } = await supabase.from('user_quests')
-    .select('*',{count:'exact',head:true}).eq('user_id', currentUser.id).eq('status','in_progress')
-  if (qc > 0) {
-    const qb = document.getElementById('navQuestBadge')
-    qb.textContent = qc > 99 ? '99+' : qc; qb.style.display = 'inline'
-  }
-
-  // navVerifyBadge
-  const myCity = p.city || 'กรุงเทพมหานคร'
-  const { data: pV } = await supabase.from('user_quests')
-    .select('id, users!inner(city)').eq('status','pending_review')
-    .eq('users.city', myCity).neq('user_id', currentUser.id)
-  const { data: mV } = await supabase.from('quest_verifications')
-    .select('user_quest_id').eq('voter_id', currentUser.id)
-  const vIds = new Set((mV||[]).map(v => v.user_quest_id))
-  const notVoted = (pV||[]).filter(p => !vIds.has(p.id)).length
-  if (notVoted > 0) {
-    const vb = document.getElementById('navVerifyBadge')
-    vb.textContent = notVoted > 99 ? '99+' : notVoted; vb.style.display = 'inline'
-  }
 }
 
 // ─── LOAD INBOX ──────────────────────────────────────────────
