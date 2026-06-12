@@ -188,47 +188,64 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .class-filter option { background:#010a0f; }
 
 /* ===================== PODIUM ===================== */
+@keyframes crownFloat { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-4px);} }
+@keyframes goldPulse { 0%,100%{box-shadow:0 0 20px rgba(255,215,0,0.5),0 0 40px rgba(255,215,0,0.2);} 50%{box-shadow:0 0 32px rgba(255,215,0,0.8),0 0 60px rgba(255,215,0,0.35);} }
+@keyframes silverPulse { 0%,100%{box-shadow:0 0 12px rgba(192,192,192,0.4);} 50%{box-shadow:0 0 22px rgba(192,192,192,0.7);} }
+@keyframes bronzePulse { 0%,100%{box-shadow:0 0 10px rgba(205,127,50,0.35);} 50%{box-shadow:0 0 18px rgba(205,127,50,0.6);} }
+
 .podium-section {
-  display:flex;align-items:flex-end;justify-content:center;gap:16px;
-  margin-bottom:32px;padding:0 20px;
+  display:flex;align-items:flex-end;justify-content:center;gap:12px;
+  margin-bottom:32px;padding:0 8px;
   animation:fadeInUp 0.6s 0.2s ease both;
 }
-.podium-item { display:flex;flex-direction:column;align-items:center;gap:10px; }
+.podium-item {
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  flex:1;max-width:140px;
+}
 .podium-rank-1 { order:2; }
 .podium-rank-2 { order:1; }
 .podium-rank-3 { order:3; }
 
-.podium-avatar-wrap { position:relative; }
+.podium-avatar-wrap { position:relative;display:flex;align-items:center;justify-content:center; }
 .podium-avatar {
   border-radius:50%;overflow:hidden;border:3px solid;
-  background:var(--panel);
+  background:var(--panel);flex-shrink:0;
 }
-.podium-rank-1 .podium-avatar { width:88px;height:88px;border-color:var(--gold);box-shadow:0 0 24px rgba(255,215,0,0.5);animation:rankGlow 2s ease infinite; }
-.podium-rank-2 .podium-avatar { width:72px;height:72px;border-color:#c0c0c0;box-shadow:0 0 14px rgba(192,192,192,0.3); }
-.podium-rank-3 .podium-avatar { width:64px;height:64px;border-color:#cd7f32;box-shadow:0 0 10px rgba(205,127,50,0.3); }
+/* อันดับ 1 ใหญ่สุด อันดับ 2-3 ขนาดใกล้กัน */
+.podium-rank-1 .podium-avatar { width:84px;height:84px;border-color:var(--gold);animation:goldPulse 2s ease-in-out infinite; }
+.podium-rank-2 .podium-avatar { width:68px;height:68px;border-color:#c0c0c0;animation:silverPulse 2.5s ease-in-out infinite; }
+.podium-rank-3 .podium-avatar { width:68px;height:68px;border-color:#cd7f32;animation:bronzePulse 2.5s ease-in-out infinite; }
 .podium-avatar img { width:100%;height:100%;object-fit:cover; }
 
-.podium-crown { position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:20px;filter:drop-shadow(0 0 6px var(--gold)); }
-.podium-rank-num {
-  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  font-family:'Orbitron',monospace;font-size:10px;font-weight:900;
-  padding:2px 8px;border-radius:10px;
+/* มงกุฎ emoji ลอยได้ */
+.podium-crown {
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:26px;line-height:1;
+  animation:crownFloat 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(255,215,0,0.9)) drop-shadow(0 2px 12px rgba(255,165,0,0.6));
 }
-.podium-rank-1 .podium-rank-num { background:var(--gold);color:#000; }
+
+.podium-rank-num {
+  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:900;
+  padding:2px 9px;border-radius:10px;white-space:nowrap;
+}
+.podium-rank-1 .podium-rank-num { background:var(--gold);color:#000;box-shadow:0 0 10px rgba(255,215,0,0.5); }
 .podium-rank-2 .podium-rank-num { background:#c0c0c0;color:#000; }
 .podium-rank-3 .podium-rank-num { background:#cd7f32;color:#000; }
 
-.podium-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;text-align:center;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.podium-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .podium-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;text-align:center; }
-.podium-xp { font-family:'Orbitron',monospace;font-size:12px;font-weight:700;text-align:center; }
-.podium-rank-1 .podium-xp { color:var(--gold); }
+.podium-xp { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;text-align:center; }
+.podium-rank-1 .podium-xp { color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.5); }
 .podium-rank-2 .podium-xp { color:#c0c0c0; }
 .podium-rank-3 .podium-xp { color:#cd7f32; }
 
-.podium-stand { width:100%; border-top:2px solid; }
-.podium-rank-1 .podium-stand { height:80px;background:linear-gradient(180deg,rgba(255,215,0,0.12),rgba(255,215,0,0.02));border-color:var(--gold); }
-.podium-rank-2 .podium-stand { height:56px;background:linear-gradient(180deg,rgba(192,192,192,0.1),rgba(192,192,192,0.02));border-color:#c0c0c0; }
-.podium-rank-3 .podium-stand { height:40px;background:linear-gradient(180deg,rgba(205,127,50,0.1),rgba(205,127,50,0.02));border-color:#cd7f32; }
+/* แท่น podium ความสูงสัดส่วน */
+.podium-stand { width:100%;border-top:2px solid; }
+.podium-rank-1 .podium-stand { height:80px;background:linear-gradient(180deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.03) 100%);border-color:var(--gold);box-shadow:inset 0 2px 12px rgba(255,215,0,0.08); }
+.podium-rank-2 .podium-stand { height:56px;background:linear-gradient(180deg,rgba(192,192,192,0.12) 0%,rgba(192,192,192,0.02) 100%);border-color:#c0c0c0; }
+.podium-rank-3 .podium-stand { height:40px;background:linear-gradient(180deg,rgba(205,127,50,0.12) 0%,rgba(205,127,50,0.02) 100%);border-color:#cd7f32; }
 
 /* ===================== LEADERBOARD TABLE ===================== */
 .lb-table-wrap {
@@ -864,7 +881,7 @@ function renderGlobal(data) {
       const rank = top3[1] ? [2,1,3][i] : i+1
       const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
       const cls = u.class||'warrior'
-      const crown = rank===1 ? '<div class="podium-crown"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M2 12L4 5l4 4 4-4 2 7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="5" r="1" fill="currentColor"/><circle cx="8" cy="3" r="1" fill="currentColor"/><circle cx="14" cy="5" r="1" fill="currentColor"/></svg></div>' : ''
+      const crown = rank===1 ? '<div class="podium-crown">👑</div>' : ''
       return `
         <div class="podium-item podium-rank-${rank}">
           <div class="podium-name">${esc(u.display_name||u.username)}</div>
