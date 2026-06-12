@@ -347,6 +347,7 @@ const userId = user.id
 let myCity = 'กรุงเทพมหานคร'
 let myClass = 'warrior'
 let myUsername = ''
+let myAvatarUrl = ''
 let currentFilter = 'city'
 let feedOffset = 0
 const PAGE_SIZE = 15
@@ -371,6 +372,7 @@ async function loadProfile() {
   myCity = u.city || 'กรุงเทพมหานคร'
   myClass = u.class || 'warrior'
   myUsername = u.username || u.display_name || 'คุณ'
+  myAvatarUrl = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 26)
 
   const clsClass = 'cls-' + (u.class || 'warrior')
 
@@ -759,7 +761,7 @@ function renderFeedCard(item) {
         </div>
         <div class="feed-body">
           <div class="feed-user-row">
-            <span class="feed-username">${escHtml(item.username || '—')}</span>
+            <span class="feed-username">${escHtml(item.display_name || item.username || '—')}</span>
             <span class="feed-class-badge cls-${item.class || 'warrior'}">${(item.class || '').toUpperCase()}</span>
             <span class="feed-rank">LV.${item.level || 1}</span>
             <span class="feed-time">${timeAgo}</span>
@@ -848,7 +850,6 @@ function attachCardListeners() {
     if (iconEl) iconEl.innerHTML = getIcon('lightning', 14)
     if (btn.dataset.cheered === 'true') {
       if (iconEl) iconEl.innerHTML = getIcon('check_circle', 14)
-      btn.disabled = true
     }
     btn.addEventListener('click', async () => {
       if (btn.dataset.cheered === 'true') return
@@ -860,7 +861,6 @@ function attachCardListeners() {
         btn.querySelector('.cheer-label').textContent = 'Cheered!'
         btn.style.color = 'var(--gold)'
         btn.dataset.cheered = 'true'
-        btn.disabled = true
       }
     })
   })
@@ -944,10 +944,14 @@ window.sendComment = async function(feedId) {
 
   input.value = ''
   const list = document.getElementById(`comment-list-${feedId}`)
+  const myAv = myAvatarUrl || getAvatarUrl(myUsername, 26)
   list.insertAdjacentHTML('beforeend', `
-    <div class="comment-item">
-      <span class="comment-user">${escHtml(myUsername || 'คุณ')}</span>
-      <span class="comment-text">${escHtml(val)}</span>
+    <div style="display:flex;gap:8px;font-size:12px;margin-bottom:6px">
+      <img src="${escHtml(myAv)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
+      <div style="flex:1">
+        <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(myUsername || 'คุณ')}</span>
+        <span style="color:var(--text-dim)"> ${escHtml(val)}</span>
+      </div>
     </div>
   `)
   // update comment count badge
@@ -1023,6 +1027,52 @@ function subscribeRealtime() {
       const html = renderFeedCard(enrichedItem)
       document.getElementById('feedList').insertAdjacentHTML('afterbegin', html)
       attachCardListeners()
+    })
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'activity_feed_comments'
+    }, async (payload) => {
+      const feedId = payload.new.feed_id
+      const commentArea = document.getElementById(`comments-${feedId}`)
+      if (!commentArea || !commentArea.classList.contains('open')) return
+
+      // ดึงข้อมูล user ของ comment ใหม่
+      const { data: u } = await supabase
+        .from('users')
+        .select('username, display_name, avatar_url, avatar_seed')
+        .eq('id', payload.new.user_id)
+        .single()
+
+      // ถ้าเป็น comment ของตัวเองที่เพิ่ง insert ไป ข้ามไป (sendComment render แล้ว)
+      if (payload.new.user_id === userId) return
+
+      const uData = u || {}
+      const av = uData.avatar_url || getAvatarUrl(uData.avatar_seed || uData.username, 26)
+      const name = uData.display_name || uData.username || '—'
+      const list = document.getElementById(`comment-list-${feedId}`)
+      if (!list) return
+
+      const indent = payload.new.reply_to_id ? 'margin-left:32px;padding-left:8px;border-left:1px solid var(--border);' : ''
+      list.insertAdjacentHTML('beforeend', `
+        <div style="${indent}display:flex;gap:8px;font-size:12px;margin-bottom:6px">
+          <img src="${escHtml(av)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
+          <div style="flex:1">
+            <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(name)}</span>
+            <span style="color:var(--text-dim)"> ${escHtml(payload.new.content)}</span>
+          </div>
+        </div>
+      `)
+
+      // update comment count badge
+      const toggleBtn = document.querySelector(`.comment-toggle-btn[data-id="${feedId}"]`)
+      if (toggleBtn) {
+        const countEl = toggleBtn.querySelector('.comment-count')
+        if (countEl) {
+          const cur = parseInt(countEl.textContent) || 0
+          countEl.textContent = cur + 1
+        }
+      }
     })
     .subscribe()
 }
