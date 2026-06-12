@@ -195,150 +195,97 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .class-filter:focus { outline:none;border-color:var(--cyan); }
 .class-filter option { background:#010a0f; }
 
-/* ===================== FULL RANK LIST ===================== */
-.rank-list-wrap { animation:fadeInUp 0.5s 0.2s ease both; }
-
+/* ===================== RANK LIST ===================== */
 .rank-row {
-  display:flex;align-items:center;gap:12px;
-  padding:10px 16px;
-  border:1px solid transparent;
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;
   border-bottom:1px solid rgba(0,245,255,0.05);
-  transition:all 0.18s;cursor:pointer;
+  transition:background 0.15s;cursor:pointer;
   position:relative;
   animation:slideIn 0.35s both;
 }
-.rank-row:hover { background:rgba(0,245,255,0.04);border-color:var(--border);padding-left:20px; }
-.rank-row.me { background:rgba(0,245,255,0.06);border-color:rgba(0,245,255,0.18); }
-.rank-row.me::after { content:'YOU';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.5; }
+.rank-row:hover { background:rgba(0,245,255,0.05); }
+.rank-row.me { background:rgba(0,245,255,0.07);border-bottom-color:rgba(0,245,255,0.15); }
+.rank-row.me::after { content:'YOU';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.45; }
+.rank-row.top1 { border-bottom-color:rgba(255,215,0,0.1); }
+.rank-row.top2 { border-bottom-color:rgba(192,192,192,0.08); }
+.rank-row.top3 { border-bottom-color:rgba(205,127,50,0.08); }
 
-/* top 3 highlight */
-.rank-row.top1 { border-bottom-color:rgba(255,215,0,0.12); }
-.rank-row.top2 { border-bottom-color:rgba(192,192,192,0.1); }
-.rank-row.top3 { border-bottom-color:rgba(205,127,50,0.1); }
-
-/* rank number */
-.rr-num {
-  min-width:36px;text-align:center;flex-shrink:0;
-  font-family:'Orbitron',monospace;font-size:12px;font-weight:900;
-}
-.rr-num.r1 { color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.6); }
+.rr-num { min-width:32px;text-align:center;flex-shrink:0;font-family:'Orbitron',monospace;font-size:11px;font-weight:900; }
+.rr-num.r1 { color:var(--gold);text-shadow:0 0 8px rgba(255,215,0,0.5); }
 .rr-num.r2 { color:#c0c0c0; }
 .rr-num.r3 { color:#cd7f32; }
-.rr-num.rn  { color:var(--text-dim);font-size:11px; }
+.rr-num.rn  { color:var(--text-dim);font-size:10px; }
 
-/* avatar */
-.rr-avatar {
-  width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;
-  border:2px solid var(--cls,var(--border));
-}
+.rr-avatar { width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--cls,var(--border)); }
 .rr-avatar img { width:100%;height:100%;object-fit:cover; }
-.rank-row.top1 .rr-avatar { border-color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,0.3); }
+.rank-row.top1 .rr-avatar { border-color:var(--gold);box-shadow:0 0 6px rgba(255,215,0,0.25); }
 .rank-row.top2 .rr-avatar { border-color:#c0c0c0; }
 .rank-row.top3 .rr-avatar { border-color:#cd7f32; }
 
-/* info block */
 .rr-info { flex:1;min-width:0; }
-.rr-name {
-  font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.rr-meta { display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap; }
-.rr-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--text-dim)); }
-.rr-title-text { font-size:9px;color:var(--text-dim);padding:1px 6px;border:1px solid rgba(255,255,255,0.08); }
-.rr-streak { display:flex;align-items:center;gap:2px;font-family:'Orbitron',monospace;font-size:8px;color:var(--gold); }
+.rr-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.rr-sub { display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:nowrap;overflow:hidden; }
+.rr-class { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--text-dim));flex-shrink:0; }
+.rr-sep { color:var(--text-dim);font-size:8px;flex-shrink:0; }
+.rr-title { font-size:9px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.rr-streak { font-family:'Orbitron',monospace;font-size:8px;color:var(--gold);flex-shrink:0; }
 
-/* XP right side */
-.rr-xp {
-  text-align:right;flex-shrink:0;
-}
-.rr-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--cyan); }
+.rr-xp { text-align:right;flex-shrink:0; }
+.rr-xp-val { font-family:'Orbitron',monospace;font-size:11px;font-weight:700; }
 .rank-row.top1 .rr-xp-val { color:var(--gold); }
 .rank-row.top2 .rr-xp-val { color:#c0c0c0; }
 .rank-row.top3 .rr-xp-val { color:#cd7f32; }
-.rr-xp-label { font-size:9px;color:var(--text-dim);margin-top:1px; }
+.rr-xp-val.normal { color:var(--cyan); }
+.rr-xp-lbl { font-size:8px;color:var(--text-dim);margin-top:1px; }
 
-/* bar under XP val */
-.rr-bar-wrap { width:60px;height:2px;background:rgba(0,245,255,0.08);margin-top:4px;overflow:hidden;margin-left:auto; }
-.rr-bar { height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
-.rank-row.top1 .rr-bar { background:linear-gradient(90deg,var(--gold),#ff9500); }
+.rank-divider { padding:6px 14px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--text-dim);border-bottom:1px solid var(--border);background:rgba(0,245,255,0.015); }
 
-/* top3 separator label */
-.rank-divider {
-  text-align:center;padding:8px 0;
-  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);
-  border-bottom:1px solid var(--border);margin-bottom:4px;
-}
-
-/* ===================== PLAYER POPUP ===================== */
-.player-popup-overlay {
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+/* ===== PLAYER POPUP ===== */
+.pp-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
   z-index:700;display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity 0.25s;
+  opacity:0;pointer-events:none;transition:opacity 0.2s;
 }
-.player-popup-overlay.open { opacity:1;pointer-events:all; }
+.pp-overlay.open { opacity:1;pointer-events:all; }
+.pp-box {
+  background:#010d14;border:1px solid var(--border);width:min(320px,92vw);
+  position:relative;transform:translateY(12px) scale(0.97);
+  transition:transform 0.22s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.pp-overlay.open .pp-box { transform:none; }
+.pp-box::before { content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+.pp-box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
 
-.player-popup {
-  background:#010d14;border:1px solid var(--border);
-  width:min(340px,92vw);
-  position:relative;
-  transform:translateY(16px) scale(0.97);
-  transition:transform 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
-}
-.player-popup-overlay.open .player-popup { transform:translateY(0) scale(1); }
-
-.player-popup::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
-.player-popup::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
-
-.pp-header {
-  display:flex;align-items:center;gap:14px;padding:18px 18px 14px;
-  border-bottom:1px solid var(--border);
-}
-.pp-avatar { width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--cyan));flex-shrink:0; }
-.pp-avatar img { width:100%;height:100%;object-fit:cover; }
-.pp-name { font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:#fff; }
-.pp-handle { font-size:11px;color:var(--text-dim);margin-top:2px; }
-.pp-class { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;margin-top:4px; }
-.pp-close {
-  position:absolute;top:12px;right:12px;
-  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
-  background:transparent;border:1px solid var(--border);color:var(--text-dim);
-  cursor:pointer;font-size:14px;transition:all 0.2s;
-}
+.pp-head { display:flex;align-items:center;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--border); }
+.pp-ava { width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--cyan));flex-shrink:0; }
+.pp-ava img { width:100%;height:100%;object-fit:cover; }
+.pp-hname { font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:#fff; }
+.pp-huser { font-size:10px;color:var(--text-dim);margin-top:1px; }
+.pp-hcls  { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;margin-top:3px; }
+.pp-close { position:absolute;top:10px;right:10px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;transition:all 0.15s; }
 .pp-close:hover { border-color:var(--red);color:var(--red); }
 
 .pp-stats { display:flex;border-bottom:1px solid var(--border); }
-.pp-stat { flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--border); }
-.pp-stat:last-child { border-right:none; }
-.pp-stat-val { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--cyan); }
-.pp-stat-lbl { font-size:9px;color:var(--text-dim);margin-top:3px; }
+.pp-st { flex:1;text-align:center;padding:10px 6px;border-right:1px solid var(--border); }
+.pp-st:last-child { border-right:none; }
+.pp-st-v { font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--cyan); }
+.pp-st-l { font-size:8px;color:var(--text-dim);margin-top:2px; }
 
-.pp-title-row { padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;min-height:40px; }
-.pp-title-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim); }
+.pp-title-row { padding:9px 16px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text-dim);min-height:38px;display:flex;align-items:center;gap:8px; }
+.pp-title-lbl { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;flex-shrink:0; }
 
-.pp-footer { display:flex;gap:0; }
-.pp-btn {
-  flex:1;padding:13px;
-  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  background:transparent;border:none;color:var(--text-dim);
-  border-top:1px solid var(--border);border-right:1px solid var(--border);
-  cursor:pointer;transition:all 0.2s;
-}
+.pp-foot { display:flex; }
+.pp-btn { flex:1;padding:12px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;background:transparent;border:none;border-top:1px solid var(--border);border-right:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.15s; }
 .pp-btn:last-child { border-right:none; }
 .pp-btn:hover { background:rgba(0,245,255,0.06);color:var(--cyan); }
-.pp-btn.primary { color:var(--cyan); }
-.pp-btn.primary:hover { background:rgba(0,245,255,0.1); }
+.pp-btn.go { color:var(--cyan); }
+.pp-btn.go:hover { background:rgba(0,245,255,0.1); }
 
-/* LIVE INDICATOR */
-.live-dot {
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--green);
-}
-.live-dot::before {
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--green);box-shadow:0 0 6px var(--green);
-  animation:livePulse 1.5s ease-in-out infinite;
-}
-@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+/* LIVE DOT */
+.live-dot { display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--green); }
+.live-dot::before { content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:livePulse 1.4s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
 /* ===================== LEADERBOARD TABLE ===================== */
 .lb-table-wrap {
@@ -586,7 +533,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   .guild-row { grid-template-columns:40px 1fr auto; }
   .guild-xp-col { display:none; }
   .guild-members { display:none; }
-  .rr-bar-wrap { width:44px; }
   .my-rank-stats { display:none; }
   .filter-right { margin-left:auto; }
   .season-timer { display:none; }
@@ -697,14 +643,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
   <!-- ==================== GLOBAL TAB ==================== -->
   <div class="tab-content active" id="content-global">
-    <!-- FILTERS -->
     <div class="filter-row">
       <span class="filter-label">PERIOD:</span>
       <button class="filter-chip active" onclick="setFilter('period','monthly',this)">เดือนนี้</button>
       <button class="filter-chip" onclick="setFilter('period','alltime',this)">All Time</button>
       <div class="filter-right">
-        <span class="live-dot">LIVE</span>
-        <span class="filter-label" style="margin-left:8px">CLASS:</span>
+        <span class="live-dot" style="margin-right:8px">LIVE</span>
+        <span class="filter-label">CLASS:</span>
         <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
           <option value="all">ทุก Class</option>
           <option value="warrior">Warrior</option>
@@ -716,9 +661,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </select>
       </div>
     </div>
-
-    <!-- RANK LIST -->
-    <div class="rank-list-wrap" id="globalList">
+    <div id="globalList">
       <div class="lb-loading">
         <div class="lb-skel"></div><div class="lb-skel"></div><div class="lb-skel"></div>
         <div class="lb-skel"></div><div class="lb-skel"></div>
@@ -772,41 +715,27 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 </main>
 
-<!-- PLAYER PROFILE POPUP -->
-<div class="player-popup-overlay" id="playerPopup" onclick="closePlayerPopup(event)">
-  <div class="player-popup">
-    <button class="pp-close" onclick="closePlayerPopup()">✕</button>
-    <div class="pp-header">
-      <div class="pp-avatar cls-warrior" id="ppAvatarWrap">
-        <img id="ppAvatar" src="" alt="">
-      </div>
+<!-- PLAYER POPUP -->
+<div class="pp-overlay" id="ppOverlay" onclick="closePP(event)">
+  <div class="pp-box">
+    <button class="pp-close" onclick="closePP()">✕</button>
+    <div class="pp-head">
+      <div class="pp-ava" id="ppAva"><img id="ppImg" src="" alt=""></div>
       <div>
-        <div class="pp-name" id="ppName">—</div>
-        <div class="pp-handle" id="ppHandle">—</div>
-        <div class="pp-class" id="ppClass" style="color:var(--cls)">—</div>
+        <div class="pp-hname" id="ppName">—</div>
+        <div class="pp-huser" id="ppUser">—</div>
+        <div class="pp-hcls" id="ppCls">—</div>
       </div>
     </div>
     <div class="pp-stats">
-      <div class="pp-stat">
-        <div class="pp-stat-val" id="ppXP">—</div>
-        <div class="pp-stat-lbl">XP เดือนนี้</div>
-      </div>
-      <div class="pp-stat">
-        <div class="pp-stat-val" id="ppLevel">—</div>
-        <div class="pp-stat-lbl">LEVEL</div>
-      </div>
-      <div class="pp-stat">
-        <div class="pp-stat-val" id="ppStreak">—</div>
-        <div class="pp-stat-lbl">STREAK</div>
-      </div>
+      <div class="pp-st"><div class="pp-st-v" id="ppXP">—</div><div class="pp-st-l">XP เดือนนี้</div></div>
+      <div class="pp-st"><div class="pp-st-v" id="ppLv">—</div><div class="pp-st-l">LEVEL</div></div>
+      <div class="pp-st"><div class="pp-st-v" id="ppStreak">—</div><div class="pp-st-l">STREAK</div></div>
     </div>
-    <div class="pp-title-row" id="ppTitleRow">
-      <span class="pp-title-label">TITLE</span>
-      <span id="ppTitleBadge" style="margin-left:8px;font-size:10px;color:var(--text-dim)">—</span>
-    </div>
-    <div class="pp-footer">
-      <button class="pp-btn primary" id="ppProfileBtn" onclick="">ดูโปรไฟล์</button>
-      <button class="pp-btn" onclick="closePlayerPopup()">ปิด</button>
+    <div class="pp-title-row"><span class="pp-title-lbl">TITLE</span><span id="ppTitle">—</span></div>
+    <div class="pp-foot">
+      <button class="pp-btn go" id="ppGo">ดูโปรไฟล์</button>
+      <button class="pp-btn" onclick="closePP()">ปิด</button>
     </div>
   </div>
 </div>
@@ -985,64 +914,57 @@ async function loadGlobal() {
 }
 
 function renderGlobal(data) {
-  const filtered = data
-  const maxXP = filtered[0] ? (globalPeriod==='monthly' ? filtered[0].xp_this_month : filtered[0].xp_total||0) : 1
-
+  const maxXP = data[0] ? (globalPeriod==='monthly' ? data[0].xp_this_month : data[0].xp_total||0) : 1
   const list = document.getElementById('globalList')
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
+
+  if (!data.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-title">ไม่พบข้อมูล</div><div class="empty-sub">ยังไม่มีผู้เล่นในหมวดนี้</div></div>`
     return
   }
 
-  let html = ''
-  filtered.forEach((u, i) => {
-    const rank = i + 1
-    const xp = globalPeriod==='monthly' ? u.xp_this_month : u.xp_total
-    const pct = Math.round((xp/maxXP)*100)
-    const isMe = u.id === currentUser?.id
-    const cls = u.class||'warrior'
-    const delay = Math.min(i*0.03, 0.6).toFixed(2)
+  list.innerHTML = data.map((u, i) => {
+    const rank  = i + 1
+    const xp    = globalPeriod==='monthly' ? (u.xp_this_month||0) : (u.xp_total||0)
+    const cls   = u.class || 'warrior'
+    const isMe  = u.id === currentUser?.id
+    const delay = Math.min(i * 0.025, 0.5).toFixed(2)
+
     const rankCls = rank===1 ? 'r1' : rank===2 ? 'r2' : rank===3 ? 'r3' : 'rn'
     const topCls  = rank===1 ? 'top1' : rank===2 ? 'top2' : rank===3 ? 'top3' : ''
-    const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
-    const titleText = titleObj ? `<span class="rr-title-text">${esc(titleObj.icon||'')} ${esc(titleObj.name)}</span>` : ''
-    const streakBadge = (u.streak_current||0) >= 7
-      ? `<span class="rr-streak"><svg width="9" height="9" viewBox="0 0 16 16" fill="none" style="vertical-align:middle"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>${u.streak_current}</span>` : ''
 
-    // divider after top 3
-    const divider = rank === 4 ? `<div class="rank-divider">— อันดับ 4 และต่อไป —</div>` : ''
+    const titleObj  = u.equipped_title_id && titlesMap[u.equipped_title_id]
+    const titleText = titleObj ? `<span class="rr-sep">·</span><span class="rr-title">${esc(titleObj.icon||'')} ${esc(titleObj.name)}</span>` : ''
+    const streak    = (u.streak_current||0) >= 7 ? `<span class="rr-streak">🔥${u.streak_current}</span>` : ''
+    const divider   = rank === 4 ? `<div class="rank-divider">— TOP 3 END · RANK 4+ —</div>` : ''
 
-    html += `${divider}
-    <div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s"
-         onclick="openPlayerPopup(${JSON.stringify({id:u.id,display_name:u.display_name,username:u.username,class:u.class,level:u.level,xp_this_month:u.xp_this_month,xp_total:u.xp_total,streak_current:u.streak_current,avatar_url:u.avatar_url,avatar_seed:u.avatar_seed,equipped_title_id:u.equipped_title_id}).replace(/"/g,'&quot;')})">
-      <div class="rr-num ${rankCls}">${rank<=3?rank:`#${rank}`}</div>
-      <div class="rr-avatar cls-${cls}">
-        <img src="${getAvatar(u,38)}" alt="" loading="lazy">
-      </div>
+    // encode user data สำหรับ popup
+    const ud = encodeURIComponent(JSON.stringify({
+      id: u.id, display_name: u.display_name, username: u.username,
+      class: u.class, level: u.level, xp_this_month: u.xp_this_month,
+      xp_total: u.xp_total, streak_current: u.streak_current,
+      avatar_url: u.avatar_url, avatar_seed: u.avatar_seed,
+      equipped_title_id: u.equipped_title_id
+    }))
+
+    return `${divider}<div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="openPP('${ud}')">
+      <div class="rr-num ${rankCls}">${rank}</div>
+      <div class="rr-avatar cls-${cls}"><img src="${getAvatar(u,36)}" alt="" loading="lazy"></div>
       <div class="rr-info">
         <div class="rr-name">${esc(u.display_name||u.username)}</div>
-        <div class="rr-meta">
-          <span class="rr-class cls-${cls}">${cls.toUpperCase()} · LV ${u.level||1}</span>
+        <div class="rr-sub">
+          <span class="rr-class cls-${cls}">${cls.toUpperCase()}</span>
+          <span class="rr-sep">·</span>
+          <span class="rr-class" style="color:var(--text-dim)">LV ${u.level||1}</span>
           ${titleText}
-          ${streakBadge}
+          ${streak}
         </div>
       </div>
       <div class="rr-xp">
-        <div class="rr-xp-val">${fmtNum(xp)}</div>
-        <div class="rr-xp-label">XP</div>
-        <div class="rr-bar-wrap"><div class="rr-bar" data-pct="${pct}"></div></div>
+        <div class="rr-xp-val ${rank>3?'normal':''}">${fmtNum(xp)}</div>
+        <div class="rr-xp-lbl">XP</div>
       </div>
     </div>`
-  })
-
-  list.innerHTML = html
-
-  // Animate bars
-  requestAnimationFrame(() => {
-    document.querySelectorAll('#globalList .rr-bar').forEach(el => {
-      el.style.width = (el.dataset.pct||0) + '%'
-    })
-  })
+  }).join('')
 }
 
 // ============================================================
@@ -1287,6 +1209,34 @@ window.setCitySort = function(key, btn) {
 }
 
 // ============================================================
+// PLAYER POPUP
+// ============================================================
+window.openPP = function(encoded) {
+  let u; try { u = JSON.parse(decodeURIComponent(encoded)) } catch(e){ return }
+  const cls = u.class||'warrior'
+  const xp  = globalPeriod==='monthly' ? (u.xp_this_month||0) : (u.xp_total||0)
+  document.getElementById('ppImg').src = getAvatar(u, 80)
+  document.getElementById('ppAva').className = `pp-ava cls-${cls}`
+  document.getElementById('ppName').textContent = u.display_name || u.username || '—'
+  document.getElementById('ppUser').textContent = `@${u.username||'—'}`
+  document.getElementById('ppCls').textContent  = cls.toUpperCase()
+  document.getElementById('ppCls').className    = `pp-hcls cls-${cls}`
+  document.getElementById('ppXP').textContent     = fmtNum(xp)
+  document.getElementById('ppLv').textContent     = u.level||1
+  document.getElementById('ppStreak').textContent = u.streak_current||0
+  const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
+  document.getElementById('ppTitle').innerHTML = titleObj
+    ? renderTitleBadge(titleObj)
+    : '<span style="opacity:0.4">—</span>'
+  document.getElementById('ppGo').onclick = () => goProfile(u.id)
+  document.getElementById('ppOverlay').classList.add('open')
+}
+window.closePP = function(e) {
+  if (e && e.target !== document.getElementById('ppOverlay')) return
+  document.getElementById('ppOverlay').classList.remove('open')
+}
+
+// ============================================================
 // NAVIGATION
 // ============================================================
 window.goProfile = function(uid) {
@@ -1343,43 +1293,6 @@ window.closeCityModal = function(e) {
   document.getElementById('cityModal').classList.remove('open')
 }
 
-
-// ============================================================
-// PLAYER POPUP
-// ============================================================
-window.openPlayerPopup = function(uObj) {
-  let u
-  try { u = typeof uObj === 'string' ? JSON.parse(uObj) : uObj } catch(e) { return }
-
-  const cls = u.class||'warrior'
-  const xp = globalPeriod==='monthly' ? (u.xp_this_month||0) : (u.xp_total||0)
-
-  document.getElementById('ppAvatar').src = getAvatar(u, 80)
-  document.getElementById('ppAvatarWrap').className = `pp-avatar cls-${cls}`
-  document.getElementById('ppName').textContent = u.display_name || u.username || '—'
-  document.getElementById('ppHandle').textContent = `@${u.username||'—'}`
-  document.getElementById('ppClass').textContent = cls.toUpperCase()
-  document.getElementById('ppClass').className = `pp-class cls-${cls}`
-  document.getElementById('ppXP').textContent = fmtNum(xp)
-  document.getElementById('ppLevel').textContent = u.level||1
-  document.getElementById('ppStreak').textContent = u.streak_current||0
-
-  const titleObj = u.equipped_title_id && titlesMap[u.equipped_title_id]
-  const ppTitle = document.getElementById('ppTitleBadge')
-  if (titleObj) {
-    ppTitle.innerHTML = renderTitleBadge(titleObj)
-  } else {
-    ppTitle.textContent = '—'
-  }
-
-  document.getElementById('ppProfileBtn').onclick = () => goProfile(u.id)
-  document.getElementById('playerPopup').classList.add('open')
-}
-
-window.closePlayerPopup = function(e) {
-  if (e && e.target !== document.getElementById('playerPopup')) return
-  document.getElementById('playerPopup').classList.remove('open')
-}
 
 // ============================================================
 // HELPERS
