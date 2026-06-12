@@ -130,14 +130,57 @@ function buildSidebarHTML(activePage) {
 async function loadBadges(userId, userCity) {
   const city = userCity || 'กรุงเทพมหานคร'
 
-  // Quest badge — in_progress quests
-  const { count: qc } = await supabase.from('user_quests')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId).eq('status', 'in_progress')
+  // Quest badge — นับเฉพาะ daily+weekly วันนี้/สัปดาห์นี้ที่ยังไม่ได้ส่ง
+  // ใช้ logic เดียวกับ quests.html (timezone ไทย UTC+7)
+  const TZ_OFFSET = 7 * 60
+  const nowLocal    = new Date(Date.now() + TZ_OFFSET * 60000)
+  const todayStr    = nowLocal.toISOString().split('T')[0]
+  const dayOfWeek   = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
+  const monday      = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
+  const mondayStr   = monday.toISOString().split('T')[0]
+  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
+
+  const toThaiDate = (ts) => {
+    if (!ts) return ''
+    return new Date(new Date(ts).getTime() + TZ_OFFSET * 60000).toISOString().split('T')[0]
+  }
+
+  // ดึง quests ที่ active ทั้ง daily+weekly
+  const { data: quests } = await supabase.from('quests')
+    .select('id, type').eq('is_active', true).in('type', ['daily', 'weekly'])
+
+  // ดึง user_quests ล่าสุด 100 รายการ
+  const { data: uqAll } = await supabase.from('user_quests')
+    .select('quest_id, status, submitted_at, created_at')
+    .eq('user_id', userId)
+    .order('submitted_at', { ascending: false })
+    .limit(100)
+
+  // กรอง active (วันนี้ หรือ สัปดาห์นี้ หรือ pending_review)
+  const uqActive = (uqAll || []).filter(uq => {
+    const d = toThaiDate(uq.submitted_at || uq.created_at)
+    if (uq.status === 'pending_review') return true
+    if (d === todayStr) return true
+    if (d >= mondayStr && d < tomorrowStr) return true
+    return false
+  })
+  const uqMap = {}
+  uqActive.forEach(uq => { uqMap[uq.quest_id] = uq })
+
+  // นับ quest ที่ยังไม่ได้ส่ง (ไม่มีใน uqMap หรือ status = in_progress)
+  const notStarted = (quests || []).filter(q => {
+    const uq = uqMap[q.id]
+    return !uq || uq.status === 'in_progress'
+  }).length
+
   const qBadge = document.getElementById('navQuestBadge')
-  if (qBadge && qc > 0) {
-    qBadge.textContent = qc > 99 ? '99+' : qc
-    qBadge.style.display = 'inline'
+  if (qBadge) {
+    if (notStarted > 0) {
+      qBadge.textContent = notStarted > 99 ? '99+' : notStarted
+      qBadge.style.display = 'inline'
+    } else {
+      qBadge.style.display = 'none'
+    }
   }
 
   // Verify badge — pending in same city, not voted yet
