@@ -881,7 +881,7 @@ function getAvatarUrl(avatarSeed, size=80) {
 import { supabase } from './supabase.js'
 import { initSidebar, updateSidebarAvatar, updateSidebarName } from './sidebar.js'
 import { getIcon } from './icons.js'
-import { renderBadgeItem, renderTitleCard, injectTitleStyles } from './titles.js'
+import { renderBadgeItem, renderTitleCard, renderTitleBadge, injectTitleStyles } from './titles.js'
 
 let currentUser  = null   // logged-in user
 let viewedUser   = null   // profile being viewed (may differ)
@@ -1226,13 +1226,8 @@ async function loadTitles() {
     const t = allTitles.find(t => t.id === window.__equippedTitleId)
     if (t) {
       const el = document.getElementById('heroTitleBadge')
-      const r = t.rarity || 'common'
-      // rarity-aware SVG icon inline
-      const iconColor = { common:'#aaaaaa', rare:'#44aaff', epic:'#dd88ff', legendary:'#ffd700' }[r] || '#00f5ff'
-      const iconSvg = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;filter:drop-shadow(0 0 3px ${iconColor}99)" aria-hidden="true"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="${iconColor}" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`
-      el.innerHTML = iconSvg + t.name
-      el.className = `hero-title-badge rarity-${r}`
-      el.style.display = 'inline-flex'
+      el.innerHTML = renderTitleBadge(t)
+      el.style.display = 'block'
     }
   }
   document.getElementById('qsTitles').textContent = userTitles.length

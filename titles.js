@@ -142,6 +142,18 @@ export function injectTitleStyles() {
   from { transform: rotate(0deg); }
   to   { transform: rotate(-360deg); }
 }
+@keyframes nxHexLegPulse {
+  0%,100% { opacity: 0.55; filter: blur(0px); }
+  50%     { opacity: 0.85; filter: blur(0.5px); }
+}
+@keyframes nxHexEpicPulse {
+  0%,100% { opacity: 0.45; }
+  50%     { opacity: 0.75; }
+}
+@keyframes nxHexRarePulse {
+  0%,100% { opacity: 0.35; }
+  50%     { opacity: 0.6; }
+}
 
 /* ──────────────────────────────
    .nx-title-badge  (small hero badge)
@@ -796,20 +808,20 @@ function renderIconFrame(svgPath, rarity = 'common', size = 48) {
   const hex = `polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)`
   const innerSize = Math.round(size * 0.52)
 
-  // Rotating ring for legendary/epic
-  let extraRing = ''
-  if (rarity === 'legendary') {
-    extraRing = `<div style="position:absolute;inset:-3px;background:conic-gradient(from 0deg,${cfg.color},${cfg.colorAlt},${cfg.colorAlt2||cfg.colorAlt},${cfg.color});clip-path:${hex};animation:nxLegRing 3s linear infinite;opacity:0.7;"></div>`
-  } else if (rarity === 'epic') {
-    extraRing = `<div style="position:absolute;inset:-2px;background:conic-gradient(from 0deg,${cfg.color},transparent,${cfg.colorAlt},transparent,${cfg.color});clip-path:${hex};animation:nxEpicRing 4s linear infinite;opacity:0.55;"></div>`
-  }
+  // Border opacity by rarity
+  const borderOpacity = rarity === 'common' ? '0.25' : rarity === 'rare' ? '0.5' : '0.7'
 
-  // Thin border ring (1.5px stroke simulation via clip-path layers)
-  const borderOpacity = rarity === 'common' ? '0.25' : rarity === 'rare' ? '0.5' : '0.65'
+  // Inner radial glow (subtle, no bg fill)
+  const glowOpacity = rarity === 'legendary' ? '50' : rarity === 'epic' ? '38' : rarity === 'rare' ? '28' : '18'
 
-  // Inner glow intensity
-  const glowSize = rarity === 'legendary' ? '20' : rarity === 'epic' ? '14' : rarity === 'rare' ? '8' : '4'
-  const glowOpacity = rarity === 'legendary' ? '55' : rarity === 'epic' ? '44' : rarity === 'rare' ? '33' : '22'
+  // Border pulse animation name (defined in CSS)
+  const pulseAnim = rarity === 'legendary'
+    ? 'nxHexLegPulse 1.8s ease-in-out infinite'
+    : rarity === 'epic'
+      ? 'nxHexEpicPulse 2.5s ease-in-out infinite'
+      : rarity === 'rare'
+        ? 'nxHexRarePulse 3s ease-in-out infinite'
+        : 'none'
 
   // SVG icon glow
   const iconGlow = rarity === 'common'
@@ -818,11 +830,15 @@ function renderIconFrame(svgPath, rarity = 'common', size = 48) {
       ? `drop-shadow(0 0 6px ${cfg.color}ee) drop-shadow(0 0 12px ${cfg.colorAlt}88)`
       : `drop-shadow(0 0 5px ${cfg.color}cc) drop-shadow(0 0 2px ${cfg.colorAlt||cfg.color}66)`
 
+  // Pulsing border layer (hex clip-path, animated opacity/shadow)
+  const borderPulseLayer = rarity !== 'common'
+    ? `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};animation:${pulseAnim};"></div>`
+    : `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};"></div>`
+
   return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-    ${extraRing}
-    <div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(2,8,14,0.92);"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 50% 30%,${cfg.color}${glowOpacity} 0%,transparent 70%);"></div>
+    ${borderPulseLayer}
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(2,8,14,0.93);"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 50% 30%,${cfg.color}${glowOpacity} 0%,transparent 65%);"></div>
     <svg width="${innerSize}" height="${innerSize}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
       style="position:relative;z-index:1;color:${cfg.color};filter:${iconGlow}">
       ${svgPath}

@@ -881,14 +881,13 @@ async function loadProfile() {
   document.getElementById('pmGold').textContent = fmtNum(profile.gold)
   document.getElementById('pmCrystal').textContent = fmtNum(profile.crystal)
 
-  // Equipped title badge — แสดงแบบเดียวกับ profile.html (icon + name ตรงๆ)
+  // Equipped title badge — ใช้ renderTitleBadge() จาก titles.js เป็น single source of truth
   const pmTitleEl = document.getElementById('pmTitle')
   if (equippedTitle) {
-    const iconPart = equippedTitle.icon ? equippedTitle.icon + ' ' : ''
-    pmTitleEl.textContent = iconPart + (equippedTitle.name || '')
-    pmTitleEl.style.cssText = 'color:var(--cyan);font-size:11px;margin-bottom:6px'
+    pmTitleEl.innerHTML = renderTitleBadge(equippedTitle)
+    pmTitleEl.style.cssText = 'margin-bottom:6px'
   } else {
-    pmTitleEl.textContent = '— ไม่มีฉายา —'
+    pmTitleEl.innerHTML = ''
     pmTitleEl.style.cssText = ''
   }
 
