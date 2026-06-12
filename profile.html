@@ -105,11 +105,45 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* HERO INFO */
 .hero-info{flex:1;min-width:0}
 .hero-title-badge{
-  display:inline-block;
+  display:inline-flex;align-items:center;gap:6px;
   font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  padding:4px 12px;margin-bottom:8px;
-  background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);color:var(--cyan);
+  padding:4px 14px 4px 10px;margin-bottom:8px;
+  position:relative;overflow:hidden;
   clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  /* default cyan — overridden per rarity */
+  background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.25);color:var(--cyan);
+}
+/* shimmer sweep right */
+.hero-title-badge::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,0.22) 50%,transparent 75%);
+  background-size:220% 100%;
+  animation:heroBadgeShimmer 2.2s linear infinite;
+}
+@keyframes heroBadgeShimmer{
+  0%  {background-position:-100% center;}
+  100%{background-position:220% center;}
+}
+/* rarity variants */
+.hero-title-badge.rarity-common {background:rgba(170,170,170,0.07);border-color:rgba(170,170,170,0.2);color:#cccccc;}
+.hero-title-badge.rarity-common::after{opacity:0.3;}
+.hero-title-badge.rarity-rare   {background:rgba(68,170,255,0.09);border-color:rgba(68,170,255,0.35);color:#44aaff;}
+.hero-title-badge.rarity-epic   {background:rgba(176,68,255,0.1);border-color:rgba(176,68,255,0.45);color:#dd88ff;}
+.hero-title-badge.rarity-epic::after{opacity:0.7;}
+.hero-title-badge.rarity-legendary{
+  background:linear-gradient(90deg,rgba(255,215,0,0.12),rgba(255,107,0,0.08),rgba(255,215,0,0.12));
+  border-color:rgba(255,215,0,0.55);color:#ffd700;
+  text-shadow:0 0 8px rgba(255,215,0,0.5);
+  animation:heroBadgeLeg 2s ease-in-out infinite;
+}
+.hero-title-badge.rarity-legendary::after{
+  background:linear-gradient(105deg,transparent 15%,rgba(255,215,0,0.4) 50%,transparent 85%);
+  background-size:220% 100%;
+  animation:heroBadgeShimmer 1.4s linear infinite;
+}
+@keyframes heroBadgeLeg{
+  0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.25);}
+  50%{box-shadow:0 0 18px rgba(255,215,0,0.5),0 0 32px rgba(255,107,0,0.2);}
 }
 .hero-name{font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:4px;line-height:1.1}
 .hero-username{font-family:'Orbitron',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:10px}
@@ -1190,7 +1224,16 @@ async function loadTitles() {
   // set equipped title badge
   if (window.__equippedTitleId) {
     const t = allTitles.find(t => t.id === window.__equippedTitleId)
-    if (t) document.getElementById('heroTitleBadge').textContent = t.icon + ' ' + t.name
+    if (t) {
+      const el = document.getElementById('heroTitleBadge')
+      const r = t.rarity || 'common'
+      // rarity-aware SVG icon inline
+      const iconColor = { common:'#aaaaaa', rare:'#44aaff', epic:'#dd88ff', legendary:'#ffd700' }[r] || '#00f5ff'
+      const iconSvg = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;filter:drop-shadow(0 0 3px ${iconColor}99)" aria-hidden="true"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="${iconColor}" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`
+      el.innerHTML = iconSvg + t.name
+      el.className = `hero-title-badge rarity-${r}`
+      el.style.display = 'inline-flex'
+    }
   }
   document.getElementById('qsTitles').textContent = userTitles.length
 }

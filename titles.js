@@ -477,28 +477,27 @@ export function injectTitleStyles() {
 }
 
 .nx-badge-item.rarity-common {
-  border-color: rgba(170,170,170,0.15);
-  background: rgba(170,170,170,0.02);
+  border-color: rgba(170,170,170,0.2);
+  background: transparent;
 }
 .nx-badge-item.rarity-rare {
-  border-color: rgba(68,170,255,0.3);
-  background: rgba(68,170,255,0.04);
+  border-color: rgba(68,170,255,0.35);
+  background: transparent;
 }
 .nx-badge-item.rarity-rare:hover {
   box-shadow: 0 0 12px rgba(68,170,255,0.2);
-  border-color: rgba(68,170,255,0.5);
+  border-color: rgba(68,170,255,0.55);
 }
 .nx-badge-item.rarity-epic {
-  border-color: rgba(176,68,255,0.35);
-  background: rgba(176,68,255,0.05);
-  animation: epicFloat 3s ease-in-out infinite;
+  border-color: rgba(176,68,255,0.4);
+  background: transparent;
 }
 .nx-badge-item.rarity-epic:hover {
   box-shadow: 0 0 16px rgba(176,68,255,0.3);
 }
 .nx-badge-item.rarity-legendary {
-  border-color: rgba(255,215,0,0.5);
-  background: rgba(255,215,0,0.05);
+  border-color: rgba(255,215,0,0.55);
+  background: transparent;
   animation: legendaryPulse 2s ease-in-out infinite;
 }
 .nx-badge-item.rarity-legendary:hover {
