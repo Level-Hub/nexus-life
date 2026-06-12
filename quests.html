@@ -799,7 +799,7 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
-    const { data: uqData, error } = await supabase.from('user_quests').upsert({
+    const { data: uqData, error } = await supabase.from('user_quests').insert({
       user_id:      currentUser.id,
       quest_id:     q.id,
       status:       isImage ? 'pending_review' : 'approved',
@@ -807,7 +807,7 @@ window.submitProof = async function() {
       proof_text:   proofText,
       submitted_at: new Date().toISOString(),
       xp_granted:   false
-    }, { onConflict: 'user_id,quest_id' }).select().single()
+    }).select().single()
 
     if (error) throw error
 
