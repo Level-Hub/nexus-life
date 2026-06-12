@@ -850,28 +850,16 @@ async function loadProfile() {
 
   if (!profile) return
 
-  // ดึง equipped title — 2 ขั้น เพื่อหลีกเลี่ยง RLS block บน nested join
+  // ดึง equipped title — ดึง titles ทั้งตารางแล้ว find() เหมือน profile.html
   let equippedTitle = null
   try {
-    // หา title_id ที่ equipped อยู่ (จาก users.equipped_title_id ก่อน fallback user_titles)
-    let equippedTitleId = profile.equipped_title_id || null
-    if (!equippedTitleId) {
-      const { data: utRow } = await supabase
-        .from('user_titles')
-        .select('title_id')
-        .eq('user_id', currentUser.id)
-        .eq('is_equipped', true)
-        .maybeSingle()
-      equippedTitleId = utRow?.title_id || null
-    }
-    // ดึงข้อมูล title แยก query — ไม่ใช้ nested join เพราะ RLS อาจ block
-    if (equippedTitleId) {
-      const { data: titleDef } = await supabase
-        .from('titles')
-        .select('id, name, icon, category, rarity')
-        .eq('id', equippedTitleId)
-        .maybeSingle()
-      equippedTitle = titleDef || null
+    const [{ data: allTitles }, { data: userTitlesData }] = await Promise.all([
+      supabase.from('titles').select('*').order('id'),
+      supabase.from('user_titles').select('*').eq('user_id', currentUser.id)
+    ])
+    const equippedUT = (userTitlesData || []).find(ut => ut.is_equipped)
+    if (equippedUT) {
+      equippedTitle = (allTitles || []).find(t => t.id === equippedUT.title_id) || null
     }
   } catch (e) {
     equippedTitle = null
