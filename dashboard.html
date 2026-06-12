@@ -893,11 +893,12 @@ async function loadProfile() {
   document.getElementById('pmGold').textContent = fmtNum(profile.gold)
   document.getElementById('pmCrystal').textContent = fmtNum(profile.crystal)
 
-  // Equipped title badge
+  // Equipped title badge — แสดงแบบเดียวกับ profile.html (icon + name ตรงๆ)
   const pmTitleEl = document.getElementById('pmTitle')
   if (equippedTitle) {
-    pmTitleEl.innerHTML = renderTitleBadge(equippedTitle)
-    pmTitleEl.style.cssText = 'background:none;border:none;padding:0;margin-bottom:6px'
+    const iconPart = equippedTitle.icon ? equippedTitle.icon + ' ' : ''
+    pmTitleEl.textContent = iconPart + (equippedTitle.name || '')
+    pmTitleEl.style.cssText = 'color:var(--cyan);font-size:11px;margin-bottom:6px'
   } else {
     pmTitleEl.textContent = '— ไม่มีฉายา —'
     pmTitleEl.style.cssText = ''
