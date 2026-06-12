@@ -1257,7 +1257,7 @@ async function loadQuestHistory() {
       <div class="quest-hist-icon">${getIcon(typeIconMap[q.type]||'sword', 16)}</div>
       <div class="quest-hist-info">
         <div class="quest-hist-title">${q.title}</div>
-        <div class="quest-hist-meta">${q.type?.toUpperCase()} · ${q.stat_type?.toUpperCase() || '—'} · ${getTimeAgo(uq.created_at)}</div>
+        <div class="quest-hist-meta">${q.type?.toUpperCase()} · ${q.stat_type?.toUpperCase() || '—'} · ${getTimeAgo(uq.submitted_at || uq.created_at)}</div>
       </div>
       <div style="text-align:right">
         <div class="quest-hist-status ${uq.status}">${statusLabel[uq.status] || uq.status}</div>

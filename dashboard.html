@@ -141,6 +141,24 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .stat-card-sub { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px; }
 .stat-card-glow { position:absolute;bottom:0;right:0;width:60px;height:60px;border-radius:50%;filter:blur(30px);pointer-events:none; }
 
+
+/* ===================== WEEKLY QUEST BOX ===================== */
+.weekly-box {
+  background:rgba(255,149,0,0.02);border:1px solid rgba(255,149,0,0.15);
+  position:relative;
+}
+.weekly-box::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--orange);border-left:2px solid var(--orange); }
+.weekly-box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--orange);border-right:2px solid var(--orange); }
+.weekly-box .box-header { border-bottom:1px solid rgba(255,149,0,0.15); }
+.weekly-box .box-title { color:var(--orange); }
+.weekly-box .quest-card { background:rgba(255,149,0,0.02); }
+.weekly-box .quest-card:hover { background:rgba(255,149,0,0.04);border-color:rgba(255,149,0,0.25); }
+.weekly-box .qf-btn.active,.weekly-box .qf-btn:hover { border-color:var(--orange);color:var(--orange);background:rgba(255,149,0,0.06); }
+
+.quest-cls-badge {
+  font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;
+  padding:2px 7px;border:1px solid currentColor;opacity:0.7;
+}
 /* ===================== MAIN GRID ===================== */
 .main-grid {
   display:grid;grid-template-columns:1fr 320px;gap:20px;
@@ -547,14 +565,36 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </div>
         <div class="box-body">
           <div class="quest-filter">
-            <button class="qf-btn active" onclick="filterQuests('all',this)">ทั้งหมด</button>
-            <button class="qf-btn" onclick="filterQuests('in_progress',this)">รอทำ</button>
-            <button class="qf-btn" onclick="filterQuests('pending_review',this)">รอ Review</button>
-            <button class="qf-btn" onclick="filterQuests('approved',this)">สำเร็จ</button>
+            <button class="qf-btn active" onclick="filterQuests('daily','all',this)">ทั้งหมด</button>
+            <button class="qf-btn" onclick="filterQuests('daily','in_progress',this)">รอทำ</button>
+            <button class="qf-btn" onclick="filterQuests('daily','pending_review',this)">รอ Review</button>
+            <button class="qf-btn" onclick="filterQuests('daily','approved',this)">สำเร็จ</button>
           </div>
-          <div class="quest-list" id="questList">
+          <div class="quest-list" id="dailyQuestList">
             <div class="empty-state">
-              <div class="empty-state-icon" id="questLoadingIcon"></div>
+              <div class="empty-state-icon"></div>
+              <div class="empty-state-txt">กำลังโหลด Quest...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEEKLY QUESTS -->
+      <div class="box weekly-box" style="margin-bottom:16px">
+        <div class="box-header">
+          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><rect x="2" y="3" width="12" height="11" stroke="currentColor" stroke-width="1.2"/><path d="M2 7h12M6 3v2M10 3v2" stroke="currentColor" stroke-width="1.2"/></svg>WEEKLY QUESTS</div>
+          <div class="box-tag" id="weeklyResetTimer">รีเซ็ตใน —</div>
+        </div>
+        <div class="box-body">
+          <div class="quest-filter">
+            <button class="qf-btn active" onclick="filterQuests('weekly','all',this)">ทั้งหมด</button>
+            <button class="qf-btn" onclick="filterQuests('weekly','in_progress',this)">รอทำ</button>
+            <button class="qf-btn" onclick="filterQuests('weekly','pending_review',this)">รอ Review</button>
+            <button class="qf-btn" onclick="filterQuests('weekly','approved',this)">สำเร็จ</button>
+          </div>
+          <div class="quest-list" id="weeklyQuestList">
+            <div class="empty-state">
+              <div class="empty-state-icon"></div>
               <div class="empty-state-txt">กำลังโหลด Quest...</div>
             </div>
           </div>
@@ -728,7 +768,7 @@ let currentUser = null
 let userProfile = null
 let userStats   = null
 let allQuests   = []        // {quest, userQuest or null}
-let currentFilter = 'all'
+// dailyFilter / weeklyFilter declared in renderQuests section
 let activeQuestId = null
 let activeProofType = null
 
@@ -881,14 +921,13 @@ async function loadProfile() {
   document.getElementById('pmGold').textContent = fmtNum(profile.gold)
   document.getElementById('pmCrystal').textContent = fmtNum(profile.crystal)
 
-  // Equipped title badge — แสดงแบบเดียวกับ profile.html (icon + name ตรงๆ)
+  // Equipped title badge — ดึงจาก titles.js เหมือน profile.html
   const pmTitleEl = document.getElementById('pmTitle')
   if (equippedTitle) {
-    const iconPart = equippedTitle.icon ? equippedTitle.icon + ' ' : ''
-    pmTitleEl.textContent = iconPart + (equippedTitle.name || '')
-    pmTitleEl.style.cssText = 'color:var(--cyan);font-size:11px;margin-bottom:6px'
+    pmTitleEl.innerHTML = renderTitleBadge(equippedTitle)
+    pmTitleEl.style.cssText = 'margin-bottom:6px'
   } else {
-    pmTitleEl.textContent = '— ไม่มีฉายา —'
+    pmTitleEl.innerHTML = ''
     pmTitleEl.style.cssText = ''
   }
 
@@ -943,38 +982,63 @@ async function loadProfile() {
 async function loadQuests() {
   const cls = userProfile?.class
 
-  // ดึง quest ทั้งหมด daily + all class
+  // ดึง quest ทุก class ทั้ง daily + weekly (เหมือน quests.html)
   const { data: quests } = await supabase
     .from('quests')
     .select('*')
     .eq('is_active', true)
-    .eq('type', 'daily')
-    .or(`class_target.eq.${cls},class_target.is.null`)
+    .in('type', ['daily', 'weekly'])
+    .order('type')
+    .order('id')
 
-  // FIX: ดึง user_quests เฉพาะวันนี้ ใส่ range ชัดๆ กันดึงวันพรุ่งนี้มาด้วย
-  // ใช้ timezone ไทย UTC+7
+  // timezone ไทย UTC+7 — ตรงกับ quests.html ทุกอย่าง
   const TZ_OFFSET = 7 * 60
-  const nowLocal   = new Date(Date.now() + TZ_OFFSET * 60000)
-  const todayStr   = nowLocal.toISOString().split('T')[0]
+  const nowLocal    = new Date(Date.now() + TZ_OFFSET * 60000)
+  const todayStr    = nowLocal.toISOString().split('T')[0]
+  const dayOfWeek   = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
+  const monday      = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
+  const mondayStr   = monday.toISOString().split('T')[0]
   const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
 
-  const { data: userQuests } = await supabase
+  const toThaiDate = (ts) => {
+    if (!ts) return ''
+    return new Date(new Date(ts).getTime() + TZ_OFFSET * 60000).toISOString().split('T')[0]
+  }
+
+  // ดึง user_quests ทั้งหมด แล้วกรองด้วย JS (ตรงกับ quests.html 100%)
+  const { data: uqAllRaw } = await supabase
     .from('user_quests')
     .select('*')
     .eq('user_id', currentUser.id)
-    .gte('created_at', todayStr + 'T00:00:00')
-    .lt('created_at', tomorrowStr + 'T00:00:00')
+    .order('submitted_at', { ascending: false })
+    .limit(100)
 
+  const uqAll = uqAllRaw || []
+
+  // daily = submitted วันนี้ (เวลาไทย)
+  const uqToday = uqAll.filter(uq => toThaiDate(uq.submitted_at || uq.created_at) === todayStr)
+
+  // weekly = submitted ตั้งแต่ monday หรือ pending_review (เหมือน quests.html)
+  const uqWeek = uqAll.filter(uq => {
+    const d = toThaiDate(uq.submitted_at || uq.created_at)
+    if (d >= mondayStr && d < tomorrowStr) return true
+    if (uq.status === 'pending_review') return true
+    return false
+  })
+
+  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today (เหมือน quests.html)
   const uqMap = {}
-  ;(userQuests || []).forEach(uq => { uqMap[uq.quest_id] = uq })
+  uqWeek.forEach(uq => { uqMap[uq.quest_id] = uq })
+  uqToday.forEach(uq => { uqMap[uq.quest_id] = uq })
 
   allQuests = (quests || []).map(q => ({ quest: q, userQuest: uqMap[q.id] || null }))
 
-  // stat card
-  const done = allQuests.filter(q => q.userQuest?.status === 'approved').length
-  document.getElementById('statQuestDone').textContent = `${done}/${allQuests.length}`
+  // stat card — นับเฉพาะ daily วันนี้
+  const dailyAll  = allQuests.filter(q => q.quest.type === 'daily')
+  const dailyDone = dailyAll.filter(q => q.userQuest?.status === 'approved').length
+  document.getElementById('statQuestDone').textContent = `${dailyDone}/${dailyAll.length}`
 
-  // nav badge — นับเฉพาะ quest ที่ยังไม่ได้ส่งหลักฐานเลย (ไม่รวม pending_review และ approved)
+  // nav badge — นับ daily+weekly ที่ยังไม่ส่ง
   const notStarted = allQuests.filter(q => !q.userQuest || q.userQuest.status === 'in_progress').length
   const badgeEl = document.getElementById('navQuestBadge')
   if (notStarted > 0) { badgeEl.textContent = notStarted; badgeEl.style.display = '' }
@@ -983,41 +1047,54 @@ async function loadQuests() {
   renderQuests()
 }
 
-function renderQuests() {
-  const list = document.getElementById('questList')
-  const filtered = currentFilter === 'all'
-    ? allQuests
-    : allQuests.filter(q => {
-        const st = q.userQuest?.status || 'in_progress'
-        return st === currentFilter
-      })
+// currentFilter แยกเป็น daily/weekly
+let dailyFilter = 'all'
+let weeklyFilter = 'all'
+
+function renderQuestList(type) {
+  const listId = type === 'daily' ? 'dailyQuestList' : 'weeklyQuestList'
+  const filter = type === 'daily' ? dailyFilter : weeklyFilter
+  const list = document.getElementById(listId)
+
+  const quests = allQuests.filter(q => q.quest.type === type)
+  const filtered = filter === 'all'
+    ? quests
+    : quests.filter(q => (q.userQuest?.status || 'in_progress') === filter)
 
   if (!filtered.length) {
     list.innerHTML = `<div class="quest-empty"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" stroke="var(--text-dim)" stroke-width="1.2" rx="1"/><line x1="4" y1="16" x2="36" y2="16" stroke="var(--text-dim)" stroke-width="1" opacity="0.4"/><rect x="10" y="22" width="10" height="2" fill="var(--text-dim)" opacity="0.4"/></svg><div class="quest-empty-txt">ไม่มี Quest ในหมวดนี้</div></div>`
     return
   }
 
+  const cls = userProfile?.class || 'warrior'
+
   list.innerHTML = filtered.map(({quest: q, userQuest: uq}) => {
     const st = uq?.status || 'in_progress'
     const isDone    = st === 'approved'
     const isPending = st === 'pending_review'
+    const isMyClass = !q.class_target || q.class_target === cls
     const clsIcon = CLASS_ICONS[q.class_target] ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" aria-hidden="true">${CLASS_ICONS[q.class_target]}</svg>` : getIcon('sword',20)
 
     let btnHtml = ''
-    if (isDone)    btnHtml = `<button class="quest-btn done-btn">${getIcon('check',12)} สำเร็จ</button>`
-    else if (isPending) btnHtml = `<button class="quest-btn pending-btn">${getIcon('refresh',12)} รอ Community Verify</button>`
-    else btnHtml = `<button class="quest-btn" onclick="openQuestModal(${q.id})">ส่งหลักฐาน →</button>`
+    if (isDone)         btnHtml = `<button class="quest-btn done-btn">${getIcon('check',12)} สำเร็จ</button>`
+    else if (isPending) btnHtml = `<button class="quest-btn pending-btn">${getIcon('refresh',12)} รอ Verify</button>`
+    else                btnHtml = `<button class="quest-btn" onclick="openQuestModal(${q.id})">ส่งหลักฐาน →</button>`
+
+    // badge บอก class ถ้าไม่ใช่ class ตัวเอง
+    const clsBadge = q.class_target && !isMyClass
+      ? `<span class="quest-cls-badge cls-${q.class_target}" style="color:var(--cls)">${q.class_target.toUpperCase()}</span>`
+      : ''
 
     return `
     <div class="quest-card cls-${q.class_target||'warrior'} ${isDone?'done':''}">
       <div class="quest-icon">${clsIcon}</div>
       <div class="quest-info">
-        <div class="quest-title">${q.title}</div>
+        <div class="quest-title">${q.title} ${clsBadge}</div>
         <div class="quest-desc">${q.description||''}</div>
         <div class="quest-tags">
           <span class="quest-tag xp">+${q.xp_reward} XP</span>
           ${q.gold_reward ? `<span class="quest-tag gold">+${q.gold_reward} Gold</span>` : ''}
-          ${q.stat_type ? `<span class="quest-tag stat">+${q.stat_points} ${q.stat_type.toUpperCase()}</span>` : ''}
+          ${q.stat_type ? `<span class="quest-tag stat">+${q.stat_points||0} ${q.stat_type.toUpperCase()}</span>` : ''}
           <span class="quest-tag">${q.proof_type?.toUpperCase()||'TEXT'}</span>
         </div>
       </div>
@@ -1026,11 +1103,19 @@ function renderQuests() {
   }).join('')
 }
 
-window.filterQuests = function(f, btn) {
-  currentFilter = f
-  document.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('active'))
+function renderQuests() {
+  renderQuestList('daily')
+  renderQuestList('weekly')
+}
+
+window.filterQuests = function(type, f, btn) {
+  if (type === 'daily') dailyFilter = f
+  else weeklyFilter = f
+  // active state เฉพาะ group นั้น
+  const box = btn.closest('.box, .weekly-box')
+  box.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
-  renderQuests()
+  renderQuestList(type)
 }
 
 // ============================================================
@@ -1356,11 +1441,24 @@ function updateDate() {
 
 function updateQuestResetTimer() {
   const now  = new Date()
-  const next = new Date(); next.setHours(24,0,0,0)
-  const diff = next - now
-  const h = Math.floor(diff/3600000)
-  const m = Math.floor((diff%3600000)/60000)
-  document.getElementById('questResetTimer').textContent = `รีเซ็ตใน ${h} ชม. ${m} นาที`
+  // daily — reset เที่ยงคืน
+  const nextDay = new Date(); nextDay.setHours(24,0,0,0)
+  const diffDay = nextDay - now
+  const dh = Math.floor(diffDay/3600000)
+  const dm = Math.floor((diffDay%3600000)/60000)
+  document.getElementById('questResetTimer').textContent = `รีเซ็ตใน ${dh} ชม. ${dm} นาที`
+
+  // weekly — reset วันจันทร์หน้า
+  const nowThai = new Date(Date.now() + 7*3600000)
+  const dow = nowThai.getUTCDay() === 0 ? 7 : nowThai.getUTCDay()
+  const daysToMonday = (8 - dow) % 7 || 7
+  const nextMonday = new Date(now.getTime() + daysToMonday * 86400000)
+  nextMonday.setHours(0,0,0,0)
+  const diffWeek = nextMonday - now
+  const wh = Math.floor(diffWeek/3600000)
+  const wm = Math.floor((diffWeek%3600000)/60000)
+  const weeklyEl = document.getElementById('weeklyResetTimer')
+  if (weeklyEl) weeklyEl.textContent = `รีเซ็ตใน ${wh} ชม. ${wm} นาที`
 }
 
 function getTimeAgo(ts) {
