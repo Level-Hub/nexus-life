@@ -198,6 +198,36 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .class-filter:focus { outline:none;border-color:var(--cyan); }
 .class-filter option { background:#010d14;color:var(--text); }
 
+/* CUSTOM CLASS DROPDOWN */
+.cls-dropdown { position:relative;display:inline-block; }
+.cls-dropdown-btn {
+  display:flex;align-items:center;gap:6px;
+  padding:6px 10px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
+  background:#010d14;border:1px solid var(--border);color:var(--text);
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;min-width:100px;
+}
+.cls-dropdown-btn:after { content:'';display:inline-block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid var(--text-dim);margin-left:auto; }
+.cls-dropdown-btn.open { border-color:var(--cyan); }
+.cls-dropdown-btn.open:after { border-top:none;border-bottom:4px solid var(--cyan); }
+.cls-dropdown-menu {
+  position:absolute;top:calc(100% + 4px);left:0;z-index:400;
+  background:#010d14;border:1px solid var(--cyan);min-width:140px;
+  display:none;flex-direction:column;
+  box-shadow:0 8px 32px rgba(0,0,0,0.8),0 0 20px rgba(0,245,255,0.08);
+}
+.cls-dropdown-menu.open { display:flex; }
+.cls-dropdown-item {
+  padding:9px 14px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
+  color:var(--text-dim);cursor:pointer;transition:all 0.15s;
+  border-bottom:1px solid rgba(0,245,255,0.06);
+  display:flex;align-items:center;gap:8px;
+}
+.cls-dropdown-item:last-child { border-bottom:none; }
+.cls-dropdown-item:hover { background:rgba(0,245,255,0.06);color:var(--cyan); }
+.cls-dropdown-item.active { color:var(--cyan);background:rgba(0,245,255,0.04); }
+.cls-dropdown-item.active:before { content:'▸';font-size:8px; }
+.cls-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+
 /* ===================== RANK LIST ===================== */
 .rank-row {
   display:flex;align-items:center;gap:10px;
@@ -208,8 +238,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   animation:slideIn 0.35s both;
 }
 .rank-row:hover { background:rgba(0,245,255,0.05); }
-.rank-row.me { background:rgba(0,245,255,0.07);border-bottom-color:rgba(0,245,255,0.15); }
-.rank-row.me::after { content:'YOU';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.45; }
+.rank-row.me { background:rgba(0,245,255,0.07);border-bottom-color:rgba(0,245,255,0.15);border-left:2px solid rgba(0,245,255,0.4); }
 .rank-row.top1 {
   background:linear-gradient(90deg,rgba(255,215,0,0.07) 0%,rgba(255,215,0,0.02) 100%);
   border-bottom-color:rgba(255,215,0,0.15);
@@ -344,11 +373,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .lb-row.me {
   background:rgba(0,245,255,0.06);
   border-color:rgba(0,245,255,0.2);
-}
-.lb-row.me::before {
-  content:'YOU';position:absolute;right:16px;top:50%;transform:translateY(-50%);
-  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;
-  color:var(--cyan);opacity:0.5;
+  border-left:2px solid rgba(0,245,255,0.5);
 }
 .lb-row-rank {
   display:flex;align-items:center;justify-content:center;
@@ -668,15 +693,18 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <div class="filter-row">
       <span class="live-dot" style="margin-right:4px">LIVE</span>
       <span class="filter-label">CLASS:</span>
-      <select class="class-filter" id="classFilter" onchange="applyClassFilter(this.value)">
-        <option value="all">ทุก Class</option>
-        <option value="warrior">Warrior</option>
-        <option value="mage">Mage</option>
-        <option value="explorer">Explorer</option>
-        <option value="merchant">Merchant</option>
-        <option value="artist">Artist</option>
-        <option value="diplomat">Diplomat</option>
-      </select>
+      <div class="cls-dropdown" id="clsDropdown">
+        <button class="cls-dropdown-btn" id="clsDropdownBtn" onclick="toggleClsDropdown()">ทุก Class</button>
+        <div class="cls-dropdown-menu" id="clsDropdownMenu">
+          <div class="cls-dropdown-item active" onclick="selectClass('all','ทุก Class',this)">ทุก Class</div>
+          <div class="cls-dropdown-item" onclick="selectClass('warrior','Warrior',this)"><span class="cls-dot" style="background:#ff4444"></span>Warrior</div>
+          <div class="cls-dropdown-item" onclick="selectClass('mage','Mage',this)"><span class="cls-dot" style="background:#aa44ff"></span>Mage</div>
+          <div class="cls-dropdown-item" onclick="selectClass('explorer','Explorer',this)"><span class="cls-dot" style="background:#44ff88"></span>Explorer</div>
+          <div class="cls-dropdown-item" onclick="selectClass('merchant','Merchant',this)"><span class="cls-dot" style="background:#ffaa00"></span>Merchant</div>
+          <div class="cls-dropdown-item" onclick="selectClass('artist','Artist',this)"><span class="cls-dot" style="background:#ff66aa"></span>Artist</div>
+          <div class="cls-dropdown-item" onclick="selectClass('diplomat','Diplomat',this)"><span class="cls-dot" style="background:#00ccff"></span>Diplomat</div>
+        </div>
+      </div>
       <span class="filter-label" style="margin-left:12px">PERIOD:</span>
       <button class="filter-chip active" onclick="setFilter('period','monthly',this)">เดือนนี้</button>
       <button class="filter-chip" onclick="setFilter('period','alltime',this)">All Time</button>
@@ -966,7 +994,7 @@ function renderGlobal(data) {
       equipped_title_id: u.equipped_title_id
     }))
 
-    return `${divider}<div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="openPP('${ud}')">
+    return `${divider}<div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" data-ud="${ud}" onclick="openPP(this.dataset.ud)">
       <div class="rr-num ${rankCls}">${rank}</div>
       <div class="rr-avatar cls-${cls}"><img src="${getAvatar(u,36)}" alt="" loading="lazy"></div>
       <div class="rr-info">
@@ -1217,9 +1245,35 @@ window.setFilter = function(key, val, btn) {
 
 window.applyClassFilter = function(val) {
   selectedClass = val
-  // FIX: re-fetch จาก DB เพราะ filter อยู่ที่ DB แล้ว
   loadGlobal()
 }
+
+window.toggleClsDropdown = function() {
+  const btn = document.getElementById('clsDropdownBtn')
+  const menu = document.getElementById('clsDropdownMenu')
+  const isOpen = menu.classList.contains('open')
+  menu.classList.toggle('open', !isOpen)
+  btn.classList.toggle('open', !isOpen)
+}
+
+window.selectClass = function(val, label, el) {
+  selectedClass = val
+  document.getElementById('clsDropdownBtn').textContent = label
+  document.querySelectorAll('.cls-dropdown-item').forEach(i => i.classList.remove('active'))
+  el.classList.add('active')
+  document.getElementById('clsDropdownMenu').classList.remove('open')
+  document.getElementById('clsDropdownBtn').classList.remove('open')
+  loadGlobal()
+}
+
+// ปิด dropdown เมื่อกดนอก
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('clsDropdown')
+  if (dd && !dd.contains(e.target)) {
+    document.getElementById('clsDropdownMenu')?.classList.remove('open')
+    document.getElementById('clsDropdownBtn')?.classList.remove('open')
+  }
+})
 
 window.setCitySort = function(key, btn) {
   citySortKey = key
@@ -1241,29 +1295,32 @@ window.openPP = async function(encoded) {
   document.getElementById('ppUser').textContent = `@${u.username||'—'}`
   document.getElementById('ppCls').textContent  = cls.toUpperCase()
   document.getElementById('ppCls').className    = `pp-hcls cls-${cls}`
-  document.getElementById('ppXP').textContent     = fmtNum(xp)
-  document.getElementById('ppLv').textContent     = u.level||1
+  document.getElementById('ppXP').textContent   = fmtNum(xp)
+  document.getElementById('ppLv').textContent   = u.level||1
   document.getElementById('ppStreak').textContent = u.streak_current||0
-  document.getElementById('ppTitle').innerHTML = '<span style="opacity:0.4">—</span>'
-  document.getElementById('ppOverlay').classList.add('open')
+  document.getElementById('ppTitle').innerHTML  = '<span style="opacity:0.4">—</span>'
   document.getElementById('ppGo').onclick = () => goProfile(u.id)
+  document.getElementById('ppOverlay').classList.add('open')
 
-  // ถ้ามี equipped_title_id จาก encoded data ใช้เลย
-  // ถ้าไม่มี (เช่น monthly view ไม่ส่งมา) ดึงจาก users โดยตรง
-  let titleId = u.equipped_title_id
-  if (!titleId && u.id) {
-    const { data: fresh } = await supabase
-      .from('users').select('equipped_title_id,streak_current').eq('id', u.id).single()
-    if (fresh) {
-      titleId = fresh.equipped_title_id
-      if (!u.streak_current && fresh.streak_current)
-        document.getElementById('ppStreak').textContent = fresh.streak_current
+  // view ไม่มี streak_current และ xp_total — ดึงเพิ่มจาก users
+  if (u.id) {
+    const { data: extra } = await supabase
+      .from('users')
+      .select('streak_current,xp_total,equipped_title_id')
+      .eq('id', u.id).single()
+    if (extra) {
+      document.getElementById('ppStreak').textContent = extra.streak_current||0
+      // อัพเดต XP ถ้าเป็น alltime mode
+      if (globalPeriod === 'alltime')
+        document.getElementById('ppXP').textContent = fmtNum(extra.xp_total||0)
+      // resolve title
+      const titleId = u.equipped_title_id || extra.equipped_title_id
+      const titleObj = titleId && titlesMap[titleId]
+      document.getElementById('ppTitle').innerHTML = titleObj
+        ? renderTitleBadge(titleObj)
+        : '<span style="opacity:0.4">—</span>'
     }
   }
-  const titleObj = titleId && titlesMap[titleId]
-  document.getElementById('ppTitle').innerHTML = titleObj
-    ? renderTitleBadge(titleObj)
-    : '<span style="opacity:0.4">—</span>'
 }
 window.closePP = function(e) {
   if (e && e.target !== document.getElementById('ppOverlay')) return
