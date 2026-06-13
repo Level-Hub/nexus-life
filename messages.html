@@ -177,7 +177,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* ONLINE DOT */
 .online-wrap{position:relative;flex-shrink:0}
-.online-dot{position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg);z-index:2}
+.online-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);z-index:2}
 .online-dot.on{background:var(--green);box-shadow:0 0 5px var(--green);animation:livePulse 1.4s ease-in-out infinite}
 .online-dot.off{background:#3a4a50}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.4}}
@@ -201,8 +201,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* COMPACT CHAT HEADER */
 .chat-header{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(1,10,15,0.9);position:relative}
-.chat-header-top{display:flex;align-items:center;gap:10px;width:100%}
-.chat-peer-card{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.chat-header-top{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.chat-peer-card{display:flex;align-items:center;gap:10px;flex:1;min-width:0;justify-content:center}
 .chat-peer-avatar-wrap{position:relative;flex-shrink:0}
 .chat-peer-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3)}
 .chat-peer-avatar img{width:100%;height:100%;object-fit:cover}
@@ -511,6 +511,9 @@ window.openChat = async function(peer) {
   document.getElementById('peerAvatar').src = getAvatarSrc(peer, 38)
   document.getElementById('peerAvatarWrap').className = `chat-peer-avatar cls-${cls}`
   document.getElementById('peerAvatarWrap').style.borderColor = CLASS_COLOR[cls]
+  // set cls บน chat-peer-card ด้วย เพื่อให้ --cls cascade ถึง peerSub
+  const peerCard = document.querySelector('.chat-peer-card')
+  if (peerCard) peerCard.className = `chat-peer-card cls-${cls}`
   document.getElementById('peerName').textContent = esc(peer.display_name || peer.username)
   document.getElementById('peerSub').innerHTML =
     `${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span><span style="color:var(--text-dim)"> · LV.${peer.level||1}</span>`
@@ -835,7 +838,8 @@ window.toggleRecording = async function() {
   if (isRecording) { stopRecording(); return }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    mediaRecorder = new MediaRecorder(stream)
+    const mimeOpts = ['audio/mp4','audio/ogg','audio/webm'].find(t => MediaRecorder.isTypeSupported(t))
+    mediaRecorder = mimeOpts ? new MediaRecorder(stream, { mimeType: mimeOpts }) : new MediaRecorder(stream)
     audioChunks = []
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data) }
     mediaRecorder.start()
@@ -863,12 +867,14 @@ window.stopRecording = async function() {
   document.getElementById('recordingIndicator').classList.remove('active')
 
   mediaRecorder.onstop = async () => {
-    const blob = new Blob(audioChunks, { type: 'audio/webm' })
+    const mimeType = mediaRecorder.mimeType || 'audio/webm'
+    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm'
+    const blob = new Blob(audioChunks, { type: mimeType })
     mediaRecorder.stream.getTracks().forEach(t => t.stop())
     if (!activeChannel) return
     // Upload to Supabase storage
-    const path = `voice/${currentUser.id}/${Date.now()}.webm`
-    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: 'audio/webm' })
+    const path = `voice/${currentUser.id}/${Date.now()}.${ext}`
+    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: mimeType })
     if (error) { showToast('ส่งเสียงไม่สำเร็จ: ' + error.message, 'error'); return }
     const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
     const duration = recSeconds
