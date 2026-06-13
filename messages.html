@@ -363,7 +363,7 @@ import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
 
-function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
+function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:${CLASS_COLOR[cls]||'#00f5ff'}" stroke="${CLASS_COLOR[cls]||'#00f5ff'}" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
 
 
 let currentUser = null
@@ -516,7 +516,7 @@ window.openChat = async function(peer) {
   if (peerCard) peerCard.className = `chat-peer-card cls-${cls}`
   document.getElementById('peerName').textContent = esc(peer.display_name || peer.username)
   document.getElementById('peerSub').innerHTML =
-    `${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span><span style="color:var(--text-dim)"> · LV.${peer.level||1}</span>`
+    `${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span><span style="color:${CLASS_COLOR[cls]}"> · LV.${peer.level||1}</span>`
 
   // online dot — check last_seen
   checkOnlineStatus(peer.id, 'peerOnlineDot')
@@ -658,7 +658,6 @@ function appendMessage(msg, scroll=true) {
       <div class="msg-avatar cls-${isMine ? myCls : cls}" style="border-color:${isMine ? CLASS_COLOR[myCls] : CLASS_COLOR[cls]}">
         <img src="${isMine ? myAvSrc : theirAvSrc}" alt="">
       </div>
-      <div class="online-dot ${isMine ? 'on' : 'off'} msg-peer-dot"></div>
     </div>
     <div>
       ${!isMine ? `<div class="msg-sender" style="color:${CLASS_COLOR[cls]}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
@@ -771,7 +770,7 @@ window.searchDMTarget = function(q) {
           <div class="sr-name">${esc(u.display_name || u.username)}</div>
           <div class="sr-sub" style="display:flex;align-items:center;gap:4px">
             ${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span>
-            <span style="color:var(--text-dim)"> · LV.${u.level||1}</span>
+            <span style="color:${CLASS_COLOR[cls]}"> · LV.${u.level||1}</span>
           </div>
         </div>
       </div>`
@@ -838,7 +837,7 @@ window.toggleRecording = async function() {
   if (isRecording) { stopRecording(); return }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    const mimeOpts = ['audio/mp4','audio/ogg','audio/webm'].find(t => MediaRecorder.isTypeSupported(t))
+    const mimeOpts = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4'].find(t => MediaRecorder.isTypeSupported(t))
     mediaRecorder = mimeOpts ? new MediaRecorder(stream, { mimeType: mimeOpts }) : new MediaRecorder(stream)
     audioChunks = []
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data) }

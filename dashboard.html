@@ -802,7 +802,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, SYSTEM_ICONS, QUEST_ICONS, getIcon } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, SYSTEM_ICONS, QUEST_ICONS, getIcon } from './icons.js'
 import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ============================================================
@@ -845,7 +845,7 @@ function getAvatarUrl(avatarSeed, size=80) {
   return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
 }
 
-function classIcon(cls, size=16) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
+function classIcon(cls, size=16) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:${CLASS_COLOR[cls]||'#00f5ff'}" stroke="${CLASS_COLOR[cls]||'#00f5ff'}" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
 const RANK_COLORS = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#ffd700', platinum:'#00f5ff', diamond:'#b044ff', legendary:'#ff9500' }
 
 // ============================================================
@@ -1017,8 +1017,7 @@ async function loadProfile() {
   const avatarUrl = profile.avatar_url || getAvatarUrl(profile.avatar_seed)
   const cls = profile.class || 'warrior'
   const clsClass = 'cls-' + cls
-  const clsColorMap = {warrior:'#ff4444',mage:'#aa44ff',explorer:'#44ff88',merchant:'#ffaa00',artist:'#ff66aa',diplomat:'#00ccff'}
-  const clsColor = clsColorMap[cls] || '#00f5ff'
+  const clsColor = CLASS_COLOR[cls] || '#00f5ff'
 
   // Sidebar
   // Profile mini
@@ -1308,7 +1307,7 @@ async function loadLeaderboard() {
     const posClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : ''
     const isMe = u.id === currentUser?.id
     const online = isMe || isOnline(u.last_seen)
-    const clsColor = clsColors[u.class||'warrior'] || '#00f5ff'
+    const clsColor = CLASS_COLOR[u.class||'warrior'] || '#00f5ff'
     return `
     <div class="lb-item ${posClass} ${isMe ? 'lb-me' : ''}">
       <div class="lb-pos ${posClass}">${pos === 1 ? '👑' : pos}</div>
@@ -1354,8 +1353,7 @@ window.openQuestModal = function(questId) {
   const clsBar     = document.getElementById('modalClsBar')
 
   // cls bar color
-  const clsColors = {warrior:'#ff4444',mage:'#aa44ff',explorer:'#44ff88',merchant:'#ffaa00',artist:'#ff66aa',diplomat:'#00ccff'}
-  if (clsBar && userProfile?.class) clsBar.style.background = clsColors[userProfile.class] || 'var(--cyan)'
+  if (clsBar && userProfile?.class) clsBar.style.background = CLASS_COLOR[userProfile.class] || 'var(--cyan)'
 
   // reset ทุกครั้ง
   imageProof.style.display = 'none'
