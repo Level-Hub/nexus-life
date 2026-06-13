@@ -1465,7 +1465,7 @@ window.submitProof = async function() {
       const oldLevel = userProfile?.level || 1
       const { error: grantErr } = await supabase.rpc('grant_quest_xp', {
         p_user_id:       currentUser.id,
-        p_user_quest_id: uqData.id
+        p_user_quest_id: parseInt(uqData.id)  // cast เป็น integer — ป้องกัน ambiguous function error
       })
       if (grantErr) throw grantErr
 
@@ -1478,7 +1478,6 @@ window.submitProof = async function() {
           data: { old_level: oldLevel, new_level: userProfile.level }
         })
       }
-      try { await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }) } catch(e) {}
       showToast('Quest สำเร็จ! XP และ Gold เข้าแล้ว', 'gold')
     } else {
       showToast('ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')

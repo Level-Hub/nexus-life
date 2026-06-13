@@ -821,7 +821,7 @@ window.submitProof = async function() {
 
       await supabase.rpc('grant_quest_xp', {
         p_user_id:       currentUser.id,
-        p_user_quest_id: uqData.id
+        p_user_quest_id: parseInt(uqData.id)  // cast integer — ป้องกัน ambiguous function error
       })
 
       await loadProfile()  // โหลด XP / level / gold ใหม่
