@@ -113,7 +113,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .season-banner::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold); }
 .season-banner-inner { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px; }
 .season-info { display:flex;align-items:center;gap:16px; }
-.season-icon { font-size:28px;animation:flicker 4s infinite; }
+.season-icon { display:flex;align-items:center;justify-content:center;animation:flicker 4s infinite; }
 .season-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--gold);margin-bottom:4px; }
 .season-title { font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:#fff;text-shadow:0 0 12px rgba(255,215,0,0.4); }
 .season-sub { font-size:12px;color:var(--text-dim);margin-top:2px; }
@@ -275,15 +275,15 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 /* top 3 special decorators */
 .rr-medal { font-size:13px;line-height:1;display:block;margin-bottom:1px; }
-.rank-row.top1 .rr-num::before { content:'👑';display:block;font-size:10px;line-height:1;text-align:center;margin-bottom:2px; }
+.rank-row.top1 .rr-num::before { content:'';display:block;font-size:10px;line-height:1;text-align:center;margin-bottom:2px; }
 @keyframes top1Pulse { 0%,100%{text-shadow:0 0 8px rgba(255,215,0,0.5);}50%{text-shadow:0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.3);} }
 .rank-row.top1 .rr-num { animation:top1Pulse 2s ease-in-out infinite; }
 
 .rr-avatar { width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--cls,var(--border)); }
 .rr-avatar img { width:100%;height:100%;object-fit:cover; }
-.rank-row.top1 .rr-avatar { border-color:var(--gold);box-shadow:0 0 6px rgba(255,215,0,0.25); }
-.rank-row.top2 .rr-avatar { border-color:#c0c0c0; }
-.rank-row.top3 .rr-avatar { border-color:#cd7f32; }
+.rank-row.top1 .rr-avatar { border-color:var(--cls,var(--cyan));box-shadow:0 0 0 2px rgba(255,215,0,0.55),0 0 12px rgba(255,215,0,0.3); }
+.rank-row.top2 .rr-avatar { border-color:var(--cls,var(--cyan));box-shadow:0 0 0 2px rgba(192,192,192,0.45),0 0 8px rgba(192,192,192,0.2); }
+.rank-row.top3 .rr-avatar { border-color:var(--cls,var(--cyan));box-shadow:0 0 0 2px rgba(205,127,50,0.45),0 0 8px rgba(205,127,50,0.2); }
 
 .rr-info { flex:1;min-width:0; }
 .rr-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
@@ -628,7 +628,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="page-header">
     <div>
       <div class="page-title">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span id="pageTitleIcon"></span>
         LEADER<span>BOARD</span>
       </div>
       <div class="page-date" id="pageDate"></div>
@@ -640,7 +640,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="season-banner">
     <div class="season-banner-inner">
       <div class="season-info">
-        <div class="season-icon"><svg width="28" height="28" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2"/></svg></div>
+        <div class="season-icon" id="seasonIcon"></div>
         <div>
           <div class="season-label">SEASON 1 — THE AWAKENING</div>
           <div class="season-title">MONTHLY LEADERBOARD</div>
@@ -690,15 +690,15 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- TABS -->
   <div class="tab-row">
     <button class="tab-btn active" onclick="switchTab('global')" id="tab-global">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <span id="tabIconGlobal"></span>
       GLOBAL
     </button>
     <button class="tab-btn" onclick="switchTab('city')" id="tab-city">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span id="tabIconCity"></span>
       CITY RANK
     </button>
     <button class="tab-btn" onclick="switchTab('guild')" id="tab-guild">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span id="tabIconGuild"></span>
       GUILD RANK
     </button>
   </div>
@@ -798,7 +798,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <!-- PLAYER POPUP -->
 <div class="pp-overlay" id="ppOverlay" onclick="closePP(event)">
   <div class="pp-box">
-    <button class="pp-close" onclick="closePP()">✕</button>
+    <button class="pp-close" id="ppCloseBtn" onclick="closePP()"></button>
     <div class="pp-head">
       <div style="position:relative;flex-shrink:0">
         <div class="pp-ava" id="ppAva"><img id="ppImg" src="" alt=""></div>
@@ -848,7 +848,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, SYSTEM_ICONS, getIcon } from './icons.js'
+import { CLASS_ICONS, SYSTEM_ICONS, getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ============================================================
@@ -896,8 +896,25 @@ async function init() {
 
   injectTitleStyles()
   injectDropdownIcons()
+  injectGlobalDefs()
 
   // inject static icons
+  const pageTitleIcon = document.getElementById('pageTitleIcon')
+  if (pageTitleIcon) pageTitleIcon.innerHTML = getIcon('bar', 24)
+
+  const seasonIcon = document.getElementById('seasonIcon')
+  if (seasonIcon) seasonIcon.innerHTML = getIcon('trophy', 28, { prestige: true })
+
+  const tabIconGlobal = document.getElementById('tabIconGlobal')
+  if (tabIconGlobal) tabIconGlobal.innerHTML = getIcon('globe', 14)
+  const tabIconCity = document.getElementById('tabIconCity')
+  if (tabIconCity) tabIconCity.innerHTML = getIcon('building', 14)
+  const tabIconGuild = document.getElementById('tabIconGuild')
+  if (tabIconGuild) tabIconGuild.innerHTML = getIcon('users', 14)
+
+  const ppCloseBtn = document.getElementById('ppCloseBtn')
+  if (ppCloseBtn) ppCloseBtn.innerHTML = getIcon('close', 14)
+
   const closeLbModalBtn = document.getElementById('closeLbModalBtn')
   if (closeLbModalBtn) closeLbModalBtn.innerHTML = getIcon('close', 16)
 
@@ -956,7 +973,7 @@ function renderMyRankCard(p) {
     : cls.toUpperCase()
   document.getElementById('myRankXP').textContent = fmtNum(p.xp_this_month||0)
   document.getElementById('myRankLv').textContent = p.level||1
-  document.getElementById('myRankStreak').innerHTML = (p.streak_current||0) + '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-left:2px"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'
+  document.getElementById('myRankStreak').innerHTML = (p.streak_current||0) + getIcon('fire', 12)
   document.getElementById('myRankTotal').textContent = fmtNum(p.xp_total||0)
 }
 
@@ -1034,7 +1051,7 @@ function renderGlobal(data) {
 
     const titleObj  = u.equipped_title_id && titlesMap[u.equipped_title_id]
     const titleText = titleObj ? `<span class="rr-sep">·</span><span class="rr-title">${esc(titleObj.icon||'')} ${esc(titleObj.name)}</span>` : ''
-    const streak    = (u.streak_current||0) >= 7 ? `<span class="rr-streak">🔥${u.streak_current}</span>` : ''
+    const streak    = (u.streak_current||0) >= 7 ? `<span class="rr-streak">${getIcon('fire',10)}${u.streak_current}</span>` : ''
     const divider   = rank === 4 ? `<div class="rank-divider">— TOP 3 END · RANK 4+ —</div>` : ''
 
     // encode user data สำหรับ popup
@@ -1050,8 +1067,10 @@ function renderGlobal(data) {
       ? `<svg width="11" height="11" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:3px;flex-shrink:0">${CLASS_ICONS[cls]}</svg>`
       : ''
 
+    const crownHtml = rank === 1 ? `<span style="display:block;text-align:center;margin-bottom:2px;line-height:1">${getIcon('crown',12,{prestige:true})}</span>` : ''
+
     return `${divider}<div class="rank-row ${topCls} ${isMe?'me':''} cls-${cls}" style="animation-delay:${delay}s" onclick="openPP('${ud}')">
-      <div class="rr-num ${rankCls}">${rank}</div>
+      <div class="rr-num ${rankCls}">${crownHtml}${rank}</div>
       <div style="position:relative;flex-shrink:0">
         <div class="rr-avatar cls-${cls}"><img src="${getAvatar(u,36)}" alt="" loading="lazy"></div>
         <div class="lb-dot off" style="width:9px;height:9px;bottom:0;right:0" data-uid="${u.id}" data-lastseen="${u.last_seen||''}"></div>
@@ -1180,7 +1199,7 @@ async function loadGuilds() {
 
 function renderGuilds(guilds) {
   const maxXP = guilds[0]?.guild_xp || 1
-  const shieldSvg = `<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 5v5c0 2.8 2.3 5 6 6 3.7-1 6-3.2 6-6V5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`
+  const shieldSvg = getIcon('shield', 20, { prestige: true })
 
   document.getElementById('guildList').innerHTML = guilds.map((g, i) => {
     const rank = i + 1
