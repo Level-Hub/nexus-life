@@ -212,6 +212,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .chat-header-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .chat-action-btn{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:5px 10px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
 .chat-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+/* UNREAD BADGE */
+.conv-unread-badge{position:absolute;bottom:12px;right:14px;min-width:18px;height:18px;border-radius:9px;background:var(--cyan);color:var(--bg);font-family:'Orbitron',monospace;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px var(--cyan);animation:badgePulse 2s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 6px var(--cyan)}50%{box-shadow:0 0 14px var(--cyan),0 0 4px rgba(0,245,255,0.4)}}
+
 @media(max-width:900px){.app-layout{grid-template-columns:1fr}.inbox{position:fixed;left:0;right:0;bottom:0;top:0;z-index:100;transform:translateX(0);transition:transform 0.3s ease}.inbox.hidden{transform:translateX(-100%)}.chat-panel{display:flex}}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
@@ -247,9 +251,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- INBOX -->
   <div class="inbox" id="inboxPanel">
     <div class="inbox-header">
-      <div class="inbox-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg> MESSAGES</div>
+      <div class="inbox-title" id="inboxTitleEl">MESSAGES</div>
       <div class="inbox-search">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#00f5ff" stroke-width="1.2"/><path d="M10 10l4 4" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="square"/></svg>
+        <span id="inboxSearchIconEl" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;line-height:0"></span>
         <input type="text" placeholder="ค้นหาชื่อ..." id="inboxSearch" oninput="filterInbox(this.value)">
       </div>
     </div>
@@ -262,7 +266,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- CHAT -->
   <div class="chat-panel" id="chatPanel">
     <div class="chat-empty" id="chatEmpty">
-      <div class="chat-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></div>
+      <div class="chat-empty-icon" id="chatEmptyIconEl"></div>
       <div class="chat-empty-txt">SELECT A CONVERSATION</div>
       <div class="chat-empty-sub">เลือกบทสนทนาจากด้านซ้าย หรือสร้างข้อความใหม่เพื่อเริ่มต้นคุย</div>
     </div>
@@ -284,9 +288,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <button class="chat-action-btn" onclick="goProfile()">ดูโปรไฟส์</button>
           </div>
         </div>
-        <button class="challenge-btn" onclick="goChallenge()">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
-          ⚔ ท้าดวล
+        <button class="challenge-btn" onclick="goChallenge()" id="challengeBtnEl">
+          ท้าดวล
         </button>
       </div>
       <div class="chat-messages" id="chatMessages"></div>
@@ -322,12 +325,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="chat-input-toolbar">
           <button class="toolbar-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="Emoji">😊</button>
           <button class="toolbar-btn" id="stickerBtn" onclick="toggleStickerPicker()" title="Sticker">🎭</button>
-          <button class="toolbar-btn" onclick="document.getElementById('imageUploadInput').click()" title="รูปภาพ">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.2"/><circle cx="5.5" cy="6.5" r="1.2" fill="currentColor" opacity="0.7"/><path d="M2 11l4-4 3 3 2-2 3 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <button class="toolbar-btn" id="voiceBtn" onclick="toggleRecording()" title="บันทึกเสียง">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="9" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M3 8c0 2.8 2.2 5 5 5s5-2.2 5-5M8 13v2M6 15h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
-          </button>
+          <button class="toolbar-btn" onclick="document.getElementById('imageUploadInput').click()" title="รูปภาพ" id="toolbarImgBtn"></button>
+          <button class="toolbar-btn" id="voiceBtn" onclick="toggleRecording()" title="บันทึกเสียง"></button>
           <input type="file" id="imageUploadInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
         </div>
         <div class="chat-input-row">
@@ -346,7 +345,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <!-- NEW DM MODAL -->
 <div class="modal-bg" id="newDMModal">
   <div class="modal">
-    <div class="modal-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg> NEW MESSAGE</div>
+    <div class="modal-title" id="newDMTitleEl">NEW MESSAGE</div>
     <input class="modal-input" id="dmSearch" type="text" placeholder="ค้นหาชื่อ username..."
       oninput="searchDMTarget(this.value)">
     <div class="search-results" id="dmSearchResults"></div>
@@ -361,7 +360,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, getIcon, injectGlobalDefs } from './icons.js'
+injectGlobalDefs()
 
 function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:${CLASS_COLOR[cls]||'#00f5ff'}" stroke="${CLASS_COLOR[cls]||'#00f5ff'}" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
 
@@ -381,7 +381,28 @@ async function init() {
   currentUser = user
   myProfile = profile  // ใช้ profile จาก sidebar.js โดยตรง
 
-  // inject static icons
+  // inject static icons via getIcon
+  const inboxTitle = document.getElementById('inboxTitleEl')
+  if (inboxTitle) inboxTitle.innerHTML = getIcon('msg', 16) + ' MESSAGES'
+
+  const inboxSearchIcon = document.getElementById('inboxSearchIconEl')
+  if (inboxSearchIcon) inboxSearchIcon.innerHTML = getIcon('search', 14)
+
+  const chatEmptyIcon = document.getElementById('chatEmptyIconEl')
+  if (chatEmptyIcon) chatEmptyIcon.innerHTML = getIcon('chat', 48)
+
+  const newDMTitle = document.getElementById('newDMTitleEl')
+  if (newDMTitle) newDMTitle.innerHTML = getIcon('msg', 16) + ' NEW MESSAGE'
+
+  const challengeBtn = document.getElementById('challengeBtnEl')
+  if (challengeBtn) challengeBtn.innerHTML = getIcon('sword', 14) + ' ท้าดวล'
+
+  const toolbarImgBtn = document.getElementById('toolbarImgBtn')
+  if (toolbarImgBtn) toolbarImgBtn.innerHTML = getIcon('upload_img', 14)
+
+  const voiceBtn = document.getElementById('voiceBtn')
+  if (voiceBtn) { voiceBtn.innerHTML = getIcon('wave', 14); voiceBtn._defaultHtml = voiceBtn.innerHTML }
+
   const chatEmptyWave = document.getElementById('chatEmptyWave')
   if (chatEmptyWave) chatEmptyWave.innerHTML = getIcon('chat', 36)
 
@@ -432,7 +453,7 @@ async function loadInbox() {
   if (!myChannels.length) {
     document.getElementById('inboxList').innerHTML = `
       <div class="inbox-empty">
-        <span class="inbox-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></span>
+        <span class="inbox-empty-icon">${getIcon('msg', 32)}</span>
         <div class="inbox-empty-txt">ยังไม่มีข้อความ</div>
       </div>`
     return
@@ -456,14 +477,35 @@ async function loadInbox() {
     return { channel: ch, lastMsg, peer: peerMap[peerId] }
   }).filter(c => c.peer)
 
-  renderInbox(allConversations)
+  // คำนวณ unread count ต่อ channel (ข้อความจาก peer ที่เราเปิดทีหลัง lastRead)
+  const unreadMap = {}
+  allConversations.forEach(c => {
+    const lastReadKey = `nexus_last_read_${c.channel}`
+    const lastRead = localStorage.getItem(lastReadKey)
+    if (!lastRead) {
+      // ถ้าไม่เคยอ่าน นับข้อความจาก peer ทั้งหมด
+      const unread = [...(sent||[]), ...(recv||[])].filter(m =>
+        m.channel === c.channel && m.sender_id !== currentUser.id
+      ).length
+      unreadMap[c.channel] = unread
+    } else {
+      const unread = [...(sent||[]), ...(recv||[])].filter(m =>
+        m.channel === c.channel &&
+        m.sender_id !== currentUser.id &&
+        new Date(m.created_at) > new Date(lastRead)
+      ).length
+      unreadMap[c.channel] = unread
+    }
+  })
+
+  renderInbox(allConversations, unreadMap)
 }
 
 // ─── RENDER INBOX ────────────────────────────────────────────
-function renderInbox(convs) {
+function renderInbox(convs, unreadMap = {}) {
   const el = document.getElementById('inboxList')
   if (!convs.length) {
-    el.innerHTML = `<div class="inbox-empty"><span class="inbox-empty-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 2h14v10H9l-3 3v-3H1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/></svg></span><div class="inbox-empty-txt">ไม่พบบทสนทนา</div></div>`
+    el.innerHTML = `<div class="inbox-empty"><span class="inbox-empty-icon">${getIcon('msg', 32)}</span><div class="inbox-empty-txt">ไม่พบบทสนทนา</div></div>`
     return
   }
 
@@ -474,9 +516,13 @@ function renderInbox(convs) {
     const preview = (isMine ? 'คุณ: ' : '') + (c.lastMsg.content || '').substring(0, 35) + (c.lastMsg.content?.length > 35 ? '...' : '')
     const timeStr = formatTime(c.lastMsg.created_at)
     const isActive = activePeer?.id === p.id
+    const unread = unreadMap[c.channel] || 0
+    const badgeHtml = (!isActive && unread > 0)
+      ? `<div class="conv-unread-badge">${unread > 99 ? '99+' : unread}</div>`
+      : ''
 
     return `
-    <div class="conv-item cls-${cls} ${isActive ? 'active' : ''}" onclick="openChat(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+    <div class="conv-item cls-${cls} ${isActive ? 'active' : ''}" onclick="openChatConv(${JSON.stringify(p).replace(/"/g,'&quot;')}, '${c.channel}')">
       <div class="online-wrap" style="flex-shrink:0">
         <div class="conv-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
           <img src="${getAvatarSrc(p, 42)}" alt="">
@@ -488,6 +534,7 @@ function renderInbox(convs) {
         <div class="conv-preview">${esc(preview)}</div>
       </div>
       <div class="conv-time">${timeStr}</div>
+      ${badgeHtml}
     </div>`
   }).join('')
 }
@@ -499,6 +546,22 @@ window.filterInbox = function(q) {
     c.peer.display_name?.toLowerCase().includes(q.toLowerCase())
   )
   renderInbox(filtered)
+}
+
+// ─── OPEN CHAT CONV (wrapper จาก inbox — บันทึก lastRead ก่อน) ───────────────
+window.openChatConv = function(peer, channel) {
+  // บันทึก lastRead ต่อ channel ทันที → clear badge
+  const lastReadKey = `nexus_last_read_${channel}`
+  localStorage.setItem(lastReadKey, new Date().toISOString())
+  // ซ่อน badge บน DOM ทันทีโดยไม่รอ reload
+  const items = document.querySelectorAll('.conv-unread-badge')
+  items.forEach(b => {
+    // เอา badge ของ conv นี้ออก
+    if (b.closest('.conv-item')?.querySelector(`[data-uid="${peer.id}"]`)) {
+      b.remove()
+    }
+  })
+  openChat(peer)
 }
 
 // ─── OPEN CHAT ───────────────────────────────────────────────
@@ -818,9 +881,12 @@ async function updateMyLastSeen() {
 // ─── READ RECEIPT ────────────────────────────────────────────
 async function markMessagesRead(channel) {
   if (!currentUser || !activePeer) return
-  // บันทึกเวลาที่อ่านล่าสุดลง localStorage เพื่อให้ sidebar badge รู้ว่าอ่านแล้ว
+  // บันทึก lastRead ต่อ channel (per-channel key)
+  const lastReadKey = `nexus_last_read_${channel}`
+  localStorage.setItem(lastReadKey, new Date().toISOString())
+  // backward compat — key เดิมสำหรับ sidebar badge
   localStorage.setItem('nexus_msg_last_read', new Date().toISOString())
-  // ซ่อน badge ทันทีโดยไม่ต้อง reload
+  // ซ่อน global badge ทันที
   const mBadge = document.getElementById('navMsgBadge')
   if (mBadge) mBadge.style.display = 'none'
 }
