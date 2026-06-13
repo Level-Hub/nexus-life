@@ -1248,16 +1248,15 @@ window.openPP = async function(encoded) {
   document.getElementById('ppOverlay').classList.add('open')
   document.getElementById('ppGo').onclick = () => goProfile(u.id)
 
-  // ถ้ามี equipped_title_id จาก encoded data ใช้เลย
-  // ถ้าไม่มี (เช่น monthly view ไม่ส่งมา) ดึงจาก users โดยตรง
+  // ดึง streak + title จาก DB เสมอ เพราะ encoded data อาจไม่มี streak_current
   let titleId = u.equipped_title_id
-  if (!titleId && u.id) {
+  if (u.id) {
     const { data: fresh } = await supabase
       .from('users').select('equipped_title_id,streak_current').eq('id', u.id).single()
     if (fresh) {
-      titleId = fresh.equipped_title_id
-      if (!u.streak_current && fresh.streak_current)
-        document.getElementById('ppStreak').textContent = fresh.streak_current
+      if (!titleId) titleId = fresh.equipped_title_id
+      // อัพเดต streak จาก DB เสมอ (ไม่ใช้ค่า encoded ที่อาจ stale หรือ 0)
+      document.getElementById('ppStreak').textContent = fresh.streak_current || 0
     }
   }
   const titleObj = titleId && titlesMap[titleId]

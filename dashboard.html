@@ -346,7 +346,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .lb-item:last-child { border-bottom:none; }
 .lb-item.lb-me { background:rgba(0,245,255,0.07); }
-.lb-item.lb-me::after { content:'YOU';position:absolute;right:0;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.45; }
+.lb-item.lb-me::after { content:'';display:none; }
 .lb-item.top1 {
   background:linear-gradient(90deg,rgba(255,215,0,0.07) 0%,rgba(255,215,0,0.02) 100%);
   border-bottom-color:rgba(255,215,0,0.15);
@@ -1052,7 +1052,7 @@ async function loadProfile() {
 
   // 6-stat bars
   if (stats) {
-    const maxStat = Math.max(100, stats.str_points, stats.int_points, stats.exp_points, stats.biz_points, stats.cre_points, stats.soc_points)
+    const maxStat = 999
     ;[['str',stats.str_points],['int',stats.int_points],['exp',stats.exp_points],
       ['biz',stats.biz_points],['cre',stats.cre_points],['soc',stats.soc_points]].forEach(([k,v]) => {
       document.getElementById('v-'+k).textContent = v || 0

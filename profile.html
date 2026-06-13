@@ -1125,7 +1125,7 @@ async function loadStats() {
 
   // ใช้ ceiling 100 เป็นฐาน — เหมือน dashboard.html
   // ป้องกัน bar เต็ม 100% ทุกตัวเมื่อค่าใกล้กัน
-  const maxVal = Math.max(100, data.str_points, data.int_points, data.exp_points, data.biz_points, data.cre_points, data.soc_points)
+  const maxVal = 999
 
   const stats = [
     { id:'Str', val:data.str_points },
