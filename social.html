@@ -624,7 +624,7 @@ async function loadSuggested() {
       </div>
       <div class="suggest-info">
         <div class="suggest-name">${esc(u.display_name || u.username)}</div>
-        <div class="suggest-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+        <div class="suggest-sub" style="display:flex;align-items:center;gap:4px;color:${CLASS_COLOR[cls]}">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
       </div>
       <button class="suggest-follow-btn ${followingIds.has(u.id)?'following':''}" id="sfbtn-${u.id}"
         onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
