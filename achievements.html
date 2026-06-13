@@ -309,7 +309,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
               <div class="prog-bar"><div class="prog-fill" id="prQuestFill" style="width:0%;background:var(--cyan)"></div></div>
             </div>
             <div class="prog-item">
-              <div class="prog-top"><span class="prog-label">STREAK MAX</span><span class="prog-val" id="prStreakVal">0/30</span></div>
+              <div class="prog-top"><span class="prog-label">STREAK MAX</span><span class="prog-val" id="prStreakVal">0/100</span></div>
               <div class="prog-bar"><div class="prog-fill" id="prStreakFill" style="width:0%;background:var(--gold)"></div></div>
             </div>
             <div class="prog-item">
@@ -360,8 +360,12 @@ function classIcon(cls, size=14) { return CLASS_ICONS[cls] ? `<svg width="${size
 
 function getAvatarUrl(seed, size=80) {
   if (!seed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
-  const [style, s, bg] = seed.split(':')
-  return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  const parts = seed.split(':')
+  if (parts.length >= 3) {
+    const [style, s, bg] = parts
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
+  }
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=${size}`
 }
 
 // ===================== INIT =====================
@@ -390,9 +394,15 @@ async function loadProfile() {
   const avatarUrl = getAvatarUrl(profile.avatar_seed)
 
 
-  // Equipped panel
-  document.getElementById('epAvatar').src = avatarUrl
+  // Equipped panel — fix รูปไม่ขึ้น + class color border
+  const epAvatarEl = document.getElementById('epAvatar')
+  epAvatarEl.src = avatarUrl
+  epAvatarEl.onerror = () => {
+    epAvatarEl.src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(profile.username||'nexus')}&backgroundColor=0a1628&size=80`
+  }
+  const CLASS_COLORS_MAP = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
   document.getElementById('equippedPanel').className = 'equipped-panel cls-' + cls
+  document.getElementById('epAvatarWrap').style.borderColor = CLASS_COLORS_MAP[cls] || '#ffd700'
   document.getElementById('epName').textContent = profile.display_name || profile.username
   document.getElementById('epClass').innerHTML = classIcon(cls,14) + ' ' + cls.toUpperCase()
 
@@ -400,9 +410,9 @@ async function loadProfile() {
 
   // Progress bars streak
   const streak = profile.streak_current || 0
-  document.getElementById('prStreakVal').textContent = `${streak}/30`
+  document.getElementById('prStreakVal').textContent = `${streak}/100`
   setTimeout(() => {
-    document.getElementById('prStreakFill').style.width = Math.min(100, streak/30*100) + '%'
+    document.getElementById('prStreakFill').style.width = Math.min(100, streak/100*100) + '%'
   }, 500)
 
   // navQuestBadge
@@ -485,12 +495,12 @@ async function loadAchievements() {
 
   // Progress
   const qDone = questDone || 0
-  document.getElementById('prQuestVal').textContent = `${qDone}/100`
+  document.getElementById('prQuestVal').textContent = `${qDone}/200`
   document.getElementById('prTitleVal').textContent = `${myTitles.length}/${allTitlesDB.length}`
   document.getElementById('prBadgeVal').textContent = `${myBadges.length}/${allBadgesDB.length}`
 
   setTimeout(() => {
-    document.getElementById('prQuestFill').style.width = Math.min(100, qDone) + '%'
+    document.getElementById('prQuestFill').style.width = Math.min(100, qDone/200*100) + '%'
     document.getElementById('prTitleFill').style.width = allTitlesDB.length
       ? Math.round(myTitles.length / allTitlesDB.length * 100) + '%' : '0%'
     document.getElementById('prBadgeFill').style.width = allBadgesDB.length
