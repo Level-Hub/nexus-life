@@ -101,8 +101,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .msg-bubble{padding:10px 14px;font-size:13px;line-height:1.6;position:relative;max-width:100%;word-break:break-word}
 .msg.mine .msg-bubble{background:rgba(0,245,255,0.12);border:1px solid rgba(0,245,255,0.2);border-radius:12px 12px 2px 12px;color:var(--text)}
 .msg.theirs .msg-bubble{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px 12px 12px 2px;color:var(--text)}
-.msg-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px;text-align:right}
-.msg.theirs .msg-time{text-align:left}
+.msg-time{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.msg.theirs .msg-time{justify-content:flex-start}
 .msg-sender{font-family:'Orbitron',monospace;font-size:8px;color:var(--cls,var(--cyan));margin-bottom:3px}
 
 .msg-date-divider{text-align:center;margin:8px 0;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);position:relative}
@@ -175,7 +175,43 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .modal-cancel{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:10px 18px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s}
 .modal-cancel:hover{border-color:var(--red);color:var(--red)}
 
-/* RESPONSIVE */
+/* ONLINE DOT */
+.online-wrap{position:relative;flex-shrink:0}
+.online-dot{position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg);z-index:2}
+.online-dot.on{background:var(--green);box-shadow:0 0 5px var(--green);animation:livePulse 1.4s ease-in-out infinite}
+.online-dot.off{background:#3a4a50}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* READ RECEIPT */
+.msg-status{font-family:'Orbitron',monospace;font-size:9px;margin-top:2px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:3px}
+.tick-sent{color:var(--text-dim)}
+.tick-read{color:var(--cyan)}
+
+/* VOICE MESSAGE */
+.voice-bubble{display:flex;align-items:center;gap:10px;padding:8px 12px;min-width:160px}
+.voice-play-btn{width:30px;height:30px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.2s}
+.voice-play-btn:hover{background:var(--cyan-dim)}
+.voice-waveform{flex:1;display:flex;align-items:center;gap:2px;height:24px}
+.voice-bar{width:3px;border-radius:2px;background:var(--cyan);opacity:0.6;transition:height 0.1s}
+.voice-duration{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);white-space:nowrap}
+.recording-indicator{display:none;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,0,60,0.08);border:1px solid rgba(255,0,60,0.3);margin-bottom:8px;font-family:'Orbitron',monospace;font-size:9px;color:var(--red)}
+.recording-indicator.active{display:flex}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:livePulse 0.8s ease-in-out infinite}
+.toolbar-btn.recording{border-color:var(--red);color:var(--red)}
+
+/* COMPACT CHAT HEADER */
+.chat-header{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:rgba(1,10,15,0.9);position:relative}
+.chat-header-top{display:flex;align-items:center;gap:10px;width:100%}
+.chat-peer-card{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.chat-peer-avatar-wrap{position:relative;flex-shrink:0}
+.chat-peer-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3)}
+.chat-peer-avatar img{width:100%;height:100%;object-fit:cover}
+.chat-peer-texts{min-width:0}
+.chat-peer-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-peer-sub{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;margin-top:1px;display:flex;align-items:center;gap:4px}
+.chat-header-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.chat-action-btn{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:5px 10px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.chat-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 @media(max-width:900px){.app-layout{grid-template-columns:1fr}.inbox{position:fixed;left:0;right:0;bottom:0;top:0;z-index:100;transform:translateX(0);transition:transform 0.3s ease}.inbox.hidden{transform:translateX(-100%)}.chat-panel{display:flex}}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
@@ -234,12 +270,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="chat-header" id="chatHeader">
         <div class="chat-header-top">
           <button class="chat-action-btn" id="backBtn" onclick="showInbox()" style="display:none">← กลับ</button>
-          <div class="chat-peer-avatar cls-warrior" id="peerAvatarWrap"><img id="peerAvatar" src="" alt=""></div>
-          <div class="chat-peer-info">
-            <div class="chat-peer-name" id="peerName">—</div>
-            <div class="chat-peer-sub" id="peerSub">—</div>
+          <div class="chat-peer-card">
+            <div class="chat-peer-avatar-wrap">
+              <div class="chat-peer-avatar cls-warrior" id="peerAvatarWrap"><img id="peerAvatar" src="" alt=""></div>
+              <div class="online-dot off" id="peerOnlineDot"></div>
+            </div>
+            <div class="chat-peer-texts">
+              <div class="chat-peer-name" id="peerName">—</div>
+              <div class="chat-peer-sub" id="peerSub">—</div>
+            </div>
           </div>
-          <button class="chat-action-btn" onclick="goProfile()">ดูโปรไฟล์</button>
+          <div class="chat-header-actions">
+            <button class="chat-action-btn" onclick="goProfile()">ดูโปรไฟส์</button>
+          </div>
         </div>
         <button class="challenge-btn" onclick="goChallenge()">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
@@ -267,12 +310,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           <img id="imgPreviewImg" src="" alt="">
           <button class="img-preview-rm" onclick="clearImageUpload()">×</button>
         </div>
+        <!-- RECORDING INDICATOR -->
+        <div class="recording-indicator" id="recordingIndicator">
+          <div class="rec-dot"></div>
+          <span id="recTimer">00:00</span>
+          <span style="margin-left:4px;opacity:0.7">กำลังบันทึก...</span>
+          <button onclick="stopRecording()" style="margin-left:auto;font-family:'Orbitron',monospace;font-size:8px;padding:4px 10px;border:1px solid var(--red);color:var(--red);background:transparent;cursor:pointer">ส่ง</button>
+          <button onclick="cancelRecording()" style="font-family:'Orbitron',monospace;font-size:8px;padding:4px 10px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer">ยกเลิก</button>
+        </div>
         <!-- TOOLBAR -->
         <div class="chat-input-toolbar">
           <button class="toolbar-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="Emoji">😊</button>
           <button class="toolbar-btn" id="stickerBtn" onclick="toggleStickerPicker()" title="Sticker">🎭</button>
           <button class="toolbar-btn" onclick="document.getElementById('imageUploadInput').click()" title="รูปภาพ">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.2"/><circle cx="5.5" cy="6.5" r="1.2" fill="currentColor" opacity="0.7"/><path d="M2 11l4-4 3 3 2-2 3 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="toolbar-btn" id="voiceBtn" onclick="toggleRecording()" title="บันทึกเสียง">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="9" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M3 8c0 2.8 2.2 5 5 5s5-2.2 5-5M8 13v2M6 15h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
           </button>
           <input type="file" id="imageUploadInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
         </div>
@@ -423,8 +477,11 @@ function renderInbox(convs) {
 
     return `
     <div class="conv-item cls-${cls} ${isActive ? 'active' : ''}" onclick="openChat(${JSON.stringify(p).replace(/"/g,'&quot;')})">
-      <div class="conv-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-        <img src="${getAvatarSrc(p, 42)}" alt="">
+      <div class="online-wrap" style="flex-shrink:0">
+        <div class="conv-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+          <img src="${getAvatarSrc(p, 42)}" alt="">
+        </div>
+        <div class="online-dot off conv-online-dot" data-uid="${p.id}"></div>
       </div>
       <div class="conv-info">
         <div class="conv-name">${esc(p.display_name || p.username)}</div>
@@ -455,7 +512,11 @@ window.openChat = async function(peer) {
   document.getElementById('peerAvatarWrap').className = `chat-peer-avatar cls-${cls}`
   document.getElementById('peerAvatarWrap').style.borderColor = CLASS_COLOR[cls]
   document.getElementById('peerName').textContent = esc(peer.display_name || peer.username)
-  document.getElementById('peerSub').innerHTML = `<span style="color:${CLASS_COLOR[cls]}">${classIcon(cls)} ${cls.toUpperCase()} · LV.${peer.level||1}</span>`
+  document.getElementById('peerSub').innerHTML =
+    `${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span><span style="color:var(--text-dim)"> · LV.${peer.level||1}</span>`
+
+  // online dot — check last_seen
+  checkOnlineStatus(peer.id, 'peerOnlineDot')
 
   // Show chat panel
   document.getElementById('chatEmpty').style.display = 'none'
@@ -559,6 +620,23 @@ function appendMessage(msg, scroll=true) {
     contentHtml = `<img class="msg-image" src="${imgUrl}" alt="รูปภาพ" onclick="window.open('${imgUrl}','_blank')">`
   } else if (rawContent.startsWith('[sticker]')) {
     contentHtml = `<span class="msg-sticker">${rawContent.slice(9)}</span>`
+  } else if (rawContent.startsWith('[voice]')) {
+    const parts = rawContent.slice(7).split('|')
+    const audioUrl = esc(parts[0])
+    const dur = parseInt(parts[1]||0)
+    const mm = String(Math.floor(dur/60)).padStart(2,'0')
+    const ss = String(dur%60).padStart(2,'0')
+    const bars = Array.from({length:20},(_,i)=>{
+      const h = 4 + Math.sin(i*0.8)*8 + Math.random()*8
+      return `<div class="voice-bar" style="height:${Math.max(4,h)}px"></div>`
+    }).join('')
+    contentHtml = `<div class="msg-bubble voice-bubble">
+      <button class="voice-play-btn" onclick="playVoice('${audioUrl}',this)">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1l7 4-7 4z" fill="#010a0f"/></svg>
+      </button>
+      <div class="voice-waveform">${bars}</div>
+      <span class="voice-duration">${mm}:${ss}</span>
+    </div>`
   } else {
     contentHtml = `<div class="msg-bubble">${escHtml(rawContent)}</div>`
   }
@@ -569,15 +647,20 @@ function appendMessage(msg, scroll=true) {
 
   const wrapper = document.createElement('div')
   wrapper.className = `msg ${isMine ? 'mine' : 'theirs'}`
-  // mine: avatar อยู่ขวา bubble อยู่ซ้าย (flex-direction:row-reverse ทำให้ avatar ไปขวาเอง)
+  const tickHtml = isMine
+    ? `<div class="msg-status"><span class="tick-sent" id="tick-${msg.id||Date.now()}">✓✓</span></div>`
+    : ''
   wrapper.innerHTML = `
-    <div class="msg-avatar cls-${isMine ? myCls : cls}" style="border-color:${isMine ? CLASS_COLOR[myCls] : CLASS_COLOR[cls]}">
-      <img src="${isMine ? myAvSrc : theirAvSrc}" alt="">
+    <div class="online-wrap">
+      <div class="msg-avatar cls-${isMine ? myCls : cls}" style="border-color:${isMine ? CLASS_COLOR[myCls] : CLASS_COLOR[cls]}">
+        <img src="${isMine ? myAvSrc : theirAvSrc}" alt="">
+      </div>
+      <div class="online-dot ${isMine ? 'on' : 'off'} msg-peer-dot"></div>
     </div>
     <div>
       ${!isMine ? `<div class="msg-sender" style="color:${CLASS_COLOR[cls]}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
       ${contentHtml}
-      <div class="msg-time">${timeStr}</div>
+      <div class="msg-time">${timeStr}${tickHtml}</div>
     </div>`
 
   msgEl.appendChild(wrapper)
@@ -675,12 +758,18 @@ window.searchDMTarget = function(q) {
       const cls = u.class || 'warrior'
       return `
       <div class="search-result-item" onclick="startDM(${JSON.stringify(u).replace(/"/g,'&quot;')})">
-        <div class="sr-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-          <img src="${getAvatarSrc(u, 36)}" alt="">
+        <div class="online-wrap">
+          <div class="sr-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+            <img src="${getAvatarSrc(u, 36)}" alt="">
+          </div>
+          <div class="online-dot off" data-uid="${u.id}"></div>
         </div>
         <div class="sr-info">
           <div class="sr-name">${esc(u.display_name || u.username)}</div>
-          <div class="sr-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+          <div class="sr-sub" style="display:flex;align-items:center;gap:4px">
+            ${classIcon(cls,11)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span>
+            <span style="color:var(--text-dim)"> · LV.${u.level||1}</span>
+          </div>
         </div>
       </div>`
     }).join('')
@@ -692,7 +781,121 @@ window.startDM = async function(peer) {
   openChat(peer)
 }
 
-// ─── HEADER ACTIONS ──────────────────────────────────────────
+// ─── ONLINE STATUS ───────────────────────────────────────────
+async function checkOnlineStatus(uid, dotId) {
+  try {
+    const { data } = await supabase.from('users').select('last_seen').eq('id', uid).single()
+    if (!data?.last_seen) return
+    const isOnline = (Date.now() - new Date(data.last_seen).getTime()) < 5 * 60 * 1000 // 5 นาที
+    const dot = document.getElementById(dotId)
+    if (dot) { dot.className = `online-dot ${isOnline ? 'on' : 'off'}` }
+  } catch(e) {}
+}
+
+async function refreshInboxOnlineDots() {
+  document.querySelectorAll('.conv-online-dot[data-uid]').forEach(async dot => {
+    const uid = dot.dataset.uid
+    try {
+      const { data } = await supabase.from('users').select('last_seen').eq('id', uid).single()
+      if (!data?.last_seen) return
+      const isOnline = (Date.now() - new Date(data.last_seen).getTime()) < 5 * 60 * 1000
+      dot.className = `online-dot ${isOnline ? 'on' : 'off'} conv-online-dot`
+    } catch(e) {}
+  })
+}
+
+// อัพเดต last_seen ของตัวเอง
+async function updateMyLastSeen() {
+  if (!currentUser) return
+  await supabase.from('users').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id)
+}
+
+// ─── READ RECEIPT ────────────────────────────────────────────
+async function markMessagesRead(channel) {
+  if (!currentUser || !activePeer) return
+  // mark read ใน DB (ถ้ามี read_receipts table) — fallback: update local ticks
+  // อัพเดต tick ของ peer เป็น read (สีฟ้า) เมื่อ peer เปิดแชท
+  // ถ้าไม่มี read_receipts table ใน DB เพียงแค่แสดง ✓✓ สีฟ้าทุก tick ของ mine
+}
+
+function markAllSentRead() {
+  document.querySelectorAll('.tick-sent').forEach(t => {
+    t.className = 'tick-read'
+  })
+}
+
+// ─── VOICE RECORDING ─────────────────────────────────────────
+let mediaRecorder = null
+let audioChunks   = []
+let recInterval   = null
+let recSeconds    = 0
+let isRecording   = false
+
+window.toggleRecording = async function() {
+  if (isRecording) { stopRecording(); return }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    mediaRecorder = new MediaRecorder(stream)
+    audioChunks = []
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data) }
+    mediaRecorder.start()
+    isRecording = true
+    recSeconds = 0
+    document.getElementById('voiceBtn').classList.add('recording')
+    document.getElementById('recordingIndicator').classList.add('active')
+    recInterval = setInterval(() => {
+      recSeconds++
+      const m = String(Math.floor(recSeconds/60)).padStart(2,'0')
+      const s = String(recSeconds%60).padStart(2,'0')
+      document.getElementById('recTimer').textContent = `${m}:${s}`
+      if (recSeconds >= 120) stopRecording() // max 2 นาที
+    }, 1000)
+  } catch(e) {
+    showToast('ไม่สามารถเข้าถึงไมค์ได้', 'error')
+  }
+}
+
+window.stopRecording = async function() {
+  if (!mediaRecorder || !isRecording) return
+  isRecording = false
+  clearInterval(recInterval)
+  document.getElementById('voiceBtn').classList.remove('recording')
+  document.getElementById('recordingIndicator').classList.remove('active')
+
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(audioChunks, { type: 'audio/webm' })
+    mediaRecorder.stream.getTracks().forEach(t => t.stop())
+    if (!activeChannel) return
+    // Upload to Supabase storage
+    const path = `voice/${currentUser.id}/${Date.now()}.webm`
+    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: 'audio/webm' })
+    if (error) { showToast('ส่งเสียงไม่สำเร็จ: ' + error.message, 'error'); return }
+    const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
+    const duration = recSeconds
+    const content = `[voice]${urlData.publicUrl}|${duration}`
+    const { error: e2 } = await supabase.from('messages').insert({
+      sender_id: currentUser.id, channel: activeChannel, content
+    })
+    if (!e2) {
+      appendMessage({ sender_id: currentUser.id, channel: activeChannel, content, created_at: new Date().toISOString(), users: myProfile })
+      await loadInbox()
+    }
+  }
+  mediaRecorder.stop()
+}
+
+window.cancelRecording = function() {
+  if (!mediaRecorder) return
+  isRecording = false
+  clearInterval(recInterval)
+  mediaRecorder.stream.getTracks().forEach(t => t.stop())
+  mediaRecorder = null
+  audioChunks = []
+  document.getElementById('voiceBtn').classList.remove('recording')
+  document.getElementById('recordingIndicator').classList.remove('active')
+}
+
+// ─── HEADER ACTIONS ───────────────────────────────────────────
 window.goProfile = function() {
   if (activePeer) window.location.href = `./profile.html?uid=${activePeer.id}`
 }
@@ -876,6 +1079,30 @@ document.addEventListener('click', e => {
     document.getElementById('stickerPicker')?.classList.remove('open')
   }
 })
+
+window.playVoice = function(url, btn) {
+  const audio = new Audio(url)
+  const origHtml = btn.innerHTML
+  btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="1" width="2.5" height="8" fill="#010a0f"/><rect x="5.5" y="1" width="2.5" height="8" fill="#010a0f"/></svg>`
+  audio.play()
+  audio.onended = () => { btn.innerHTML = origHtml }
+  audio.onerror = () => { btn.innerHTML = origHtml; showToast('เล่นเสียงไม่ได้', 'error') }
+}
+
+// อัพเดต last_seen ของตัวเอง + refresh online dots ทุก 30 วิ
+setTimeout(async () => {
+  await updateMyLastSeen()
+  setInterval(async () => {
+    await updateMyLastSeen()
+    await refreshInboxOnlineDots()
+    if (activePeer) checkOnlineStatus(activePeer.id, 'peerOnlineDot')
+  }, 30000)
+}, 1000)
+
+// mark read เมื่อ peer ส่งข้อความมา (realtime trigger)
+window._onPeerMessage = function() {
+  markAllSentRead()
+}
 
 init()
 </script>
