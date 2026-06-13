@@ -560,7 +560,7 @@ function renderUserGrid(users) {
         </div>
         <div class="user-card-info">
           <div class="user-card-name">${esc(u.display_name || u.username)}</div>
-          <div class="user-card-sub">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+          <div class="user-card-sub">${classIcon(cls)} ${cls.toUpperCase()} <span style="color:var(--text-dim)">· LV.${u.level||1}</span></div>
           <div class="user-card-meta">
             <span><span class="rank-badge ${rankCls}">${(RANK_LABEL[u.rank]||'BRONZE').replace(/.*? /,'')}</span></span>
             <span>${getIcon('city',11)} ${esc(u.city||'—')}</span>
@@ -660,7 +660,7 @@ async function loadSuggested() {
       </div>
       <div class="suggest-info">
         <div class="suggest-name">${esc(u.display_name || u.username)}</div>
-        <div class="suggest-sub" style="display:flex;align-items:center;gap:4px;color:${CLASS_COLOR[cls]}">${classIcon(cls)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+        <div class="suggest-sub" style="display:flex;align-items:center;gap:4px;color:${CLASS_COLOR[cls]}">${classIcon(cls)} ${cls.toUpperCase()} <span style="color:var(--text-dim)">· LV.${u.level||1}</span></div>
       </div>
       <button class="suggest-follow-btn ${followingIds.has(u.id)?'following':''}" id="sfbtn-${u.id}"
         onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
