@@ -892,16 +892,16 @@ async function checkAndUpdateStreak() {
   try {
     if (!userProfile) return
 
-    // วันนี้ในเวลาไทย UTC+7
-    const nowThai   = new Date(Date.now() + 7 * 3600000)
-    const todayStr  = nowThai.toISOString().split('T')[0]              // "2026-06-12"
+    // วันนี้ในเวลาไทย Asia/Bangkok
+    const TZ = 'Asia/Bangkok'
+    const todayStr  = new Date().toLocaleDateString('sv-SE', { timeZone: TZ })
     const lastDate  = userProfile.streak_last_date || ''               // "2026-06-11" หรือว่าง
 
     // ถ้า login วันนี้ไปแล้ว — ไม่ต้องทำอะไร
     if (lastDate === todayStr) return
 
-    const yesterdayThai = new Date(nowThai.getTime() - 86400000)
-    const yesterdayStr  = yesterdayThai.toISOString().split('T')[0]   // "2026-06-11"
+    const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate() - 1)
+    const yesterdayStr  = yesterdayDate.toLocaleDateString('sv-SE', { timeZone: TZ })   // "2026-06-11"
 
     let newStreak
     if (lastDate === yesterdayStr) {
@@ -1104,18 +1104,19 @@ async function loadQuests() {
     .order('type')
     .order('id')
 
-  // timezone ไทย UTC+7 — ตรงกับ quests.html ทุกอย่าง
-  const TZ_OFFSET = 7 * 60
-  const nowLocal    = new Date(Date.now() + TZ_OFFSET * 60000)
-  const todayStr    = nowLocal.toISOString().split('T')[0]
-  const dayOfWeek   = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
-  const monday      = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
-  const mondayStr   = monday.toISOString().split('T')[0]
-  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
+  // timezone ไทย Asia/Bangkok
+  const TZ = 'Asia/Bangkok'
+  const todayStr    = new Date().toLocaleDateString('sv-SE', { timeZone: TZ })
+  const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+  const tomorrowStr = tomorrowDate.toLocaleDateString('sv-SE', { timeZone: TZ })
+  const nowThai     = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }))
+  const dayOfWeek   = nowThai.getDay() === 0 ? 7 : nowThai.getDay()
+  const monday      = new Date(nowThai.getTime() - (dayOfWeek - 1) * 86400000)
+  const mondayStr   = monday.toLocaleDateString('sv-SE', { timeZone: TZ })
 
   const toThaiDate = (ts) => {
     if (!ts) return ''
-    return new Date(new Date(ts).getTime() + TZ_OFFSET * 60000).toISOString().split('T')[0]
+    return new Date(ts).toLocaleDateString('sv-SE', { timeZone: TZ })
   }
 
   // ดึง user_quests ทั้งหมด แล้วกรองด้วย JS (ตรงกับ quests.html 100%)
@@ -1459,11 +1460,11 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
-    // ป้องกัน XP ซ้ำ — เช็คเฉพาะวันนี้ (timezone ไทย UTC+7)
-    const _tz     = 7 * 60
-    const _now    = new Date(Date.now() + _tz * 60000)
-    const _tdStr  = _now.toISOString().split('T')[0]
-    const _tmStr  = new Date(_now.getTime() + 86400000).toISOString().split('T')[0]
+    // ป้องกัน XP ซ้ำ — เช็คเฉพาะวันนี้ (timezone ไทย Asia/Bangkok)
+    const _TZ    = 'Asia/Bangkok'
+    const _tdStr = new Date().toLocaleDateString('sv-SE', { timeZone: _TZ })
+    const _tmDate = new Date(); _tmDate.setDate(_tmDate.getDate() + 1)
+    const _tmStr = _tmDate.toLocaleDateString('sv-SE', { timeZone: _TZ })
 
     const { data: existingUQ } = await supabase
       .from('user_quests').select('id, status, xp_granted')
@@ -1534,8 +1535,8 @@ window.submitProof = async function() {
 // ============================================================
 function renderStreakDays(streak, lastDate) {
   const days  = ['อา','จ','อ','พ','พฤ','ศ','ส']
-  const nowThai = new Date(Date.now() + 7 * 60 * 60000)
-  const today = nowThai.getUTCDay()
+  const nowThai = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }))
+  const today = nowThai.getDay()
   const items = document.querySelectorAll('.streak-day')
   items.forEach((el, i) => {
     el.classList.remove('done','today')
@@ -1555,10 +1556,10 @@ function renderStreakDays(streak, lastDate) {
 // HELPERS
 // ============================================================
 function updateDate() {
-  const d = new Date(Date.now() + 7 * 60 * 60000)
+  const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }))
   const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
   const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-  document.getElementById('pageDate').textContent = `วัน${days[d.getUTCDay()]}ที่ ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear() + 543}`
+  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`
 }
 
 function updateQuestResetTimer() {

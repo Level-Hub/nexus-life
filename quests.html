@@ -443,16 +443,17 @@ async function loadProfile() {
 async function loadAllQuests() {
   const { data: quests } = await supabase.from('quests').select('*').eq('is_active', true).order('type').order('id')
 
-  // ใช้ timezone ไทย UTC+7 ตลอด ให้ตรงกับ submitted_at ที่ถูก offset แล้ว
-  const TZ_OFFSET = 7 * 60 // นาที
-  const nowLocal = new Date(Date.now() + TZ_OFFSET * 60000)
-  const todayStr    = nowLocal.toISOString().split('T')[0]
-  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
+  // ใช้ timezone ไทย Asia/Bangkok (UTC+7) — ใช้ toLocaleDateString แทนการบวก offset เอง
+  const TZ = 'Asia/Bangkok'
+  const todayStr    = new Date().toLocaleDateString('sv-SE', { timeZone: TZ })
+  const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+  const tomorrowStr = tomorrowDate.toLocaleDateString('sv-SE', { timeZone: TZ })
 
   // หา Monday ของสัปดาห์นี้ (ไทย)
-  const dayOfWeek = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
-  const monday = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
-  const mondayStr = monday.toISOString().split('T')[0]
+  const nowThai = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }))
+  const dayOfWeek = nowThai.getDay() === 0 ? 7 : nowThai.getDay()
+  const monday = new Date(nowThai.getTime() - (dayOfWeek - 1) * 86400000)
+  const mondayStr = monday.toLocaleDateString('sv-SE', { timeZone: TZ })
 
   // ดึง user_quests ทั้งหมดของ user (ไม่กรอง date ใน query)
   // เพราะ upsert เก่าไม่อัปเดต created_at ทำให้กรองด้วย date พลาด record เก่า
@@ -466,11 +467,10 @@ async function loadAllQuests() {
   const uqAll = uqAllRaw || []
   window._historyQuests = uqAll
 
-  // helper: แปลง timestamp DB → วันที่ไทย (UTC+7)
+  // helper: แปลง timestamp DB → วันที่ไทย (Asia/Bangkok)
   const toThaiDate = (ts) => {
     if (!ts) return ''
-    const d = new Date(new Date(ts).getTime() + TZ_OFFSET * 60000)
-    return d.toISOString().split('T')[0]
+    return new Date(ts).toLocaleDateString('sv-SE', { timeZone: TZ })
   }
 
   // แยก daily = submitted วันนี้ (เวลาไทย)
