@@ -812,12 +812,20 @@ function getUserLocation() {
     myLat = pos.coords.latitude
     myLng = pos.coords.longitude
 
-    // Show on map as "me"
-    const icon = L.divIcon({
-      html: `<div class="player-marker me" style="border-color:var(--cyan)">${getIcon('person',18)}</div>`,
+    // Show on map as "me" — ใช้ avatar จริงจาก userProfile
+    const myAvatarSeed = userProfile?.avatar_seed || userProfile?.username || 'nexus'
+    const myAvatarParts = myAvatarSeed.split(':')
+    const myAvatarUrl = myAvatarParts.length >= 3
+      ? `https://api.dicebear.com/9.x/${myAvatarParts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(myAvatarParts[1]||'nexus')}&backgroundColor=${myAvatarParts[2]||'0a1628'}&size=48`
+      : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(myAvatarSeed)}&backgroundColor=0a1628&size=48`
+    const myIcon = L.divIcon({
+      html: `<div class="player-marker me" style="border-color:var(--cyan);padding:0;overflow:hidden;background:#010a0f">
+               <img src="${myAvatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover"
+                 onerror="this.style.display='none';this.insertAdjacentHTML('afterend','${getIcon('person',18).replace(/'/g,"\'").replace(/"/g,'&quot;')}')">
+             </div>`,
       iconSize: [32,32], iconAnchor: [16,16], className:''
     })
-    L.marker([myLat, myLng], { icon }).addTo(mapInstance)
+    L.marker([myLat, myLng], { icon: myIcon }).addTo(mapInstance)
       .bindPopup(`<b style="font-family:Orbitron,monospace;color:#00f5ff">ตำแหน่งของฉัน</b>`)
 
     mapInstance.setView([myLat, myLng], 10)
@@ -866,12 +874,32 @@ async function loadPlayersOnMap() {
   // FIX: เพิ่ม location_public filter + ลบ avatar_url ที่ไม่มีใน schema
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng')
+    .select('id, display_name, username, class, level, rank, avatar_seed, last_lat, last_lng, equipped_title_id, city')
     .eq('map_visible', true)
     .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
     .limit(200)
+
+  // ดึง guild ของแต่ละ user (guild_members join guilds)
+  const userIds = (data || []).map(p => p.id)
+  let guildMap = {}
+  if (userIds.length) {
+    const { data: guildRows } = await supabase
+      .from('guild_members')
+      .select('user_id, guilds(name, tag)')
+      .in('user_id', userIds)
+    ;(guildRows || []).forEach(r => { guildMap[r.user_id] = r.guilds })
+  }
+
+  // ดึง equipped title ของแต่ละ user
+  let titleMap = {}
+  const titleIds = [...new Set((data||[]).map(p => p.equipped_title_id).filter(Boolean))]
+  if (titleIds.length) {
+    const { data: titleRows } = await supabase
+      .from('titles').select('id, name').in('id', titleIds)
+    ;(titleRows || []).forEach(t => { titleMap[t.id] = t.name })
+  }
 
   document.getElementById('onlineCount').textContent = data?.length || 0
 
@@ -881,25 +909,63 @@ async function loadPlayersOnMap() {
     if (!p.last_lat || !p.last_lng) return
     const cls   = p.class || 'warrior'
     const color = CLASS_COLORS[cls] || '#00f5ff'
-    const iconSvg = clsIcon(cls, 18)
 
     const jLat = p.last_lat + (Math.random() - 0.5) * 0.08
     const jLng = p.last_lng + (Math.random() - 0.5) * 0.08
 
+    // Avatar URL
+    const seed  = p.avatar_seed || p.username || 'nexus'
+    const parts = seed.split(':')
+    const avatarUrl = parts.length >= 3
+      ? `https://api.dicebear.com/9.x/${parts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(parts[1]||'nexus')}&backgroundColor=${parts[2]||'0a1628'}&size=48`
+      : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=48`
+
+    // Marker: avatar 28px + border สี class + badge class เล็กมุมล่างขวา
     const icon = L.divIcon({
-      html: `<div class="player-marker" style="border-color:${color};box-shadow:0 0 10px ${color}40">${iconSvg}</div>`,
+      html: `<div style="position:relative;width:32px;height:32px">
+               <div style="width:32px;height:32px;border-radius:50%;border:2px solid ${color};box-shadow:0 0 8px ${color}60;overflow:hidden;background:#010a0f">
+                 <img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+               </div>
+               <div style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#010a0f;border:1px solid ${color};display:flex;align-items:center;justify-content:center">
+                 <svg width="9" height="9" viewBox="0 0 20 20" fill="none" style="display:block">${CLASS_ICONS[cls]||''}</svg>
+               </div>
+             </div>`,
       iconSize: [32,32], iconAnchor: [16,16], className:''
     })
-    const name = p.display_name || p.username || '—'
+
+    // Popup ละเอียด
+    const name    = p.display_name || p.username || '—'
+    const title   = p.equipped_title_id ? (titleMap[p.equipped_title_id] || '') : ''
+    const guild   = guildMap[p.id]
+    const rankStr = (p.rank || 'bronze').toUpperCase()
+    const RANK_COLORS = { BRONZE:'#cd7f32', SILVER:'#c0c0c0', GOLD:'#ffd700', PLATINUM:'#00f5ff', DIAMOND:'#b044ff', LEGENDARY:'#ff9500' }
+    const rankColor = RANK_COLORS[rankStr] || '#c0c0c0'
+
     const marker = L.marker([jLat, jLng], { icon })
       .bindPopup(`
-        <div style="font-family:Orbitron,monospace;min-width:140px">
-          <div style="color:${color};font-size:11px;font-weight:700">${name}</div>
-          <div style="color:#5a8a90;font-size:9px;margin-top:4px;display:flex;align-items:center;gap:4px">${clsIcon(cls,12)} ${cls.toUpperCase()} · LV.${p.level||1}</div>
+        <div style="font-family:Orbitron,monospace;min-width:160px;padding:4px 0">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="width:40px;height:40px;border-radius:50%;border:2px solid ${color};overflow:hidden;flex-shrink:0;background:#010a0f">
+              <img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+            </div>
+            <div>
+              <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3">${name}</div>
+              ${title ? `<div style="color:#ffd700;font-size:8px;margin-top:1px">${title}</div>` : ''}
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:8px;color:#5a8a90;margin-bottom:4px">
+            <svg width="10" height="10" viewBox="0 0 20 20" fill="none">${CLASS_ICONS[cls]||''}</svg>
+            <span style="color:${color}">${cls.toUpperCase()}</span>
+            <span>·</span>
+            <span style="color:#fff">LV.${p.level||1}</span>
+            <span>·</span>
+            <span style="color:${rankColor}">${rankStr}</span>
+          </div>
+          ${guild ? `<div style="font-size:8px;color:#5a8a90;border-top:1px solid rgba(0,245,255,0.1);padding-top:4px;margin-top:4px">[${guild.tag||'???'}] ${guild.name||''}</div>` : ''}
         </div>
       `, { className:'nexus-popup' })
-      .addTo(mapInstance)
     playerMarkers.push(marker)
+    if (layers.players) marker.addTo(mapInstance)
   })
 }
 
@@ -1041,6 +1107,20 @@ async function loadTerritories() {
     `, { className: 'nexus-popup' })
     territoryMarkers.push(circle)
     if (layers.territory) circle.addTo(mapInstance)
+
+    // Label ชื่อ guild กลางวงกลม territory
+    const labelIcon = L.divIcon({
+      html: `<div style="font-family:Orbitron,monospace;font-size:9px;font-weight:700;color:${color};
+                         text-shadow:0 0 8px ${color};white-space:nowrap;
+                         background:rgba(1,10,15,0.75);padding:2px 6px;
+                         border:1px solid ${color}40;pointer-events:none">
+               [${guild?.tag||'???'}] ${guild?.name||''}
+             </div>`,
+      className:'', iconAnchor:[0,0]
+    })
+    const labelMarker = L.marker(coords, { icon: labelIcon, interactive: false })
+    territoryMarkers.push(labelMarker)
+    if (layers.territory) labelMarker.addTo(mapInstance)
   })
 }
 
@@ -1146,6 +1226,30 @@ window.submitCheckin = async function() {
     showToast('ไม่พบตำแหน่ง — กรุณาเปิด GPS', 'error')
     btn.disabled = false; btn.textContent = 'CHECK-IN →'
     return
+  }
+
+  // Cooldown 4 ชั่วโมง — เช็ค check-in ล่าสุดของ user
+  const cooldownHours = 4
+  const { data: lastCheckin } = await supabase
+    .from('checkins')
+    .select('created_at')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (lastCheckin?.created_at) {
+    const diffMs   = Date.now() - new Date(lastCheckin.created_at).getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHrs  = diffMs / 3600000
+    if (diffHrs < cooldownHours) {
+      const remaining = cooldownHours * 60 - diffMins
+      const hh = Math.floor(remaining / 60)
+      const mm = remaining % 60
+      showToast(`เช็คอินได้อีกใน ${hh > 0 ? hh + ' ชม. ' : ''}${mm} นาที`, 'error')
+      btn.disabled = false; btn.textContent = 'CHECK-IN →'
+      return
+    }
   }
 
   const placeName = document.getElementById('checkinPlaceName').value.trim()
