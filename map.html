@@ -810,12 +810,14 @@ function getUserLocation() {
     myLat = pos.coords.latitude
     myLng = pos.coords.longitude
 
-    // ใช้ avatar_seed จาก userProfile (โหลดเสร็จแล้วก่อนเรียกฟังก์ชันนี้)
-    const myAvatarSeed = userProfile?.avatar_seed || userProfile?.username || 'nexus'
-    const myAvatarParts = myAvatarSeed.split(':')
-    const myAvatarUrl = myAvatarParts.length >= 3
-      ? `https://api.dicebear.com/9.x/${myAvatarParts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(myAvatarParts[1]||'nexus')}&backgroundColor=${myAvatarParts[2]||'0a1628'}&size=48`
-      : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(myAvatarSeed)}&backgroundColor=0a1628&size=48`
+    // ใช้ avatar_url (รูปจริง) ก่อน ถ้าไม่มีค่อย fallback เป็น dicebear จาก avatar_seed
+    const myAvatarUrl = userProfile?.avatar_url || (() => {
+      const seed = userProfile?.avatar_seed || userProfile?.username || 'nexus'
+      const parts = seed.split(':')
+      return parts.length >= 3
+        ? `https://api.dicebear.com/9.x/${parts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(parts[1]||'nexus')}&backgroundColor=${parts[2]||'0a1628'}&size=48`
+        : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=48`
+    })()
     const myIcon = L.divIcon({
       html: `<div class="player-marker me" style="border-color:var(--cyan);padding:0;overflow:hidden;background:#010a0f">
                <img src="${myAvatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover"
@@ -872,7 +874,7 @@ async function loadPlayersOnMap() {
   // FIX: เพิ่ม location_public filter + ลบ avatar_url ที่ไม่มีใน schema
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, rank, avatar_seed, last_lat, last_lng, equipped_title_id, city, last_seen')
+    .select('id, display_name, username, class, level, rank, avatar_seed, avatar_url, last_lat, last_lng, equipped_title_id, city, last_seen')
     .eq('map_visible', true)
     .eq('location_public', true)
     .not('last_lat', 'is', null)
@@ -917,12 +919,14 @@ async function loadPlayersOnMap() {
     const jLat = p.last_lat + (Math.random() - 0.5) * 0.08
     const jLng = p.last_lng + (Math.random() - 0.5) * 0.08
 
-    // Avatar URL
-    const seed  = p.avatar_seed || p.username || 'nexus'
-    const parts = seed.split(':')
-    const avatarUrl = parts.length >= 3
-      ? `https://api.dicebear.com/9.x/${parts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(parts[1]||'nexus')}&backgroundColor=${parts[2]||'0a1628'}&size=48`
-      : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=48`
+    // Avatar URL — ใช้ avatar_url (รูปจริง) ก่อน fallback dicebear
+    const avatarUrl = p.avatar_url || (() => {
+      const seed  = p.avatar_seed || p.username || 'nexus'
+      const parts = seed.split(':')
+      return parts.length >= 3
+        ? `https://api.dicebear.com/9.x/${parts[0]||'pixel-art'}/svg?seed=${encodeURIComponent(parts[1]||'nexus')}&backgroundColor=${parts[2]||'0a1628'}&size=48`
+        : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0a1628&size=48`
+    })()
 
     // Marker: avatar 28px + border สี class + badge class เล็กมุมล่างขวา
     const icon = L.divIcon({
@@ -1135,7 +1139,7 @@ async function loadNearbyPlayers() {
   // FIX: ลบ avatar_url + เพิ่ม location_public filter
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng, last_seen')
+    .select('id, display_name, username, class, level, avatar_seed, avatar_url, last_lat, last_lng, last_seen')
     .eq('map_visible', true)
     .eq('location_public', true)
     .not('last_lat', 'is', null)
@@ -1161,7 +1165,7 @@ async function loadNearbyPlayers() {
 
   list.innerHTML = sorted.map(p => {
     const cls    = p.class || 'warrior'
-    const avatar = getAvatarUrl(p.avatar_seed || p.username, 34)
+    const avatar = p.avatar_url || getAvatarUrl(p.avatar_seed || p.username, 34)
     const dist   = myLat ? getDistKm(myLat, myLng, p.last_lat, p.last_lng) : null
     const isOnline = p.last_seen && (Date.now() - new Date(p.last_seen).getTime()) < 30 * 60 * 1000
     const lastSeenMs = p.last_seen ? Date.now() - new Date(p.last_seen).getTime() : null
