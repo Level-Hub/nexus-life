@@ -785,7 +785,7 @@ async function loadCityProject(city) {
     document.getElementById('projectTitle').textContent = 'ยังไม่มีโครงการสัปดาห์นี้'
     document.getElementById('projectDesc').textContent = 'รอโครงการใหม่จากผู้ดูแลระบบ...'
     document.getElementById('joinProjectBtn').disabled = true
-    document.getElementById('statProject').textContent = '—'
+    document.getElementById('statProject').textContent = '0'
     return
   }
 
@@ -829,6 +829,7 @@ async function loadCityRanking() {
   const { data } = await supabase
     .from('city_stats')
     .select('*')
+    .order('prosperity_level', { ascending: false })
     .order('xp_contributed_weekly', { ascending: false })
     .limit(12)
 
@@ -1007,13 +1008,20 @@ async function loadChatMessages(city) {
   document.getElementById('onlineCount').textContent = count || 0
 }
 
-function appendChatMsg(msg) {
+const _renderedMsgIds = new Set()
+function appendChatMsg(msg, fromSelf) {
+  // ป้องกัน duplicate เมื่อ realtime ส่งซ้ำหลัง sendChat append แล้ว
+  if (msg.id) {
+    if (_renderedMsgIds.has(msg.id)) return
+    _renderedMsgIds.add(msg.id)
+  }
   const u = msg.users || {}
   const isOwn = msg.sender_id === currentUser.id
   const cls = u.class || 'warrior'
   const el = document.getElementById('chatMessages')
   const div = document.createElement('div')
   div.className = `chat-msg ${isOwn?'own':''}`
+  if (msg.id) div.dataset.msgId = msg.id
   div.innerHTML = `
     <div class="chat-avatar"><img src="${getAvatar(u,28)}" alt=""></div>
     <div class="chat-bubble">
@@ -1045,11 +1053,30 @@ window.sendChat = async function() {
   if (!text) return
   input.value = ''
   const channel = `city:${selectedCity}`
-  await supabase.from('messages').insert({
+  const now = new Date().toISOString()
+  const { data, error } = await supabase.from('messages').insert({
     sender_id: currentUser.id,
     channel,
     content: text
-  })
+  }).select('*').single()
+  if (!error) {
+    // append ทันทีโดยไม่รอ realtime subscription
+    const msgId = data?.id
+    appendChatMsg({
+      ...(data || {}),
+      id: msgId,
+      sender_id: currentUser.id,
+      content: text,
+      created_at: data?.created_at || now,
+      users: {
+        username: userProfile?.username,
+        display_name: userProfile?.display_name,
+        avatar_seed: userProfile?.avatar_seed,
+        avatar_url: userProfile?.avatar_url,
+        class: userProfile?.class
+      }
+    }, true)
+  }
 }
 
 // ─── ACTIONS ─────────────────────────────────
