@@ -929,7 +929,7 @@ async function init() {
   if (!isOwnProfile) await checkFollowing()
 
   renderActions()
-  renderStreakDays(userProfile?.streak_current || 0)
+  renderStreakDays(userProfile?.streak_current || 0, userProfile?.streak_last_date)
   updateQuestStats()
 
   document.getElementById('profileLayout').style.display = 'grid'
@@ -1423,7 +1423,7 @@ window.switchTab = function(tab, btn) {
 // ============================================================
 // STREAK DAYS
 // ============================================================
-function renderStreakDays(streak) {
+function renderStreakDays(streak, lastDate) {
   const days    = ['อา','จ','อ','พ','พฤ','ศ','ส']
   // ใช้ UTC+7 เหมือน dashboard.html — ไม่ใช้ local browser time
   const nowThai = new Date(Date.now() + 7 * 3600000)

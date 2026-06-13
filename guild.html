@@ -1013,11 +1013,16 @@ async function loadGuildQuests() {
     const cur = gq.current_value || 0
     const target = gq.target_value || 3
     const pct = Math.min(100, Math.round(cur / target * 100))
+    const gqExpires = gq.expires_at ? new Date(gq.expires_at) : null
+    const gqDiff = gqExpires ? Math.max(0, gqExpires.getTime() - Date.now()) : 0
+    const gqD = Math.floor(gqDiff / 86400000)
+    const gqH = Math.floor((gqDiff % 86400000) / 3600000)
+    const gqTimerStr = gqDiff === 0 ? 'หมดเวลา' : gqD > 0 ? `${gqD}d ${gqH}h` : `${gqH}h`
     return `
     <div class="gquest-card">
       <div class="gquest-header">
         <div class="gquest-name">${escHtml(q?.title || 'Guild Quest')}</div>
-        <div class="gquest-timer">72h</div>
+        <div class="gquest-timer">${gqTimerStr}</div>
       </div>
       <div class="gquest-desc">${escHtml(q?.description || '')}</div>
       <div class="gquest-progress">

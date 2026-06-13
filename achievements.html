@@ -622,6 +622,7 @@ window.equipTitle = async function(titleId) {
     renderTitles()
     renderAllTitles()
     showToast(`ใส่ฉายา "${def?.name}" แล้ว!`, 'success')
+    await checkAndUnlockAchievements()
   } catch(e) {
     showToast('เกิดข้อผิดพลาด', 'error')
   }
@@ -638,10 +639,10 @@ window.switchTab = function(tab, btn) {
 
 // ===================== HELPERS =====================
 function updateDate() {
-  const d = new Date()
+  const d = new Date(Date.now() + 7 * 3600000)
   const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์']
   const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-  document.getElementById('pageDate').textContent = `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`
+  document.getElementById('pageDate').textContent = `วัน${days[d.getUTCDay()]}ที่ ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear() + 543}`
 }
 
 window.showToast = function(msg, type='success') {
@@ -661,6 +662,113 @@ function initCursor() {
     el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(0,245,255,0.7)' })
     el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
   })
+}
+
+// ===================== CHECK AND UNLOCK ACHIEVEMENTS =====================
+async function checkAndUnlockAchievements() {
+  try {
+    if (!currentUser) return
+
+    const [
+      { count: questDone },
+      { data: existingBadges },
+      { data: existingTitles },
+      { data: allBadges },
+      { data: allTitlesData }
+    ] = await Promise.all([
+      supabase.from('user_quests').select('*', { count:'exact', head:true })
+        .eq('user_id', currentUser.id).eq('status', 'approved'),
+      supabase.from('user_badges').select('badge_id').eq('user_id', currentUser.id),
+      supabase.from('user_titles').select('title_id').eq('user_id', currentUser.id),
+      supabase.from('badges').select('*'),
+      supabase.from('titles').select('*')
+    ])
+
+    const { data: profile } = await supabase.from('users').select('streak_current,level').eq('id', currentUser.id).single()
+
+    const myBadgeIds  = new Set((existingBadges || []).map(b => b.badge_id))
+    const myTitleIds  = new Set((existingTitles || []).map(t => t.title_id))
+    const streak      = profile?.streak_current || 0
+    const level       = profile?.level || 1
+    const totalQuests = questDone || 0
+
+    const badgeConditions = [
+      { category: 'quest',  condition: totalQuests >= 1   },
+      { category: 'quest',  condition: totalQuests >= 10  },
+      { category: 'quest',  condition: totalQuests >= 50  },
+      { category: 'quest',  condition: totalQuests >= 100 },
+      { category: 'streak', condition: streak >= 3  },
+      { category: 'streak', condition: streak >= 7  },
+      { category: 'streak', condition: streak >= 30 },
+      { category: 'level',  condition: level >= 5  },
+      { category: 'level',  condition: level >= 10 },
+      { category: 'level',  condition: level >= 20 },
+    ]
+
+    for (const badge of (allBadges || [])) {
+      if (myBadgeIds.has(badge.id)) continue
+      const eligible = badgeConditions
+        .filter(c => c.category === badge.category)
+        .some(c => c.condition)
+      if (!eligible) continue
+
+      const { error } = await supabase.from('user_badges').insert({
+        user_id: currentUser.id,
+        badge_id: badge.id,
+        unlocked_at: new Date().toISOString()
+      })
+      if (!error) {
+        myBadgeIds.add(badge.id)
+        showToast(`🏅 ปลดล็อค Badge: ${badge.name}!`, 'gold')
+        await supabase.from('activity_feed').insert({
+          user_id: currentUser.id,
+          type: 'badge_unlock',
+          data: { badge_id: badge.id, name: badge.name }
+        })
+      }
+    }
+
+    const titleConditions = [
+      { category: 'quest',  condition: totalQuests >= 1   },
+      { category: 'quest',  condition: totalQuests >= 10  },
+      { category: 'quest',  condition: totalQuests >= 50  },
+      { category: 'streak', condition: streak >= 7  },
+      { category: 'streak', condition: streak >= 30 },
+      { category: 'level',  condition: level >= 10 },
+      { category: 'level',  condition: level >= 20 },
+    ]
+
+    for (const title of (allTitlesData || [])) {
+      if (myTitleIds.has(title.id)) continue
+      const eligible = titleConditions
+        .filter(c => c.category === title.category)
+        .some(c => c.condition)
+      if (!eligible) continue
+
+      const { error } = await supabase.from('user_titles').insert({
+        user_id: currentUser.id,
+        title_id: title.id,
+        unlocked_at: new Date().toISOString(),
+        is_equipped: false
+      })
+      if (!error) {
+        myTitleIds.add(title.id)
+        showToast(`👑 ปลดล็อคฉายา: ${title.name}!`, 'gold')
+        await supabase.from('activity_feed').insert({
+          user_id: currentUser.id,
+          type: 'title_unlock',
+          data: { title_id: title.id, name: title.name }
+        })
+        await supabase.from('notifications').insert({
+          user_id: currentUser.id,
+          title: `👑 ได้รับฉายา: ${title.name}!`,
+          body: title.description || 'ฉายาใหม่ของคุณรอใช้งานที่หน้า Achievements'
+        })
+      }
+    }
+  } catch(e) {
+    console.warn('[checkAndUnlockAchievements]', e)
+  }
 }
 
 init()
