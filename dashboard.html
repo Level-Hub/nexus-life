@@ -1122,7 +1122,7 @@ async function loadQuests() {
   // ดึง user_quests ทั้งหมด แล้วกรองด้วย JS (ตรงกับ quests.html 100%)
   const { data: uqAllRaw } = await supabase
     .from('user_quests')
-    .select('*')
+    .select('*,quests(*)')
     .eq('user_id', currentUser.id)
     .order('submitted_at', { ascending: false })
     .limit(100)
@@ -1153,8 +1153,10 @@ async function loadQuests() {
   const dailyDone = dailyAll.filter(q => q.userQuest?.status === 'approved').length
   document.getElementById('statQuestDone').textContent = `${dailyDone}/${dailyAll.length}`
 
-  // nav badge — นับ daily+weekly ที่ยังไม่ส่ง
-  const notStarted = allQuests.filter(q => !q.userQuest || q.userQuest.status === 'in_progress').length
+  // nav badge — นับเฉพาะ daily ที่ยังไม่ได้ทำวันนี้
+  const notStarted = allQuests.filter(q =>
+    q.quest.type === 'daily' && (!q.userQuest || q.userQuest.status === 'in_progress')
+  ).length
   const badgeEl = document.getElementById('navQuestBadge')
   if (notStarted > 0) { badgeEl.textContent = notStarted; badgeEl.style.display = '' }
   else { badgeEl.style.display = 'none' }
