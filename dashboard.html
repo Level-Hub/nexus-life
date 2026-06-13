@@ -252,7 +252,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .profile-mini::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
 
 .pm-avatar-wrap {
-  position:relative;width:80px;height:80px;margin:0 auto 12px;
+  position:relative;width:80px;height:80px;margin:0 auto 16px;
 }
 .pm-avatar {
   width:80px;height:80px;border-radius:50%;
@@ -262,13 +262,21 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .pm-avatar img { width:100%;height:100%;object-fit:cover; }
 .pm-rank-badge {
-  position:absolute;bottom:-4px;right:-4px;
+  position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);
   font-family:'Orbitron',monospace;font-size:8px;
-  padding:3px 7px;background:var(--bg);
+  padding:3px 10px;background:var(--bg);
   border:1px solid var(--gold);color:var(--gold);
+  white-space:nowrap;letter-spacing:1px;
 }
+.pm-online-dot {
+  position:absolute;bottom:4px;right:2px;
+  width:13px;height:13px;border-radius:50%;
+  border:2px solid var(--bg2);background:var(--text-dim);
+  z-index:2;transition:background 0.4s;
+}
+.pm-online-dot.online { background:var(--green);box-shadow:0 0 6px rgba(68,255,136,0.7); }
 
-.pm-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#fff;margin-bottom:2px; }
+.pm-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#fff;margin-bottom:2px;margin-top:6px; }
 .pm-title { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);margin-bottom:4px;min-height:20px; }
 .pm-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));margin-bottom:16px; }
 
@@ -374,6 +382,16 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .lb-item.top1 .lb-avatar { border-color:var(--gold);box-shadow:0 0 6px rgba(255,215,0,0.25); }
 .lb-item.top2 .lb-avatar { border-color:#c0c0c0; }
 .lb-item.top3 .lb-avatar { border-color:#cd7f32; }
+
+/* leaderboard avatar wrapper + online dot */
+.lb-avatar-wrap { position:relative;flex-shrink:0; }
+.lb-online-dot {
+  position:absolute;bottom:0;right:0;
+  width:9px;height:9px;border-radius:50%;
+  border:1.5px solid var(--bg2);background:var(--text-dim);
+  z-index:2;
+}
+.lb-online-dot.online { background:var(--green);box-shadow:0 0 4px rgba(68,255,136,0.8); }
 .lb-info { flex:1;min-width:0; }
 .lb-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .lb-cls { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--text-dim));margin-top:2px;display:flex;align-items:center;gap:5px; }
@@ -523,10 +541,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="page-title">// <span>DASHBOARD</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
-    <button class="notif-btn" onclick="window.location.href='./notifications.html'">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 0 1 5 5v3l2 2H2l2-2V7a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.2"/><path d="M7 14a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.2"/></svg>
-      <div class="notif-dot" id="notifDot" style="display:none"></div>
-    </button>
+
   </div>
 
   <!-- XP BANNER -->
@@ -653,6 +668,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="pm-avatar-wrap">
           <div class="pm-avatar"><img id="pmAvatar" src="" alt=""></div>
           <div class="pm-rank-badge" id="pmRank">BRONZE</div>
+          <div class="pm-online-dot online" id="pmOnlineDot"></div>
         </div>
         <div class="pm-name" id="pmName">—</div>
         <div class="pm-title" id="pmTitle">Nexus Initiate</div>
@@ -979,6 +995,9 @@ async function loadProfile() {
 
   if (!profile) return
 
+  // update last_seen
+  supabase.from('users').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id).then(() => {})
+
   // ดึง equipped title — ดึง titles ทั้งตารางแล้ว find() เหมือน profile.html
   let equippedTitle = null
   try {
@@ -1263,7 +1282,7 @@ async function loadLeaderboard() {
   // FIX: ใช้ leaderboard_monthly view ตาม Blueprint v5 (มี position field + filter profile_public ใน view แล้ว)
   const { data } = await supabase
     .from('leaderboard_monthly')
-    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed, avatar_url, position')
+    .select('id, username, display_name, class, level, rank, xp_this_month, avatar_seed, avatar_url, position, last_seen')
     .order('position', { ascending: true })
     .limit(5)
 
@@ -1273,14 +1292,23 @@ async function loadLeaderboard() {
     return
   }
 
+  const isOnline = (lastSeen) => {
+    if (!lastSeen) return false
+    return (Date.now() - new Date(lastSeen).getTime()) <= 10 * 60 * 1000
+  }
+
   el.innerHTML = data.map((u, i) => {
-    const pos = u.position || (i + 1)   // FIX: ใช้ position จาก leaderboard_monthly view
+    const pos = u.position || (i + 1)
     const posClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : ''
     const isMe = u.id === currentUser?.id
+    const online = isMe || isOnline(u.last_seen)
     return `
     <div class="lb-item ${posClass} ${isMe ? 'lb-me' : ''}">
       <div class="lb-pos ${posClass}">${pos === 1 ? '👑' : pos}</div>
-      <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 32)}" alt=""></div>
+      <div class="lb-avatar-wrap">
+        <div class="lb-avatar cls-${u.class||'warrior'}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 32)}" alt=""></div>
+        <div class="lb-online-dot ${online ? 'online' : ''}"></div>
+      </div>
       <div class="lb-info">
         <div class="lb-name">${u.display_name || u.username}${isMe ? ' (คุณ)' : ''}</div>
         <div class="lb-cls cls-${u.class||'warrior'}">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>

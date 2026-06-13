@@ -237,7 +237,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <div class="reset-badge" id="resetBadge">⏱ Daily รีเซ็ตใน —</div>
-      <div class="reset-badge" id="weeklyResetBadge" style="border-color:rgba(255,149,0,0.3);color:var(--orange)">📅 Weekly รีเซ็ตใน —</div>
+      <div class="reset-badge" id="weeklyResetBadge" style="border-color:rgba(255,149,0,0.3);color:var(--orange);display:inline-flex;align-items:center;gap:6px"><span id="weeklyResetIcon"></span><span id="weeklyResetText">Weekly รีเซ็ตใน —</span></div>
     </div>
   </div>
 
@@ -372,6 +372,9 @@ async function init() {
   if (closeBtn) closeBtn.innerHTML = getIcon('close', 16)
   const uploadIcon = document.getElementById('uploadZoneIcon')
   if (uploadIcon) uploadIcon.innerHTML = getIcon('camera', 28)
+  // inject weekly reset SVG icon (จาก QUEST_ICONS.weekly ผ่าน getIcon)
+  const weeklyIconEl = document.getElementById('weeklyResetIcon')
+  if (weeklyIconEl) weeklyIconEl.innerHTML = getIcon('quest_weekly', 13)
   // inject class filter btn icons
   const clsFilterMap = { filterWarrior:'warrior', filterMage:'mage', filterExplorer:'explorer', filterMerchant:'merchant', filterArtist:'artist', filterDiplomat:'diplomat' }
   const clsLabelMap = { filterWarrior:'Warrior', filterMage:'Mage', filterExplorer:'Explorer', filterMerchant:'Merchant', filterArtist:'Artist', filterDiplomat:'Diplomat' }
@@ -398,7 +401,11 @@ async function loadProfile() {
   if (!data) return
 
   const cls = data.class || 'warrior'
-  document.getElementById('pageSub').innerHTML = `${clsIcon(cls,14)} ${(data.display_name||data.username).toUpperCase()} · LV.${data.level} · ${cls.toUpperCase()}`
+  const clsColor = CLASS_COLOR[cls] || '#00f5ff'
+  document.getElementById('pageSub').innerHTML =
+    `<span style="color:${clsColor};display:inline-flex;align-items:center;gap:5px;vertical-align:middle">${clsIcon(cls,14)}</span>` +
+    `<span style="color:${clsColor}"> ${(data.display_name||data.username).toUpperCase()}</span>` +
+    `<span style="color:var(--text-dim)"> · LV.${data.level} · ${cls.toUpperCase()}</span>`
 
   // navQuestBadge
   const { count: questCount } = await supabase
@@ -627,7 +634,7 @@ function renderQuestCard(q, uq) {
       <div class="qcard-info">
         <div class="qcard-type-row">
           <span class="qcard-type ${q.type}">${q.type.toUpperCase()}</span>
-          ${q.class_target ? `<span class="qcard-cls-badge">${clsIcon(cls,13)} ${cls.toUpperCase()}</span>` : ''}
+          ${q.class_target ? `<span class="qcard-cls-badge" style="color:${getCssColor(cls)};display:inline-flex;align-items:center;gap:3px"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" style="color:${getCssColor(cls)};flex-shrink:0">${CLASS_ICONS[cls]||''}</svg>${cls.toUpperCase()}</span>` : ''}
         </div>
         <div class="qcard-title">${q.title}</div>
         <div class="qcard-desc">${q.description||''}</div>
@@ -1008,11 +1015,11 @@ function updateResetTimer() {
   const wd = Math.floor(diffWeek / 86400000)
   const wh = Math.floor((diffWeek % 86400000) / 3600000)
   const wm = Math.floor((diffWeek % 3600000) / 60000)
-  const weeklyEl = document.getElementById('weeklyResetBadge')
-  if (weeklyEl) {
-    weeklyEl.textContent = wd > 0
-      ? `📅 Weekly รีเซ็ตใน ${wd} วัน ${wh} ชม.`
-      : `📅 Weekly รีเซ็ตใน ${wh} ชม. ${wm} น.`
+  const weeklyTextEl = document.getElementById('weeklyResetText')
+  if (weeklyTextEl) {
+    weeklyTextEl.textContent = wd > 0
+      ? `Weekly รีเซ็ตใน ${wd} วัน ${wh} ชม.`
+      : `Weekly รีเซ็ตใน ${wh} ชม. ${wm} น.`
   }
 }
 
