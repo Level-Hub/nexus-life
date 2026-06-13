@@ -1,63 +1,68 @@
 // ============================================================
-// NEXUS LIFE — titles.js  v2.0  (UPGRADED)
-// Title & Badge Render System — with per-title icons + special FX
+// NEXUS LIFE — titles.js  v3.0  (WORLD-CLASS UPGRADE)
+// Title & Badge Render System — AAA-grade particle FX,
+// metallic text, 3D perspective, multi-layer animations.
 //
 // Usage:
 //   import { renderTitleBadge, renderTitleCard, renderBadgeItem, injectTitleStyles } from './titles.js'
 //
 //   injectTitleStyles()                    — inject CSS once (auto-called on import)
-//   renderTitleBadge(title, options)       → HTML string (small badge with icon + FX)
-//   renderTitleCard(title, state, options) → HTML string (full card)
-//   renderBadgeItem(badge, unlocked)       → HTML string (badge card)
+//   renderTitleBadge(title, options)       → HTML string
+//   renderTitleCard(title, state, options) → HTML string
+//   renderBadgeItem(badge, unlocked)       → HTML string
 // ============================================================
 
 import { CLASS_COLOR } from './icons.js'
 
 
 // ============================================================
-// RARITY CONFIG  (unchanged — backward-compat)
+// RARITY CONFIG  (backward-compat, enhanced)
 // ============================================================
 export const RARITY_CONFIG = {
   common: {
     color:       '#aaaaaa',
     colorAlt:    '#888888',
-    shimmerDur:  '4s',
+    shimmerDur:  '5s',
     glow:        'none',
-    borderColor: 'rgba(170,170,170,0.15)',
-    bgGradient:  'linear-gradient(135deg,rgba(170,170,170,0.03) 0%,rgba(170,170,170,0.01) 100%)',
+    borderColor: 'rgba(170,170,170,0.18)',
+    bgGradient:  'linear-gradient(135deg,rgba(170,170,170,0.04) 0%,rgba(170,170,170,0.01) 100%)',
     animation:   '',
     particle:    false,
+    metallic:    'linear-gradient(90deg,#666 0%,#aaa 30%,#ccc 50%,#999 70%,#666 100%)',
   },
   rare: {
     color:       '#44aaff',
-    colorAlt:    '#00ccff',
-    shimmerDur:  '3s',
-    glow:        '0 0 8px rgba(68,170,255,0.25)',
-    borderColor: 'rgba(68,170,255,0.35)',
-    bgGradient:  'linear-gradient(135deg,rgba(68,170,255,0.06) 0%,rgba(0,204,255,0.03) 100%)',
+    colorAlt:    '#00f0ff',
+    shimmerDur:  '2.8s',
+    glow:        '0 0 10px rgba(68,170,255,0.3)',
+    borderColor: 'rgba(68,170,255,0.4)',
+    bgGradient:  'linear-gradient(135deg,rgba(68,170,255,0.07) 0%,rgba(0,240,255,0.04) 100%)',
     animation:   'rareTwinkle 3s ease-in-out infinite',
     particle:    false,
+    metallic:    'linear-gradient(90deg,#1a5aaa 0%,#44aaff 30%,#88ddff 50%,#44aaff 70%,#1a5aaa 100%)',
   },
   epic: {
-    color:       '#b044ff',
-    colorAlt:    '#dd88ff',
-    shimmerDur:  '2s',
-    glow:        '0 0 14px rgba(176,68,255,0.35)',
-    borderColor: 'rgba(176,68,255,0.45)',
-    bgGradient:  'linear-gradient(135deg,rgba(176,68,255,0.08) 0%,rgba(221,136,255,0.04) 100%)',
+    color:       '#cc66ff',
+    colorAlt:    '#ee99ff',
+    shimmerDur:  '1.8s',
+    glow:        '0 0 18px rgba(204,102,255,0.4)',
+    borderColor: 'rgba(204,102,255,0.5)',
+    bgGradient:  'linear-gradient(135deg,rgba(204,102,255,0.1) 0%,rgba(238,153,255,0.05) 100%)',
     animation:   'epicFloat 2.5s ease-in-out infinite',
     particle:    false,
+    metallic:    'linear-gradient(90deg,#660099 0%,#cc66ff 30%,#ee99ff 50%,#cc66ff 70%,#660099 100%)',
   },
   legendary: {
     color:       '#ffd700',
     colorAlt:    '#ff9500',
     colorAlt2:   '#ff6b00',
-    shimmerDur:  '1.2s',
-    glow:        '0 0 20px rgba(255,215,0,0.45), 0 0 40px rgba(255,149,0,0.2)',
-    borderColor: 'rgba(255,215,0,0.6)',
-    bgGradient:  'linear-gradient(135deg,rgba(255,215,0,0.09) 0%,rgba(255,107,0,0.05) 50%,rgba(255,215,0,0.07) 100%)',
-    animation:   'legendaryPulse 1.8s ease-in-out infinite',
+    shimmerDur:  '1.0s',
+    glow:        '0 0 24px rgba(255,215,0,0.5), 0 0 48px rgba(255,149,0,0.25)',
+    borderColor: 'rgba(255,215,0,0.65)',
+    bgGradient:  'linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,107,0,0.06) 50%,rgba(255,215,0,0.08) 100%)',
+    animation:   'legendaryPulse 1.6s ease-in-out infinite',
     particle:    true,
+    metallic:    'linear-gradient(90deg,#996600 0%,#ffd700 25%,#fff5aa 50%,#ffd700 75%,#996600 100%)',
   },
 }
 
@@ -65,132 +70,119 @@ export const RARITY_ORDER = ['common', 'rare', 'epic', 'legendary']
 
 
 // ============================================================
-// CLASS ICONS SVG (full <svg> element strings) — upgraded colors
+// CLASS ICONS SVG (full <svg> elements) — v3 upgraded
 // ============================================================
 export const CLASS_ICONS_SVG = {
-  warrior: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="url(#redGrad)" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glowWarm)"/><path d="M7 13l3-3" stroke="url(#redGrad)" stroke-width="1.1" opacity="0.6"/></svg>`,
-  mage:    (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><circle cx="10" cy="11" r="4" stroke="url(#purpleGrad)" stroke-width="1.6" fill="none" filter="url(#glowPurple)"/><path d="M10 4v2M10 15v2M4 11H2M16 11h2M5.5 6.5l1.4 1.4M13.1 14.1l1.4 1.4M5.5 15.5l1.4-1.4M13.1 7.9l1.4-1.4" stroke="url(#purpleGrad)" stroke-width="1.2"/><circle cx="10" cy="11" r="1.5" fill="url(#purpleGrad)" filter="url(#glowPurple)"/></svg>`,
-  explorer:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="url(#greenGrad)" stroke-width="1.6" fill="none"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="url(#greenGrad)" stroke-width="1"/><polygon points="10,6 12,11 10,10 8,11" fill="url(#greenGrad)" opacity="0.9"/><polygon points="10,14 8,9 10,10 12,9" fill="url(#greenGrad)" opacity="0.35"/></svg>`,
-  merchant:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><ellipse cx="10" cy="6" rx="5" ry="2" stroke="url(#orangeGrad)" stroke-width="1.6" fill="none"/><path d="M5 6v4c0 1.1 2.24 2 5 2s5-.9 5-2V6" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none"/><path d="M5 10v3c0 1.1 2.24 2 5 2s5-.9 5-2v-3" stroke="url(#orangeGrad)" stroke-width="1.5" fill="none"/><path d="M8 5.5l1 .5 1-.5" stroke="url(#goldStroke)" stroke-width="1.1" opacity="0.7"/></svg>`,
-  artist:  (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M10 3L15 8l-5 9-5-9z" stroke="url(#purpleGrad)" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.75"/><path d="M10 8l-2 4M10 8l2 4" stroke="url(#purpleGrad)" stroke-width="1" opacity="0.55"/></svg>`,
-  diplomat:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="url(#blueGrad)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M3 12l-1.5 1.5" stroke="url(#blueGrad)" stroke-width="1.6" stroke-linecap="round"/><path d="M17 12c0 0-2-3-4-3H9.5" stroke="url(#blueGrad)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M17 12l1.5 1.5" stroke="url(#blueGrad)" stroke-width="1.6" stroke-linecap="round"/><path d="M8 10V8a1 1 0 012 0v2" stroke="url(#cyanGrad)" stroke-width="1.2" fill="none"/></svg>`,
+  warrior: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="url(#rubyGrad)" stroke-width="2.0" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glowWarm)"/><path d="M7 13l3-3" stroke="url(#rubyGrad)" stroke-width="1.2" opacity="0.65"/><circle cx="10" cy="10" r="1.2" fill="url(#goldGrad)" opacity="0.7"/></svg>`,
+  mage:    (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><circle cx="10" cy="11" r="4" stroke="url(#amethystGrad)" stroke-width="1.8" fill="none" filter="url(#glowPurple)"/><path d="M10 4v2M10 15v2M4 11H2M16 11h2M5.5 6.5l1.4 1.4M13.1 14.1l1.4 1.4M5.5 15.5l1.4-1.4M13.1 7.9l1.4-1.4" stroke="url(#amethystGrad)" stroke-width="1.3"/><circle cx="10" cy="11" r="2.0" fill="url(#amethystGrad)" filter="url(#glowPurple)"/><circle cx="10" cy="10" r="0.8" fill="white" opacity="0.5"/></svg>`,
+  explorer:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="url(#emeraldGrad)" stroke-width="1.8" fill="none"/><circle cx="10" cy="10" r="5" stroke="url(#emeraldGrad)" stroke-width="0.6" opacity="0.3"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="url(#emeraldGrad)" stroke-width="1.1"/><polygon points="10,6 12,11 10,10 8,11" fill="url(#rubyGrad)" opacity="0.95"/><polygon points="10,14 8,9 10,10 12,9" fill="url(#cyanGrad)" opacity="0.4"/></svg>`,
+  merchant:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><ellipse cx="10" cy="6" rx="5" ry="2" stroke="url(#goldGrad)" stroke-width="1.8" fill="url(#goldGrad)" fill-opacity="0.12"/><path d="M5 6v4c0 1.1 2.24 2 5 2s5-.9 5-2V6" stroke="url(#goldGrad)" stroke-width="1.6" fill="none"/><path d="M5 10v3c0 1.1 2.24 2 5 2s5-.9 5-2v-3" stroke="url(#goldGrad)" stroke-width="1.6" fill="none"/><path d="M8 5.5l1 .5 1-.5" stroke="url(#goldStroke)" stroke-width="1.2" opacity="0.8"/></svg>`,
+  artist:  (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M10 3L15 8l-5 9-5-9z" stroke="url(#amethystGrad)" stroke-width="1.8" fill="url(#amethystGrad)" fill-opacity="0.1" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.8"/><circle cx="10" cy="8" r="0.8" fill="white" opacity="0.7"/></svg>`,
+  diplomat:(size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true"><path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M3 12l-1.5 1.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round"/><path d="M17 12c0 0-2-3-4-3H9.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M17 12l1.5 1.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round"/><path d="M8 10V8a1 1 0 012 0v2" stroke="url(#cyanGrad)" stroke-width="1.3" fill="none"/></svg>`,
 }
 
 
 // ============================================================
 // TITLE EFFECT MAP
-// Maps title names → effect class + badge icon SVG path
-//
-// effectClass: CSS class added to .nx-title-badge for special FX
-// icon: SVG path content (16×16 viewBox)
 // ============================================================
 const TITLE_EFFECT_MAP = {
 
-  // ── LIGHTNING titles (shake + spark) ──────────────────────
   'นักวิ่งมือใหม่': {
     effectClass: 'nx-fx-lightning',
-    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.3" fill="url(#lightningGrad)" fill-opacity="0.2" stroke-linejoin="round"/>`,
+    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.4" fill="url(#lightningGrad)" fill-opacity="0.25" stroke-linejoin="round"/>`,
   },
   'นักวิ่งขั้นเทพ': {
     effectClass: 'nx-fx-lightning',
-    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.5" fill="url(#lightningGrad)" fill-opacity="0.3" stroke-linejoin="round"/>`,
+    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.6" fill="url(#lightningGrad)" fill-opacity="0.35" stroke-linejoin="round"/>`,
   },
   'Speed Demon': {
     effectClass: 'nx-fx-lightning',
-    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.5" fill="url(#lightningGrad)" fill-opacity="0.3" stroke-linejoin="round"/>`,
+    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.6" fill="url(#lightningGrad)" fill-opacity="0.35" stroke-linejoin="round"/>`,
   },
 
-  // ── FIRE titles (flame aura) ───────────────────────────────
   'Week Warrior': {
     effectClass: 'nx-fx-fire',
-    icon: `<path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="url(#fireGrad)" stroke-width="1.2" fill="url(#fireGrad)" fill-opacity="0.15"/><circle cx="8" cy="11" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>`,
+    icon: `<path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="url(#fireGrad)" stroke-width="1.3" fill="url(#fireGrad)" fill-opacity="0.2"/><circle cx="8" cy="11" r="1.6" fill="url(#goldRadial)" opacity="0.75"/>`,
   },
   'Monthly Crusher': {
     effectClass: 'nx-fx-fire',
-    icon: `<path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="url(#fireGrad)" stroke-width="1.3" fill="url(#fireGrad)" fill-opacity="0.25"/>`,
+    icon: `<path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="url(#fireGrad)" stroke-width="1.4" fill="url(#fireGrad)" fill-opacity="0.3"/>`,
   },
 
-  // ── SHIELD titles (pulse ring) ─────────────────────────────
   'The Unbreakable': {
     effectClass: 'nx-fx-shield',
-    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#cyanGrad)" stroke-width="1.4" fill="url(#shieldGrad)" fill-opacity="0.35" stroke-linejoin="round"/><path d="M8 6v3l1.5 1.5" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
+    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#sapphireGrad)" stroke-width="1.5" fill="url(#shieldGrad)" fill-opacity="0.4" stroke-linejoin="round"/><path d="M8 6v3l1.5 1.5" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
   },
   'Iron Will': {
     effectClass: 'nx-fx-shield',
-    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#cyanGrad)" stroke-width="1.4" fill="url(#shieldGrad)" fill-opacity="0.35" stroke-linejoin="round"/>`,
+    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#sapphireGrad)" stroke-width="1.5" fill="url(#shieldGrad)" fill-opacity="0.4" stroke-linejoin="round"/>`,
   },
 
-  // ── BOOK / reading titles ──────────────────────────────────
   'นักอ่านมือใหม่': {
     effectClass: 'nx-fx-glow',
-    icon: `<path d="M8 13V4" stroke="url(#orangeGrad)" stroke-width="1.2"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#orangeGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+    icon: `<path d="M8 13V4" stroke="url(#orangeGrad)" stroke-width="1.3"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#orangeGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
   },
   'จอมเวทแห่งการเรียนรู้': {
     effectClass: 'nx-fx-glow-purple',
-    icon: `<circle cx="8" cy="9" r="3.5" stroke="url(#purpleGrad)" stroke-width="1.2" fill="none"/><path d="M8 3v2M8 13v1M3 9H2M13 9h1M4.5 5.5l1.2 1.2M10.3 11.3l1.2 1.2M4.5 12.5l1.2-1.2M10.3 6.7l1.2-1.2" stroke="url(#purpleGrad)" stroke-width="1.1"/><circle cx="8" cy="9" r="1.2" fill="url(#purpleGrad)"/>`,
+    icon: `<circle cx="8" cy="9" r="3.5" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none"/><path d="M8 3v2M8 13v1M3 9H2M13 9h1M4.5 5.5l1.2 1.2M10.3 11.3l1.2 1.2M4.5 12.5l1.2-1.2M10.3 6.7l1.2-1.2" stroke="url(#amethystGrad)" stroke-width="1.1"/><circle cx="8" cy="9" r="1.3" fill="url(#amethystGrad)"/>`,
   },
 
-  // ── COMPASS / Explorer ────────────────────────────────────
   'นักสำรวจผู้กล้า': {
     effectClass: 'nx-fx-spin-ring',
-    icon: `<circle cx="8" cy="8" r="6" stroke="url(#greenGrad)" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="url(#redGrad)"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="url(#cyanGrad)" opacity="0.4"/>`,
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#emeraldGrad)" stroke-width="1.3"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="url(#rubyGrad)"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="url(#cyanGrad)" opacity="0.45"/>`,
   },
   'Pathfinder': {
     effectClass: 'nx-fx-spin-ring',
-    icon: `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#greenGrad)" stroke-width="1.2" fill="none"/><circle cx="8" cy="5" r="1.5" fill="url(#greenGrad)"/>`,
+    icon: `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#emeraldGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="5" r="1.6" fill="url(#emeraldGrad)"/>`,
   },
 
-  // ── GOLD / Finance / Crown ────────────────────────────────
   'จ้าวแห่งเดือน': {
     effectClass: 'nx-fx-gold-pulse',
-    icon: `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.15" stroke-linejoin="round"/><path d="M2 12h12" stroke="url(#goldStroke)" stroke-width="1.3"/><circle cx="2" cy="5" r="1.2" fill="url(#goldGrad)"/><circle cx="8" cy="3" r="1.2" fill="url(#goldGrad)"/><circle cx="14" cy="5" r="1.2" fill="url(#goldGrad)"/>`,
+    icon: `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="url(#goldStroke)" stroke-width="1.4" fill="url(#goldGrad)" fill-opacity="0.18" stroke-linejoin="round"/><path d="M2 12h12" stroke="url(#goldStroke)" stroke-width="1.4"/><circle cx="2" cy="5" r="1.3" fill="url(#goldRadial)"/><circle cx="8" cy="3" r="1.3" fill="url(#goldRadial)"/><circle cx="14" cy="5" r="1.3" fill="url(#goldRadial)"/>`,
   },
   'นักวางแผนการเงิน': {
     effectClass: 'nx-fx-gold-pulse',
-    icon: `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/><path d="M3.5 5v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V5" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/><path d="M3.5 8v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V8" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/>`,
+    icon: `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M3.5 5v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M3.5 8v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V8" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/>`,
   },
   'Gold Walker': {
     effectClass: 'nx-fx-gold-pulse',
-    icon: `<circle cx="8" cy="8" r="6" stroke="url(#goldStroke)" stroke-width="1.3"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="url(#goldGrad)" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="url(#goldStroke)" stroke-width="1.2"/>`,
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#goldStroke)" stroke-width="1.4" filter="url(#glowGold)"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="url(#goldGrad)" stroke-width="1.3" fill="none"/><path d="M8 4v1M8 11v1" stroke="url(#goldStroke)" stroke-width="1.3"/>`,
   },
 
-  // ── FOUNDER / special star ────────────────────────────────
   'Founder': {
     effectClass: 'nx-fx-legendary-star',
-    icon: `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.4" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.4"/>`,
+    icon: `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.5"/>`,
   },
 
-  // ── SOCIAL / Diplomat ─────────────────────────────────────
   'เสน่ห์ล้นเหลือ': {
     effectClass: 'nx-fx-glow-blue',
-    icon: `<circle cx="5" cy="5" r="2.2" stroke="url(#blueGrad)" stroke-width="1.2"/><circle cx="11" cy="5" r="2.2" stroke="url(#cyanGrad)" stroke-width="1.2"/><path d="M1.5 14c0-2.5 1.5-4 3.5-4M14.5 14c0-2.5-1.5-4-3.5-4M5 10c1 0 3 .5 3 2s2-2 3-2" stroke="url(#blueGrad)" stroke-width="1.1"/>`,
+    icon: `<circle cx="5" cy="5" r="2.3" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="11" cy="5" r="2.3" stroke="url(#cyanGrad)" stroke-width="1.3"/><path d="M1.5 14c0-2.5 1.5-4 3.5-4M14.5 14c0-2.5-1.5-4-3.5-4M5 10c1 0 3 .5 3 2s2-2 3-2" stroke="url(#sapphireGrad)" stroke-width="1.2"/>`,
   },
   'Social Butterfly': {
     effectClass: 'nx-fx-glow-blue',
-    icon: `<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.2"/><circle cx="3" cy="12" r="2" stroke="url(#blueGrad)" stroke-width="1.2"/><circle cx="13" cy="12" r="2" stroke="url(#purpleGrad)" stroke-width="1.2"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.7"/>`,
+    icon: `<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.3"/><circle cx="3" cy="12" r="2" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="13" cy="12" r="2" stroke="url(#amethystGrad)" stroke-width="1.3"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.7"/>`,
   },
 }
 
-// Default icon for titles not in the map
-const DEFAULT_TITLE_ICON_PATH = `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="url(#goldStroke)" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`
+const DEFAULT_TITLE_ICON_PATH = `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`
 
 
 // ============================================================
-// CSS INJECTION
+// CSS INJECTION  v3.0  —  World-Class Edition
 // ============================================================
 export function injectTitleStyles() {
   if (typeof document === 'undefined') return
-  if (document.getElementById('nexus-title-styles')) return
+  if (document.getElementById('nexus-title-styles-v3')) return
 
   const css = `
-/* ──────────────────────────────────────────────────── */
-/* NEXUS LIFE — Title & Badge Styles v2.0 (auto-injected) */
-/* ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   NEXUS LIFE — Title & Badge Styles v3.0   World-Class Edition
+═══════════════════════════════════════════════════════════ */
 
-/* KEYFRAMES — base */
+/* ── KEYFRAMES — Metallic shimmer ── */
 @keyframes shimmerSlide {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
 }
 @keyframes gradientShift {
   0%,100% { background-position: 0% 50%; }
@@ -198,152 +190,204 @@ export function injectTitleStyles() {
 }
 @keyframes nxIconPulse {
   0%,100% { opacity: 1; }
-  50%     { opacity: 0.65; }
+  50%     { opacity: 0.6; }
 }
 @keyframes nxRarePing {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50%     { opacity: 0.8; transform: scale(1.015); }
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.015); }
 }
+
+/* ── Rarity card pulses ── */
 @keyframes legendaryPulse {
   0%,100% {
-    border-color: rgba(255,215,0,0.55);
-    box-shadow: 0 0 16px rgba(255,215,0,0.35), 0 0 32px rgba(255,149,0,0.15);
+    border-color: rgba(255,215,0,0.6);
+    box-shadow: 0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,149,0,0.18);
   }
   50% {
-    border-color: rgba(255,149,0,0.9);
-    box-shadow: 0 0 28px rgba(255,215,0,0.65), 0 0 56px rgba(255,107,0,0.3), inset 0 0 12px rgba(255,215,0,0.08);
+    border-color: rgba(255,200,0,1);
+    box-shadow: 0 0 36px rgba(255,215,0,0.75), 0 0 70px rgba(255,107,0,0.35), inset 0 0 16px rgba(255,215,0,0.1);
   }
 }
 @keyframes epicFloat {
-  0%,100% { box-shadow: 0 0 10px rgba(176,68,255,0.25); }
-  50%     { box-shadow: 0 0 22px rgba(176,68,255,0.5), 0 0 40px rgba(221,136,255,0.15); }
+  0%,100% { box-shadow: 0 0 12px rgba(204,102,255,0.3); }
+  50%     { box-shadow: 0 0 28px rgba(204,102,255,0.6), 0 0 50px rgba(238,153,255,0.2); }
 }
 @keyframes rareTwinkle {
-  0%,100% { opacity: 1; }
-  50%     { opacity: 0.82; }
+  0%,100% { opacity: 1; box-shadow: 0 0 6px rgba(68,170,255,0.2); }
+  50%     { opacity: 0.85; box-shadow: 0 0 14px rgba(68,170,255,0.4); }
 }
-@keyframes sparkle {
-  0%   { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--sx,8px), var(--sy,-12px)) scale(0); opacity: 0; }
-}
+
+/* ── Shimmer sweep ── */
 @keyframes legendaryCardShimmer {
-  0%   { left: -120%; }
-  100% { left: 120%; }
-}
-@keyframes nxLegRing {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes nxEpicRing {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
-}
-@keyframes nxHexLegPulse {
-  0%,100% { opacity: 0.55; filter: blur(0px); }
-  50%     { opacity: 0.85; filter: blur(0.5px); }
-}
-@keyframes nxHexEpicPulse {
-  0%,100% { opacity: 0.45; }
-  50%     { opacity: 0.75; }
-}
-@keyframes nxHexRarePulse {
-  0%,100% { opacity: 0.35; }
-  50%     { opacity: 0.6; }
+  0%   { left: -140%; }
+  100% { left: 140%; }
 }
 
-/* ── NEW FX KEYFRAMES ───────────────────────────────── */
+/* ── Hex frame pulsers ── */
+@keyframes nxLegRing     { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes nxEpicRing    { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes nxHexLegPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 0.95; filter: blur(0.5px); } }
+@keyframes nxHexEpicPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 0.8; } }
+@keyframes nxHexRarePulse { 0%,100% { opacity: 0.35; } 50% { opacity: 0.65; } }
 
-/* Lightning shake */
+/* ── Light-ray sweep across text ── */
+@keyframes nxTextRay {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── 3D perspective breathing ── */
+@keyframes nxPerspBreath {
+  0%,100% { transform: perspective(120px) rotateX(0deg) rotateY(0deg); }
+  33%     { transform: perspective(120px) rotateX(1.5deg) rotateY(-1deg); }
+  66%     { transform: perspective(120px) rotateX(-1deg) rotateY(1.5deg); }
+}
+
+/* ── LIGHTNING FX ── */
 @keyframes nxShake {
   0%,100% { transform: translateX(0); }
-  20%     { transform: translateX(-2px) rotate(-1deg); }
-  40%     { transform: translateX(2px) rotate(1deg); }
-  60%     { transform: translateX(-1px); }
-  80%     { transform: translateX(1px); }
+  15%     { transform: translateX(-2.5px) rotate(-1.5deg); }
+  30%     { transform: translateX(2.5px) rotate(1.5deg); }
+  45%     { transform: translateX(-1.5px); }
+  60%     { transform: translateX(1.5px); }
+  75%     { transform: translateX(-0.5px); }
+}
+@keyframes nxLightningFlash {
+  0%,89%,100% { opacity: 0; }
+  90%         { opacity: 1; }
+  95%         { opacity: 0.4; }
+}
+@keyframes nxBoltSweep {
+  0%   { transform: scaleX(0) translateX(-50%); opacity: 0; }
+  10%  { transform: scaleX(1) translateX(0); opacity: 0.6; }
+  40%  { transform: scaleX(1.2) translateX(10%); opacity: 0.3; }
+  100% { transform: scaleX(0) translateX(100%); opacity: 0; }
 }
 
-/* Spark particle */
-@keyframes nxSpark {
-  0%   { opacity: 1; transform: translate(0,0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--nx-sx,5px), var(--nx-sy,-10px)) scale(0.2); }
-}
-
-/* Fire aura flicker */
+/* ── FIRE FX ── */
 @keyframes nxFlicker {
-  0%,100% { opacity: 0.9; transform: scaleY(1) scaleX(1); }
-  25%     { opacity: 0.7; transform: scaleY(1.03) scaleX(0.98); }
-  50%     { opacity: 1;   transform: scaleY(0.98) scaleX(1.02); }
-  75%     { opacity: 0.8; transform: scaleY(1.04) scaleX(0.97); }
+  0%,100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+  20%     { transform: scaleY(1.04) scaleX(0.97); opacity: 0.75; }
+  40%     { transform: scaleY(0.97) scaleX(1.03); opacity: 1; }
+  60%     { transform: scaleY(1.05) scaleX(0.96); opacity: 0.8; }
+  80%     { transform: scaleY(0.98) scaleX(1.02); opacity: 0.95; }
+}
+@keyframes nxFireGlow {
+  0%,100% { box-shadow: 0 0 8px rgba(255,90,0,0.4), inset 0 0 4px rgba(255,150,0,0.1); }
+  50%     { box-shadow: 0 0 22px rgba(255,60,0,0.7), 0 -4px 12px rgba(255,200,0,0.3), inset 0 0 8px rgba(255,100,0,0.15); }
 }
 
-/* Shield pulse ring */
+/* ── SHIELD FX ── */
 @keyframes nxShieldPing {
-  0%   { box-shadow: 0 0 0 0 rgba(0,245,255,0.6); opacity: 0.9; }
-  100% { box-shadow: 0 0 0 8px rgba(0,245,255,0); opacity: 0; }
+  0%   { box-shadow: 0 0 0 0 rgba(0,245,255,0.7); }
+  70%  { box-shadow: 0 0 0 10px rgba(0,245,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,245,255,0); }
+}
+@keyframes nxShieldScale {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.04); }
 }
 
-/* Gold badge pulse */
+/* ── GOLD FX ── */
 @keyframes nxGoldGlow {
-  0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.4), inset 0 0 4px rgba(255,215,0,0.05); }
-  50%     { box-shadow: 0 0 18px rgba(255,215,0,0.8), inset 0 0 8px rgba(255,215,0,0.12); }
+  0%,100% { box-shadow: 0 0 8px rgba(255,215,0,0.45), inset 0 0 6px rgba(255,215,0,0.06); }
+  50%     { box-shadow: 0 0 24px rgba(255,215,0,0.85), 0 0 48px rgba(255,149,0,0.3), inset 0 0 12px rgba(255,215,0,0.14); }
+}
+@keyframes nxCoinSpin {
+  0%   { transform: scaleX(1); }
+  50%  { transform: scaleX(0.1); }
+  100% { transform: scaleX(1); }
 }
 
-/* Spin ring (compass) */
+/* ── SPIN RING (Compass) ── */
 @keyframes nxSpinRing {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* Purple glow wave */
+/* ── PURPLE GLOW ── */
 @keyframes nxPurpleWave {
-  0%,100% { box-shadow: 0 0 8px rgba(176,68,255,0.3); }
-  50%     { box-shadow: 0 0 22px rgba(221,136,255,0.6); }
+  0%,100% { box-shadow: 0 0 10px rgba(204,102,255,0.35); }
+  50%     { box-shadow: 0 0 28px rgba(238,153,255,0.65), 0 0 8px rgba(150,50,255,0.4); }
 }
 
-/* Blue glow */
+/* ── BLUE GLOW ── */
 @keyframes nxBlueGlow {
-  0%,100% { box-shadow: 0 0 6px rgba(68,170,255,0.3); }
-  50%     { box-shadow: 0 0 16px rgba(0,204,255,0.6); }
+  0%,100% { box-shadow: 0 0 8px rgba(68,170,255,0.35); }
+  50%     { box-shadow: 0 0 20px rgba(0,204,255,0.65), 0 0 6px rgba(0,150,255,0.4); }
 }
 
-/* Legendary star badge */
+/* ── LEGENDARY STAR ── */
 @keyframes nxLegStar {
   0%,100% {
-    box-shadow: 0 0 16px rgba(255,215,0,0.45), 0 0 32px rgba(255,149,0,0.2);
-    border-color: rgba(255,215,0,0.6);
+    box-shadow: 0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,149,0,0.22);
+    border-color: rgba(255,215,0,0.65);
   }
   50% {
-    box-shadow: 0 0 28px rgba(255,215,0,0.75), 0 0 56px rgba(255,107,0,0.35);
-    border-color: rgba(255,200,0,0.95);
+    box-shadow: 0 0 36px rgba(255,215,0,0.85), 0 0 70px rgba(255,107,0,0.4);
+    border-color: rgba(255,220,0,1);
   }
 }
 
-/* ──────────────────────────────
-   .nx-title-badge  (small hero badge)
-────────────────────────────── */
+/* ── PARTICLE float-up ── */
+@keyframes nxParticleRise {
+  0%   { transform: translate(var(--px,0px), 0) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--px,0px), -20px) scale(0); opacity: 0; }
+}
+@keyframes nxParticleOrbit {
+  from { transform: rotate(0deg) translateX(var(--pr,12px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--pr,12px)) rotate(-360deg); }
+}
+@keyframes nxSparkle {
+  0%   { transform: scale(0) rotate(0deg); opacity: 0; }
+  30%  { transform: scale(1.2) rotate(90deg); opacity: 1; }
+  70%  { transform: scale(0.9) rotate(180deg); opacity: 0.7; }
+  100% { transform: scale(0) rotate(270deg); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   .nx-title-badge  — World-Class Small Badge
+═══════════════════════════════════════════════════════════ */
 .nx-title-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   font-family: 'Orbitron', monospace;
   font-size: 9px;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   padding: 4px 12px 4px 8px;
   clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
   white-space: nowrap;
   vertical-align: middle;
+  will-change: transform, box-shadow;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), filter 0.25s ease;
 }
+.nx-title-badge:hover {
+  transform: scale(1.08) translateY(-1px);
+  filter: brightness(1.25);
+}
+
+/* ── Metallic light ray sweep ── */
 .nx-title-badge::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
-  background-size: 200% 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,0.22) 40%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 70%
+  );
+  background-size: 300% 100%;
   animation: shimmerSlide var(--shimmer-dur, 3s) linear infinite;
   pointer-events: none;
 }
+
 /* Badge icon wrapper */
 .nx-badge-icon-wrap {
   display: inline-flex;
@@ -354,175 +398,277 @@ export function injectTitleStyles() {
   height: 14px;
   position: relative;
   z-index: 2;
+  will-change: transform;
 }
 
-/* rarity variants */
+/* ── Rarity variants ── */
 .nx-title-badge.rarity-common {
-  --shimmer-dur: 5s;
+  --shimmer-dur: 6s;
   color: #aaaaaa;
-  background: rgba(170,170,170,0.08);
-  border: 1px solid rgba(170,170,170,0.15);
+  background: rgba(170,170,170,0.07);
+  border: 1px solid rgba(170,170,170,0.18);
+  text-shadow: 0 0 4px rgba(170,170,170,0.2);
 }
-.nx-title-badge.rarity-common::after { opacity: 0.2; }
+.nx-title-badge.rarity-common .nx-title-text {
+  background: linear-gradient(90deg,#888 0%,#ccc 30%,#ddd 50%,#ccc 70%,#888 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nxTextRay 5s linear infinite;
+}
 
 .nx-title-badge.rarity-rare {
-  --shimmer-dur: 3s;
+  --shimmer-dur: 2.8s;
   color: #44aaff;
-  background: linear-gradient(90deg, rgba(68,170,255,0.1), rgba(0,204,255,0.08));
-  border: 1px solid rgba(68,170,255,0.35);
+  background: linear-gradient(90deg, rgba(68,170,255,0.1), rgba(0,240,255,0.07));
+  border: 1px solid rgba(68,170,255,0.4);
   animation: rareTwinkle 3s ease-in-out infinite;
+}
+.nx-title-badge.rarity-rare .nx-title-text {
+  background: linear-gradient(90deg,#0060bb 0%,#44aaff 30%,#aaeeff 50%,#44aaff 70%,#0060bb 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nxTextRay 2.8s linear infinite;
 }
 
 .nx-title-badge.rarity-epic {
-  --shimmer-dur: 2s;
-  color: #dd88ff;
-  background: linear-gradient(90deg, rgba(176,68,255,0.12), rgba(221,136,255,0.08));
-  border: 1px solid rgba(176,68,255,0.45);
+  --shimmer-dur: 1.8s;
+  color: #cc66ff;
+  background: linear-gradient(90deg, rgba(204,102,255,0.12), rgba(238,153,255,0.07));
+  border: 1px solid rgba(204,102,255,0.5);
   animation: epicFloat 2.5s ease-in-out infinite;
 }
-.nx-title-badge.rarity-epic::after { opacity: 0.55; }
+.nx-title-badge.rarity-epic .nx-title-text {
+  background: linear-gradient(90deg,#660099 0%,#cc66ff 30%,#ffccff 50%,#cc66ff 70%,#660099 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nxTextRay 1.8s linear infinite;
+}
 
 .nx-title-badge.rarity-legendary {
-  --shimmer-dur: 1.2s;
+  --shimmer-dur: 1.0s;
   color: #ffd700;
-  background: linear-gradient(90deg, rgba(255,215,0,0.15), rgba(255,107,0,0.1), rgba(255,215,0,0.15));
-  border: 1px solid rgba(255,215,0,0.6);
-  animation: legendaryPulse 1.8s ease-in-out infinite;
-  text-shadow: 0 0 8px rgba(255,215,0,0.6);
+  background: linear-gradient(90deg, rgba(255,215,0,0.14), rgba(255,107,0,0.09), rgba(255,215,0,0.14));
+  border: 1px solid rgba(255,215,0,0.65);
+  animation: legendaryPulse 1.6s ease-in-out infinite;
+}
+.nx-title-badge.rarity-legendary .nx-title-text {
+  background: linear-gradient(90deg,#996600 0%,#ffd700 20%,#fff8a0 40%,#ff9500 60%,#ffd700 80%,#996600 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nxTextRay 1.0s linear infinite;
 }
 .nx-title-badge.rarity-legendary::after {
-  background: linear-gradient(105deg, transparent 20%, rgba(255,215,0,0.35) 50%, transparent 80%);
-  background-size: 200% 100%;
-  animation: shimmerSlide 1.2s linear infinite;
-  opacity: 1;
+  background: linear-gradient(105deg, transparent 15%, rgba(255,240,80,0.4) 40%, rgba(255,255,200,0.15) 50%, transparent 75%);
+  background-size: 300% 100%;
+  animation: shimmerSlide 1.0s linear infinite;
 }
 
-/* ── SPECIAL FX CLASSES ────────────────────────────── */
+/* ── PARTICLE dot — Legendary animated orbit ── */
+.nx-title-badge.rarity-legendary .nx-particle-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: gold;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 0 0 4px gold;
+}
+.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(1) { --pr: 18px; animation: nxParticleOrbit 1.8s linear infinite; }
+.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(2) { --pr: 18px; animation: nxParticleOrbit 1.8s linear 0.6s infinite; background: #ff9500; box-shadow: 0 0 4px #ff9500; }
+.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(3) { --pr: 18px; animation: nxParticleOrbit 1.8s linear 1.2s infinite; background: #ffe566; box-shadow: 0 0 4px #ffe566; }
 
-/* Lightning: shake icon + spark pseudo */
+/* ── SPARKLE dots — Epic ── */
+.nx-title-badge.rarity-epic .nx-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+.nx-title-badge.rarity-epic .nx-sparkle:nth-child(1) {
+  top: -2px; left: 30%;
+  background: #ee99ff;
+  box-shadow: 0 0 4px #cc66ff;
+  animation: nxSparkle 2.2s ease-in-out infinite;
+}
+.nx-title-badge.rarity-epic .nx-sparkle:nth-child(2) {
+  top: -2px; right: 25%;
+  background: #cc88ff;
+  box-shadow: 0 0 4px #aa44ff;
+  animation: nxSparkle 2.2s ease-in-out 0.7s infinite;
+}
+
+/* ── Rare sparkle ── */
+.nx-title-badge.rarity-rare .nx-sparkle {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: -1px; right: 20%;
+  background: #88ddff;
+  box-shadow: 0 0 4px #44aaff;
+  animation: nxSparkle 3s ease-in-out infinite;
+  z-index: 5;
+}
+
+/* ── Hover: 3D perspective + particle burst ── */
+.nx-title-badge:hover {
+  transform: scale(1.1) translateY(-2px) perspective(100px) rotateX(-3deg);
+}
+
+/* ═══════════════════════════════════════════════
+   SPECIAL FX CLASSES
+═══════════════════════════════════════════════ */
+
+/* ── LIGHTNING ── */
 .nx-title-badge.nx-fx-lightning .nx-badge-icon-wrap {
-  animation: nxShake 2.5s ease-in-out infinite;
+  animation: nxShake 2.2s ease-in-out infinite;
 }
+/* Lightning bolt line across badge */
 .nx-title-badge.nx-fx-lightning::before {
   content: '';
   position: absolute;
-  left: 6px; top: 50%;
-  width: 3px; height: 3px;
-  background: #ffe566;
-  border-radius: 50%;
-  --nx-sx: 6px; --nx-sy: -8px;
-  animation: nxSpark 1.4s ease-out infinite;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ffe566 40%, #ffffff 50%, #ffe566 60%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: nxBoltSweep 3s ease-in-out infinite;
   pointer-events: none;
-  z-index: 3;
-  transform-origin: center;
+  z-index: 4;
+  opacity: 0;
+  animation: nxLightningFlash 3s ease-in-out infinite;
 }
 
-/* Fire: flicker glow on badge */
+/* ── FIRE ── */
 .nx-title-badge.nx-fx-fire {
-  animation: nxFlicker 1.6s ease-in-out infinite !important;
+  animation: nxFireGlow 1.5s ease-in-out infinite, nxFlicker 1.8s ease-in-out infinite !important;
 }
-.nx-title-badge.nx-fx-fire.rarity-epic   { animation: nxFlicker 1.4s ease-in-out infinite, epicFloat 2.5s ease-in-out infinite !important; }
-.nx-title-badge.nx-fx-fire.rarity-legendary { animation: nxFlicker 1.2s ease-in-out infinite, legendaryPulse 1.8s ease-in-out infinite !important; }
+.nx-title-badge.nx-fx-fire.rarity-legendary {
+  animation: nxFireGlow 1.2s ease-in-out infinite, nxFlicker 1.3s ease-in-out infinite, legendaryPulse 1.6s ease-in-out infinite !important;
+}
 
-/* Shield: pulsing ring on the badge */
+/* ── SHIELD ── */
 .nx-title-badge.nx-fx-shield {
-  animation: nxShieldPing 1.8s ease-out infinite !important;
+  animation: nxShieldPing 2s ease-out infinite, nxShieldScale 2s ease-in-out infinite !important;
 }
 
-/* Gold pulse */
+/* ── GOLD ── */
 .nx-title-badge.nx-fx-gold-pulse {
-  animation: nxGoldGlow 2s ease-in-out infinite !important;
+  animation: nxGoldGlow 1.8s ease-in-out infinite !important;
 }
 
-/* Spinning ring (compass titles) — ::before becomes a dashed border that rotates */
+/* ── SPIN RING — dashed rotating outline ── */
 .nx-title-badge.nx-fx-spin-ring::before {
   content: '';
   position: absolute;
   inset: -2px;
-  border: 1.5px dashed rgba(68,255,136,0.45);
+  border: 1.5px dashed rgba(68,255,136,0.5);
   clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-  animation: nxSpinRing 4s linear infinite;
+  animation: nxSpinRing 3.5s linear infinite;
   pointer-events: none;
   z-index: 3;
 }
 
-/* Purple/mage glow */
+/* ── PURPLE GLOW ── */
 .nx-title-badge.nx-fx-glow-purple {
-  animation: nxPurpleWave 2.2s ease-in-out infinite !important;
+  animation: nxPurpleWave 2s ease-in-out infinite !important;
 }
 
-/* General warm glow */
+/* ── WARM GLOW ── */
 .nx-title-badge.nx-fx-glow {
   animation: nxGoldGlow 3s ease-in-out infinite !important;
-  --shimmer-dur: 1.8s;
+  --shimmer-dur: 1.6s;
 }
 
-/* Blue social glow */
+/* ── BLUE GLOW ── */
 .nx-title-badge.nx-fx-glow-blue {
-  animation: nxBlueGlow 2.5s ease-in-out infinite !important;
+  animation: nxBlueGlow 2.3s ease-in-out infinite !important;
 }
 
-/* Legendary star (Founder etc.) */
+/* ── LEGENDARY STAR (Founder) ── */
 .nx-title-badge.nx-fx-legendary-star {
-  animation: nxLegStar 1.8s ease-in-out infinite !important;
+  animation: nxLegStar 1.6s ease-in-out infinite !important;
 }
 .nx-title-badge.nx-fx-legendary-star .nx-badge-icon-wrap {
   animation: nxShake 4s ease-in-out infinite;
 }
 
-/* ──────────────────────────────
+
+/* ═══════════════════════════════════════════════
    .nx-title-card  (full card)
-────────────────────────────── */
+═══════════════════════════════════════════════ */
 .nx-title-card {
   position: relative;
   overflow: hidden;
   padding: 16px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease, border-color 0.28s ease;
   border: 1px solid;
-  background: rgba(1,10,15,0.7);
+  background: rgba(1,10,15,0.75);
+  will-change: transform;
+  transform-style: preserve-3d;
+  backdrop-filter: blur(4px);
 }
-.nx-title-card:hover { transform: translateY(-2px); }
+.nx-title-card:hover {
+  transform: translateY(-3px) perspective(300px) rotateX(1.5deg);
+}
+
+/* Corner accent marks */
 .nx-title-card::before {
   content: '';
   position: absolute;
   top: -1px; left: -1px;
-  width: 12px; height: 12px;
+  width: 14px; height: 14px;
   border-top: 2px solid currentColor;
   border-left: 2px solid currentColor;
-  opacity: 0.6;
+  opacity: 0.7;
   pointer-events: none;
 }
 .nx-title-card::after {
   content: '';
   position: absolute;
   bottom: -1px; right: -1px;
-  width: 12px; height: 12px;
+  width: 14px; height: 14px;
   border-bottom: 2px solid currentColor;
   border-right: 2px solid currentColor;
-  opacity: 0.6;
+  opacity: 0.7;
   pointer-events: none;
 }
 .nx-title-card .nx-card-shimmer {
   position: absolute;
   top: 0; bottom: 0;
-  width: 60%;
-  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.06), transparent);
+  width: 70%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.07), transparent);
   pointer-events: none;
   animation: legendaryCardShimmer var(--card-shimmer-dur, 4s) linear infinite;
 }
-.nx-title-card.rarity-common  { --card-shimmer-dur: 6s;   border-color: rgba(170,170,170,0.18); background: linear-gradient(135deg,rgba(170,170,170,0.03),rgba(170,170,170,0.01)); color: #aaaaaa; }
-.nx-title-card.rarity-common:hover  { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-.nx-title-card.rarity-rare    { --card-shimmer-dur: 3.5s; border-color: rgba(68,170,255,0.35);  background: linear-gradient(135deg,rgba(68,170,255,0.06),rgba(0,204,255,0.03)); color: #44aaff; animation: rareTwinkle 3s ease-in-out infinite; }
-.nx-title-card.rarity-rare:hover    { box-shadow: 0 4px 20px rgba(68,170,255,0.18); border-color: rgba(68,170,255,0.55); }
-.nx-title-card.rarity-epic    { --card-shimmer-dur: 2.5s; border-color: rgba(176,68,255,0.45); background: linear-gradient(135deg,rgba(176,68,255,0.08),rgba(221,136,255,0.04)); color: #b044ff; animation: epicFloat 2.5s ease-in-out infinite; }
-.nx-title-card.rarity-epic:hover    { box-shadow: 0 4px 24px rgba(176,68,255,0.3); border-color: rgba(176,68,255,0.7); }
-.nx-title-card.rarity-legendary { --card-shimmer-dur: 1.5s; border-color: rgba(255,215,0,0.55); background: linear-gradient(135deg,rgba(255,215,0,0.09),rgba(255,107,0,0.05),rgba(255,215,0,0.07)); color: #ffd700; animation: legendaryPulse 1.8s ease-in-out infinite; }
-.nx-title-card.rarity-legendary:hover { box-shadow: 0 6px 32px rgba(255,215,0,0.35); border-color: rgba(255,215,0,0.85); }
 
-.nx-title-card.nx-locked { opacity: 0.35; filter: grayscale(0.8); }
+/* Rarity card variants */
+.nx-title-card.rarity-common   { --card-shimmer-dur:7s;   border-color: rgba(170,170,170,0.2);  background: linear-gradient(135deg,rgba(170,170,170,0.04),rgba(170,170,170,0.01)); color: #aaa; }
+.nx-title-card.rarity-common:hover   { box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+.nx-title-card.rarity-rare    { --card-shimmer-dur:3.5s;  border-color: rgba(68,170,255,0.4);  background: linear-gradient(135deg,rgba(68,170,255,0.07),rgba(0,240,255,0.04)); color: #44aaff; animation: rareTwinkle 3s ease-in-out infinite; }
+.nx-title-card.rarity-rare:hover    { box-shadow: 0 6px 24px rgba(68,170,255,0.22); border-color: rgba(68,170,255,0.6); }
+.nx-title-card.rarity-epic    { --card-shimmer-dur:2.5s;  border-color: rgba(204,102,255,0.5); background: linear-gradient(135deg,rgba(204,102,255,0.1),rgba(238,153,255,0.05)); color: #cc66ff; animation: epicFloat 2.5s ease-in-out infinite; }
+.nx-title-card.rarity-epic:hover    { box-shadow: 0 6px 30px rgba(204,102,255,0.35); border-color: rgba(204,102,255,0.75); }
+.nx-title-card.rarity-legendary { --card-shimmer-dur:1.5s; border-color: rgba(255,215,0,0.6); background: linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.06),rgba(255,215,0,0.08)); color: #ffd700; animation: legendaryPulse 1.6s ease-in-out infinite; }
+.nx-title-card.rarity-legendary:hover { box-shadow: 0 8px 40px rgba(255,215,0,0.4), 0 0 20px rgba(255,149,0,0.2); border-color: rgba(255,215,0,0.9); }
+
+.nx-title-card.nx-locked { opacity: 0.35; filter: grayscale(0.85); }
 .nx-title-card.nx-locked:hover { transform: none; }
 
-/* Title card inner elements */
+/* Card inner elements */
 .nx-title-name {
   font-family: 'Orbitron', monospace;
   font-size: 12px;
@@ -530,89 +676,103 @@ export function injectTitleStyles() {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: gradientShift 4s ease infinite;
+  background-size: 300% auto;
+  animation: nxTextRay 3s linear infinite;
   display: inline-block;
   margin-bottom: 4px;
+  letter-spacing: 1.5px;
+  /* Multi-layer text shadow via filter */
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.1));
 }
-.nx-title-name.rarity-common    { background-image: linear-gradient(90deg,#aaaaaa,#cccccc,#aaaaaa); animation-duration: 8s; }
-.nx-title-name.rarity-rare      { background-image: linear-gradient(90deg,#44aaff,#00ccff,#44aaff); animation-duration: 5s; }
-.nx-title-name.rarity-epic      { background-image: linear-gradient(90deg,#b044ff,#dd88ff,#b044ff); animation-duration: 3.5s; }
-.nx-title-name.rarity-legendary { background-image: linear-gradient(90deg,#ffd700,#ff9500,#ff6b00,#ff9500,#ffd700); animation-duration: 2.5s; }
+/* Rarity metallic gradients for title name */
+.nx-title-name.rarity-common    { background-image: linear-gradient(90deg,#666 0%,#bbb 30%,#eee 50%,#bbb 70%,#666 100%); animation-duration: 7s; }
+.nx-title-name.rarity-rare      { background-image: linear-gradient(90deg,#003366 0%,#44aaff 25%,#aaeeff 50%,#44aaff 75%,#003366 100%); animation-duration: 3.5s; }
+.nx-title-name.rarity-epic      { background-image: linear-gradient(90deg,#440066 0%,#cc66ff 20%,#ffccff 40%,#9933ff 60%,#cc66ff 80%,#440066 100%); animation-duration: 2.5s; }
+.nx-title-name.rarity-legendary { background-image: linear-gradient(90deg,#996600 0%,#ffd700 15%,#fff8a0 30%,#ffaa00 45%,#ff6600 60%,#ffd700 75%,#ffeeaa 85%,#996600 100%); animation-duration: 1.4s; }
 
 .nx-rarity-badge {
   display: inline-block;
   font-family: 'Orbitron', monospace;
   font-size: 7px;
-  letter-spacing: 1.5px;
-  padding: 2px 7px;
+  letter-spacing: 2px;
+  padding: 2px 8px;
   border: 1px solid currentColor;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.9;
   white-space: nowrap;
   flex-shrink: 0;
 }
 .nx-class-icon-wrap {
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--cls-color, rgba(0,245,255,0.3));
-  box-shadow: 0 0 8px var(--cls-color, rgba(0,245,255,0.15));
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--cls-color, rgba(0,245,255,0.35));
+  box-shadow: 0 0 10px var(--cls-color, rgba(0,245,255,0.18));
   flex-shrink: 0;
 }
 .nx-equip-btn {
   display: block; width: 100%; margin-top: 10px;
-  font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 2px; padding: 8px;
+  font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 2.5px; padding: 8px;
   background: transparent;
-  border: 1px solid var(--nx-btn-color, rgba(0,245,255,0.35));
+  border: 1px solid var(--nx-btn-color, rgba(0,245,255,0.4));
   color: var(--nx-btn-color, #00f5ff);
-  cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative; overflow: hidden;
+  will-change: transform;
 }
 .nx-equip-btn::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
-  background-size: 200% 100%; animation: shimmerSlide 2.5s linear infinite;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
+  background-size: 300% 100%; animation: shimmerSlide 2s linear infinite;
   pointer-events: none; opacity: 0; transition: opacity 0.25s;
 }
-.nx-equip-btn:hover { background: rgba(var(--nx-btn-rgb,0,245,255),0.1); border-color: var(--nx-btn-color,#00f5ff); box-shadow: 0 0 10px rgba(var(--nx-btn-rgb,0,245,255),0.25); }
+.nx-equip-btn:hover {
+  background: rgba(var(--nx-btn-rgb,0,245,255),0.12);
+  border-color: var(--nx-btn-color,#00f5ff);
+  box-shadow: 0 0 14px rgba(var(--nx-btn-rgb,0,245,255),0.3);
+  transform: translateY(-1px);
+}
 .nx-equip-btn:hover::after { opacity: 1; }
 .nx-equip-btn.nx-btn-equipped { border-color: var(--nx-btn-color,#ffd700); background: rgba(var(--nx-btn-rgb,0,245,255),0.12); cursor: default; opacity: 0.8; }
 .nx-equip-btn.nx-btn-equipped::after { display: none; }
 
 .nx-equipped-tag {
-  display: inline-block; font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 1.5px;
-  padding: 3px 8px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.5);
+  display: inline-block; font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 2px;
+  padding: 3px 8px; background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.55);
   color: #ffd700; animation: legendaryPulse 2s ease-in-out infinite;
 }
 .nx-lock-icon { position: absolute; top: 8px; left: 8px; opacity: 0.5; }
 
-/* ──────────────────────────────
+/* ═══════════════════════════════════════════════
    .nx-badge-item  (badge card)
-────────────────────────────── */
+═══════════════════════════════════════════════ */
 .nx-badge-item {
   position: relative; padding: 14px 8px; text-align: center;
-  transition: all 0.3s; border: 1px solid; background: rgba(1,10,15,0.6); overflow: hidden;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease;
+  border: 1px solid; background: rgba(1,10,15,0.65); overflow: hidden;
+  will-change: transform;
 }
-.nx-badge-item:hover { transform: translateY(-1px); }
-.nx-badge-item.rarity-common  { border-color: rgba(170,170,170,0.2); background: transparent; }
-.nx-badge-item.rarity-rare    { border-color: rgba(68,170,255,0.35);  background: transparent; }
-.nx-badge-item.rarity-rare:hover    { box-shadow: 0 0 12px rgba(68,170,255,0.2); border-color: rgba(68,170,255,0.55); }
-.nx-badge-item.rarity-epic    { border-color: rgba(176,68,255,0.4);   background: transparent; }
-.nx-badge-item.rarity-epic:hover    { box-shadow: 0 0 16px rgba(176,68,255,0.3); }
-.nx-badge-item.rarity-legendary { border-color: rgba(255,215,0,0.55); background: transparent; animation: legendaryPulse 2s ease-in-out infinite; }
-.nx-badge-item.rarity-legendary:hover { box-shadow: 0 0 24px rgba(255,215,0,0.4); }
+.nx-badge-item:hover { transform: translateY(-2px) scale(1.02); }
+.nx-badge-item.rarity-common  { border-color: rgba(170,170,170,0.22); }
+.nx-badge-item.rarity-rare    { border-color: rgba(68,170,255,0.38); }
+.nx-badge-item.rarity-rare:hover    { box-shadow: 0 0 16px rgba(68,170,255,0.25); border-color: rgba(68,170,255,0.6); }
+.nx-badge-item.rarity-epic    { border-color: rgba(204,102,255,0.45); }
+.nx-badge-item.rarity-epic:hover    { box-shadow: 0 0 22px rgba(204,102,255,0.35); border-color: rgba(204,102,255,0.7); }
+.nx-badge-item.rarity-legendary { border-color: rgba(255,215,0,0.6); animation: legendaryPulse 2s ease-in-out infinite; }
+.nx-badge-item.rarity-legendary:hover { box-shadow: 0 0 32px rgba(255,215,0,0.45); }
 .nx-badge-item.nx-locked { opacity: 0.28; filter: grayscale(1); }
 .nx-badge-item.nx-locked:hover { transform: none; box-shadow: none; }
 
 .nx-badge-icon { font-size: 28px; margin-bottom: 6px; display: block; }
-.nx-badge-name { font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 1px; color: #c8f0f5; line-height: 1.3; margin-bottom: 4px; }
-.nx-badge-desc { font-size: 10px; color: #5a8a90; line-height: 1.3; }
-.nx-badge-cat  { font-family: 'Orbitron', monospace; font-size: 6px; letter-spacing: 1px; padding: 2px 5px; margin-top: 5px; display: inline-block; background: rgba(176,68,255,0.08); border: 1px solid rgba(176,68,255,0.2); color: #b044ff; }
+.nx-badge-name { font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 1.5px; color: #c8f0f5; line-height: 1.3; margin-bottom: 4px; }
+.nx-badge-desc { font-size: 10px; color: #5a8a90; line-height: 1.4; }
+.nx-badge-cat  { font-family: 'Orbitron', monospace; font-size: 6px; letter-spacing: 1px; padding: 2px 5px; margin-top: 5px; display: inline-block; background: rgba(204,102,255,0.08); border: 1px solid rgba(204,102,255,0.22); color: #cc66ff; }
 .nx-badge-rarity-pip { position: absolute; top: 4px; right: 4px; font-family: 'Orbitron', monospace; font-size: 6px; letter-spacing: 0.5px; padding: 1px 5px; border: 1px solid currentColor; text-transform: uppercase; }
-.nx-badge-rarity-pip.rarity-common    { color: #888888; }
+.nx-badge-rarity-pip.rarity-common    { color: #888; }
 .nx-badge-rarity-pip.rarity-rare      { color: #44aaff; }
-.nx-badge-rarity-pip.rarity-epic      { color: #b044ff; }
+.nx-badge-rarity-pip.rarity-epic      { color: #cc66ff; }
 .nx-badge-rarity-pip.rarity-legendary { color: #ffd700; animation: legendaryPulse 2s ease-in-out infinite; }
 .nx-badge-unlock-date { font-family: 'Orbitron', monospace; font-size: 7px; color: #00f5ff; margin-top: 5px; }
 
@@ -622,16 +782,25 @@ export function injectTitleStyles() {
 .nx-title-card-top-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 .nx-title-card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
 .nx-title-card-body { position: relative; z-index: 1; }
+.nx-title-text { display: inline; }
 `
 
   const style = document.createElement('style')
-  style.id = 'nexus-title-styles'
+  style.id = 'nexus-title-styles-v3'
   style.textContent = css
   document.head.appendChild(style)
 }
 
-// Auto-inject on import
-injectTitleStyles()
+// Also remove old style ID if present (upgrade path)
+if (typeof document !== 'undefined') {
+  const old = document.getElementById('nexus-title-styles')
+  if (old) old.remove()
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectTitleStyles)
+  } else {
+    injectTitleStyles()
+  }
+}
 
 
 // ============================================================
@@ -641,29 +810,47 @@ const LOCK_SVG = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xm
 
 
 // ============================================================
+// PARTICLE HTML helpers
+// ============================================================
+function getParticleHTML(rarity) {
+  if (rarity === 'legendary') {
+    return `<span class="nx-particle-dot" aria-hidden="true"></span>
+            <span class="nx-particle-dot" aria-hidden="true"></span>
+            <span class="nx-particle-dot" aria-hidden="true"></span>`
+  }
+  if (rarity === 'epic') {
+    return `<span class="nx-sparkle" aria-hidden="true"></span>
+            <span class="nx-sparkle" aria-hidden="true"></span>`
+  }
+  if (rarity === 'rare') {
+    return `<span class="nx-sparkle" aria-hidden="true"></span>`
+  }
+  return ''
+}
+
+
+// ============================================================
 // renderTitleBadge(title, options) → HTML string
-// Small badge for hero profile — NOW with icon + special FX
 // ============================================================
 export function renderTitleBadge(title, options = {}) {
   if (!title) return ''
   const r = title.rarity || 'common'
   const name = title.name || ''
 
-  // Look up special effect + icon for this title
   const fx = TITLE_EFFECT_MAP[name] || null
   const effectClass = fx ? ` ${fx.effectClass}` : ''
   const iconPath = fx ? fx.icon : DEFAULT_TITLE_ICON_PATH
 
-  // Build small inline SVG icon (12×12)
   const iconSvg = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${iconPath}</svg>`
 
-  return `<span class="nx-title-badge rarity-${r}${effectClass}"><span class="nx-badge-icon-wrap">${iconSvg}</span>${name}</span>`
+  const particles = getParticleHTML(r)
+
+  return `<span class="nx-title-badge rarity-${r}${effectClass}">${particles}<span class="nx-badge-icon-wrap">${iconSvg}</span><span class="nx-title-text">${name}</span></span>`
 }
 
 
 // ============================================================
 // renderTitleCard(title, state, options) → HTML string
-// Full card for achievements page
 // ============================================================
 export function renderTitleCard(title, state = {}, options = {}) {
   const { unlocked = false, equipped = false } = state
@@ -698,7 +885,7 @@ export function renderTitleCard(title, state = {}, options = {}) {
   const btnColorMap = {
     common:    { color: '#aaaaaa', rgb: '170,170,170' },
     rare:      { color: '#44aaff', rgb: '68,170,255' },
-    epic:      { color: '#dd88ff', rgb: '221,136,255' },
+    epic:      { color: '#ee99ff', rgb: '238,153,255' },
     legendary: { color: '#ffd700', rgb: '255,215,0' },
   }
   const btnC = btnColorMap[r] || btnColorMap.common
@@ -740,14 +927,14 @@ export function renderTitleCard(title, state = {}, options = {}) {
 
 
 // ============================================================
-// renderBadgeItem(badge, unlocked) → HTML string
+// renderBadgeItem(badge, unlocked, options) → HTML string
 // ============================================================
 export function renderBadgeItem(badge, unlocked = false, options = {}) {
   const { showDate = false, unlockedAt = null } = options
   const r = badge.rarity || 'common'
   const lockedClass = !unlocked ? ' nx-locked' : ''
 
-  const svgPath = BADGE_SVG_MAP[badge.name] || `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/>`
+  const svgPath = BADGE_SVG_MAP[badge.name] || `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/>`
   const iconHtml = renderIconFrame(svgPath, r, 56)
 
   let dateHtml = ''
@@ -775,47 +962,47 @@ export function renderBadgeItem(badge, unlocked = false, options = {}) {
 
 
 // ============================================================
-// BADGE ICON MAP  (keyed by badge name) — upgraded strokes
+// BADGE ICON MAP (SVG paths by badge name)
 // ============================================================
 const BADGE_SVG_MAP = {
-  'First Blood':     `<circle cx="8" cy="8" r="5" stroke="url(#redGrad)" stroke-width="1.2"/><circle cx="8" cy="8" r="2" stroke="url(#redGrad)" stroke-width="1.2"/><circle cx="8" cy="8" r="0.8" fill="url(#redGrad)"/><path d="M8 1v2M8 11v2M1 8h2M11 8h2" stroke="url(#redGrad)" stroke-width="1.2"/>`,
-  'Week Warrior':    `<path d="M8 13c-2.5 0-4-1.6-4-4 0-1.2.4-2.4 1.6-3.6 0 1.6.8 2.4.8 2.4s.4-2 1.6-3.6c.4 1.6 1.6 2.8 1.6 2.8s.8-.8.4-2C11.6 6.4 12 7.6 12 9c0 2.4-1.6 4-4 4z" stroke="url(#fireGrad)" stroke-width="1.2" fill="url(#fireGrad)" fill-opacity="0.12"/>`,
-  'Monthly Crusher': `<path d="M8 1v3M8 12v3M1 8h3M12 8h3M3 3l2 2M11 11l2 2M3 13l2-2M11 5l2-2" stroke="url(#goldStroke)" stroke-width="1.3" stroke-linecap="square"/><circle cx="8" cy="8" r="3" stroke="url(#goldGrad)" stroke-width="1.2"/>`,
-  'Gold Walker':     `<circle cx="8" cy="9" r="4" stroke="url(#goldStroke)" stroke-width="1.3"/><path d="M5.5 5.5L3.5 2h9L10.5 5.5" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M8 7v2.5l1.5 1" stroke="url(#goldStroke)" stroke-width="1.1" stroke-linecap="round"/>`,
-  'Globe Trotter':   `<circle cx="8" cy="8" r="6" stroke="url(#blueGrad)" stroke-width="1.2"/><path d="M8 2c-1.6 1.6-1.6 8.4 0 12M8 2c1.6 1.6 1.6 8.4 0 12" stroke="url(#cyanGrad)" stroke-width="1" fill="none"/><path d="M2 8h12" stroke="url(#blueGrad)" stroke-width="1"/><path d="M3 5.5h10M3 10.5h10" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.5"/>`,
-  'Social Butterfly':`<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.2"/><circle cx="3" cy="12" r="2" stroke="url(#blueGrad)" stroke-width="1.2"/><circle cx="13" cy="12" r="2" stroke="url(#purpleGrad)" stroke-width="1.2"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.7"/>`,
-  'Proof Master':    `<rect x="2" y="5" width="12" height="9" stroke="url(#blueGrad)" stroke-width="1.2"/><circle cx="8" cy="9.5" r="2.5" stroke="url(#cyanGrad)" stroke-width="1.2"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="url(#cyanGrad)" stroke-width="1.2"/><path d="M6.5 9.5l1 1 2-2" stroke="url(#greenGrad)" stroke-width="1.1" stroke-linecap="round"/>`,
-  'Founder':         `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.4"/>`,
+  'First Blood':     `<circle cx="8" cy="8" r="5" stroke="url(#rubyGrad)" stroke-width="1.3"/><circle cx="8" cy="8" r="2.2" stroke="url(#rubyGrad)" stroke-width="1.3"/><circle cx="8" cy="8" r="0.9" fill="url(#rubyGrad)" filter="url(#glowWarm)"/><path d="M8 1v2M8 11v2M1 8h2M11 8h2" stroke="url(#rubyGrad)" stroke-width="1.2"/>`,
+  'Week Warrior':    `<path d="M8 13c-2.5 0-4-1.6-4-4 0-1.2.4-2.4 1.6-3.6 0 1.6.8 2.4.8 2.4s.4-2 1.6-3.6c.4 1.6 1.6 2.8 1.6 2.8s.8-.8.4-2C11.6 6.4 12 7.6 12 9c0 2.4-1.6 4-4 4z" stroke="url(#fireGrad)" stroke-width="1.3" fill="url(#fireGrad)" fill-opacity="0.15"/><circle cx="8" cy="10" r="1.4" fill="url(#goldRadial)" opacity="0.7"/>`,
+  'Monthly Crusher': `<path d="M8 1v3M8 12v3M1 8h3M12 8h3M3 3l2 2M11 11l2 2M3 13l2-2M11 5l2-2" stroke="url(#goldStroke)" stroke-width="1.3" stroke-linecap="square"/><circle cx="8" cy="8" r="3.2" stroke="url(#goldGrad)" stroke-width="1.3" filter="url(#glowGold)"/>`,
+  'Gold Walker':     `<circle cx="8" cy="9" r="4" stroke="url(#goldStroke)" stroke-width="1.4" filter="url(#glowGold)"/><path d="M5.5 5.5L3.5 2h9L10.5 5.5" stroke="url(#goldGrad)" stroke-width="1.3" stroke-linejoin="round" fill="none"/><path d="M8 7v2.5l1.5 1" stroke="url(#goldStroke)" stroke-width="1.2" stroke-linecap="round"/>`,
+  'Globe Trotter':   `<circle cx="8" cy="8" r="6" stroke="url(#sapphireGrad)" stroke-width="1.3"/><path d="M8 2c-1.6 1.6-1.6 8.4 0 12M8 2c1.6 1.6 1.6 8.4 0 12" stroke="url(#cyanGrad)" stroke-width="1.1" fill="none"/><path d="M2 8h12" stroke="url(#sapphireGrad)" stroke-width="1.1"/><path d="M3 5.5h10M3 10.5h10" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.55"/>`,
+  'Social Butterfly':`<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.3"/><circle cx="3" cy="12" r="2" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="13" cy="12" r="2" stroke="url(#amethystGrad)" stroke-width="1.3"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.7"/>`,
+  'Proof Master':    `<rect x="2" y="5" width="12" height="9" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="8" cy="9.5" r="2.5" stroke="url(#cyanGrad)" stroke-width="1.3"/><path d="M5 5V4l1.5-1.5h3L11 4v1" stroke="url(#cyanGrad)" stroke-width="1.3"/><path d="M6.5 9.5l1 1 2-2" stroke="url(#emeraldGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
+  'Founder':         `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none" filter="url(#glowGold)"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.5"/>`,
 }
 
-// Legacy TITLE_SVG_MAP (fallback for titles not in TITLE_EFFECT_MAP)
+// Legacy fallback for title icons
 const TITLE_SVG_MAP = {
-  'The Unbreakable':       `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#cyanGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 6v3l1.5 1.5" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
-  'นักวิ่งมือใหม่':        `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
-  'นักอ่านมือใหม่':        `<path d="M8 13V4" stroke="url(#orangeGrad)" stroke-width="1.2"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#orangeGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
-  'จอมเวทแห่งการเรียนรู้': `<circle cx="8" cy="9" r="3.5" stroke="url(#purpleGrad)" stroke-width="1.2" fill="none"/><path d="M8 3v2M8 13v1M3 9H2M13 9h1M4.5 5.5l1.2 1.2M10.3 11.3l1.2 1.2M4.5 12.5l1.2-1.2M10.3 6.7l1.2-1.2" stroke="url(#purpleGrad)" stroke-width="1.1"/><circle cx="8" cy="9" r="1.2" fill="url(#purpleGrad)"/>`,
-  'นักสำรวจผู้กล้า':       `<circle cx="8" cy="8" r="6" stroke="url(#greenGrad)" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="url(#redGrad)"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="url(#cyanGrad)" opacity="0.4"/>`,
-  'Pathfinder':             `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#greenGrad)" stroke-width="1.2" fill="none"/><circle cx="8" cy="5" r="1.5" fill="url(#greenGrad)"/>`,
-  'นักวางแผนการเงิน':      `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/><path d="M3.5 5v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V5" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/><path d="M3.5 8v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V8" stroke="url(#goldStroke)" stroke-width="1.2" fill="none"/>`,
-  'เสน่ห์ล้นเหลือ':        `<circle cx="5" cy="5" r="2.2" stroke="url(#blueGrad)" stroke-width="1.2"/><circle cx="11" cy="5" r="2.2" stroke="url(#cyanGrad)" stroke-width="1.2"/><path d="M1.5 14c0-2.5 1.5-4 3.5-4M14.5 14c0-2.5-1.5-4-3.5-4M5 10c1 0 3 .5 3 2s2-2 3-2" stroke="url(#blueGrad)" stroke-width="1.1"/>`,
-  'จ้าวแห่งเดือน':         `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M2 12h12" stroke="url(#goldStroke)" stroke-width="1.3"/><circle cx="2" cy="5" r="1.2" fill="url(#goldGrad)"/><circle cx="8" cy="3" r="1.2" fill="url(#goldGrad)"/><circle cx="14" cy="5" r="1.2" fill="url(#goldGrad)"/>`,
-  'Founder':                `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.35"/>`,
+  'The Unbreakable':       `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#sapphireGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
+  'นักวิ่งมือใหม่':        `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
+  'นักอ่านมือใหม่':        `<path d="M8 13V4" stroke="url(#orangeGrad)" stroke-width="1.3"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#orangeGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
+  'จอมเวทแห่งการเรียนรู้': `<circle cx="8" cy="9" r="3.5" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="9" r="1.3" fill="url(#amethystGrad)"/>`,
+  'นักสำรวจผู้กล้า':       `<circle cx="8" cy="8" r="6" stroke="url(#emeraldGrad)" stroke-width="1.3"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="url(#rubyGrad)"/>`,
+  'Pathfinder':             `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#emeraldGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="5" r="1.6" fill="url(#emeraldGrad)"/>`,
+  'นักวางแผนการเงิน':      `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/>`,
+  'เสน่ห์ล้นเหลือ':        `<circle cx="5" cy="5" r="2.3" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="11" cy="5" r="2.3" stroke="url(#cyanGrad)" stroke-width="1.3"/>`,
+  'จ้าวแห่งเดือน':         `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="url(#goldStroke)" stroke-width="1.4" fill="none" stroke-linejoin="round"/>`,
+  'Founder':                `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none"/>`,
 }
 
 
 // ============================================================
-// HEXAGON FRAME RENDERER  (unchanged API, upgraded icon colors)
+// HEXAGON FRAME RENDERER  (v3 — multi-ring for legendary/epic)
 // ============================================================
 function renderIconFrame(svgPath, rarity = 'common', size = 48) {
   const cfg = RARITY_CONFIG[rarity] || RARITY_CONFIG.common
   const hex = `polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)`
   const innerSize = Math.round(size * 0.52)
 
-  const borderOpacity = rarity === 'common' ? '0.25' : rarity === 'rare' ? '0.5' : '0.7'
-  const glowOpacity   = rarity === 'legendary' ? '50' : rarity === 'epic' ? '38' : rarity === 'rare' ? '28' : '18'
+  const borderOpacity = rarity === 'common' ? '0.28' : rarity === 'rare' ? '0.55' : '0.75'
+  const glowOpacity   = rarity === 'legendary' ? '55' : rarity === 'epic' ? '42' : rarity === 'rare' ? '30' : '1a'
 
   const pulseAnim = rarity === 'legendary'
-    ? 'nxHexLegPulse 1.8s ease-in-out infinite'
+    ? 'nxHexLegPulse 1.6s ease-in-out infinite'
     : rarity === 'epic'
       ? 'nxHexEpicPulse 2.5s ease-in-out infinite'
       : rarity === 'rare'
@@ -823,19 +1010,25 @@ function renderIconFrame(svgPath, rarity = 'common', size = 48) {
         : 'none'
 
   const iconGlow = rarity === 'common'
-    ? `drop-shadow(0 0 2px ${cfg.color}66)`
+    ? `drop-shadow(0 0 2px ${cfg.color}55)`
     : rarity === 'legendary'
-      ? `drop-shadow(0 0 6px ${cfg.color}ee) drop-shadow(0 0 12px ${cfg.colorAlt}88)`
-      : `drop-shadow(0 0 5px ${cfg.color}cc) drop-shadow(0 0 2px ${cfg.colorAlt||cfg.color}66)`
+      ? `drop-shadow(0 0 7px ${cfg.color}ff) drop-shadow(0 0 14px ${cfg.colorAlt}99)`
+      : `drop-shadow(0 0 6px ${cfg.color}dd) drop-shadow(0 0 2px ${cfg.colorAlt||cfg.color}66)`
 
-  const borderPulseLayer = rarity !== 'common'
-    ? `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};animation:${pulseAnim};"></div>`
-    : `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};"></div>`
+  // Outer spinning ring for legendary/epic
+  const outerRing = rarity === 'legendary'
+    ? `<div style="position:absolute;inset:-3px;border:1.5px dashed rgba(255,215,0,0.45);clip-path:${hex};animation:nxLegRing 4s linear infinite;pointer-events:none;"></div>`
+    : rarity === 'epic'
+      ? `<div style="position:absolute;inset:-3px;border:1.5px dashed rgba(204,102,255,0.4);clip-path:${hex};animation:nxEpicRing 5s linear infinite;pointer-events:none;"></div>`
+      : ''
+
+  const borderPulseLayer = `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};animation:${pulseAnim};"></div>`
 
   return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+    ${outerRing}
     ${borderPulseLayer}
     <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(2,8,14,0.93);"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 50% 30%,${cfg.color}${glowOpacity} 0%,transparent 65%);"></div>
+    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 40% 25%,${cfg.color}${glowOpacity} 0%,transparent 65%);"></div>
     <svg width="${innerSize}" height="${innerSize}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
       style="position:relative;z-index:1;filter:${iconGlow}">
       ${svgPath}
