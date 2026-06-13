@@ -133,6 +133,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .suggest-item{display:flex;align-items:center;gap:10px}
 .suggest-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:rgba(0,0,0,0.3);flex-shrink:0}
 .suggest-avatar img{width:100%;height:100%;object-fit:cover}
+
+/* ONLINE DOT */
+.avatar-wrap{position:relative;flex-shrink:0}
+.online-dot{position:absolute;bottom:2px;right:1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--bg2);background:var(--text-dim);z-index:2;transition:background 0.4s}
+.online-dot.online{background:var(--green);box-shadow:0 0 6px rgba(68,255,136,0.7)}
 .suggest-info{flex:1;min-width:0}
 .suggest-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .suggest-sub{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px}
@@ -443,7 +448,7 @@ async function loadFollowingIds() {
 // ─── LOAD DISCOVER ───────────────────────────────────────────
 async function loadDiscover() {
   let q = supabase.from('users')
-    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current')
+    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current,last_seen')
     .eq('profile_public', true)
     .neq('id', currentUser.id)
     .order('followers_count', { ascending: false })
@@ -460,7 +465,7 @@ async function loadDiscover() {
 // ─── LOAD FOLLOWING ──────────────────────────────────────────
 async function loadFollowing() {
   const { data } = await supabase.from('social_follows')
-    .select('following_id, users!social_follows_following_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current)')
+    .select('following_id, users!social_follows_following_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current,last_seen)')
     .eq('follower_id', currentUser.id)
 
   const users = (data||[]).map(r => r.users).filter(Boolean)
@@ -473,7 +478,7 @@ async function loadFollowing() {
 // ─── LOAD FOLLOWERS ──────────────────────────────────────────
 async function loadFollowers() {
   const { data } = await supabase.from('social_follows')
-    .select('follower_id, users!social_follows_follower_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current)')
+    .select('follower_id, users!social_follows_follower_id_fkey(id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current,last_seen)')
     .eq('following_id', currentUser.id)
 
   const users = (data||[]).map(r => r.users).filter(Boolean)
@@ -492,7 +497,7 @@ window.searchUsers = async function() {
   grid.innerHTML = '<div class="skel" style="height:84px"></div>'.repeat(3)
 
   let query = supabase.from('users')
-    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current')
+    .select('id,username,display_name,class,level,rank,avatar_seed,avatar_url,followers_count,city,streak_current,last_seen')
     .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
     .eq('profile_public', true)
     .neq('id', currentUser.id)
@@ -503,6 +508,9 @@ window.searchUsers = async function() {
   const { data } = await query
   renderUserGrid(data || [])
 }
+
+// ─── ONLINE HELPER ───────────────────────────────────────────
+const isOnline = (lastSeen) => !!lastSeen && (Date.now() - new Date(lastSeen).getTime()) <= 10 * 60 * 1000
 
 // ─── RENDER USER GRID ────────────────────────────────────────
 function renderUserGrid(users) {
@@ -520,11 +528,15 @@ function renderUserGrid(users) {
     const cls = u.class || 'warrior'
     const isFollowing = followingIds.has(u.id)
     const rankCls = RANK_CLS[u.rank] || 'rank-bronze'
+    const online = isOnline(u.last_seen)
     return `
     <div class="user-card cls-${cls}">
       <div class="user-card-top" onclick="goProfile('${u.id}')">
-        <div class="user-card-avatar">
-          <img src="${getAvatarSrc(u, 52)}" alt="">
+        <div class="avatar-wrap">
+          <div class="user-card-avatar">
+            <img src="${getAvatarSrc(u, 52)}" alt="">
+          </div>
+          <div class="online-dot ${online ? 'online' : ''}"></div>
         </div>
         <div class="user-card-info">
           <div class="user-card-name">${esc(u.display_name || u.username)}</div>
@@ -600,7 +612,7 @@ async function loadSuggested() {
   const myCity = myProfile?.city || 'กรุงเทพมหานคร'
 
   const { data } = await supabase.from('users')
-    .select('id,username,display_name,class,level,avatar_seed,avatar_url,followers_count')
+    .select('id,username,display_name,class,level,avatar_seed,avatar_url,followers_count,last_seen')
     .eq('city', myCity)
     .eq('profile_public', true)
     .neq('id', currentUser.id)
@@ -617,10 +629,14 @@ async function loadSuggested() {
 
   el.innerHTML = suggested.map(u => {
     const cls = u.class || 'warrior'
+    const online = isOnline(u.last_seen)
     return `
     <div class="suggest-item">
-      <div class="suggest-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
-        <img src="${getAvatarSrc(u, 36)}" alt="">
+      <div class="avatar-wrap">
+        <div class="suggest-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+          <img src="${getAvatarSrc(u, 36)}" alt="">
+        </div>
+        <div class="online-dot ${online ? 'online' : ''}"></div>
       </div>
       <div class="suggest-info">
         <div class="suggest-name">${esc(u.display_name || u.username)}</div>
