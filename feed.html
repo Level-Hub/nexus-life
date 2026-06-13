@@ -371,7 +371,7 @@ async function loadProfile() {
 
   myCity = u.city || 'กรุงเทพมหานคร'
   myClass = u.class || 'warrior'
-  myUsername = u.username || u.display_name || 'คุณ'
+  myUsername = u.display_name || u.username || 'คุณ'
   myAvatarUrl = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 26)
 
   const clsClass = 'cls-' + (u.class || 'warrior')
@@ -475,26 +475,39 @@ async function loadCityProject() {
 
 // ===== ACTIVE PLAYERS =====
 async function loadActivePlayers() {
+  const isOnline = (lastSeen) => {
+    if (!lastSeen) return false
+    return (Date.now() - new Date(lastSeen).getTime()) <= 10 * 60 * 1000
+  }
+
   const { data: players } = await supabase
     .from('users')
-    .select('id, username, avatar_seed, avatar_url, class, level, xp_this_month')
+    .select('id, username, display_name, avatar_seed, avatar_url, class, level, xp_this_month, last_seen')
     .eq('city', myCity)
     .order('xp_this_month', { ascending: false })
-    .limit(6)
+    .limit(10)
 
   const list = document.getElementById('activeList')
   if (!players || players.length === 0) {
-    list.innerHTML = `<div class="empty-state" style="padding:12px"><div class="empty-txt">ไม่มีผู้เล่นออนไลน์</div></div>`
+    list.innerHTML = `<div class="empty-state" style="padding:12px"><div class="empty-txt">ไม่มีผู้เล่นในเมือง</div></div>`
     return
   }
 
-  list.innerHTML = players.map(p => `
+  // filter เฉพาะ online จริงๆ
+  const onlinePlayers = players.filter(p => isOnline(p.last_seen))
+
+  if (onlinePlayers.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:12px"><div class="empty-txt">ไม่มีผู้เล่นออนไลน์ขณะนี้</div></div>`
+    return
+  }
+
+  list.innerHTML = onlinePlayers.map(p => `
     <div class="active-item cls-${p.class || 'warrior'}">
-      <div class="active-dot"></div>
+      <div class="active-dot" style="background:#44ff88;box-shadow:0 0 6px #44ff88"></div>
       <div class="active-avatar">
         <img src="${p.avatar_url || getAvatarUrl(p.avatar_seed || p.username, 28)}" alt="">
       </div>
-      <div class="active-name">${p.username || '—'}</div>
+      <div class="active-name">${p.display_name || p.username || '—'}</div>
       <div class="active-xp">${(p.xp_this_month || 0).toLocaleString()} XP</div>
     </div>
   `).join('')
