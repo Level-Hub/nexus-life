@@ -708,6 +708,20 @@ async function init() {
   getUserLocation()
   loadNotifBadge()
   document.getElementById('loadingScreen').style.display = 'none'
+
+  // Realtime — อัปเดต players บนแผนที่ทันทีเมื่อมีคนย้ายตำแหน่ง
+  supabase.channel('map-live')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'users'
+    }, () => {
+      playerMarkers.forEach(m => { try { mapInstance.removeLayer(m) } catch(e){} })
+      playerMarkers = []
+      loadPlayersOnMap()
+      loadNearbyPlayers()
+    })
+    .subscribe()
 }
 
 // ============================================================
@@ -1140,8 +1154,8 @@ window.submitCheckin = async function() {
   const baseXP    = 100 + (isPioneer ? 100 : 0)
 
   try {
-    // 1. Insert checkin record (ครบทุก column ใน schema: user_id, place_name, city, province, district, latitude, longitude, is_pioneer)
-    const locEl   = document.getElementById('myLocationName')
+    // 1. Insert checkin record
+    const locEl    = document.getElementById('myLocationName')
     const district = locEl.dataset.district || ''
     const province = locEl.dataset.province || ''
     const { error: checkinErr } = await supabase.from('checkins').insert({
@@ -1156,88 +1170,70 @@ window.submitCheckin = async function() {
     })
     if (checkinErr) throw checkinErr
 
-    // 2. ดึง user profile เพื่อเช็ค class + streak + level ปัจจุบัน
+    // 2. ดึง class + streak สำหรับคำนวณ bonus
     const { data: u } = await supabase
       .from('users')
-      .select('class, streak_current, xp_total, xp_this_month, level')
+      .select('class, streak_current, level')
       .eq('id', currentUser.id)
       .single()
 
-    // 3. คำนวณ class bonus (+15% ถ้า class = explorer, stat_type = exp)
+    // 3. Class bonus (+15% ถ้า class = explorer)
     const isExplorer = (u?.class || '') === 'explorer'
     const classBonus = isExplorer ? 1.15 : 1.0
 
-    // 4. คำนวณ streak bonus
+    // 4. Streak bonus
     const streak = u?.streak_current || 0
     let streakBonus = 1.0
-    if (streak >= 100) streakBonus = 1.5
-    else if (streak >= 30) streakBonus = 1.3
-    else if (streak >= 7)  streakBonus = 1.2
-    else if (streak >= 3)  streakBonus = 1.1
+    if      (streak >= 100) streakBonus = 1.5
+    else if (streak >= 30)  streakBonus = 1.3
+    else if (streak >= 7)   streakBonus = 1.2
+    else if (streak >= 3)   streakBonus = 1.1
 
-    // 5. XP หลังโบนัส (ปัดเป็น int)
-    const finalXP = Math.round(baseXP * classBonus * streakBonus)
+    // 5. XP หลังโบนัส
+    const finalXP   = Math.round(baseXP * classBonus * streakBonus)
     const bonusNote = []
-    if (isExplorer) bonusNote.push('Explorer +15%')
+    if (isExplorer)      bonusNote.push('Explorer +15%')
     if (streakBonus > 1) bonusNote.push(`Streak x${streakBonus}`)
 
-    // 6. ✅ BUG FIX: ใช้ atomic SQL increment แทน read-modify-write
-    // เพื่อป้องกัน race condition กรณี check-in พร้อมกัน 2 ครั้ง
+    // 6. บันทึก level เดิมไว้เช็ค level-up
+    const oldLevel = u?.level || 1
+
+    // 7. grant_checkin_xp — atomic XP + level-up + notification + activity_feed(level_up)
+    //    ใช้ level table เดียวกับ grant_quest_xp ทุกประการ
     const { error: xpErr } = await supabase.rpc('grant_checkin_xp', {
       p_user_id: currentUser.id,
-      p_xp: finalXP
+      p_xp:      finalXP
     })
-    // Fallback: ถ้า RPC grant_checkin_xp ยังไม่ได้สร้าง ใช้ atomic increment แทน
-    if (xpErr) {
-      await supabase.from('users').update({
-        xp_total: (u?.xp_total || 0) + finalXP,
-        xp_this_month: (u?.xp_this_month || 0) + finalXP
-      }).eq('id', currentUser.id)
-    }
+    if (xpErr) throw xpErr
 
-    // ดึง xp_total ล่าสุดหลัง update (เพื่อใช้เช็ค level up อย่างถูกต้อง)
-    const { data: uFresh } = await supabase
-      .from('users').select('xp_total, level').eq('id', currentUser.id).single()
-    const newXPTotal = uFresh?.xp_total || ((u?.xp_total || 0) + finalXP)
-
-    // 7. Grant EXP stat points ผ่าน RPC (Explorer stat)
-    // FIX: p_stat_type ใช้ค่า 'exp' ตาม DB function signature — ไม่ใช่ column name 'exp_points'
+    // 8. Grant EXP stat points
     await supabase.rpc('increment_stat', {
-      p_user_id: currentUser.id,
+      p_user_id:   currentUser.id,
       p_stat_type: 'exp',
-      p_amount: finalXP
+      p_amount:    finalXP
     })
 
-    // 8. Update rank
+    // 9. Update rank + streak
     await supabase.rpc('update_user_rank', { p_user_id: currentUser.id })
+    await supabase.rpc('update_streak',    { p_user_id: currentUser.id })
 
-    // 9. Update streak
-    await supabase.rpc('update_streak', { p_user_id: currentUser.id })
-
-    // 10. เช็ค level up โดยใช้ xp_total จาก DB (ไม่ใช่ค่าที่คำนวณเอง)
-    const currentLevel = uFresh?.level || u?.level || 1
-    function xpForLevel(n) {
-      if (n <= 1) return 0
-      let xp = 0
-      for (let i = 2; i <= n; i++) xp += (i * 50) + Math.round(Math.pow(i, 1.5) * 30)
-      return xp
-    }
-    const xpNeededNext = xpForLevel(currentLevel + 1)
-    if (newXPTotal >= xpNeededNext) {
-      const newLevel = currentLevel + 1
-      await supabase.from('users').update({ level: newLevel }).eq('id', currentUser.id)
+    // 10. ดึง level ใหม่จาก DB แล้วแสดง toast level-up ถ้าขึ้น
+    const { data: uFresh } = await supabase
+      .from('users').select('level').eq('id', currentUser.id).single()
+    const newLevel = uFresh?.level || oldLevel
+    if (newLevel > oldLevel) {
       showToast(`LEVEL UP! คุณขึ้นเป็น LV.${newLevel}!`, 'success')
     }
 
-    // 11. Activity feed
+    // 11. Activity feed checkin (level_up feed ถูก insert โดย grant_checkin_xp แล้ว)
     await supabase.from('activity_feed').insert({
       user_id: currentUser.id,
-      type: 'checkin',
-      data: { place_name: placeName || locName, xp: finalXP, pioneer: isPioneer }
+      type:    'checkin',
+      data:    { place_name: placeName || locName, xp: finalXP, pioneer: isPioneer }
     })
 
     const bonusStr = bonusNote.length ? ` (${bonusNote.join(', ')})` : ''
-    showToast(`Check-in สำเร็จ! +${finalXP} XP${bonusStr}${isPioneer ? ' Pioneer!' : ''}`, 'success')
+    showToast(`Check-in สำเร็จ! +${finalXP} XP${bonusStr}${isPioneer ? ' 🏴 Pioneer!' : ''}`, 'success')
     closeCheckinModal()
     loadHotspots()
 
