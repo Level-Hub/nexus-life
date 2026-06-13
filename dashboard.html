@@ -1469,14 +1469,11 @@ window.submitProof = async function() {
       })
       if (grantErr) throw grantErr
 
+      await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
       await loadProfile()
       if (userProfile && userProfile.level > oldLevel) {
         showToast(`LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')
-        await supabase.from('activity_feed').insert({
-          user_id: currentUser.id,
-          type: 'level_up',
-          data: { old_level: oldLevel, new_level: userProfile.level }
-        })
+        // level_up feed ถูก insert โดย grant_quest_xp ใน DB แล้ว ไม่ต้อง insert ซ้ำ
       }
       showToast('Quest สำเร็จ! XP และ Gold เข้าแล้ว', 'gold')
     } else {

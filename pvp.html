@@ -453,8 +453,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   .pvp-hero { padding:16px; }
   .pvp-hero-inner { flex-direction:column;gap:12px; }
   .pvp-hero-title { font-size:20px; }
-  .tab-btn span { display:none; }
-  .tab-btn { padding:12px 6px;font-size:8px; }
+  .tab-btn span { display:inline;font-size:7px;letter-spacing:1px; }
+  .tab-btn { padding:10px 4px;font-size:7px;gap:4px; }
   .box, .challenge-area, .duel-card { max-width:100%;box-sizing:border-box; }
   .history-table { font-size:11px; }
   .history-table th, .history-table td { padding:8px 8px; }
@@ -1381,7 +1381,8 @@ window.triggerResolveDuel = async function(duelId) {
   const result = await resolveDuel(duelId)
   if (result) {
     const isWinner = result?.winner_id === currentUser.id
-    showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ! +50 XP' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+    const xpGained = result?.xp_awarded || result?.winner_xp || 50
+    showToast(isWinner ? `Duel จบแล้ว — คุณชนะ! +${xpGained} XP` : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
     setTimeout(() => location.reload(), 1500)
   }
 }
@@ -1537,14 +1538,14 @@ async function loadPvPRanking() {
     const rank = i + 1
     const isMe = p.id === currentUser.id
     return `
-    <div class="pvp-rank-item" ${isMe ? 'style="background:rgba(0,245,255,0.04)"' : ''}>
+    <div class="pvp-rank-item" style="${isMe ? 'background:rgba(0,245,255,0.07);border-left:2px solid var(--cyan);' : ''}" ${!isMe ? `onclick="window.location.href='./profile.html?uid=${p.id}'"` : ''}>
       <div class="pvp-rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':'other'}">${rank===1?'#1':rank===2?'#2':rank===3?'#3':rank}</div>
-      <div class="pvp-rank-avatar" style="border-color:${CLASS_COLOR[cls]}">
+      <div class="pvp-rank-avatar" style="border-color:${isMe ? 'var(--cyan)' : CLASS_COLOR[cls]}">
         ${avatarHtml(p)}
       </div>
       <div class="pvp-rank-info">
-        <div class="pvp-rank-name">${p.display_name || p.username}${isMe ? ' (ME)' : ''}</div>
-        <div class="pvp-rank-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${p.level||1}</div>
+        <div class="pvp-rank-name">${p.display_name || p.username}</div>
+        <div class="pvp-rank-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${p.level||1}${isMe ? ' · <span style="color:var(--cyan);font-size:7px">YOU</span>' : ''}</div>
       </div>
       <div class="pvp-rank-score">${p.wins}W</div>
     </div>`

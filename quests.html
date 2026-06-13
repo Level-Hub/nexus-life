@@ -829,11 +829,7 @@ window.submitProof = async function() {
       // เช็ค level up จาก userProfile ที่ loadProfile() อัปเดตแล้ว
       if (userProfile && userProfile.level > oldLevel) {
         showToast(`LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')
-        await supabase.from('activity_feed').insert({
-          user_id: currentUser.id,
-          type: 'level_up',
-          data: { old_level: oldLevel, new_level: userProfile.level }
-        })
+        // level_up feed ถูก insert โดย grant_quest_xp ใน DB แล้ว ไม่ต้อง insert ซ้ำ
       }
 
       await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})

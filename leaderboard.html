@@ -209,7 +209,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .rank-row:hover { background:rgba(0,245,255,0.05); }
 .rank-row.me { background:rgba(0,245,255,0.07);border-bottom-color:rgba(0,245,255,0.15); }
-.rank-row.me::after { content:'YOU';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan);opacity:0.45; }
+.rank-row.me::after { content:'';display:none; }
 .rank-row.top1 {
   background:linear-gradient(90deg,rgba(255,215,0,0.07) 0%,rgba(255,215,0,0.02) 100%);
   border-bottom-color:rgba(255,215,0,0.15);
@@ -1025,7 +1025,7 @@ function renderCities(cities) {
     const stars = Array.from({length:10}, (_,si) =>
       `<span class="pstar ${si < (c.prosperity_level||1) ? 'on' : 'off'}">${getIcon('star_filled',10)}</span>`
     ).join('')
-    const buff = c.active_buffs?.xp_bonus ? `+${Math.round(c.active_buffs.xp_bonus*100)}% XP BUFF` : ''
+    const buff = (c.prosperity_level || 0) >= 1 ? `+${(c.prosperity_level || 1) * 5}% XP BUFF` : ''
     const isMyCity = userProfile?.city === c.city_name
     return `
       <div class="city-card" style="${isMyCity?'border-color:rgba(0,245,255,0.3);':''}" onclick="filterCityPlayers('${esc(c.city_name)}')">
@@ -1274,7 +1274,7 @@ window.closePP = function(e) {
 // NAVIGATION
 // ============================================================
 window.goProfile = function(uid) {
-  window.location.href = `./profile.html?id=${uid}`
+  window.location.href = `./profile.html?uid=${uid}`
 }
 
 // ============================================================
