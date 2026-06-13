@@ -232,11 +232,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>QUESTS</span></div>
+      <div class="page-title" id="questPageTitle"><span>QUESTS</span></div>
       <div class="page-sub" id="pageSub">—</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <div class="reset-badge" id="resetBadge">⏱ Daily รีเซ็ตใน —</div>
+      <div class="reset-badge" id="resetBadge"><span id="resetDailyIcon" style="vertical-align:middle;margin-right:5px"></span><span id="resetDailyText">Daily รีเซ็ตใน —</span></div>
       <div class="reset-badge" id="weeklyResetBadge" style="border-color:rgba(255,149,0,0.3);color:var(--orange);display:inline-flex;align-items:center;gap:6px"><span id="weeklyResetIcon"></span><span id="weeklyResetText">Weekly รีเซ็ตใน —</span></div>
     </div>
   </div>
@@ -269,16 +269,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('daily',this)">
-      DAILY <span class="tab-count" id="tcDaily">0</span>
+      <span id="tabIconDaily"></span>DAILY <span class="tab-count" id="tcDaily">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('weekly',this)">
-      WEEKLY <span class="tab-count gold" id="tcWeekly">0</span>
+      <span id="tabIconWeekly"></span>WEEKLY <span class="tab-count gold" id="tcWeekly">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('challenge',this)">
-      CHALLENGE <span class="tab-count red" id="tcChallenge">0</span>
+      <span id="tabIconChallenge"></span>CHALLENGE <span class="tab-count red" id="tcChallenge">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('history',this)">
-      HISTORY <span class="tab-count green" id="tcHistory">0</span>
+      <span id="tabIconHistory"></span>HISTORY <span class="tab-count green" id="tcHistory">0</span>
     </button>
   </div>
 
@@ -341,7 +341,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon, CLASS_ICONS, CLASS_COLOR } from './icons.js'
+import { getIcon, CLASS_ICONS, CLASS_COLOR, injectGlobalDefs } from './icons.js'
 
 // ── STATE ──
 let currentUser = null
@@ -365,6 +365,26 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  injectGlobalDefs()
+
+  // ── Page title ──
+  const questPageTitle = document.getElementById('questPageTitle')
+  if (questPageTitle) questPageTitle.innerHTML = getIcon('scroll', 16) + ' <span>QUESTS</span>'
+
+  // ── Tab icons ──
+  const tabIconDaily = document.getElementById('tabIconDaily')
+  if (tabIconDaily) tabIconDaily.innerHTML = getIcon('quest_daily', 13)
+  const tabIconWeekly = document.getElementById('tabIconWeekly')
+  if (tabIconWeekly) tabIconWeekly.innerHTML = getIcon('quest_weekly', 13)
+  const tabIconChallenge = document.getElementById('tabIconChallenge')
+  if (tabIconChallenge) tabIconChallenge.innerHTML = getIcon('quest_challenge', 13)
+  const tabIconHistory = document.getElementById('tabIconHistory')
+  if (tabIconHistory) tabIconHistory.innerHTML = getIcon('scroll', 13)
+
+  // ── Daily reset icon ──
+  const resetDailyIcon = document.getElementById('resetDailyIcon')
+  if (resetDailyIcon) resetDailyIcon.innerHTML = getIcon('calendar', 13)
+
   // inject static icons
   const loadIcon = document.getElementById('questsLoadingIcon')
   if (loadIcon) loadIcon.innerHTML = getIcon('scroll', 28)
@@ -375,14 +395,12 @@ async function init() {
   // inject weekly reset SVG icon (จาก QUEST_ICONS.weekly ผ่าน getIcon)
   const weeklyIconEl = document.getElementById('weeklyResetIcon')
   if (weeklyIconEl) weeklyIconEl.innerHTML = getIcon('quest_weekly', 13)
-  // inject class filter btn icons
+  // inject class filter btn icons — ใช้ getIcon() เพื่อได้ gradient จาก defs
   const clsFilterMap = { filterWarrior:'warrior', filterMage:'mage', filterExplorer:'explorer', filterMerchant:'merchant', filterArtist:'artist', filterDiplomat:'diplomat' }
   const clsLabelMap = { filterWarrior:'Warrior', filterMage:'Mage', filterExplorer:'Explorer', filterMerchant:'Merchant', filterArtist:'Artist', filterDiplomat:'Diplomat' }
   Object.entries(clsFilterMap).forEach(([btnId, cls]) => {
     const btn = document.getElementById(btnId)
-    if (btn && CLASS_ICONS[cls]) {
-      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px">${CLASS_ICONS[cls]}</svg>${clsLabelMap[btnId]}`
-    }
+    if (btn) btn.innerHTML = getIcon(`class_${cls}`, 13) + ' ' + clsLabelMap[btnId]
   })
 
   await loadProfile()
@@ -616,7 +634,7 @@ function renderQuestCard(q, uq) {
   let btnHtml = ''
   if (isDone)    btnHtml = `<button class="qbtn done-btn">${getIcon('check',12)} สำเร็จ</button>`
   else if (isPend) btnHtml = `<button class="qbtn pending-btn">${getIcon('refresh',12)} รอ Vote</button>`
-  else if (isRej)  btnHtml = `<button class="qbtn rejected-btn" onclick="openModal(${q.id})">↩ ส่งใหม่</button>`
+  else if (isRej)  btnHtml = `<button class="qbtn rejected-btn" onclick="openModal(${q.id})">${getIcon('refresh',12)} ส่งใหม่</button>`
   else             btnHtml = `<button class="qbtn" onclick="openModal(${q.id})">ส่งหลักฐาน →</button>`
 
   const statusLabel = isDone ? 'สำเร็จแล้ว' : isPend ? 'รอชุมชนตรวจสอบ' : isRej ? 'ถูกปฏิเสธ' : 'รอดำเนินการ'
@@ -636,7 +654,7 @@ function renderQuestCard(q, uq) {
       <div class="qcard-info">
         <div class="qcard-type-row">
           <span class="qcard-type ${q.type}">${q.type.toUpperCase()}</span>
-          ${q.class_target ? `<span class="qcard-cls-badge" style="color:${getCssColor(cls)};display:inline-flex;align-items:center;gap:3px"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" style="color:${getCssColor(cls)};flex-shrink:0">${CLASS_ICONS[cls]||''}</svg>${cls.toUpperCase()}</span>` : ''}
+          ${q.class_target ? `<span class="qcard-cls-badge" style="color:${getCssColor(cls)};display:inline-flex;align-items:center;gap:3px">${getIcon(`class_${cls}`,13)}${cls.toUpperCase()}</span>` : ''}
         </div>
         <div class="qcard-title">${q.title}</div>
         <div class="qcard-desc">${q.description||''}</div>
@@ -915,7 +933,7 @@ async function checkAndUnlockAchievements() {
       })
       if (!error) {
         myBadgeIds.add(badge.id)
-        showToast(`🏅 ปลดล็อค Badge: ${badge.name}!`, 'gold')
+        showToast(`ปลดล็อค Badge: ${badge.name}!`, 'gold')
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'badge_unlock',
@@ -950,7 +968,7 @@ async function checkAndUnlockAchievements() {
       })
       if (!error) {
         myTitleIds.add(title.id)
-        showToast(`👑 ปลดล็อคฉายา: ${title.name}!`, 'gold')
+        showToast(`ปลดล็อคฉายา: ${title.name}!`, 'gold')
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'title_unlock',
@@ -958,7 +976,7 @@ async function checkAndUnlockAchievements() {
         })
         await supabase.from('notifications').insert({
           user_id: currentUser.id,
-          title: `👑 ได้รับฉายา: ${title.name}!`,
+          title: `ได้รับฉายา: ${title.name}!`,
           body: title.description || 'ฉายาใหม่ของคุณรอใช้งานที่หน้า Achievements'
         })
       }
@@ -1004,7 +1022,7 @@ function updateResetTimer() {
   const diffDay = nextMidnightThai.getTime() - nowUtc
   const dh = Math.floor(diffDay / 3600000)
   const dm = Math.floor((diffDay % 3600000) / 60000)
-  document.getElementById('resetBadge').textContent = `⏱ Daily รีเซ็ตใน ${dh} ชม. ${dm} น.`
+  document.getElementById('resetDailyText').textContent = `Daily รีเซ็ตใน ${dh} ชม. ${dm} น.`
 
   // ── Weekly reset: วันจันทร์ถัดไป 00:00 ไทย ──
   const dowThai = nowThai.getUTCDay() === 0 ? 7 : nowThai.getUTCDay()
