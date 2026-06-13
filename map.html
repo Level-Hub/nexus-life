@@ -442,10 +442,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="page-title">// <span>WORLD MAP</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
-    <button class="notif-btn" onclick="window.location.href='./notifications.html'">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 0 1 5 5v3l2 2H2l2-2V7a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.2"/><path d="M7 14a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.2"/></svg>
-      <div class="notif-dot" id="notifDot" style="display:none"></div>
-    </button>
+
   </div>
 
   <!-- MAP LAYOUT -->
@@ -705,6 +702,7 @@ async function init() {
     loadNearbyPlayers()
   ])
 
+  // เรียกหลัง loadProfile เสร็จเพื่อให้ userProfile.avatar_seed พร้อมแน่ใจ
   getUserLocation()
   loadNotifBadge()
   document.getElementById('loadingScreen').style.display = 'none'
@@ -812,7 +810,7 @@ function getUserLocation() {
     myLat = pos.coords.latitude
     myLng = pos.coords.longitude
 
-    // Show on map as "me" — ใช้ avatar จริงจาก userProfile
+    // ใช้ avatar_seed จาก userProfile (โหลดเสร็จแล้วก่อนเรียกฟังก์ชันนี้)
     const myAvatarSeed = userProfile?.avatar_seed || userProfile?.username || 'nexus'
     const myAvatarParts = myAvatarSeed.split(':')
     const myAvatarUrl = myAvatarParts.length >= 3
@@ -874,7 +872,7 @@ async function loadPlayersOnMap() {
   // FIX: เพิ่ม location_public filter + ลบ avatar_url ที่ไม่มีใน schema
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, rank, avatar_seed, last_lat, last_lng, equipped_title_id, city')
+    .select('id, display_name, username, class, level, rank, avatar_seed, last_lat, last_lng, equipped_title_id, city, last_seen')
     .eq('map_visible', true)
     .eq('location_public', true)
     .not('last_lat', 'is', null)
@@ -901,7 +899,13 @@ async function loadPlayersOnMap() {
     ;(titleRows || []).forEach(t => { titleMap[t.id] = t.name })
   }
 
-  document.getElementById('onlineCount').textContent = data?.length || 0
+  // นับเฉพาะคนที่ online จริง = last_seen ภายใน 30 นาที
+  const now = Date.now()
+  const onlineData = (data || []).filter(p => {
+    if (!p.last_seen) return false
+    return (now - new Date(p.last_seen).getTime()) < 30 * 60 * 1000
+  })
+  document.getElementById('onlineCount').textContent = onlineData.length
 
   if (!data?.length) return
 
@@ -1131,12 +1135,12 @@ async function loadNearbyPlayers() {
   // FIX: ลบ avatar_url + เพิ่ม location_public filter
   const { data } = await supabase
     .from('users')
-    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng')
+    .select('id, display_name, username, class, level, avatar_seed, last_lat, last_lng, last_seen')
     .eq('map_visible', true)
     .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
-    .limit(10)
+    .limit(100)  // ดึงมากกว่าเดิม แล้วค่อย sort+slice ใน JS
 
   const list = document.getElementById('nearbyList')
   if (!data?.length) {
@@ -1144,10 +1148,27 @@ async function loadNearbyPlayers() {
     return
   }
 
-  list.innerHTML = data.map(p => {
-    const cls   = p.class || 'warrior'
+  // Sort ตาม distance จาก GPS ของเรา (ถ้ามี) แล้วเอาแค่ 10 คนแรก
+  let sorted = data
+  if (myLat && myLng) {
+    sorted = data
+      .map(p => ({ ...p, _dist: getDistKm(myLat, myLng, p.last_lat, p.last_lng) }))
+      .sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999))
+      .slice(0, 10)
+  } else {
+    sorted = data.slice(0, 10)
+  }
+
+  list.innerHTML = sorted.map(p => {
+    const cls    = p.class || 'warrior'
     const avatar = getAvatarUrl(p.avatar_seed || p.username, 34)
-    const dist  = myLat ? getDistKm(myLat, myLng, p.last_lat, p.last_lng) : null
+    const dist   = myLat ? getDistKm(myLat, myLng, p.last_lat, p.last_lng) : null
+    const isOnline = p.last_seen && (Date.now() - new Date(p.last_seen).getTime()) < 30 * 60 * 1000
+    const lastSeenMs = p.last_seen ? Date.now() - new Date(p.last_seen).getTime() : null
+    const lastSeenTxt = lastSeenMs === null ? '' :
+      lastSeenMs < 60000 ? 'เมื่อกี้' :
+      lastSeenMs < 3600000 ? `${Math.floor(lastSeenMs/60000)} นาทีที่แล้ว` :
+      lastSeenMs < 86400000 ? `${Math.floor(lastSeenMs/3600000)} ชม.ที่แล้ว` : 'นานมากแล้ว'
     return `
       <div class="nearby-item cls-${cls}">
         <div class="nearby-avatar" style="border-color:${CLASS_COLORS[cls]||'var(--cyan)'}">
@@ -1156,30 +1177,34 @@ async function loadNearbyPlayers() {
         <div class="nearby-info">
           <div class="nearby-name">${p.display_name || p.username || '—'}</div>
           <div class="nearby-class" style="display:flex;align-items:center;gap:4px">${clsIcon(cls,12)} ${cls.toUpperCase()} · LV.${p.level||1}</div>
+          ${!isOnline && lastSeenTxt ? `<div style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim);margin-top:1px">${lastSeenTxt}</div>` : ''}
         </div>
         ${dist !== null ? `<div class="nearby-dist">${dist < 1 ? Math.round(dist*1000)+'m' : dist.toFixed(1)+'km'}</div>` : ''}
-        <div class="nearby-online"></div>
+        <div class="nearby-online" style="${isOnline ? '' : 'background:#5a8a90;box-shadow:none'}"></div>
       </div>
     `
   }).join('')
 }
 
 // ============================================================
-// TOGGLE LAYERS
+// TOGGLE LAYERS (radio behavior — กดอันไหน active อันนั้น ปุ่มอื่น deactivate)
 // ============================================================
 window.toggleLayer = function(layer, btn) {
-  layers[layer] = !layers[layer]
-  btn.classList.toggle('active', layers[layer])
+  // ถ้ากดปุ่มที่ active อยู่แล้ว → ไม่ทำอะไร (ป้องกัน deselect ทั้งหมด)
+  if (layers[layer]) return
 
-  if (layer === 'players') {
-    playerMarkers.forEach(m => layers.players ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
-  }
-  if (layer === 'hotspots') {
-    hotspotMarkers.forEach(m => layers.hotspots ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
-  }
-  if (layer === 'territory') {
-    territoryMarkers.forEach(m => layers.territory ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
-  }
+  // ปิด layer เก่าทั้งหมด
+  Object.keys(layers).forEach(l => { layers[l] = false })
+  document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'))
+
+  // เปิด layer ใหม่
+  layers[layer] = true
+  btn.classList.add('active')
+
+  // sync marker visibility
+  playerMarkers.forEach(m => layers.players ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
+  hotspotMarkers.forEach(m => layers.hotspots ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
+  territoryMarkers.forEach(m => layers.territory ? m.addTo(mapInstance) : mapInstance.removeLayer(m))
 }
 
 // ============================================================
