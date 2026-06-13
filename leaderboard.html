@@ -142,7 +142,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .my-rank-avatar-wrap { position:relative;flex-shrink:0; }
 .my-rank-avatar { width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--cls,var(--cyan)); }
 .my-rank-avatar img { width:100%;height:100%;object-fit:cover; }
-.my-rank-online { position:absolute;bottom:1px;right:1px;width:11px;height:11px;background:var(--green);border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 6px var(--green);animation:livePulse 1.4s ease-in-out infinite; }
+/* ONLINE DOT — reusable */
+.lb-dot { position:absolute;border-radius:50%;border:2px solid var(--bg); }
+.lb-dot.on  { background:var(--green);box-shadow:0 0 5px var(--green);animation:livePulse 1.4s ease-in-out infinite; }
+.lb-dot.off { background:#3a4a50; }
+
+/* MY RANK ONLINE DOT */
+.my-rank-online { position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--bg); }
 .my-rank-info { flex:1; }
 .my-rank-name { font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#fff; }
 .my-rank-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--cyan));letter-spacing:2px;margin-top:2px; }
@@ -655,7 +661,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="my-rank-avatar cls-warrior" id="myRankAvatarWrap">
         <img id="myRankAvatar" src="" alt="">
       </div>
-      <div class="my-rank-online"></div>
+      <div class="my-rank-online lb-dot off" id="myRankOnlineDot"></div>
     </div>
     <div class="my-rank-info">
       <div class="my-rank-name" id="myRankName">—</div>
@@ -796,7 +802,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <div class="pp-head">
       <div style="position:relative;flex-shrink:0">
         <div class="pp-ava" id="ppAva"><img id="ppImg" src="" alt=""></div>
-        <div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid #010d14;box-shadow:0 0 6px var(--green);animation:livePulse 1.4s ease-in-out infinite"></div>
+        <div class="lb-dot off" style="width:10px;height:10px;bottom:1px;right:1px;border-color:#010d14" id="ppOnlineDot"></div>
       </div>
       <div>
         <div class="pp-hname" id="ppName">—</div>
@@ -968,7 +974,7 @@ async function loadGlobal() {
   if (globalPeriod === 'alltime') {
     // alltime: query users ตรง เรียง xp_total ถูกต้อง 100%
     let query = supabase.from('users')
-      .select('id,username,display_name,class,level,rank,xp_total,xp_this_month,streak_current,avatar_seed,avatar_url,city,equipped_title_id')
+      .select('id,username,display_name,class,level,rank,xp_total,xp_this_month,streak_current,avatar_seed,avatar_url,city,equipped_title_id,last_seen')
       .eq('profile_public', true)
       .order('xp_total', { ascending: false })
       .limit(100)
@@ -1003,7 +1009,6 @@ function renderGlobal(data) {
   }
 
   list.innerHTML = data.map((u, i) => {
-    const rank  = i + 1
     const xp    = globalPeriod==='monthly' ? (u.xp_this_month||0) : (u.xp_total||0)
     const cls   = u.class || 'warrior'
     const isMe  = u.id === currentUser?.id
@@ -1023,7 +1028,7 @@ function renderGlobal(data) {
       class: u.class, level: u.level, xp_this_month: u.xp_this_month,
       xp_total: u.xp_total, streak_current: u.streak_current,
       avatar_url: u.avatar_url, avatar_seed: u.avatar_seed,
-      equipped_title_id: u.equipped_title_id
+      equipped_title_id: u.equipped_title_id, last_seen: u.last_seen
     }))
 
     const clsIconSvg = CLASS_ICONS[cls]
@@ -1034,7 +1039,7 @@ function renderGlobal(data) {
       <div class="rr-num ${rankCls}">${rank}</div>
       <div style="position:relative;flex-shrink:0">
         <div class="rr-avatar cls-${cls}"><img src="${getAvatar(u,36)}" alt="" loading="lazy"></div>
-        <div style="position:absolute;bottom:0;right:0;width:9px;height:9px;background:var(--green);border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 5px var(--green);animation:livePulse 1.4s ease-in-out infinite"></div>
+        <div class="lb-dot off" style="width:9px;height:9px;bottom:0;right:0" data-uid="${u.id}" data-lastseen="${u.last_seen||''}"></div>
       </div>
       <div class="rr-info">
         <div class="rr-name">${esc(u.display_name||u.username)}</div>
@@ -1052,6 +1057,7 @@ function renderGlobal(data) {
       </div>
     </div>`
   }).join('')
+  requestAnimationFrame(applyOnlineDots)
 }
 
 // ============================================================
@@ -1313,6 +1319,31 @@ function injectDropdownIcons() {
 }
 
 // ============================================================
+// ONLINE STATUS HELPERS
+// ============================================================
+function isOnlineNow(lastSeen) {
+  if (!lastSeen) return false
+  return (Date.now() - new Date(lastSeen).getTime()) <= 5 * 60 * 1000 // 5 นาที
+}
+
+// apply online dots ทุก [data-lastseen] หลัง render
+function applyOnlineDots() {
+  document.querySelectorAll('.lb-dot[data-lastseen]').forEach(dot => {
+    const ls = dot.dataset.lastseen
+    const uid = dot.dataset.uid
+    // ถ้าเป็นตัวเอง → on เสมอ
+    if (uid && currentUser && uid === currentUser.id) {
+      dot.className = dot.className.replace(/\b(on|off)\b/, 'on')
+    } else {
+      dot.className = dot.className.replace(/\b(on|off)\b/, isOnlineNow(ls) ? 'on' : 'off')
+    }
+  })
+  // My rank card dot
+  const myDot = document.getElementById('myRankOnlineDot')
+  if (myDot) myDot.className = myDot.className.replace(/\b(on|off)\b/, 'on')
+}
+
+// ============================================================
 // FILTERS
 // ============================================================
 window.setFilter = function(key, val, btn) {
@@ -1357,15 +1388,21 @@ window.openPP = async function(encoded) {
   document.getElementById('ppOverlay').classList.add('open')
   document.getElementById('ppGo').onclick = () => goProfile(u.id)
 
-  // ดึง streak + title จาก DB เสมอ เพราะ encoded data อาจไม่มี streak_current
+  // ดึง streak + title + last_seen จาก DB เสมอ เพราะ encoded data อาจ stale
   let titleId = u.equipped_title_id
   if (u.id) {
     const { data: fresh } = await supabase
-      .from('users').select('equipped_title_id,streak_current').eq('id', u.id).single()
+      .from('users').select('equipped_title_id,streak_current,last_seen').eq('id', u.id).single()
     if (fresh) {
       if (!titleId) titleId = fresh.equipped_title_id
-      // อัพเดต streak จาก DB เสมอ (ไม่ใช้ค่า encoded ที่อาจ stale หรือ 0)
       document.getElementById('ppStreak').textContent = fresh.streak_current || 0
+      // set online dot จาก last_seen จริง (ไม่ hardcode)
+      const ppDot = document.getElementById('ppOnlineDot')
+      if (ppDot) {
+        const isSelf = u.id === currentUser?.id
+        const online = isSelf || isOnlineNow(fresh.last_seen)
+        ppDot.className = ppDot.className.replace(/\b(on|off)\b/, online ? 'on' : 'off')
+      }
     }
   }
   const titleObj = titleId && titlesMap[titleId]
@@ -1398,7 +1435,7 @@ window.filterCityPlayers = async function(cityName) {
   document.getElementById('cityModal').classList.add('open')
 
   const { data, error } = await supabase.from('users')
-    .select('id,username,display_name,class,level,xp_this_month,xp_total,avatar_seed,avatar_url')
+    .select('id,username,display_name,class,level,xp_this_month,xp_total,avatar_seed,avatar_url,last_seen')
     .eq('city', cityName)
     .eq('profile_public', true)
     .order('xp_this_month', { ascending: false })
@@ -1425,7 +1462,7 @@ window.filterCityPlayers = async function(cityName) {
           <div class="modal-player-avatar cls-${cls}">
             <img src="${getAvatar(u, 36)}" alt="">
           </div>
-          <div style="position:absolute;bottom:0;right:0;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid #010d14;box-shadow:0 0 4px var(--green);animation:livePulse 1.4s ease-in-out infinite"></div>
+          <div class="lb-dot ${isOnlineNow(u.last_seen)?'on':'off'}" style="width:8px;height:8px;bottom:0;right:0;border-color:#010d14"></div>
         </div>
         <div class="modal-player-info">
           <div class="modal-player-name">${esc(u.display_name||u.username)}</div>
