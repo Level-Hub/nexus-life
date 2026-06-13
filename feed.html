@@ -423,13 +423,9 @@ async function loadCityBuff() {
 
   const lvl = cs.prosperity_level || 1
 
-  // อ่าน bonus จาก active_buffs JSON เป็น source of truth
-  // fallback: prosperity_level * 5 ถ้า active_buffs ยังไม่มีค่า
-  let bonusPct = lvl * 5
-  try {
-    const buffs = typeof cs.active_buffs === 'string' ? JSON.parse(cs.active_buffs) : (cs.active_buffs || {})
-    if (buffs.xp_bonus != null) bonusPct = Math.round(buffs.xp_bonus * 100)
-  } catch(e) {}
+  // ใช้ prosperity_level * 5 เป็น source of truth เสมอ
+  // (active_buffs.xp_bonus เก็บเป็น decimal เช่น 0.05 ซึ่งไม่อัพเดตตาม level จริง)
+  const bonusPct = lvl * 5
 
   const xpContrib = cs.xp_contributed_weekly || 0
   const xpNext    = cs.xp_threshold_next || 1000
