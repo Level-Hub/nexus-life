@@ -143,6 +143,17 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .tab-panel { display:none;animation:fadeInUp 0.3s ease both; }
 .tab-panel.active { display:block; }
 
+/* ===================== TOURNAMENT SUB-TABS ===================== */
+.tourn-subtab-bar { display:flex;gap:8px;margin-bottom:16px; }
+.tourn-subtab-btn {
+  flex:1;padding:10px;
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  color:var(--text-dim);background:var(--panel);border:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;text-align:center;
+}
+.tourn-subtab-btn.active { color:var(--gold);background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.3); }
+.tourn-subtab-btn:hover:not(.active) { color:var(--text);border-color:var(--cyan); }
+
 /* ===================== MAIN GRID ===================== */
 .pvp-grid { display:grid;grid-template-columns:1fr 300px;gap:20px; }
 
@@ -671,7 +682,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                   <div class="reward-name">WIN REWARD</div>
                   <div class="reward-desc">ชนะ 1v1 Duel</div>
                 </div>
-                <div class="reward-amount">+50 XP</div>
+                <div class="reward-amount">+150 XP</div>
               </div>
               <div class="reward-item">
                 <div class="reward-icon" id="rwIconStreak"></div>
@@ -695,7 +706,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
                   <div class="reward-name">GOLD REWARD</div>
                   <div class="reward-desc">ชนะ Duel ได้ Gold</div>
                 </div>
-                <div class="reward-amount">+20 Gold</div>
+                <div class="reward-amount">+50 Gold</div>
               </div>
             </div>
           </div>
@@ -760,10 +771,18 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
   <!-- ========================= TAB: TOURNAMENT ========================= -->
   <div class="tab-panel" id="tab-tournament">
+    <div class="tourn-subtab-bar">
+      <button class="tourn-subtab-btn active" id="subtabCity" onclick="switchTournamentLevel('city')">
+        <span id="subtabCityLabel">🏙️ CITY TOURNAMENT</span>
+      </button>
+      <button class="tourn-subtab-btn" id="subtabNational" onclick="switchTournamentLevel('national')">
+        <span id="subtabNationalLabel">🏆 NATIONAL TOURNAMENT</span>
+      </button>
+    </div>
     <div class="tournament-header">
       <div>
-        <div class="tournament-title" id="tournamentTitle">MONTHLY TOURNAMENT</div>
-        <div class="tournament-sub">// JUNE 2026 · BRACKET TOURNAMENT</div>
+        <div class="tournament-title" id="tournamentTitle">CITY TOURNAMENT</div>
+        <div class="tournament-sub" id="tournamentSub">// JUNE 2026 · BRACKET TOURNAMENT</div>
       </div>
       <div class="tournament-status">
         <div class="tournament-status-badge" id="tournamentStatus">OPEN</div>
@@ -776,7 +795,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="box" style="margin-bottom:16px">
           <div class="box-header">
             <div class="box-title gold" id="bracketTitle">TOURNAMENT BRACKET</div>
-            <div class="box-tag">// 8 PLAYERS</div>
+            <div class="box-tag" id="bracketTag">// 8 PLAYERS</div>
           </div>
           <div class="box-body">
             <div class="bracket-wrap">
@@ -1110,7 +1129,9 @@ async function init() {
     }, (payload) => {
       if (payload.new?.status === 'completed') {
         const isWinner = payload.new?.winner_id === currentUser.id
-        showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ!' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+        const isDraw = !payload.new?.winner_id
+        if (isDraw) showToast('Duel จบแล้ว — เสมอกัน!', '')
+        else showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ! +150 XP +50 Gold' : 'Duel จบแล้ว — คุณแพ้ สู้ต่อไป!', isWinner ? 'success' : 'error')
         setTimeout(() => location.reload(), 1500)
       }
     })
@@ -1125,7 +1146,9 @@ async function init() {
     }, (payload) => {
       if (payload.new?.status === 'completed') {
         const isWinner = payload.new?.winner_id === currentUser.id
-        showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ!' : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+        const isDraw = !payload.new?.winner_id
+        if (isDraw) showToast('Duel จบแล้ว — เสมอกัน!', '')
+        else showToast(isWinner ? 'Duel จบแล้ว — คุณชนะ! +150 XP +50 Gold' : 'Duel จบแล้ว — คุณแพ้ สู้ต่อไป!', isWinner ? 'success' : 'error')
         setTimeout(() => location.reload(), 1500)
       }
     })
@@ -1198,6 +1221,7 @@ async function loadIncomingChallenges() {
     .select('*, challenger:challenger_id(id,username,display_name,class,level,avatar_seed), defender:defender_id(id,username,display_name,class,level,avatar_seed)')
     .eq('defender_id', currentUser.id)
     .eq('status', 'pending')
+    .gt('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false })
     .limit(10)
 
@@ -1380,9 +1404,19 @@ async function loadActiveDuels() {
 window.triggerResolveDuel = async function(duelId) {
   const result = await resolveDuel(duelId)
   if (result) {
-    const isWinner = result?.winner_id === currentUser.id
-    const xpGained = result?.xp_awarded || result?.winner_xp || 50
-    showToast(isWinner ? `Duel จบแล้ว — คุณชนะ! +${xpGained} XP` : 'Duel จบแล้ว — คุณแพ้', isWinner ? 'success' : 'error')
+    if (result?.result === 'draw') {
+      showToast('Duel จบแล้ว — เสมอกัน!', '')
+    } else {
+      const isWinner = result?.winner_id === currentUser.id
+      const xpGained = result?.xp || 150
+      const goldGained = result?.gold || 50
+      showToast(
+        isWinner
+          ? `Duel จบแล้ว — คุณชนะ! +${xpGained} XP +${goldGained} Gold`
+          : 'Duel จบแล้ว — คุณแพ้ สู้ต่อไป!',
+        isWinner ? 'success' : 'error'
+      )
+    }
     setTimeout(() => location.reload(), 1500)
   }
 }
@@ -1698,8 +1732,13 @@ async function loadGuildWar() {
         </div>
       </div>
       <div class="duel-meta">
-        ${myXP > theirXP ? `<div class="duel-tag reward">ทีมเรานำอยู่!</div>` : myXP < theirXP ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">ตามหลังอยู่ — ทำ Quest เพิ่ม!</div>` : `<div class="duel-tag">เสมอกัน</div>`}
-        <div class="duel-tag reward">รางวัล: Guild XP + Badge</div>
+        ${myXP > theirXP
+          ? `<div class="duel-tag reward">ทีมเรานำอยู่!</div>`
+          : myXP < theirXP
+          ? `<div class="duel-tag" style="color:var(--red);border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.06)">ตามหลังอยู่ — ทำ Quest เพิ่ม!</div>`
+          : `<div class="duel-tag" style="color:var(--gold);border-color:rgba(255,215,0,0.2);background:rgba(255,215,0,0.06)">เสมอกัน — สู้ต่อ!</div>`}
+        <div class="duel-tag reward">ชนะ: +1000 Guild XP · +150 Crystal · +200 Gold</div>
+        <div class="duel-tag" style="color:var(--text-dim)">เสมอ: ทั้งคู่ได้ 75 Crystal</div>
       </div>
     </div>`
   }).join('')
@@ -1708,12 +1747,53 @@ async function loadGuildWar() {
 // ============================================================
 // TOURNAMENT
 // ============================================================
+let tournamentLevel = 'city' // 'city' | 'national'
+
+window.switchTournamentLevel = function(level) {
+  tournamentLevel = level
+  document.getElementById('subtabCity').classList.toggle('active', level === 'city')
+  document.getElementById('subtabNational').classList.toggle('active', level === 'national')
+  loadTournament()
+}
+
+function getTournamentMonth(level, now) {
+  const y = now.getFullYear(), m = now.getMonth()
+  const base = `${y}-${String(m + 1).padStart(2, '0')}`
+  if (level === 'city') {
+    const city = myProfile?.city || 'กรุงเทพมหานคร'
+    return `${base}-CITY-${city}`
+  }
+  return base
+}
+
 async function loadTournament() {
   const now = new Date()
   const y = now.getFullYear(), m = now.getMonth()
   const regDeadline = new Date(y, m, 5, 23, 59, 59)
   const tournamentEnd = new Date(y, m + 1, 1)
   const isOpen = now < regDeadline
+  const level = tournamentLevel
+  const city = myProfile?.city || 'กรุงเทพมหานคร'
+
+  // Title / labels
+  const titleEl = document.getElementById('tournamentTitle')
+  const subEl = document.getElementById('tournamentSub')
+  const bracketTitle = document.getElementById('bracketTitle')
+  const bracketTag = document.getElementById('bracketTag')
+  const participantsTitle = document.getElementById('participantsTitle')
+  if (level === 'city') {
+    titleEl.textContent = `CITY TOURNAMENT — ${city.toUpperCase()}`
+    subEl.textContent = `// ${y}-${String(m+1).padStart(2,'0')} · เฉพาะผู้เล่นในเมือง ${city}`
+    bracketTitle.innerHTML = getIcon('trophy',14) + ' CITY BRACKET'
+    bracketTag.textContent = '// 8 PLAYERS · CITY'
+    if (participantsTitle) participantsTitle.textContent = `PARTICIPANTS (${city})`
+  } else {
+    titleEl.textContent = 'NATIONAL TOURNAMENT'
+    subEl.textContent = `// ${y}-${String(m+1).padStart(2,'0')} · ผู้เล่นทั่วประเทศ`
+    bracketTitle.innerHTML = getIcon('trophy',14) + ' NATIONAL BRACKET'
+    bracketTag.textContent = '// 8 PLAYERS · NATIONAL'
+    if (participantsTitle) participantsTitle.textContent = 'PARTICIPANTS'
+  }
 
   document.getElementById('tournamentStatus').textContent = isOpen ? 'OPEN' : 'IN PROGRESS'
   document.getElementById('tournamentStatus').style.color = isOpen ? 'var(--green)' : 'var(--orange)'
@@ -1728,13 +1808,13 @@ async function loadTournament() {
     ? `ปิดรับสมัครใน ${d}วัน ${h}ชม. ${mins}น.`
     : `จบใน ${d}วัน ${h}ชม.`
 
-  const tournamentMonth = `${y}-${String(m + 1).padStart(2, '0')}`
+  const tournamentMonth = getTournamentMonth(level, now)
 
   // Participants
   const { data: participants } = await supabase.from('tournament_participants')
-    .select('*, users(id,username,display_name,class,level,avatar_seed)')
+    .select('*, users(id,username,display_name,class,level,avatar_seed,city)')
     .eq('tournament_month', tournamentMonth)
-    .order('created_at', { ascending: true })
+    .order('registered_at', { ascending: true })
     .limit(8)
 
   const pList = document.getElementById('participantList')
@@ -1757,7 +1837,7 @@ async function loadTournament() {
         </div>
         <div class="pvp-rank-info">
           <div class="pvp-rank-name">${u.display_name||u.username||'???'}${isMe ? ' (ME)' : ''}</div>
-          <div class="pvp-rank-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${u.level||1}</div>
+          <div class="pvp-rank-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${u.level||1}${level==='national' && u.city ? ' · '+u.city : ''}</div>
         </div>
       </div>`
     }).join('')
@@ -1769,6 +1849,8 @@ async function loadTournament() {
   // Register button
   const alreadyIn = pItems.some(p => p.users?.id === currentUser.id)
   const regBtn = document.getElementById('registerBtn')
+  regBtn.disabled = false
+  regBtn.innerHTML = getIcon('sword',13) + ' REGISTER NOW'
   if (alreadyIn) {
     regBtn.innerHTML = getIcon('check',13) + ' ลงทะเบียนแล้ว'
     regBtn.disabled = true
@@ -1820,7 +1902,7 @@ window.registerTournament = async function() {
   btn.disabled = true; btn.textContent = 'กำลังลงทะเบียน...'
 
   const now2 = new Date()
-  const tournamentMonth = `${now2.getFullYear()}-${String(now2.getMonth() + 1).padStart(2, '0')}`
+  const tournamentMonth = getTournamentMonth(tournamentLevel, now2)
   const { error } = await supabase.from('tournament_participants').insert({
     user_id: currentUser.id,
     tournament_month: tournamentMonth
