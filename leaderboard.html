@@ -1028,6 +1028,7 @@ function renderGlobal(data) {
     const isMe  = u.id === currentUser?.id
     const delay = Math.min(i * 0.025, 0.5).toFixed(2)
 
+    const rank    = u.position || (i + 1)
     const rankCls = rank===1 ? 'r1' : rank===2 ? 'r2' : rank===3 ? 'r3' : 'rn'
     const topCls  = rank===1 ? 'top1' : rank===2 ? 'top2' : rank===3 ? 'top3' : ''
 
