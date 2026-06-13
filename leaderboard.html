@@ -219,14 +219,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .nexus-select-btn .nsd-arrow { transition:transform 0.2s;flex-shrink:0; }
 .nexus-select-btn.open .nsd-arrow { transform:rotate(180deg); }
 .nexus-dropdown {
-  position:absolute;top:calc(100% + 4px);left:0;z-index:600;
+  position:fixed;z-index:9500;
   background:#010d14;border:1px solid var(--border);min-width:140px;
   box-shadow:0 8px 32px rgba(0,0,0,0.85);
   display:none;
 }
 .nexus-dropdown.open { display:block; }
-.nexus-dropdown::before { content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
-.nexus-dropdown::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
 .nexus-option {
   display:flex;align-items:center;gap:7px;
   padding:9px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
@@ -712,29 +710,6 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
           <span id="classSelectLabel">ทุก Class</span>
           <svg class="nsd-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>
         </button>
-        <div class="nexus-dropdown" id="classDropdown">
-          <div class="nexus-option selected" data-val="all" onclick="selectClass('all','ทุก Class',this)">
-            <span class="no-icon">✦</span>ทุก Class
-          </div>
-          <div class="nexus-option cls-warrior" data-val="warrior" onclick="selectClass('warrior','Warrior',this)" id="clsOpt-warrior">
-            <span class="cls-icon-warrior"></span>Warrior
-          </div>
-          <div class="nexus-option cls-mage" data-val="mage" onclick="selectClass('mage','Mage',this)" id="clsOpt-mage">
-            <span class="cls-icon-mage"></span>Mage
-          </div>
-          <div class="nexus-option cls-explorer" data-val="explorer" onclick="selectClass('explorer','Explorer',this)" id="clsOpt-explorer">
-            <span class="cls-icon-explorer"></span>Explorer
-          </div>
-          <div class="nexus-option cls-merchant" data-val="merchant" onclick="selectClass('merchant','Merchant',this)" id="clsOpt-merchant">
-            <span class="cls-icon-merchant"></span>Merchant
-          </div>
-          <div class="nexus-option cls-artist" data-val="artist" onclick="selectClass('artist','Artist',this)" id="clsOpt-artist">
-            <span class="cls-icon-artist"></span>Artist
-          </div>
-          <div class="nexus-option cls-diplomat" data-val="diplomat" onclick="selectClass('diplomat','Diplomat',this)" id="clsOpt-diplomat">
-            <span class="cls-icon-diplomat"></span>Diplomat
-          </div>
-        </div>
       </div>
       <span class="filter-label" style="margin-left:12px">PERIOD:</span>
       <button class="filter-chip active" onclick="setFilter('period','monthly',this)">เดือนนี้</button>
@@ -839,6 +814,31 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="lb-skel"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- CLASS DROPDOWN — body level to escape stacking context -->
+<div class="nexus-dropdown" id="classDropdown" style="position:fixed;z-index:9500;display:none">
+  <div class="nexus-option selected" data-val="all" onclick="selectClass('all','ทุก Class',this)">
+    <span class="no-icon">✦</span>ทุก Class
+  </div>
+  <div class="nexus-option cls-warrior" data-val="warrior" onclick="selectClass('warrior','Warrior',this)" id="clsOpt-warrior">
+    <span class="cls-icon-warrior"></span>Warrior
+  </div>
+  <div class="nexus-option cls-mage" data-val="mage" onclick="selectClass('mage','Mage',this)" id="clsOpt-mage">
+    <span class="cls-icon-mage"></span>Mage
+  </div>
+  <div class="nexus-option cls-explorer" data-val="explorer" onclick="selectClass('explorer','Explorer',this)" id="clsOpt-explorer">
+    <span class="cls-icon-explorer"></span>Explorer
+  </div>
+  <div class="nexus-option cls-merchant" data-val="merchant" onclick="selectClass('merchant','Merchant',this)" id="clsOpt-merchant">
+    <span class="cls-icon-merchant"></span>Merchant
+  </div>
+  <div class="nexus-option cls-artist" data-val="artist" onclick="selectClass('artist','Artist',this)" id="clsOpt-artist">
+    <span class="cls-icon-artist"></span>Artist
+  </div>
+  <div class="nexus-option cls-diplomat" data-val="diplomat" onclick="selectClass('diplomat','Diplomat',this)" id="clsOpt-diplomat">
+    <span class="cls-icon-diplomat"></span>Diplomat
   </div>
 </div>
 
@@ -1318,8 +1318,18 @@ window.switchTab = function(tab) {
 window.toggleClassDropdown = function() {
   const btn = document.getElementById('classSelectBtn')
   const dd  = document.getElementById('classDropdown')
-  btn.classList.toggle('open')
-  dd.classList.toggle('open')
+  const isOpen = dd.style.display === 'block'
+  if (isOpen) {
+    dd.style.display = 'none'
+    btn.classList.remove('open')
+  } else {
+    const rect = btn.getBoundingClientRect()
+    dd.style.top  = (rect.bottom + 4) + 'px'
+    dd.style.left = rect.left + 'px'
+    dd.style.minWidth = rect.width + 'px'
+    dd.style.display = 'block'
+    btn.classList.add('open')
+  }
 }
 
 window.selectClass = function(val, label, el) {
@@ -1327,16 +1337,17 @@ window.selectClass = function(val, label, el) {
   document.getElementById('classDropdown').querySelectorAll('.nexus-option').forEach(o => o.classList.remove('selected'))
   el.classList.add('selected')
   document.getElementById('classSelectBtn').classList.remove('open')
-  document.getElementById('classDropdown').classList.remove('open')
+  document.getElementById('classDropdown').style.display = 'none'
   applyClassFilter(val)
 }
 
 // close dropdown on outside click
 document.addEventListener('click', e => {
-  const wrap = document.getElementById('classSelectWrap')
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('classSelectBtn')?.classList.remove('open')
-    document.getElementById('classDropdown')?.classList.remove('open')
+  const btn  = document.getElementById('classSelectBtn')
+  const dd   = document.getElementById('classDropdown')
+  if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+    dd.style.display = 'none'
+    btn.classList.remove('open')
   }
 })
 

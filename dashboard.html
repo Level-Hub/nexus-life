@@ -1374,7 +1374,7 @@ async function loadLeaderboard() {
       </div>
       <div class="lb-info">
         <div class="lb-name">${u.display_name || u.username}${isMe ? ' (คุณ)' : ''}</div>
-        <div class="lb-cls cls-${u.class||'warrior'}">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} · LV.${u.level}</div>
+        <div class="lb-cls cls-${u.class||'warrior'}">${classIcon(u.class,12)} ${(u.class||'').toUpperCase()} <span style="color:var(--text-dim)">· LV.${u.level}</span></div>
       </div>
       <div>
         <div class="lb-xp">${fmtNum(u.xp_this_month)}</div>
