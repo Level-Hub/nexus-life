@@ -48,8 +48,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* PAGE HEADER */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both}
-.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
-.page-title span{color:var(--cyan);text-shadow:0 0 16px var(--cyan)}
+.page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px;letter-spacing:2px}
+.page-title .title-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.page-title span{color:var(--cyan);text-shadow:0 0 16px var(--cyan),0 0 32px rgba(0,245,255,0.3)}
 .page-date{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 
 /* SEARCH BAR */
@@ -64,7 +65,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* FILTERS */
 .filter-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.1s ease both}
-.filter-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.filter-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
 .filter-btn.active,.filter-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06)}
 .filter-btn.cls-warrior.active{border-color:#ff4444;color:#ff4444;background:rgba(255,68,68,0.06)}
 .filter-btn.cls-mage.active{border-color:#aa44ff;color:#aa44ff;background:rgba(170,68,255,0.06)}
@@ -205,7 +206,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>SOCIAL</span></div>
+      <div class="page-title">
+        <span class="title-icon" id="pageTitleIcon"></span>
+        <span>SOCIAL</span>
+      </div>
       <div class="page-date" id="pageDate">—</div>
     </div>
   </div>
@@ -213,7 +217,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- SEARCH -->
   <div class="search-bar">
     <div class="search-wrap">
-      <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#00f5ff" stroke-width="1.2"/><path d="M10 10l4 4" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="square"/></svg>
+      <span class="search-icon" id="searchIconEl"></span>
       <input class="search-input" id="searchInput" type="text" placeholder="ค้นหาชื่อผู้เล่น, username..." onkeydown="if(event.key==='Enter') searchUsers()">
     </div>
     <button class="search-btn" onclick="searchUsers()">SEARCH</button>
@@ -222,12 +226,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- CLASS FILTERS -->
   <div class="filter-row" id="filterRow">
     <button class="filter-btn active" onclick="setClassFilter('',this)">ALL CLASS</button>
-    <button class="filter-btn cls-warrior" onclick="setClassFilter('warrior',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>WARRIOR</button>
-    <button class="filter-btn cls-mage" onclick="setClassFilter('mage',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="10" cy="11" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="10" cy="11" r="1.5" fill="currentColor"/></svg>MAGE</button>
-    <button class="filter-btn cls-explorer" onclick="setClassFilter('explorer',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><polygon points="10,6 12,11 10,10 8,11" fill="currentColor" opacity="0.9"/></svg>EXPLORER</button>
-    <button class="filter-btn cls-merchant" onclick="setClassFilter('merchant',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><ellipse cx="10" cy="6" rx="5" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M5 6v4c0 1.1 2.24 2 5 2s5-.9 5-2V6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>MERCHANT</button>
-    <button class="filter-btn cls-artist" onclick="setClassFilter('artist',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg>ARTIST</button>
-    <button class="filter-btn cls-diplomat" onclick="setClassFilter('diplomat',this)"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M17 12c0 0-2-3-4-3H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>DIPLOMAT</button>
+    <button class="filter-btn cls-warrior" onclick="setClassFilter('warrior',this)"><span id="filt-icon-warrior"></span>WARRIOR</button>
+    <button class="filter-btn cls-mage" onclick="setClassFilter('mage',this)"><span id="filt-icon-mage"></span>MAGE</button>
+    <button class="filter-btn cls-explorer" onclick="setClassFilter('explorer',this)"><span id="filt-icon-explorer"></span>EXPLORER</button>
+    <button class="filter-btn cls-merchant" onclick="setClassFilter('merchant',this)"><span id="filt-icon-merchant"></span>MERCHANT</button>
+    <button class="filter-btn cls-artist" onclick="setClassFilter('artist',this)"><span id="filt-icon-artist"></span>ARTIST</button>
+    <button class="filter-btn cls-diplomat" onclick="setClassFilter('diplomat',this)"><span id="filt-icon-diplomat"></span>DIPLOMAT</button>
   </div>
 
   <!-- LAYOUT -->
@@ -300,7 +304,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, getIcon, injectGlobalDefs } from './icons.js'
 
 function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:${CLASS_COLOR[cls]||'#00f5ff'}" stroke="${CLASS_COLOR[cls]||'#00f5ff'}" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
 
@@ -333,6 +337,22 @@ function updateDate() {
 
 // ─── INIT ────────────────────────────────────────────────────
 async function init() {
+  injectGlobalDefs()
+
+  // inject static icons
+  const pageTitleIcon = document.getElementById('pageTitleIcon')
+  if (pageTitleIcon) pageTitleIcon.innerHTML = getIcon('users', 22)
+
+  const searchIconEl = document.getElementById('searchIconEl')
+  if (searchIconEl) searchIconEl.innerHTML = getIcon('search', 16)
+
+  // class filter icons
+  const filterClasses = ['warrior','mage','explorer','merchant','artist','diplomat']
+  filterClasses.forEach(cls => {
+    const el = document.getElementById(`filt-icon-${cls}`)
+    if (el) el.innerHTML = getIcon(`class_${cls}`, 12)
+  })
+
   const { user } = await initSidebar('social')
   if (!user) return
   currentUser = user
@@ -552,7 +572,7 @@ function renderUserGrid(users) {
       <div class="user-card-actions" onclick="event.stopPropagation()">
         <button class="follow-btn ${isFollowing ? 'following' : ''}" id="fbtn-${u.id}"
           onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
-          ${isFollowing ? '✓ ติดตาม' : '+ ติดตาม'}
+          ${isFollowing ? getIcon('check',11)+' ติดตาม' : getIcon('plus',11)+' ติดตาม'}
         </button>
         <button class="profile-btn" onclick="goProfile('${u.id}')">ดูโปรไฟล์</button>
       </div>
@@ -575,7 +595,7 @@ window.toggleFollow = async function(userId, displayName) {
     })
     if (error) { showToast('เกิดข้อผิดพลาด: ' + error.message, 'error'); btn.disabled = false; return }
     followingIds.delete(userId)
-    btn.textContent = '+ ติดตาม'
+    btn.innerHTML = getIcon('plus',11)+' ติดตาม'
     btn.classList.remove('following')
     showToast(`เลิกติดตาม ${displayName} แล้ว`)
 
@@ -644,7 +664,7 @@ async function loadSuggested() {
       </div>
       <button class="suggest-follow-btn ${followingIds.has(u.id)?'following':''}" id="sfbtn-${u.id}"
         onclick="toggleFollow('${u.id}','${esc(u.display_name||u.username)}')">
-        ${followingIds.has(u.id) ? getIcon('check',11)+' ติดตาม' : '+ Follow'}
+        ${followingIds.has(u.id) ? getIcon('check',11)+' ติดตาม' : getIcon('plus',11)+' Follow'}
       </button>
     </div>`
   }).join('')
