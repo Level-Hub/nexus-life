@@ -447,7 +447,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
         <div class="tourn-card-body">
           <div class="tourn-card-info">
-            ผู้เข้าร่วม: <b id="tournCardCount">0 / 8</b> · เดือนนี้<br>
+            ผู้เข้าร่วม: <b id="tournCardCount">0 คน</b> · เดือนนี้<br>
             <span id="tournCardSub">ลงทะเบียนเพื่อเข้าแข่งใน Bracket ของเมือง <b id="tournCardCity">—</b></span>
           </div>
           <button class="tourn-card-btn" id="tournCardBtn" onclick="registerCityTournament()">ลงทะเบียน City Tournament</button>
@@ -879,10 +879,9 @@ async function loadCityTournament(city) {
     .from('tournament_participants')
     .select('user_id')
     .eq('tournament_month', tournamentMonth)
-    .limit(8)
 
   const pItems = participants || []
-  document.getElementById('tournCardCount').textContent = `${pItems.length} / 8`
+  document.getElementById('tournCardCount').textContent = `${pItems.length} คน`
 
   const btn = document.getElementById('tournCardBtn')
   const alreadyIn = pItems.some(p => p.user_id === currentUser.id)
@@ -890,8 +889,8 @@ async function loadCityTournament(city) {
     btn.innerHTML = getIcon('check', 13) + ' ลงทะเบียนแล้ว'
     btn.classList.add('joined')
     btn.disabled = true
-  } else if (!isOpen || pItems.length >= 8) {
-    btn.textContent = pItems.length >= 8 ? 'เต็มแล้ว' : 'ปิดรับสมัคร'
+  } else if (!isOpen) {
+    btn.textContent = 'ปิดรับสมัคร'
     btn.disabled = true
   } else {
     btn.innerHTML = getIcon('sword', 13) + ' ลงทะเบียน City Tournament'

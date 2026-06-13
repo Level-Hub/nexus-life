@@ -1092,7 +1092,11 @@ async function loadOverview() {
   document.getElementById('questsTrend').textContent = `สำเร็จวันนี้`
 
   // Open tickets
-  const { count: openTk } = await sb.from('support_tickets').select('*', { count: 'exact', head: true }).eq('status', 'open').catch(() => ({ count: 0 }))
+  let openTk = 0
+  try {
+    const res = await sb.from('support_tickets').select('*', { count: 'exact', head: true }).eq('status', 'open')
+    openTk = res.count ?? 0
+  } catch (e) { openTk = 0 }
   document.getElementById('openTickets').textContent = openTk ?? 0
   document.getElementById('openTicketBadge').textContent = openTk ?? 0
   document.getElementById('qasOpenTickets').textContent = openTk ?? 0
