@@ -178,7 +178,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .comment-send:hover{opacity:0.85}
 .comment-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .comment-item{display:flex;gap:8px;font-size:12px}
-.comment-user{font-weight:700;color:var(--cyan);white-space:nowrap}
+.comment-user{font-weight:700;color:#fff;white-space:nowrap}
 .comment-text{color:var(--text-dim)}
 
 /* ===== REALTIME BADGE ===== */
@@ -209,7 +209,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>SOCIAL FEED</span></div>
+      <div class="page-title" id="pageTitleEl"><span>SOCIAL FEED</span></div>
       <div class="page-sub" id="cityLabel">กำลังโหลด...</div>
     </div>
     <div class="live-badge"><div class="live-dot"></div>LIVE</div>
@@ -326,14 +326,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon } from './icons.js'
+import { getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleBadge, injectTitleStyles } from './titles.js'
+injectGlobalDefs()
 
 // ===== AUTH CHECK =====
 const { user } = await initSidebar('feed')
 if (!user) { window.location.href = './login.html'; throw new Error('no session') }
 
 injectTitleStyles()
+
+// inject page title icon
+const pageTitleEl = document.getElementById('pageTitleEl')
+if (pageTitleEl) pageTitleEl.innerHTML = getIcon('chat', 16) + ' <span>SOCIAL FEED</span>'
 
 // inject static icon-wrap elements
 document.querySelectorAll('.icon-wrap[data-icon]').forEach(el => {
@@ -782,11 +787,11 @@ function renderFeedCard(item) {
       ${data.proof_url ? `<div class="feed-proof"><img src="${escHtml(data.proof_url)}" alt="proof" loading="lazy"></div>` : ''}
       <div class="feed-actions">
         <button class="feed-action-btn like-btn${userLiked ? ' liked' : ''}" data-id="${item.id}" data-likes="${likeCount}" data-liked="${userLiked}">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12s-5-3.5-5-6.5C2 3.57 3.57 2 5.5 2c.9 0 1.7.37 2.5 1 .8-.63 1.6-1 2.5-1C12.43 2 14 3.57 14 5.5c0 3-5 6.5-5 6.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          <span class="like-icon-wrap"></span>
           <span class="like-count">${likeCount}</span>
         </button>
         <button class="feed-action-btn comment-toggle-btn" data-id="${item.id}">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v8H7l-3 2V10H2z" stroke="currentColor" stroke-width="1.2"/></svg>
+          <span class="comment-icon-wrap"></span>
           <span class="comment-count">${commentCount > 0 ? commentCount : 'ความคิดเห็น'}</span>
         </button>
         <button class="feed-action-btn cheer-btn${userCheered ? ' cheered' : ''}" data-id="${item.id}" data-cheered="${userCheered}" style="margin-left:auto${userCheered ? ';color:var(--gold)' : ''}">
@@ -805,6 +810,15 @@ function renderFeedCard(item) {
 }
 
 function attachCardListeners() {
+  // inject like/comment icons ในทุก card ใหม่
+  document.querySelectorAll('.like-icon-wrap:not([data-inj])').forEach(el => {
+    el.innerHTML = getIcon('xp', 14)
+    el.dataset.inj = '1'
+  })
+  document.querySelectorAll('.comment-icon-wrap:not([data-inj])').forEach(el => {
+    el.innerHTML = getIcon('msg', 14)
+    el.dataset.inj = '1'
+  })
   // Like buttons — real DB
   document.querySelectorAll('.like-btn').forEach(btn => {
     if (btn.dataset.bound) return
@@ -905,7 +919,7 @@ async function loadComments(feedId) {
     return `<div style="${indent}display:flex;gap:8px;font-size:12px;margin-bottom:6px">
       <img src="${av}" style="width:${isReply?'20':'26'}px;height:${isReply?'20':'26'}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
       <div style="flex:1">
-        <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(u.username || '—')}</span>
+        <span style="font-weight:700;color:#fff;font-size:11px">${escHtml(u.username || '—')}</span>
         <span style="color:var(--text-dim)"> ${escHtml(c.content)}</span>
         ${replyBtn}
       </div>
@@ -958,7 +972,7 @@ window.sendComment = async function(feedId) {
     <div style="display:flex;gap:8px;font-size:12px;margin-bottom:6px">
       <img src="${escHtml(myAv)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
       <div style="flex:1">
-        <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(myUsername || 'คุณ')}</span>
+        <span style="font-weight:700;color:#fff;font-size:11px">${escHtml(myUsername || 'คุณ')}</span>
         <span style="color:var(--text-dim)"> ${escHtml(val)}</span>
       </div>
     </div>
@@ -1067,7 +1081,7 @@ function subscribeRealtime() {
         <div style="${indent}display:flex;gap:8px;font-size:12px;margin-bottom:6px">
           <img src="${escHtml(av)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">
           <div style="flex:1">
-            <span style="font-weight:700;color:var(--cyan);font-size:11px">${escHtml(name)}</span>
+            <span style="font-weight:700;color:#fff;font-size:11px">${escHtml(name)}</span>
             <span style="color:var(--text-dim)"> ${escHtml(payload.new.content)}</span>
           </div>
         </div>
