@@ -979,7 +979,6 @@ async function loadGlobal() {
     // alltime: query users ตรง เรียง xp_total ถูกต้อง 100%
     let query = supabase.from('users')
       .select('id,username,display_name,class,level,rank,xp_total,xp_this_month,streak_current,avatar_seed,avatar_url,city,equipped_title_id,last_seen')
-      .eq('profile_public', true)
       .order('xp_total', { ascending: false })
       .limit(100)
     if (selectedClass !== 'all') query = query.eq('class', selectedClass)
@@ -995,7 +994,18 @@ async function loadGlobal() {
     if (selectedClass !== 'all') query = query.eq('class', selectedClass)
     const { data, error } = await query
     if (error) { console.error(error); return }
-    sorted = data || []
+
+    // view ใหม่ไม่มี equipped_title_id, streak_current — ดึงเพิ่มจาก users
+    const ids = (data||[]).map(u => u.id)
+    let extraMap = {}
+    if (ids.length) {
+      const { data: extras } = await supabase
+        .from('users')
+        .select('id, equipped_title_id, streak_current, city')
+        .in('id', ids)
+      ;(extras||[]).forEach(e => { extraMap[e.id] = e })
+    }
+    sorted = (data||[]).map(u => ({ ...u, ...extraMap[u.id] }))
   }
 
   allGlobalData = sorted
@@ -1098,7 +1108,7 @@ function renderCities(cities) {
   document.getElementById('cityGrid').innerHTML = sorted.map((c, i) => {
     const rank = i + 1
     const rankClass = rank <= 3 ? `r${rank}` : 'rother'
-    const pct = Math.round((c.xp_contributed_weekly / maxXP)*100)
+    const pct = Math.min(100, Math.round((c.xp_contributed_weekly / (c.xp_threshold_next||5000))*100))
     const stars = Array.from({length:10}, (_,si) =>
       `<span class="pstar ${si < (c.prosperity_level||1) ? 'on' : 'off'}">${getIcon('star_filled',10)}</span>`
     ).join('')
@@ -1131,8 +1141,8 @@ function renderCities(cities) {
           <div class="city-xp-bar" data-pct="${pct}"></div>
         </div>
         <div class="city-xp-label">
-          <span>0</span>
-          <span>${fmtNum(c.xp_threshold_next||1000)} target</span>
+          <span>${fmtNum(c.xp_contributed_weekly||0)} XP</span>
+          <span>${fmtNum(c.xp_threshold_next||5000)} target</span>
         </div>
         ${buff ? `<div class="city-buff">${getIcon('lightning',11)} ${buff}</div>` : ''}
       </div>`
