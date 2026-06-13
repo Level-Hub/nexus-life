@@ -189,7 +189,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>VERIFY</span></div>
+      <div class="page-title" id="pageTitleEl"><span>VERIFY</span></div>
       <div class="page-sub" id="pageSub">COMMUNITY VERIFICATION SYSTEM</div>
     </div>
   </div>
@@ -221,11 +221,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('pending',this)">
-      รอ VERIFY <span class="tab-count red" id="tcPending">0</span>
+    <button class="tab-btn active" onclick="switchTab('pending',this)" id="tabPendingBtn">
+      <span id="tabIconPending"></span> รอ VERIFY <span class="tab-count red" id="tcPending">0</span>
     </button>
-    <button class="tab-btn" onclick="switchTab('history',this)">
-      ประวัติของฉัน <span class="tab-count green" id="tcHistory">0</span>
+    <button class="tab-btn" onclick="switchTab('history',this)" id="tabHistoryBtn">
+      <span id="tabIconHistory"></span> ประวัติของฉัน <span class="tab-count green" id="tcHistory">0</span>
     </button>
   </div>
 
@@ -249,7 +249,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon } from './icons.js'
+import { getIcon, injectGlobalDefs } from './icons.js'
+injectGlobalDefs()
 
 function clsIcon(cls, size=16) { return getIcon(`class_${cls}`, size) || getIcon('sword', size) }
 
@@ -293,6 +294,14 @@ async function init() {
   currentUser = user
 
   // inject static icons
+  const pageTitleEl = document.getElementById('pageTitleEl')
+  if (pageTitleEl) pageTitleEl.innerHTML = getIcon('check_circle', 18) + ' <span>VERIFY</span>'
+
+  const tabIconPending = document.getElementById('tabIconPending')
+  if (tabIconPending) tabIconPending.innerHTML = getIcon('refresh', 12)
+  const tabIconHistory = document.getElementById('tabIconHistory')
+  if (tabIconHistory) tabIconHistory.innerHTML = getIcon('scroll', 12)
+
   const sbarPending = document.getElementById('sbarPending')
   if (sbarPending) sbarPending.innerHTML = getIcon('refresh', 16)
   const sbarApproved = document.getElementById('sbarApproved')
@@ -303,19 +312,6 @@ async function init() {
   if (verifyLoadingIcon) verifyLoadingIcon.innerHTML = getIcon('refresh', 28)
   const closeLightboxBtn = document.getElementById('closeLightboxBtn')
   if (closeLightboxBtn) closeLightboxBtn.innerHTML = getIcon('close', 18)
-  const verifyDoneIcon = document.getElementById('verifyDoneIcon')
-  if (verifyDoneIcon) verifyDoneIcon.innerHTML = getIcon('check_circle', 28)
-  const proofExpandIcon = document.getElementById('proofExpandIcon')
-  if (proofExpandIcon) proofExpandIcon.innerHTML = getIcon('zoom', 14)
-  const emptyCardIcon = document.getElementById('emptyCardIcon')
-  if (emptyCardIcon) emptyCardIcon.innerHTML = getIcon('scroll', 28)
-  // inject vote button icons
-  document.querySelectorAll('.vote-btn-approve').forEach(btn => {
-    btn.innerHTML = getIcon('check_circle', 14) + ' APPROVE'
-  })
-  document.querySelectorAll('.vote-btn-reject').forEach(btn => {
-    btn.innerHTML = getIcon('x_circle', 14) + ' REJECT'
-  })
 
   await loadProfile()
   await loadData()
@@ -448,7 +444,7 @@ function renderPending() {
   if (!pendingItems.length) {
     grid.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon" id="verifyDoneIcon"></div>
+        <div class="empty-icon">${getIcon('check_circle', 48)}</div>
         <div class="empty-txt">ไม่มี Quest รอ Verify</div>
         <div class="empty-sub">ในเมืองของคุณไม่มีหลักฐานรอตรวจสอบ หรือ vote ครบหมดแล้ว</div>
       </div>`
@@ -478,7 +474,7 @@ function renderVerifyCard(item) {
     ? `<div class="vcard-proof" onclick="openLightbox('${item.proof_url}')">
         <img src="${item.proof_url}" alt="proof" loading="lazy" onerror="this.parentElement.style.display='none'">
         <div class="vcard-proof-overlay"></div>
-        <div class="vcard-proof-expand" id="proofExpandIcon"></div>
+        <div class="vcard-proof-expand">${getIcon('zoom', 14)}</div>
        </div>`
     : `<div class="vcard-no-proof"><div class="vcard-no-proof-txt">หลักฐานข้อความ</div></div>`
 
@@ -509,10 +505,10 @@ function renderVerifyCard(item) {
       </div>
       <div class="vote-btns">
         <button class="vote-btn approve-btn" onclick="castVote(${item.id},'approve',this)">
-          APPROVE
+          ${getIcon('check_circle', 13)} APPROVE
         </button>
         <button class="vote-btn reject-btn" onclick="castVote(${item.id},'reject',this)">
-          REJECT
+          ${getIcon('x_circle', 13)} REJECT
         </button>
       </div>
     </div>
@@ -524,7 +520,7 @@ function renderHistory() {
   if (!myVoteHistory.length) {
     grid.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon" id="emptyCardIcon"></div>
+        <div class="empty-icon">${getIcon('scroll', 48)}</div>
         <div class="empty-txt">ยังไม่มีประวัติ</div>
         <div class="empty-sub">Vote หลักฐาน Quest ของผู้เล่นคนอื่นเพื่อสะสม XP</div>
       </div>`
