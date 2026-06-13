@@ -912,10 +912,14 @@ async function init() {
   const { data: allTitles } = await supabase.from('titles').select('*')
   ;(allTitles || []).forEach(t => { titlesMap[t.id] = t })
 
-  await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
+  try {
+    await Promise.all([loadGlobal(), loadCities(), loadGuilds()])
+  } catch(e) {
+    console.warn('[leaderboard init error]', e)
+  } finally {
+    document.getElementById('loadingScreen').style.display = 'none'
+  }
   checkNotifications()
-
-  document.getElementById('loadingScreen').style.display = 'none'
 
   // Realtime polling — refresh ทุก 30 วิ อัพเดตอันดับแบบ real-time
   setInterval(async () => {
