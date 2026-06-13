@@ -476,8 +476,10 @@ async function loadAllQuests() {
   // แยก daily = submitted วันนี้ (เวลาไทย)
   const uqToday = uqAll.filter(uq => toThaiDate(uq.submitted_at || uq.created_at) === todayStr)
 
-  // weekly = submitted ตั้งแต่ monday จนถึงพรุ่งนี้ (เวลาไทย)
+  // weekly = เฉพาะ quest type=weekly ที่ submitted ตั้งแต่ monday จนถึงพรุ่งนี้ (เวลาไทย)
+  // *** ไม่รวม daily quest *** ไม่งั้น daily ที่ทำเมื่อวานจะยังโชว์สำเร็จวันนี้
   const uqWeek = uqAll.filter(uq => {
+    if (uq.quests?.type !== 'weekly') return false
     const d = toThaiDate(uq.submitted_at || uq.created_at)
     if (d >= mondayStr && d < tomorrowStr) return true
     if (uq.status === 'pending_review') return true
@@ -485,7 +487,7 @@ async function loadAllQuests() {
   })
 
   const uqMap = {}
-  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today
+  // ใส่ weekly ก่อน แล้ว overwrite ด้วย today (daily)
   ;(uqWeek || []).forEach(uq => { uqMap[uq.quest_id] = uq })
   ;(uqToday || []).forEach(uq => { uqMap[uq.quest_id] = uq })
 
