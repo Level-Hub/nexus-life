@@ -342,7 +342,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .feed-text { flex:1; }
 .feed-main { font-size:12px;color:var(--text);line-height:1.4; }
-.feed-main strong { color:var(--cyan); }
+.feed-main strong { color:#fff; }
+.feed-main .feed-action { color:var(--cyan); }
 .feed-time { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:3px; }
 
 /* LEADERBOARD MINI — matched to leaderboard.html rank-row style */
@@ -581,15 +582,15 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(255,215,0,0.08)"></div>
       <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
-      <div class="stat-card-label">GOLD</div>
-      <div class="stat-card-val" id="statGold">0</div>
+      <div class="stat-card-label" style="color:var(--gold)">GOLD</div>
+      <div class="stat-card-val" id="statGold" style="color:var(--gold)">0</div>
       <div class="stat-card-sub">Gold สะสม</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(0,245,255,0.08)"></div>
       <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 1l4 4-1 6H5L4 5zM4 5h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 1L5 5M8 1l3 4" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg></div>
-      <div class="stat-card-label">CRYSTAL</div>
-      <div class="stat-card-val" id="statCrystal">0</div>
+      <div class="stat-card-label" style="color:#b044ff">CRYSTAL</div>
+      <div class="stat-card-val" id="statCrystal" style="color:#b044ff">0</div>
       <div class="stat-card-sub">Crystal คงเหลือ</div>
     </div>
   </div>
@@ -726,12 +727,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </div>
         <div class="box-body" style="padding:16px 20px">
           <div class="stat-bars" id="statBars">
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 11c0 0 1-4 4-4s4 2 4 2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 9l1 2 2-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M12 6c1 0 2 .5 2 2s-1 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></div><div class="sbar-label">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:#ff4444"></div></div><div class="sbar-val" id="v-str">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 10V8a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4 10h8v2a2 2 0 01-4 0 2 2 0 01-4 0v-2z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 5V3M5.5 5.5L4 4M10.5 5.5L12 4" stroke="currentColor" stroke-width="1.1"/></svg></div><div class="sbar-label">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:#aa44ff"></div></div><div class="sbar-val" id="v-int">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.35"/></svg></div><div class="sbar-label">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:#44ff88"></div></div><div class="sbar-val" id="v-exp">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="6" width="10" height="8" stroke="currentColor" stroke-width="1.2"/><path d="M5 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3 10h10" stroke="currentColor" stroke-width="1.2"/></svg></div><div class="sbar-label">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:#ffaa00"></div></div><div class="sbar-val" id="v-biz">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="currentColor" stroke-width="1" opacity="0.7"/></svg></div><div class="sbar-label">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:#ff66aa"></div></div><div class="sbar-val" id="v-cre">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 10l2-2h3l1 1h2l1-1h2l1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 10l-.5 1.5M14 10l.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="sbar-label">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:#00ccff"></div></div><div class="sbar-val" id="v-soc">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 11c0 0 1-4 4-4s4 2 4 2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 9l1 2 2-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M12 6c1 0 2 .5 2 2s-1 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></div><div class="sbar-label" style="color:#ff4444">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:#ff4444"></div></div><div class="sbar-val" id="v-str" style="color:#ff4444">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 10V8a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4 10h8v2a2 2 0 01-4 0 2 2 0 01-4 0v-2z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 5V3M5.5 5.5L4 4M10.5 5.5L12 4" stroke="currentColor" stroke-width="1.1"/></svg></div><div class="sbar-label" style="color:#aa44ff">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:#aa44ff"></div></div><div class="sbar-val" id="v-int" style="color:#aa44ff">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.35"/></svg></div><div class="sbar-label" style="color:#44ff88">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:#44ff88"></div></div><div class="sbar-val" id="v-exp" style="color:#44ff88">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="6" width="10" height="8" stroke="currentColor" stroke-width="1.2"/><path d="M5 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3 10h10" stroke="currentColor" stroke-width="1.2"/></svg></div><div class="sbar-label" style="color:#ffaa00">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:#ffaa00"></div></div><div class="sbar-val" id="v-biz" style="color:#ffaa00">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="currentColor" stroke-width="1" opacity="0.7"/></svg></div><div class="sbar-label" style="color:#ff66aa">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:#ff66aa"></div></div><div class="sbar-val" id="v-cre" style="color:#ff66aa">0</div></div>
+            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 10l2-2h3l1 1h2l1-1h2l1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 10l-.5 1.5M14 10l.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="sbar-label" style="color:#00ccff">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:#00ccff"></div></div><div class="sbar-val" id="v-soc" style="color:#00ccff">0</div></div>
           </div>
         </div>
       </div>
@@ -864,7 +865,7 @@ async function init() {
   const modalCloseBtn    = document.getElementById('modalCloseBtn')
   if (questLoadingIcon) questLoadingIcon.innerHTML = getIcon('scroll', 36)
   if (feedLoadingIcon)  feedLoadingIcon.innerHTML  = getIcon('signal', 32)
-  if (lbLoadingIcon)    lbLoadingIcon.innerHTML    = getIcon('trophy', 32)
+  if (lbLoadingIcon)    lbLoadingIcon.innerHTML    = `<span style="color:var(--gold)">${getIcon('trophy', 32)}</span>`
   if (modalCloseBtn)    modalCloseBtn.innerHTML    = getIcon('close', 18)
 
   try {
@@ -1269,7 +1270,7 @@ async function loadFeed() {
     <div class="feed-item">
       <div class="feed-icon">${icon}</div>
       <div class="feed-text">
-        <div class="feed-main"><strong>${name}</strong> ${label}${item.data?.title ? ': '+item.data.title : ''}</div>
+        <div class="feed-main"><strong>${name}</strong> <span class="feed-action">${label}</span>${item.data?.title ? ': '+item.data.title : ''}</div>
         <div class="feed-time">${timeAgo}</div>
       </div>
     </div>`
