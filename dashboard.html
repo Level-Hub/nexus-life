@@ -539,7 +539,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>DASHBOARD</span></div>
+      <div class="page-title" id="pageTitleIcon"><span>DASHBOARD</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
 
@@ -567,28 +567,28 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="stat-row">
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(0,245,255,0.15)"></div>
-      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" stroke="currentColor" stroke-width="1.2"/><path d="M2 7h12M6 3v2M10 3v2" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="9" width="2" height="2" fill="currentColor" opacity="0.7"/><rect x="9" y="9" width="2" height="2" fill="currentColor" opacity="0.4"/></svg></div>
+      <div class="stat-card-icon" id="statIconQuest"></div>
       <div class="stat-card-label">QUEST วันนี้</div>
       <div class="stat-card-val" id="statQuestDone">0/0</div>
       <div class="stat-card-sub">สำเร็จแล้ว</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-glow" style="background:rgba(255,215,0,0.1)"></div>
-      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.6"/></svg></div>
+      <div class="stat-card-glow" style="background:rgba(255,100,0,0.12)"></div>
+      <div class="stat-card-icon" id="statIconStreak"></div>
       <div class="stat-card-label">STREAK</div>
       <div class="stat-card-val" id="statStreak">0</div>
       <div class="stat-card-sub">วันติดต่อกัน</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-glow" style="background:rgba(255,215,0,0.08)"></div>
-      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
+      <div class="stat-card-icon" id="statIconGold"></div>
       <div class="stat-card-label" style="color:var(--gold)">GOLD</div>
       <div class="stat-card-val" id="statGold" style="color:var(--gold)">0</div>
       <div class="stat-card-sub">Gold สะสม</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-glow" style="background:rgba(0,245,255,0.08)"></div>
-      <div class="stat-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 1l4 4-1 6H5L4 5zM4 5h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 1L5 5M8 1l3 4" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg></div>
+      <div class="stat-card-glow" style="background:rgba(176,68,255,0.08)"></div>
+      <div class="stat-card-icon" id="statIconCrystal"></div>
       <div class="stat-card-label" style="color:#b044ff">CRYSTAL</div>
       <div class="stat-card-val" id="statCrystal" style="color:#b044ff">0</div>
       <div class="stat-card-sub">Crystal คงเหลือ</div>
@@ -603,7 +603,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- DAILY QUESTS -->
       <div class="box" style="margin-bottom:16px">
         <div class="box-header">
-          <div class="box-title"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M4 16L16 4M12 4h4v4M8 16H4v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/><path d="M7 13l3-3" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>DAILY QUESTS</div>
+          <div class="box-title" id="dailyQuestTitle">DAILY QUESTS</div>
           <div class="box-tag" id="questResetTimer">รีเซ็ตใน —</div>
         </div>
         <div class="box-body">
@@ -625,7 +625,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- WEEKLY QUESTS -->
       <div class="box weekly-box" style="margin-bottom:16px">
         <div class="box-header">
-          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><rect x="2" y="3" width="12" height="11" stroke="currentColor" stroke-width="1.2"/><path d="M2 7h12M6 3v2M10 3v2" stroke="currentColor" stroke-width="1.2"/></svg>WEEKLY QUESTS</div>
+          <div class="box-title" id="weeklyQuestTitle">WEEKLY QUESTS</div>
           <div class="box-tag" id="weeklyResetTimer">รีเซ็ตใน —</div>
         </div>
         <div class="box-body">
@@ -647,7 +647,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- ACTIVITY FEED -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><circle cx="8" cy="12" r="1.5" fill="currentColor"/><path d="M5 9.5a4.2 4.2 0 016 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 7a7 7 0 0110 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M1 4.5a9.8 9.8 0 0114 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>ACTIVITY FEED</div>
+          <div class="box-title" id="feedBoxTitle">ACTIVITY FEED</div>
           <div class="box-tag">// GLOBAL</div>
         </div>
         <div class="box-body" style="padding:0 20px">
@@ -681,14 +681,14 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         </div>
         <div class="pm-currencies">
           <div class="pm-currency">
-            <div class="pm-currency-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 4v1M8 11v1" stroke="currentColor" stroke-width="1.2"/></svg></div>
+            <div class="pm-currency-icon" id="pmCurrencyGoldIcon"></div>
             <div>
               <div class="pm-currency-val" id="pmGold">0</div>
               <div class="pm-currency-lab">GOLD</div>
             </div>
           </div>
           <div class="pm-currency">
-            <div class="pm-currency-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l4 4-1 6H5L4 5zM4 5h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M8 1L5 5M8 1l3 4" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg></div>
+            <div class="pm-currency-icon" id="pmCurrencyCrystalIcon"></div>
             <div>
               <div class="pm-currency-val" id="pmCrystal">0</div>
               <div class="pm-currency-lab">CRYSTAL</div>
@@ -701,7 +701,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="streak-box">
         <div class="streak-header">
           <div>
-            <div class="streak-label"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.6"/></svg>STREAK</div>
+            <div class="streak-label" id="streakLabel">STREAK</div>
             <div class="streak-sub" id="streakLongest">สถิติสูงสุด: 0 วัน</div>
           </div>
           <div>
@@ -723,16 +723,16 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- 6-STAT BARS -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M2 14V8h3v6M7 14V4h2v10M11 14V6h3v8" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M1 14h14" stroke="currentColor" stroke-width="1.2"/></svg>CHARACTER STATS</div>
+          <div class="box-title" id="statsBarsTitle">CHARACTER STATS</div>
         </div>
         <div class="box-body" style="padding:16px 20px">
           <div class="stat-bars" id="statBars">
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 11c0 0 1-4 4-4s4 2 4 2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M3 9l1 2 2-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M12 6c1 0 2 .5 2 2s-1 2-2 2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></div><div class="sbar-label" style="color:#ff4444">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:#ff4444"></div></div><div class="sbar-val" id="v-str" style="color:#ff4444">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 10V8a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4 10h8v2a2 2 0 01-4 0 2 2 0 01-4 0v-2z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M8 5V3M5.5 5.5L4 4M10.5 5.5L12 4" stroke="currentColor" stroke-width="1.1"/></svg></div><div class="sbar-label" style="color:#aa44ff">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:#aa44ff"></div></div><div class="sbar-val" id="v-int" style="color:#aa44ff">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="currentColor"/><polygon points="8,12 6.5,7 8,8 9.5,7" fill="currentColor" opacity="0.35"/></svg></div><div class="sbar-label" style="color:#44ff88">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:#44ff88"></div></div><div class="sbar-val" id="v-exp" style="color:#44ff88">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="6" width="10" height="8" stroke="currentColor" stroke-width="1.2"/><path d="M5 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3 10h10" stroke="currentColor" stroke-width="1.2"/></svg></div><div class="sbar-label" style="color:#ffaa00">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:#ffaa00"></div></div><div class="sbar-val" id="v-biz" style="color:#ffaa00">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3L15 8l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="currentColor" stroke-width="1" opacity="0.7"/></svg></div><div class="sbar-label" style="color:#ff66aa">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:#ff66aa"></div></div><div class="sbar-val" id="v-cre" style="color:#ff66aa">0</div></div>
-            <div class="sbar"><div class="sbar-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 10l2-2h3l1 1h2l1-1h2l1 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 10l-.5 1.5M14 10l.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="sbar-label" style="color:#00ccff">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:#00ccff"></div></div><div class="sbar-val" id="v-soc" style="color:#00ccff">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconStr"></div><div class="sbar-label" style="color:#ff4444">STR</div><div class="sbar-track"><div class="sbar-fill" id="b-str" style="width:0%;background:linear-gradient(90deg,#aa0011,#ff4422)"></div></div><div class="sbar-val" id="v-str" style="color:#ff4444">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconInt"></div><div class="sbar-label" style="color:#cc66ff">INT</div><div class="sbar-track"><div class="sbar-fill" id="b-int" style="width:0%;background:linear-gradient(90deg,#660099,#cc66ff)"></div></div><div class="sbar-val" id="v-int" style="color:#cc66ff">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconExp"></div><div class="sbar-label" style="color:#44ff88">EXP</div><div class="sbar-track"><div class="sbar-fill" id="b-exp" style="width:0%;background:linear-gradient(90deg,#006633,#44ff88)"></div></div><div class="sbar-val" id="v-exp" style="color:#44ff88">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconBiz"></div><div class="sbar-label" style="color:#ffcc44">BIZ</div><div class="sbar-track"><div class="sbar-fill" id="b-biz" style="width:0%;background:linear-gradient(90deg,#dd6600,#ffcc44)"></div></div><div class="sbar-val" id="v-biz" style="color:#ffcc44">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconCre"></div><div class="sbar-label" style="color:#cc66ff">CRE</div><div class="sbar-track"><div class="sbar-fill" id="b-cre" style="width:0%;background:linear-gradient(90deg,#660099,#cc66ff)"></div></div><div class="sbar-val" id="v-cre" style="color:#cc66ff">0</div></div>
+            <div class="sbar"><div class="sbar-icon" id="sbarIconSoc"></div><div class="sbar-label" style="color:#44aaff">SOC</div><div class="sbar-track"><div class="sbar-fill" id="b-soc" style="width:0%;background:linear-gradient(90deg,#002299,#44aaff)"></div></div><div class="sbar-val" id="v-soc" style="color:#44aaff">0</div></div>
           </div>
         </div>
       </div>
@@ -740,7 +740,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <!-- LEADERBOARD MINI -->
       <div class="box">
         <div class="box-header">
-          <div class="box-title"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:6px"><path d="M4 2h8v7a4 4 0 01-8 0z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 4H4M12 4h2M8 13v2M5 15h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><path d="M2 4c0 3 2 4 2 4M14 4c0 3-2 4-2 4" stroke="currentColor" stroke-width="1.2"/></svg>TOP PLAYERS</div>
+          <div class="box-title" id="lbBoxTitle">TOP PLAYERS</div>
           <a href="./leaderboard.html" style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--cyan);text-decoration:none;opacity:0.7">ดูทั้งหมด →</a>
         </div>
         <div class="box-body" style="padding:0 20px">
@@ -802,7 +802,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, CLASS_COLOR, SYSTEM_ICONS, QUEST_ICONS, getIcon } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, SYSTEM_ICONS, QUEST_ICONS, getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleBadge, injectTitleStyles } from './titles.js'
 
 // ============================================================
@@ -857,6 +857,58 @@ async function init() {
   currentUser = user
 
   injectTitleStyles()
+  injectGlobalDefs()
+
+  // ── inject icons.js icons into all static placeholders ──
+  // Page title
+  const pageTitleEl = document.getElementById('pageTitleIcon')
+  if (pageTitleEl) pageTitleEl.innerHTML = getIcon('pioneer',16) + ' <span>DASHBOARD</span>'
+
+  // Stat card icons
+  const si = document.getElementById('statIconQuest')
+  if (si) si.innerHTML = getIcon('calendar', 22)
+  const si2 = document.getElementById('statIconStreak')
+  if (si2) si2.innerHTML = getIcon('fire', 22)
+  const si3 = document.getElementById('statIconGold')
+  if (si3) si3.innerHTML = getIcon('gold', 22)
+  const si4 = document.getElementById('statIconCrystal')
+  if (si4) si4.innerHTML = getIcon('crystal', 22)
+
+  // Box titles with icons
+  const dailyQT = document.getElementById('dailyQuestTitle')
+  if (dailyQT) dailyQT.innerHTML = getIcon('quest_daily',14) + ' DAILY QUESTS'
+  const weeklyQT = document.getElementById('weeklyQuestTitle')
+  if (weeklyQT) weeklyQT.innerHTML = getIcon('quest_weekly',14) + ' WEEKLY QUESTS'
+  const feedBT = document.getElementById('feedBoxTitle')
+  if (feedBT) feedBT.innerHTML = getIcon('signal',14) + ' ACTIVITY FEED'
+  const statsBT = document.getElementById('statsBarsTitle')
+  if (statsBT) statsBT.innerHTML = getIcon('chart',14) + ' CHARACTER STATS'
+  const lbBT = document.getElementById('lbBoxTitle')
+  if (lbBT) lbBT.innerHTML = getIcon('trophy',14) + ' TOP PLAYERS'
+
+  // Stat bar icons
+  const sbarStr = document.getElementById('sbarIconStr')
+  if (sbarStr) sbarStr.innerHTML = getIcon('str', 14)
+  const sbarInt = document.getElementById('sbarIconInt')
+  if (sbarInt) sbarInt.innerHTML = getIcon('int', 14)
+  const sbarExp = document.getElementById('sbarIconExp')
+  if (sbarExp) sbarExp.innerHTML = getIcon('exp_stat', 14)
+  const sbarBiz = document.getElementById('sbarIconBiz')
+  if (sbarBiz) sbarBiz.innerHTML = getIcon('biz', 14)
+  const sbarCre = document.getElementById('sbarIconCre')
+  if (sbarCre) sbarCre.innerHTML = getIcon('cre', 14)
+  const sbarSoc = document.getElementById('sbarIconSoc')
+  if (sbarSoc) sbarSoc.innerHTML = getIcon('diplo_stat', 14)
+
+  // Streak label
+  const streakLbl = document.getElementById('streakLabel')
+  if (streakLbl) streakLbl.innerHTML = getIcon('fire',14) + ' STREAK'
+
+  // Profile mini currency icons
+  const pmGoldIco = document.getElementById('pmCurrencyGoldIcon')
+  if (pmGoldIco) pmGoldIco.innerHTML = getIcon('gold', 14)
+  const pmCrystalIco = document.getElementById('pmCurrencyCrystalIcon')
+  if (pmCrystalIco) pmCrystalIco.innerHTML = getIcon('crystal', 14)
 
   // inject static icon placeholders
   const questLoadingIcon = document.getElementById('questLoadingIcon')
@@ -1254,15 +1306,16 @@ async function loadFeed() {
   }
 
   const typeIcon = {
-    quest_complete: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg>`,
-    level_up:       `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l-5 6h3.5v6h3V8H13z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`,
-    badge_unlock:   `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`,
-    title_unlock:   `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>`,
-    checkin:        `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M6 5l1.5 1.5L10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
-    guild_join:     `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-3 1.8-4.5 4-4.5M15 14c0-3-1.8-4.5-4-4.5M8 10c2 0 4 1.2 4 4H4c0-2.8 2-4 4-4z" stroke="currentColor" stroke-width="1.2"/></svg>`,
-    pvp_win:        `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg>`,
+    quest_complete: getIcon('check_circle', 14),
+    level_up:       getIcon('levelup', 14),
+    badge_unlock:   getIcon('star_filled', 14),
+    title_unlock:   getIcon('title_badge', 14),
+    checkin:        getIcon('checkin', 14),
+    guild_join:     getIcon('group', 14),
+    pvp_win:        getIcon('axes', 14),
+    city_project_join: getIcon('pioneer', 14),
   }
-  const defaultIcon = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`
+  const defaultIcon = getIcon('signal', 14)
   const typeLabel = {
     quest_complete:'ทำ Quest สำเร็จ', level_up:'Level Up!', badge_unlock:'ปลดล็อค Badge',
     title_unlock:'ได้รับ Title', checkin:'Check-in สถานที่', guild_join:'เข้าร่วม Guild', pvp_win:'ชนะ PvP'
@@ -1314,7 +1367,7 @@ async function loadLeaderboard() {
     const clsColor = CLASS_COLOR[u.class||'warrior'] || '#00f5ff'
     return `
     <div class="lb-item ${posClass} ${isMe ? 'lb-me' : ''}">
-      <div class="lb-pos ${posClass}">${pos === 1 ? '👑' : pos}</div>
+      <div class="lb-pos ${posClass}" id="lbPos${pos}">${pos === 1 ? '<span id="lbCrown1"></span>' : pos}</div>
       <div class="lb-avatar-wrap">
         <div class="lb-avatar cls-${u.class||'warrior'}" style="border-color:${clsColor};box-shadow:0 0 8px ${clsColor}40"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed, 32)}" alt=""></div>
         <div class="lb-online-dot ${online ? 'online' : ''}"></div>
@@ -1329,6 +1382,11 @@ async function loadLeaderboard() {
       </div>
     </div>`
   }).join('')
+
+  // inject crown icon for rank 1
+  const crownEl = document.getElementById('lbCrown1')
+  if (crownEl) crownEl.innerHTML = getIcon('crown', 16, { prestige: true })
+
   } catch (err) { console.error('[loadLeaderboard] error:', err) }
 }
 
