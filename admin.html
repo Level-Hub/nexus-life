@@ -46,7 +46,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .loading-denied{color:var(--red);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;display:none}
 
 /* ===== SIDEBAR ===== */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:230px;background:rgba(1,8,12,0.97);border-right:1px solid rgba(255,149,0,0.15);backdrop-filter:blur(24px);z-index:200;display:flex;flex-direction:column}
+.admin-sidebar{position:fixed;top:0;left:0;bottom:0;width:230px;background:rgba(1,8,12,0.97);border-right:1px solid rgba(255,149,0,0.15);backdrop-filter:blur(24px);z-index:200;display:flex;flex-direction:column}
 
 .sidebar-top{padding:24px 20px 18px;border-bottom:1px solid rgba(255,149,0,0.1)}
 .sidebar-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,149,0,0.1);border:1px solid rgba(255,149,0,0.3);margin-bottom:12px}
@@ -373,21 +373,32 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,149,0,0.25);border-radius:2px}
 
-@media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0;padding:70px 16px 60px}
-  .topbar-mobile{display:flex}
-}
-
 /* TOPBAR MOBILE */
-.topbar-mobile{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,8,12,0.97);border-bottom:1px solid rgba(255,149,0,0.15);align-items:center;justify-content:space-between}
+.admin-topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:9000;padding:14px 20px;background:rgba(1,8,12,0.97);border-bottom:1px solid rgba(255,149,0,0.15);align-items:center;justify-content:space-between}
 .topbar-logo{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;letter-spacing:3px;color:var(--admin-accent)}
-.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid rgba(255,149,0,0.3);cursor:pointer}
-.burger span{display:block;width:18px;height:1px;background:var(--admin-accent)}
+.admin-burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid rgba(255,149,0,0.3);cursor:pointer;position:relative;z-index:9001}
+.admin-burger span{display:block;width:18px;height:1px;background:var(--admin-accent)}
+
+/* Shared site sidebar (sidebar.js) — render as overlay-only on admin page */
+#sidebar-root .sidebar{transform:translateX(-100%)!important;z-index:9600!important;transition:transform 0.3s ease}
+#sidebar-root .sidebar.open{transform:translateX(0)!important}
+#sidebar-root .sidebar-overlay{z-index:9590!important}
+#sidebar-root .topbar{display:none!important}
+.main-nav-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:#00f5ff;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.25);cursor:pointer;transition:all 0.2s;margin-bottom:8px}
+.main-nav-btn:hover{background:rgba(0,245,255,0.12)}
+.admin-burger.main-nav{border-color:rgba(0,245,255,0.3)}
+.admin-burger.main-nav span{background:#00f5ff}
+@media(max-width:900px){
+  .admin-topbar{display:flex}
+  .main{margin-left:0;padding:70px 16px 60px}
+  .admin-sidebar{transform:translateX(-100%)}
+  .admin-sidebar.open{transform:translateX(0);z-index:9500}
+}
 </style>
 </head>
 <body>
+
+<div id="sidebar-root"></div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -405,13 +416,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
 <!-- TOPBAR MOBILE -->
-<div class="topbar-mobile" id="topbarMobile">
+<div class="admin-topbar" id="adminTopbar">
+  <button class="admin-burger main-nav" onclick="window.openSidebar && window.openSidebar()" title="เมนูหลัก / กลับ Dashboard"><span></span><span></span><span></span></button>
   <div class="topbar-logo" id="topbarLogo">ADMIN</div>
-  <button class="burger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <button class="admin-burger" onclick="toggleAdminSidebar()"><span></span><span></span><span></span></button>
 </div>
 
 <!-- SIDEBAR -->
-<nav class="sidebar" id="sidebar">
+<nav class="admin-sidebar" id="adminSidebar">
   <div class="sidebar-top">
     <div class="sidebar-badge"><span class="sidebar-badge-txt" id="sidebarBadgeTxt">ADMIN PANEL</span></div>
     <div class="sidebar-logo-txt">NEXUS LIFE</div>
@@ -463,6 +475,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 
   <div class="sidebar-bottom">
+    <button class="main-nav-btn" onclick="window.openSidebar && window.openSidebar()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      เมนูหลัก / กลับ DASHBOARD
+    </button>
     <button class="back-btn" onclick="window.location.href='./dashboard.html'">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
       กลับหน้าหลัก
@@ -963,7 +979,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-import { getIcon } from './icons.js'
+import { getIcon, CLASS_COLOR } from './icons.js'
+import { initSidebar } from './sidebar.js'
 
 const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
@@ -1005,6 +1022,8 @@ async function init() {
   }
 
   ME = profile
+  // เมนูหลัก (สีฟ้า) — overlay เท่านั้น เปิดผ่านปุ่ม "เมนูหลัก / กลับ Dashboard"
+  initSidebar('admin', { skipAuth: true })
   document.getElementById('adminName').textContent = profile.display_name || profile.username
   const avatarSeed = profile.avatar_seed || profile.username
   document.getElementById('adminAvatar').src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=80`
@@ -1128,11 +1147,10 @@ async function loadOverview() {
   const { data: top } = await sb.from('users').select('username, display_name, class, level, xp_this_month, avatar_seed, avatar_url').order('xp_this_month', { ascending: false }).limit(5)
   const topEl = document.getElementById('topUsersList')
   if (top && top.length > 0) {
-    const clsColors = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
     topEl.innerHTML = top.map((u, i) => `
       <div class="user-row">
         <div class="user-rank-num">${i + 1}</div>
-        <div class="user-av"><img src="${getAvatarSrc(u)}" alt=""></div>
+        <div class="user-av" style="border:1.5px solid ${CLASS_COLOR[u.class]||'var(--border)'};border-radius:50%;overflow:hidden"><img src="${getAvatarSrc(u)}" alt=""></div>
         <div class="user-info">
           <div class="user-uname">${escHtml(u.display_name || u.username)}</div>
           <div class="user-sub">Lv.${u.level} · ${u.class||'?'}</div>
@@ -1360,14 +1378,12 @@ window.filterUsers = function() {
   renderUsers(list)
 }
 function renderUsers(list) {
-  const clsColors = { warrior: '#ff4444', mage: '#aa44ff', explorer: '#44ff88', merchant: '#ffaa00', artist: '#ff66aa', diplomat: '#00ccff' }
-  const clsEmoji = { warrior: getIcon('sword',12), mage: getIcon('star',12), explorer: getIcon('compass',12), merchant: getIcon('gold',12), artist: getIcon('diamond',12), diplomat: getIcon('users',12) }
   document.getElementById('usersTbody').innerHTML = list.map((u, i) => `
     <tr>
       <td class="mono">${i + 1}</td>
       <td>
         <div style="display:flex;align-items:center;gap:8px">
-          <div class="user-av" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid ${clsColors[u.class]||'var(--border)'};background:var(--panel);flex-shrink:0">
+          <div class="user-av" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid ${CLASS_COLOR[u.class]||'var(--border)'};background:var(--panel);flex-shrink:0">
             <img src="${getAvatarSrc(u)}" style="width:100%;height:100%;object-fit:cover" alt="">
           </div>
           <div>
@@ -1376,7 +1392,7 @@ function renderUsers(list) {
           </div>
         </div>
       </td>
-      <td><span class="class-tag" style="color:${clsColors[u.class]||'var(--text-dim)'};border-color:${clsColors[u.class]||'var(--border)'}33">${clsEmoji[u.class]||'?'} ${(u.class||'?').toUpperCase()}</span></td>
+      <td><span class="class-tag" style="color:${CLASS_COLOR[u.class]||'var(--text-dim)'};border-color:${CLASS_COLOR[u.class]||'var(--border)'}33">${clsEmoji[u.class]||'?'} ${(u.class||'?').toUpperCase()}</span></td>
       <td class="mono">${u.level || 1}</td>
       <td class="mono">${(u.xp_total || 0).toLocaleString()}</td>
       <td class="mono" style="color:var(--gold)">${(u.gold || 0).toLocaleString()}</td>
@@ -1890,9 +1906,15 @@ function switchTab(name, el) {
 }
 function openModal(id) { document.getElementById(id).classList.add('open') }
 function closeModal(id) { document.getElementById(id).classList.remove('open') }
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open')
+function toggleAdminSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open')
 }
+function updateServerTime() {
+  const el = document.getElementById('serverTime')
+  if (el) el.textContent = new Date().toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
+}
+setInterval(updateServerTime, 1000)
+updateServerTime()
 function toast(msg, type = 'info') {
   const el = document.createElement('div')
   el.className = `toast ${type}`
