@@ -532,6 +532,9 @@ window.openChat = async function(peer) {
     document.getElementById('backBtn').style.display = 'inline-flex'
   }
 
+  // Mark messages as read เมื่อเปิดแชท — ซ่อน badge ทันที
+  await markMessagesRead(activeChannel)
+
   // Unsubscribe channel เก่า
   if (realtimeSub) { supabase.removeChannel(realtimeSub); realtimeSub = null }
 
@@ -815,9 +818,11 @@ async function updateMyLastSeen() {
 // ─── READ RECEIPT ────────────────────────────────────────────
 async function markMessagesRead(channel) {
   if (!currentUser || !activePeer) return
-  // mark read ใน DB (ถ้ามี read_receipts table) — fallback: update local ticks
-  // อัพเดต tick ของ peer เป็น read (สีฟ้า) เมื่อ peer เปิดแชท
-  // ถ้าไม่มี read_receipts table ใน DB เพียงแค่แสดง ✓✓ สีฟ้าทุก tick ของ mine
+  // บันทึกเวลาที่อ่านล่าสุดลง localStorage เพื่อให้ sidebar badge รู้ว่าอ่านแล้ว
+  localStorage.setItem('nexus_msg_last_read', new Date().toISOString())
+  // ซ่อน badge ทันทีโดยไม่ต้อง reload
+  const mBadge = document.getElementById('navMsgBadge')
+  if (mBadge) mBadge.style.display = 'none'
 }
 
 function markAllSentRead() {

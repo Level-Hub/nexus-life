@@ -130,24 +130,24 @@ function buildSidebarHTML(activePage) {
 async function loadBadges(userId, userCity) {
   const city = userCity || 'กรุงเทพมหานคร'
 
-  // Quest badge — นับเฉพาะ daily+weekly วันนี้/สัปดาห์นี้ที่ยังไม่ได้ส่ง
-  // ใช้ logic เดียวกับ quests.html (timezone ไทย UTC+7)
-  const TZ_OFFSET = 7 * 60
-  const nowLocal    = new Date(Date.now() + TZ_OFFSET * 60000)
-  const todayStr    = nowLocal.toISOString().split('T')[0]
-  const dayOfWeek   = nowLocal.getUTCDay() === 0 ? 7 : nowLocal.getUTCDay()
-  const monday      = new Date(nowLocal.getTime() - (dayOfWeek - 1) * 86400000)
-  const mondayStr   = monday.toISOString().split('T')[0]
-  const tomorrowStr = new Date(nowLocal.getTime() + 86400000).toISOString().split('T')[0]
+  // Quest badge — นับเฉพาะ daily วันนี้ที่ยังไม่ได้ทำ
+  const TZ = 'Asia/Bangkok'
+  const todayStr    = new Date().toLocaleDateString('sv-SE', { timeZone: TZ })
+  const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+  const tomorrowStr = tomorrowDate.toLocaleDateString('sv-SE', { timeZone: TZ })
+  const nowThai     = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }))
+  const dayOfWeek   = nowThai.getDay() === 0 ? 7 : nowThai.getDay()
+  const monday      = new Date(nowThai.getTime() - (dayOfWeek - 1) * 86400000)
+  const mondayStr   = monday.toLocaleDateString('sv-SE', { timeZone: TZ })
 
   const toThaiDate = (ts) => {
     if (!ts) return ''
-    return new Date(new Date(ts).getTime() + TZ_OFFSET * 60000).toISOString().split('T')[0]
+    return new Date(ts).toLocaleDateString('sv-SE', { timeZone: TZ })
   }
 
-  // ดึง quests ที่ active ทั้ง daily+weekly
+  // ดึงเฉพาะ daily quests
   const { data: quests } = await supabase.from('quests')
-    .select('id, type').eq('is_active', true).in('type', ['daily', 'weekly'])
+    .select('id, type').eq('is_active', true).eq('type', 'daily')
 
   // ดึง user_quests ล่าสุด 100 รายการ
   const { data: uqAll } = await supabase.from('user_quests')
@@ -156,18 +156,14 @@ async function loadBadges(userId, userCity) {
     .order('submitted_at', { ascending: false })
     .limit(100)
 
-  // กรอง active (วันนี้ หรือ สัปดาห์นี้ หรือ pending_review)
-  const uqActive = (uqAll || []).filter(uq => {
-    const d = toThaiDate(uq.submitted_at || uq.created_at)
-    if (uq.status === 'pending_review') return true
-    if (d === todayStr) return true
-    if (d >= mondayStr && d < tomorrowStr) return true
-    return false
-  })
+  // กรองเฉพาะ daily ที่ทำวันนี้ (ไม่รวม weekly ไม่งั้น daily เมื่อวานจะโชว์ข้ามวัน)
   const uqMap = {}
-  uqActive.forEach(uq => { uqMap[uq.quest_id] = uq })
+  ;(uqAll || []).forEach(uq => {
+    const d = toThaiDate(uq.submitted_at || uq.created_at)
+    if (d === todayStr) uqMap[uq.quest_id] = uq
+  })
 
-  // นับ quest ที่ยังไม่ได้ส่ง (ไม่มีใน uqMap หรือ status = in_progress)
+  // นับ daily quest ที่ยังไม่ได้ทำวันนี้
   const notStarted = (quests || []).filter(q => {
     const uq = uqMap[q.id]
     return !uq || uq.status === 'in_progress'
@@ -199,16 +195,21 @@ async function loadBadges(userId, userCity) {
     vBadge.style.display = 'inline'
   }
 
-  // Messages badge — unread DMs (ข้อความที่คนอื่นส่งมา ในช่วง 24 ชม.)
+  // Messages badge — นับข้อความที่คนอื่นส่งมาหลังจากที่เราเปิดอ่านครั้งล่าสุด
+  const lastRead = localStorage.getItem('nexus_msg_last_read') || '2000-01-01T00:00:00Z'
   const { count: mc } = await supabase.from('messages')
     .select('*', { count: 'exact', head: true })
-    .like('channel', `%${userId}%`)
+    .like('channel', `dm:%${userId}%`)
     .neq('sender_id', userId)
-    .gte('created_at', new Date(Date.now() - 86400000).toISOString())
+    .gt('created_at', lastRead)
   const mBadge = document.getElementById('navMsgBadge')
-  if (mBadge && mc > 0) {
-    mBadge.textContent = '●'
-    mBadge.style.display = 'inline'
+  if (mBadge) {
+    if (mc > 0) {
+      mBadge.textContent = '●'
+      mBadge.style.display = 'inline'
+    } else {
+      mBadge.style.display = 'none'
+    }
   }
 }
 
