@@ -7,11 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --cyan:#c8860a; --cyan-dim:#8a5a06; --gold:#ffd700; --red:#ff003c;
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
-  --bg:#010a0f; --bg2:#020d14;
-  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
-  --text:#c8f0f5; --text-dim:#5a8a90;
+  --bg:#0a0700; --bg2:#120e02;
+  --panel:rgba(200,134,10,0.04); --border:rgba(200,134,10,0.15);
+  --text:#f0deb0; --text-dim:#7a6030;
+  --amber:#c8860a; --amber-bright:#f5a623; --amber-dim:#6b4500;
 }
 .cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
@@ -21,10 +22,10 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;ove
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
 .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(200,134,10,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(200,134,10,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
-.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+.orb-1{width:500px;height:500px;background:rgba(200,134,10,0.06);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(139,90,43,0.05);bottom:100px;left:-50px}
 
 
 
@@ -138,13 +139,139 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .empty-txt{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--text-dim);margin-bottom:8px}
 .empty-sub{font-size:13px;color:var(--text-dim);opacity:0.6}
 
-/* LOADING */
-.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
-.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
-.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
-@keyframes loadAnim{0%{width:0}50%{width:70%}100%{width:100%}}
-.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
+/* LOADING — QUEST BOOK OPEN & WARP */
+.loading-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:9000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  transition:opacity 0.3s ease;
+}
+.loading-screen.warp-out{animation:warpIn 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes warpIn{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
+
+/* ── BOOK CONTAINER ── */
+.book-wrap{position:relative;width:110px;height:140px;perspective:600px}
+.book{
+  width:110px;height:140px;
+  position:relative;transform-style:preserve-3d;
+  animation:bookIdle 2.5s ease-in-out infinite;
+}
+.book.opening{animation:bookOpen 1.0s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes bookIdle{
+  0%,100%{transform:rotateY(-6deg) translateY(0)}
+  50%    {transform:rotateY(6deg)  translateY(-8px)}
+}
+@keyframes bookOpen{
+  0%  {transform:rotateY(-6deg) scale(1)}
+  30% {transform:rotateY(-35deg) scale(1.08)}
+  60% {transform:rotateY(0deg) scale(1.15)}
+  100%{transform:rotateY(0deg) scale(4) translateZ(60px);opacity:0}
+}
+
+/* ── ปก ── */
+.book-cover{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#3d2008 0%,#7a4a18 35%,#a06828 55%,#5c3410 100%);
+  border:2px solid #c8860a;
+  border-radius:2px 5px 5px 2px;
+  box-shadow:0 0 28px rgba(200,134,10,0.45),inset 0 0 24px rgba(0,0,0,0.6);
+  overflow:hidden;
+}
+.book-cover::before{
+  content:'';position:absolute;inset:7px;
+  border:1px solid rgba(200,134,10,0.35);
+  pointer-events:none;
+}
+.book-cover::after{
+  content:'✦ QUEST LOG ✦';
+  position:absolute;bottom:16px;left:0;right:0;text-align:center;
+  font-family:'Orbitron',monospace;font-size:6.5px;letter-spacing:2px;
+  color:rgba(245,166,35,0.65);
+}
+
+/* ── สัน ── */
+.book-spine{
+  position:absolute;left:-9px;top:2px;bottom:2px;width:9px;
+  background:linear-gradient(90deg,#281405,#5c3410);
+  border:1px solid rgba(200,134,10,0.25);
+  border-radius:2px 0 0 2px;
+}
+
+/* ── หน้ากระดาษ ── */
+.book-pages{
+  position:absolute;right:-4px;top:4px;bottom:4px;width:7px;
+  background:repeating-linear-gradient(
+    90deg,#edd98a 0px,#c9a840 1px,#edd98a 2.5px,#c08a28 3px,#edd98a 4.5px
+  );
+  border-radius:0 2px 2px 0;
+}
+
+/* ── ไอคอนบนปก ── */
+.book-icon{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);
+  width:42px;height:42px;
+  border:1px solid rgba(200,134,10,0.5);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.35);
+}
+
+/* ── กระดาษด้านในที่ปรากฏตอนเปิด ── */
+.book-inner-page{
+  position:absolute;inset:3px;
+  background:linear-gradient(135deg,#f5e6b8,#e8d090,#f0daa0);
+  opacity:0;border-radius:1px 3px 3px 1px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;
+  transition:opacity 0.3s ease 0.5s;
+}
+.book.opening .book-inner-page{opacity:1}
+.book-inner-line{width:70%;height:2px;background:rgba(100,60,10,0.25);border-radius:1px}
+
+/* ── scanline ── */
+.book-scanline{
+  position:absolute;left:9px;right:5px;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(200,134,10,0.9),rgba(245,166,35,0.7),transparent);
+  box-shadow:0 0 8px rgba(200,134,10,0.6);
+  animation:bookScan 2s ease-in-out infinite;
+}
+@keyframes bookScan{
+  0%{top:12%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:88%;opacity:0}
+}
+
+/* ── particle glow ── */
+.book-glow{
+  position:absolute;inset:-20px;
+  background:radial-gradient(ellipse,rgba(200,134,10,0.12) 0%,transparent 70%);
+  animation:glowPulse 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes glowPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+
+/* ── ข้อความ ── */
+.loading-logo{
+  font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
+  letter-spacing:6px;color:#f5a623;
+  text-shadow:0 0 24px rgba(200,134,10,0.8),0 0 48px rgba(200,134,10,0.3);
+}
+.loading-bar-wrap{
+  width:160px;height:2px;
+  background:rgba(200,134,10,0.1);
+  border:1px solid rgba(200,134,10,0.18);
+}
+.loading-bar{
+  height:100%;
+  background:linear-gradient(90deg,#6b4500,#c8860a,#f5a623);
+  animation:loadAnim 1.4s ease-in-out infinite;
+}
+@keyframes loadAnim{0%{width:0}55%{width:70%}100%{width:100%}}
+.loading-txt{
+  font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--text-dim);
+}
 
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:500;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
@@ -216,9 +343,26 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <body>
 
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="book-wrap">
+    <div class="book" id="bookEl">
+      <div class="book-glow"></div>
+      <div class="book-spine"></div>
+      <div class="book-cover">
+        <div class="book-icon" id="bookIconEl"></div>
+        <div class="book-inner-page">
+          <div class="book-inner-line"></div>
+          <div class="book-inner-line" style="width:50%"></div>
+          <div class="book-inner-line" style="width:60%"></div>
+          <div class="book-inner-line" style="width:40%"></div>
+        </div>
+        <div class="book-scanline"></div>
+      </div>
+      <div class="book-pages"></div>
+    </div>
+  </div>
+  <div class="loading-logo">QUESTS</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt">LOADING QUESTS...</div>
+  <div class="loading-txt" id="loadingTxt">LOADING MISSIONS...</div>
 </div>
 
 <div class="cursor" id="cursor"></div>
@@ -367,7 +511,9 @@ async function init() {
 
   injectGlobalDefs()
 
-  // ── Page title ──
+  // ── Book cover icon ──
+  const bookIconEl = document.getElementById('bookIconEl')
+  if (bookIconEl) bookIconEl.innerHTML = getIcon('scroll', 28)
   const questPageTitle = document.getElementById('questPageTitle')
   if (questPageTitle) questPageTitle.innerHTML = getIcon('scroll', 16) + ' <span>QUESTS</span>'
 
@@ -406,7 +552,16 @@ async function init() {
   await loadProfile()
   await loadAllQuests()
 
-  document.getElementById('loadingScreen').style.display = 'none'
+  // ── Book open → warp into page ──
+  const ls = document.getElementById('loadingScreen')
+  const bookEl = document.getElementById('bookEl')
+  const loadTxt = document.getElementById('loadingTxt')
+  if (loadTxt) loadTxt.textContent = 'OPENING...'
+  if (bookEl) bookEl.classList.add('opening')
+  setTimeout(() => {
+    if (ls) ls.classList.add('warp-out')
+    setTimeout(() => { if (ls) ls.style.display = 'none' }, 700)
+  }, 800)
   updateResetTimer()
   setInterval(updateResetTimer, 60000)
   initCursor()
