@@ -104,9 +104,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(max-width:900px){.guild-grid{grid-template-columns:1fr}}
 
 /* TABS (MEMBERS / QUEST / CHAT / FEED / จัดการ) */
-.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--g-border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}
-.inner-tabs::-webkit-scrollbar{display:none}
-.itab{padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;flex-shrink:0}
+.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--g-border);margin-bottom:20px;width:100%}
+.itab{padding:10px 4px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:0.5px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0}
 .itab.active{color:var(--g-gold);border-bottom-color:var(--g-gold)}
 .itab.active.manage-tab{color:var(--g-amber);border-bottom-color:var(--g-amber)}
 .itab:hover:not(.active){color:var(--g-amber)}
@@ -114,24 +113,27 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* MEMBER LIST */
 .member-list{display:flex;flex-direction:column;gap:0}
-.member-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g-border);transition:background 0.2s}
+.member-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--g-border)}
 .member-item:last-child{border-bottom:none}
-.member-avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cls,var(--g-border));background:var(--g-panel);flex-shrink:0}
+.member-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cls,var(--g-border));background:var(--g-panel);flex-shrink:0}
 .member-avatar img{width:100%;height:100%;object-fit:cover}
 .member-info{flex:1;min-width:0}
-.member-name{font-family:'Orbitron',monospace;font-size:10px;color:#fff;display:flex;align-items:center;gap:6px}
-.member-cls{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
-.member-xp{font-family:'Orbitron',monospace;font-size:10px;color:var(--g-amber);flex-shrink:0}
-.member-role{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 7px;border:1px solid;display:inline-flex;align-items:center;gap:3px}
+.member-name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.member-name{font-family:'Orbitron',monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-meta-row{display:flex;align-items:center;gap:6px}
+.member-cls{font-family:'Orbitron',monospace;font-size:8px}
+.member-lv{font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim)}
+.member-xp{font-family:'Orbitron',monospace;font-size:10px;color:var(--g-amber);flex-shrink:0;text-align:right;min-width:60px}
+.member-role{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 7px;border:1px solid;display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
 .member-role.master{color:var(--g-gold);border-color:rgba(255,215,0,0.4)}
 .member-role.officer{color:var(--g-amber);border-color:rgba(255,160,0,0.4)}
 
 /* MANAGE TAB — action buttons (master/officer only) */
 .manage-member-list{display:flex;flex-direction:column;gap:0}
-.manage-member-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g-border);transition:background 0.2s}
+.manage-member-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--g-border)}
 .manage-member-item:last-child{border-bottom:none}
-.manage-member-actions{display:flex;gap:6px;flex-shrink:0}
-.manage-btn{padding:5px 10px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;background:transparent;border:1px solid;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px}
+.manage-member-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.manage-btn{padding:6px 10px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:0.5px;background:transparent;border:1px solid;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .manage-btn.promote{color:var(--g-amber);border-color:rgba(255,160,0,0.35)}
 .manage-btn.promote:hover{color:var(--g-gold);border-color:var(--g-gold);background:rgba(255,200,0,0.08)}
 .manage-btn.kick{color:rgba(255,50,50,0.6);border-color:rgba(255,50,50,0.25)}
@@ -301,8 +303,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .main{margin-left:0;padding:80px 12px 100px}
   .guild-grid{grid-template-columns:1fr}
   .right-panel{display:none}
-  .inner-tabs{width:100%;overflow-x:auto}
-  .itab{padding:8px 8px;font-size:8px;letter-spacing:0.5px;gap:3px}
+  .inner-tabs{width:100%}
+  .itab{padding:8px 2px;font-size:7px;letter-spacing:0;gap:2px}
   .itab-count{font-size:7px;padding:1px 4px}
   .guild-banner-inner{gap:12px}
   .guild-icon{width:52px;height:52px;font-size:22px}
@@ -1156,11 +1158,13 @@ async function loadMembers() {
     <div class="member-item cls-${cls}">
       <div class="member-avatar" style="border-color:${clsColor}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
       <div class="member-info">
-        <div class="member-name">${escHtml(u.display_name || u.username)}</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
-          <span class="member-cls" style="color:${clsColor}">${getIcon('class_'+cls,11)} ${cls.toUpperCase()}</span>
-          <span style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim)">· LV.${u.level}</span>
+        <div class="member-name-row">
+          <span class="member-name">${escHtml(u.display_name || u.username)}</span>
           <span class="member-role ${m.role}">${m.role === 'master' ? getIcon('crown',10)+' MASTER' : m.role === 'officer' ? getIcon('officer_badge',10)+' OFFICER' : 'MEMBER'}</span>
+        </div>
+        <div class="member-meta-row">
+          <span class="member-cls" style="color:${clsColor}">${getIcon('class_'+cls,10)} ${cls.toUpperCase()}</span>
+          <span class="member-lv">· LV.${u.level}</span>
         </div>
       </div>
       <div class="member-xp">${(u.xp_this_month||0).toLocaleString()} XP</div>
@@ -1214,12 +1218,15 @@ function renderManageList() {
       const isMaster = m.role === 'master'
       return `
       <div class="manage-member-item cls-${cls}">
-        <div class="member-avatar" style="border-color:${clsColor};width:32px;height:32px;flex-shrink:0"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
+        <div class="member-avatar" style="border-color:${clsColor};width:38px;height:38px;flex-shrink:0"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
         <div class="member-info" style="flex:1;min-width:0">
-          <div style="font-family:Orbitron,monospace;font-size:9px;color:#fff">${escHtml(u.display_name||u.username)}</div>
-          <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
-            <span style="font-family:Orbitron,monospace;font-size:7px;color:${clsColor}">${cls.toUpperCase()} · LV.${u.level}</span>
-            <span class="member-role ${m.role}" style="font-size:7px">${isMaster ? getIcon('crown',9)+' MASTER' : isOfficer ? getIcon('officer_badge',9)+' OFFICER' : 'MEMBER'}</span>
+          <div class="member-name-row">
+            <span style="font-family:Orbitron,monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(u.display_name||u.username)}</span>
+            <span class="member-role ${m.role}" style="flex-shrink:0">${isMaster ? getIcon('crown',9)+' MASTER' : isOfficer ? getIcon('officer_badge',9)+' OFFICER' : 'MEMBER'}</span>
+          </div>
+          <div class="member-meta-row">
+            <span style="font-family:Orbitron,monospace;font-size:8px;color:${clsColor}">${cls.toUpperCase()}</span>
+            <span style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim)">· LV.${u.level}</span>
           </div>
         </div>
         <div class="manage-member-actions">
