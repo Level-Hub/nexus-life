@@ -68,7 +68,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   margin-bottom:28px;
   animation:fadeInDown 0.5s ease both;
 }
-.page-title { font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px; }
+.page-title { font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:14px; }
 .page-title span { color:var(--cyan); }
 .page-date { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
 
@@ -439,7 +439,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>WORLD MAP</span></div>
+      <div class="page-title"><span id="pageTitleIcon" style="display:inline-flex;align-items:center"></span> <span>WORLD MAP</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
 
@@ -665,6 +665,13 @@ async function init() {
   const { user } = await initSidebar('map')
   if (!user) return
   currentUser = user
+
+  // Page title icon — pioneer compass suits World Map perfectly
+  const pageTitleIcon = document.getElementById('pageTitleIcon')
+  if (pageTitleIcon) {
+    pageTitleIcon.innerHTML = getIcon('pioneer', 26)
+    pageTitleIcon.style.filter = 'drop-shadow(0 0 8px #00f5ff) drop-shadow(0 0 3px #44ff88)'
+  }
 
   // inject static icons
   const mapTitle = document.getElementById('mapPageTitle')
