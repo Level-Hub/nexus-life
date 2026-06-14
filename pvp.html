@@ -7,19 +7,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan: #00f5ff;
-  --cyan-dim: #00a8b5;
+  --cyan: #ff003c;
+  --cyan-dim: #cc0030;
   --gold: #ffd700;
   --red: #ff003c;
   --green: #44ff88;
-  --purple: #b044ff;
+  --purple: #ff6666;
   --orange: #ff9500;
-  --bg: #010a0f;
-  --bg2: #020d14;
-  --panel: rgba(0,245,255,0.04);
-  --border: rgba(0,245,255,0.12);
-  --text: #c8f0f5;
-  --text-dim: #5a8a90;
+  --bg: #0f0003;
+  --bg2: #140005;
+  --panel: rgba(255,0,60,0.04);
+  --border: rgba(255,0,60,0.15);
+  --text: #f5c8cc;
+  --text-dim: #7a404a;
 }
 
 .cls-warrior  { --cls:#ff4444; }
@@ -45,16 +45,16 @@ body {
   body { cursor:none; }
 }
 
-.cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
-.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
+.cursor { position:fixed;width:10px;height:10px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--red); }
+.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(255,0,60,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
 
 body::before { content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000; }
 
-.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
+.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(255,0,60,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,60,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
 
 .orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
 .orb-1 { width:500px;height:500px;background:rgba(255,0,60,0.04);top:-150px;right:-100px; }
-.orb-2 { width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px; }
+.orb-2 { width:300px;height:300px;background:rgba(180,0,30,0.05);bottom:100px;left:-50px; }
 
 /* MAIN */
 .main { margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px; }
@@ -67,14 +67,12 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .page-title span { color:var(--red); }
 .page-date { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px; }
 
-.notif-btn { position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--border);cursor:pointer;transition:all 0.3s; }
-.notif-btn:hover { border-color:var(--cyan); }
-.notif-dot { position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.5s infinite; }
+
 
 /* SECTION BOX */
-.box { background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative; }
-.box::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
-.box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+.box { background:rgba(255,0,60,0.02);border:1px solid var(--border);position:relative; }
+.box::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--red);border-left:2px solid var(--red); }
+.box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--red);border-right:2px solid var(--red); }
 .box.red-box::before { border-color:var(--red); }
 .box.red-box::after  { border-color:var(--red); }
 .box.gold-box::before { border-color:var(--gold); }
@@ -83,7 +81,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .box.purple-box::after  { border-color:var(--purple); }
 
 .box-header { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border); }
-.box-title { font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--cyan); }
+.box-title { font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--red); }
 .box-title.red { color:var(--red); }
 .box-title.gold { color:var(--gold); }
 .box-title.purple { color:var(--purple); }
@@ -152,7 +150,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   cursor:pointer;transition:all 0.2s;text-align:center;
 }
 .tourn-subtab-btn.active { color:var(--gold);background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.3); }
-.tourn-subtab-btn:hover:not(.active) { color:var(--text);border-color:var(--cyan); }
+.tourn-subtab-btn:hover:not(.active) { color:var(--text);border-color:var(--red); }
 
 /* ===================== MAIN GRID ===================== */
 .pvp-grid { display:grid;grid-template-columns:1fr 300px;gap:20px; }
@@ -172,7 +170,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .duel-player { display:flex;align-items:center;gap:10px; }
 .duel-avatar { width:44px;height:44px;border-radius:50%;border:2px solid var(--cls, var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0; }
 .duel-avatar img { width:100%;height:100%;object-fit:cover; }
-.duel-avatar-placeholder { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(0,245,255,0.05); }
+.duel-avatar-placeholder { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,0,60,0.05); }
 .duel-pname { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff; }
 .duel-pclass { font-family:'Orbitron',monospace;font-size:8px;color:var(--cls,var(--cyan));letter-spacing:1px;margin-top:2px; }
 .duel-plv { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px; }
@@ -191,7 +189,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .duel-status-badge.active { background:rgba(68,255,136,0.1);border:1px solid rgba(68,255,136,0.3);color:var(--green); }
 .duel-status-badge.pending { background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--gold); }
-.duel-status-badge.won { background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);color:var(--cyan); }
+.duel-status-badge.won { background:rgba(255,0,60,0.1);border:1px solid rgba(255,0,60,0.3);color:var(--red); }
 .duel-status-badge.lost { background:rgba(255,0,60,0.1);border:1px solid rgba(255,0,60,0.3);color:var(--red); }
 
 .duel-progress-row { display:flex;align-items:center;gap:10px;margin-bottom:12px; }
@@ -199,16 +197,16 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .duel-xp-label { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);margin-bottom:4px; }
 .duel-xp-track { height:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);position:relative;overflow:hidden; }
 .duel-xp-fill { height:100%;transition:width 1s ease; }
-.duel-xp-fill.me { background:linear-gradient(90deg,var(--cyan-dim),var(--cyan)); }
+.duel-xp-fill.me { background:linear-gradient(90deg,#cc0030,var(--red)); }
 .duel-xp-fill.them { background:linear-gradient(90deg,#cc2222,var(--red)); }
 .duel-xp-num { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;white-space:nowrap; }
-.duel-xp-num.me { color:var(--cyan); }
+.duel-xp-num.me { color:var(--red); }
 .duel-xp-num.them { color:var(--red); }
 
 .duel-meta { display:flex;gap:8px;flex-wrap:wrap; }
 .duel-tag {
   font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
-  padding:3px 8px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15);color:var(--cyan);
+  padding:3px 8px;background:rgba(255,0,60,0.06);border:1px solid rgba(255,0,60,0.2);color:var(--red);
 }
 .duel-tag.time { color:var(--gold);border-color:rgba(255,215,0,0.2);background:rgba(255,215,0,0.06); }
 .duel-tag.reward { color:var(--green);border-color:rgba(68,255,136,0.2);background:rgba(68,255,136,0.06); }
@@ -239,23 +237,23 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   background:rgba(0,0,0,0.4);border:1px solid var(--border);color:var(--text);
   outline:none;transition:border-color 0.2s;
 }
-.search-input:focus { border-color:var(--cyan); }
+.search-input:focus { border-color:var(--red); }
 .search-input::placeholder { color:var(--text-dim); }
 .search-btn {
   padding:12px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all 0.3s;
+  background:transparent;border:1px solid var(--red);color:var(--red);cursor:pointer;transition:all 0.3s;
 }
-.search-btn:hover { background:var(--cyan);color:var(--bg); }
+.search-btn:hover { background:var(--red);color:#fff; }
 
 .player-results { display:flex;flex-direction:column;gap:8px; }
 .player-result-card {
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px;background:rgba(0,245,255,0.02);border:1px solid var(--border);
+  padding:14px;background:rgba(255,0,60,0.02);border:1px solid var(--border);
   transition:all 0.2s;
 }
-.player-result-card:hover { border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04); }
+.player-result-card:hover { border-color:rgba(255,0,60,0.25);background:rgba(255,0,60,0.04); }
 .player-result-info { display:flex;align-items:center;gap:12px; }
-.player-result-avatar { width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel); }
+.player-result-avatar { width:40px;height:40px;border-radius:50%;border:2px solid var(--cls,var(--red));overflow:hidden;background:var(--panel); }
 .player-result-avatar .duel-avatar-placeholder { font-size:16px; }
 .player-result-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff; }
 .player-result-sub { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px; }
@@ -274,10 +272,10 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);
 }
 .history-table td {
-  padding:12px 14px;border-bottom:1px solid rgba(0,245,255,0.05);
+  padding:12px 14px;border-bottom:1px solid rgba(255,0,60,0.05);
   font-size:13px;color:var(--text);
 }
-.history-table tr:hover td { background:rgba(0,245,255,0.02); }
+.history-table tr:hover td { background:rgba(255,0,60,0.02); }
 .result-win { font-family:'Orbitron',monospace;font-size:9px;color:var(--green);font-weight:700; }
 .result-loss { font-family:'Orbitron',monospace;font-size:9px;color:var(--red);font-weight:700; }
 
@@ -307,15 +305,15 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 .bracket-match { margin:8px 0;position:relative; }
 .bracket-slot {
-  padding:10px 14px;background:rgba(0,245,255,0.02);border:1px solid var(--border);
+  padding:10px 14px;background:rgba(255,0,60,0.02);border:1px solid var(--border);
   font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);
   display:flex;align-items:center;justify-content:space-between;
   transition:all 0.2s;
 }
 .bracket-slot.winner { border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.04);color:var(--green); }
-.bracket-slot.me { border-color:rgba(0,245,255,0.3);background:rgba(0,245,255,0.06);color:var(--cyan); }
+.bracket-slot.me { border-color:rgba(255,0,60,0.3);background:rgba(255,0,60,0.06);color:var(--red); }
 .bracket-slot.tbd { opacity:0.4; }
-.bracket-divider { height:1px;background:rgba(0,245,255,0.08);margin:0 4px; }
+.bracket-divider { height:1px;background:rgba(255,0,60,0.08);margin:0 4px; }
 .bracket-slot-xp { font-size:8px;color:var(--text-dim); }
 .bracket-connector { position:absolute;right:-8px;top:50%;width:8px;height:1px;background:var(--border); }
 
@@ -334,14 +332,14 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .gw-guild-name { font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px; }
 .gw-guild-tag { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px; }
 .gw-xp { font-family:'Orbitron',monospace;font-size:20px;font-weight:900; }
-.gw-xp.us { color:var(--cyan); }
+.gw-xp.us { color:var(--red); }
 .gw-xp.them { color:var(--purple); }
 .gw-them { text-align:right; }
 
 .gw-bar-wrap { margin-bottom:12px; }
 .gw-bar-label { display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim);margin-bottom:4px; }
 .gw-bar-track { height:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex; }
-.gw-bar-us { background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));transition:width 1s ease; }
+.gw-bar-us { background:linear-gradient(90deg,#cc0030,var(--red));transition:width 1s ease; }
 .gw-bar-them { background:linear-gradient(90deg,#8800cc,var(--purple));transition:width 1s ease; }
 
 /* ===================== RIGHT SIDEBAR ===================== */
@@ -351,7 +349,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .pvp-my-stats { padding:0; }
 .pvp-stat-row { display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border); }
 .pvp-stat-cell { background:var(--bg2);padding:14px;text-align:center; }
-.pvp-stat-val { font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan); }
+.pvp-stat-val { font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--red); }
 .pvp-stat-val.g { color:var(--green); }
 .pvp-stat-val.r { color:var(--red); }
 .pvp-stat-val.o { color:var(--orange); }
@@ -361,7 +359,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .pvp-rank-list { display:flex;flex-direction:column;gap:0; }
 .pvp-rank-item {
   display:flex;align-items:center;gap:10px;
-  padding:12px 0;border-bottom:1px solid rgba(0,245,255,0.05);
+  padding:12px 0;border-bottom:1px solid rgba(255,0,60,0.08);
 }
 .pvp-rank-item:last-child { border-bottom:none; }
 .pvp-rank-num { font-family:'Orbitron',monospace;font-size:11px;font-weight:900;width:24px;text-align:center;flex-shrink:0; }
@@ -369,17 +367,17 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .pvp-rank-num.top2 { color:#c0c0c0; }
 .pvp-rank-num.top3 { color:#cd7f32; }
 .pvp-rank-num.other { color:var(--text-dim); }
-.pvp-rank-avatar { width:32px;height:32px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel);flex-shrink:0; }
+.pvp-rank-avatar { width:32px;height:32px;border-radius:50%;border:2px solid var(--cls,var(--red));overflow:hidden;background:var(--panel);flex-shrink:0; }
 .pvp-rank-avatar .duel-avatar-placeholder { font-size:12px; }
 .pvp-rank-info { flex:1;min-width:0; }
 .pvp-rank-name { font-family:'Orbitron',monospace;font-size:9px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .pvp-rank-sub { font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim);margin-top:1px; }
-.pvp-rank-score { font-family:'Orbitron',monospace;font-size:10px;color:var(--cyan);font-weight:700;flex-shrink:0; }
+.pvp-rank-score { font-family:'Orbitron',monospace;font-size:10px;color:var(--red);font-weight:700;flex-shrink:0; }
 
 /* REWARDS BOX */
 .reward-list { display:flex;flex-direction:column;gap:10px; }
-.reward-item { display:flex;align-items:center;gap:12px;padding:12px;background:rgba(0,245,255,0.02);border:1px solid var(--border);transition:border-color 0.2s; }
-.reward-item:hover { border-color:rgba(0,245,255,0.25); }
+.reward-item { display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,0,60,0.02);border:1px solid var(--border);transition:border-color 0.2s; }
+.reward-item:hover { border-color:rgba(255,0,60,0.25); }
 .reward-icon { font-size:22px;width:36px;text-align:center;flex-shrink:0; }
 .reward-text { flex:1; }
 .reward-name { font-family:'Orbitron',monospace;font-size:9px;color:#fff;letter-spacing:1px;margin-bottom:3px; }
@@ -397,7 +395,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   position:fixed;bottom:32px;right:32px;z-index:500;
   font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;
   padding:14px 20px;background:rgba(1,10,15,0.95);
-  border:1px solid var(--cyan);color:var(--cyan);
+  border:1px solid var(--red);color:var(--red);
   transform:translateY(80px);opacity:0;
   transition:all 0.3s ease;pointer-events:none;max-width:320px;
 }
@@ -413,7 +411,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .modal-overlay.show { display:flex; }
 .modal {
-  background:var(--bg2);border:1px solid var(--border);
+  background:var(--bg2);border:1px solid rgba(255,0,60,0.2);
   width:90%;max-width:480px;position:relative;
   animation:fadeInUp 0.3s ease;
 }
@@ -423,7 +421,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .modal-close:hover { border-color:var(--red);color:var(--red); }
 .modal-body { padding:24px; }
 
-.modal-target-info { display:flex;align-items:center;gap:14px;padding:16px;background:rgba(0,245,255,0.03);border:1px solid var(--border);margin-bottom:20px; }
+.modal-target-info { display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,0,60,0.03);border:1px solid var(--border);margin-bottom:20px; }
 .modal-target-avatar { width:52px;height:52px;border-radius:50%;border:2px solid var(--cls,var(--cyan));overflow:hidden;background:var(--panel); }
 .modal-target-name { font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px; }
 .modal-target-sub { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px; }
@@ -435,13 +433,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   background:rgba(0,0,0,0.4);border:1px solid var(--border);color:var(--text);
   cursor:pointer;outline:none;appearance:none;
 }
-.modal-select:focus { border-color:var(--cyan); }
+.modal-select:focus { border-color:var(--red); }
 
 .modal-info-box { background:rgba(255,0,60,0.04);border:1px solid rgba(255,0,60,0.15);padding:12px;margin-bottom:20px; }
 .modal-info-item { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
 .modal-info-item:last-child { margin-bottom:0; }
 .modal-info-label { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px; }
-.modal-info-val { font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan); }
+.modal-info-val { font-family:'Orbitron',monospace;font-size:9px;color:var(--red); }
 
 .modal-submit {
   width:100%;padding:14px;
@@ -556,13 +554,10 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>PVP DUEL</span></div>
+      <div class="page-title"><span id="pvpPageTitleIcon" style="display:inline-flex;align-items:center"></span> <span>PVP DUEL</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
-    <button class="notif-btn" onclick="window.location.href='./notifications.html'">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 0 1 5 5v3l2 2H2l2-2V7a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.2"/><path d="M7 14a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.2"/></svg>
-      <div class="notif-dot" id="notifDot" style="display:none"></div>
-    </button>
+
   </div>
 
   <!-- PVP HERO BANNER -->
@@ -993,6 +988,9 @@ function clsIcon(cls, size=16) { return getIcon(`class_${cls}`, size) || getIcon
 
 function avatarHtml(user, size='44px') {
   const cls = user?.class || 'warrior'
+  if (user?.avatar_url) {
+    return `<img src="${user.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+  }
   if (user?.avatar_seed) {
     return `<img src="${getAvatarUrl(user.avatar_seed)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
   }
@@ -1028,6 +1026,10 @@ async function init() {
   currentUser = user
 
   // inject static icons
+  // inject page title icon (target crosshair)
+  const pvpPageTitleIcon = document.getElementById('pvpPageTitleIcon')
+  if (pvpPageTitleIcon) pvpPageTitleIcon.innerHTML = getIcon('target', 20)
+
   const pvpHeroTitle = document.getElementById('pvpHeroTitle')
   if (pvpHeroTitle) pvpHeroTitle.innerHTML = getIcon('sword', 16) + ' PVP ARENA'
   const tab1v1 = document.getElementById('tab1v1')
@@ -1294,7 +1296,7 @@ async function loadIncomingChallenges() {
           </div>
           <div class="vs-badge">VS</div>
           <div>
-            <div class="duel-pname" style="color:var(--cyan)">YOU</div>
+            <div class="duel-pname" style="color:var(--red)">YOU</div>
             <div class="duel-plv" style="color:var(--text-dim)">LV.${myProfile?.level || 1}</div>
           </div>
         </div>
@@ -1396,7 +1398,7 @@ async function loadActiveDuels() {
               ${avatarHtml(me)}
             </div>
             <div>
-              <div class="duel-pname" style="color:var(--cyan)">YOU</div>
+              <div class="duel-pname" style="color:var(--red)">YOU</div>
               <div class="duel-plv">LV.${me?.level || 1}</div>
             </div>
           </div>
@@ -1482,19 +1484,28 @@ window.searchPlayers = async function() {
   }
 
   const myLv = myProfile?.level || 1
+  const RANK_COLORS = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#ffd700', platinum:'#88ccff', diamond:'#88ffff', legendary:'#ff88ff' }
   results.innerHTML = players.map(p => {
     const cls = p.class || 'warrior'
+    const clsColor = CLASS_COLOR[cls] || '#ff4444'
     const lvDiff = Math.abs((p.level || 1) - myLv)
     const canChallenge = lvDiff <= 5
+    const rankKey = p.rank || 'bronze'
+    const rankLabel = RANK_LABEL[rankKey] || 'BRONZE'
+    const rankColor = RANK_COLORS[rankKey] || '#cd7f32'
     return `
     <div class="player-result-card">
       <div class="player-result-info">
-        <div class="player-result-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
+        <div class="player-result-avatar cls-${cls}" style="border-color:${clsColor}">
           ${avatarHtml(p)}
         </div>
         <div>
           <div class="player-result-name">${p.display_name || p.username}</div>
-          <div class="player-result-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${p.level||1} · ${(RANK_LABEL[p.rank]||'BRONZE').split(' ')[0]}</div>
+          <div class="player-result-sub">
+            <span style="color:${clsColor}">${clsIcon(cls,13)} ${cls.toUpperCase()}</span>
+            <span style="color:var(--text-dim)"> · LV.${p.level||1} · </span>
+            <span style="color:${rankColor};font-family:'Orbitron',monospace;font-size:8px">${rankLabel}</span>
+          </div>
         </div>
       </div>
       <button class="challenge-btn" ${!canChallenge ? 'disabled title="Level ห่างกันเกิน 5"' : ''} onclick='openChallengeModal(${JSON.stringify(p)})'>
@@ -1598,7 +1609,7 @@ async function loadPvPRanking() {
 
   const { data: players } = await supabase
     .from('users')
-    .select('id,username,display_name,class,level,avatar_seed')
+    .select('id,username,display_name,class,level,avatar_seed,avatar_url')
     .in('id', topIds)
 
   const ranked = (players || [])
@@ -1610,14 +1621,14 @@ async function loadPvPRanking() {
     const rank = i + 1
     const isMe = p.id === currentUser.id
     return `
-    <div class="pvp-rank-item" style="${isMe ? 'background:rgba(0,245,255,0.07);border-left:2px solid var(--cyan);' : ''}" ${!isMe ? `onclick="window.location.href='./profile.html?uid=${p.id}'"` : ''}>
+    <div class="pvp-rank-item" style="${isMe ? 'background:rgba(255,0,60,0.07);border-left:2px solid var(--red);' : ''}" ${!isMe ? `onclick="window.location.href='./profile.html?uid=${p.id}'"` : ''}>
       <div class="pvp-rank-num ${rank===1?'top1':rank===2?'top2':rank===3?'top3':'other'}">${rank===1?'#1':rank===2?'#2':rank===3?'#3':rank}</div>
-      <div class="pvp-rank-avatar" style="border-color:${isMe ? 'var(--cyan)' : CLASS_COLOR[cls]}">
+      <div class="pvp-rank-avatar" style="border-color:${isMe ? 'var(--red)' : CLASS_COLOR[cls]}">
         ${avatarHtml(p)}
       </div>
       <div class="pvp-rank-info">
         <div class="pvp-rank-name">${p.display_name || p.username}</div>
-        <div class="pvp-rank-sub">${clsIcon(cls,14)} ${cls.toUpperCase()} · LV.${p.level||1}${isMe ? ' · <span style="color:var(--cyan);font-size:7px">YOU</span>' : ''}</div>
+        <div class="pvp-rank-sub" style="color:${CLASS_COLOR[cls]}">${clsIcon(cls,12)} <span style="color:var(--text-dim)">${cls.toUpperCase()} · LV.${p.level||1}</span>${isMe ? ' · <span style="color:var(--red);font-size:7px">YOU</span>' : ''}</div>
       </div>
       <div class="pvp-rank-score">${p.wins}W</div>
     </div>`
@@ -1869,7 +1880,7 @@ async function loadTournament() {
       const isMe = u.id === currentUser.id
       const eliminated = p.is_eliminated && !p.bracket_position
       return `
-      <div class="pvp-rank-item" ${isMe ? 'style="background:rgba(0,245,255,0.04)"' : ''}>
+      <div class="pvp-rank-item" ${isMe ? 'style="background:rgba(255,0,60,0.04);border-left:2px solid var(--red)"' : ''}>
         <div class="pvp-rank-num other">${i + 1}</div>
         <div class="pvp-rank-avatar" style="border-color:${CLASS_COLOR[cls]}">
           ${avatarHtml(u)}

@@ -673,14 +673,11 @@ function updateGuildClock() {
   const date = now.getDate()
   const month = months[now.getMonth()]
   const year = now.getFullYear() + 543
-  const h = String(now.getHours()).padStart(2,'0')
-  const m = String(now.getMinutes()).padStart(2,'0')
-  const s = String(now.getSeconds()).padStart(2,'0')
   const el = document.getElementById('guildStatusSub')
-  if (el) el.textContent = `${day}ที่ ${date} ${month} ${year}  ${h}:${m}:${s}`
+  if (el) el.textContent = `${day}ที่ ${date} ${month} ${year}`
 }
 updateGuildClock()
-setInterval(updateGuildClock, 1000)
+setInterval(updateGuildClock, 60000)
 
 // ============================================
 // CUSTOM CONFIRM DIALOG
@@ -1225,7 +1222,7 @@ function renderManageList() {
             <span class="member-role ${m.role}" style="flex-shrink:0">${isMaster ? getIcon('crown',9)+' MASTER' : isOfficer ? getIcon('officer_badge',9)+' OFFICER' : 'MEMBER'}</span>
           </div>
           <div class="member-meta-row">
-            <span style="font-family:Orbitron,monospace;font-size:8px;color:${clsColor}">${cls.toUpperCase()}</span>
+            <span style="font-family:Orbitron,monospace;font-size:8px;color:${clsColor}">${getIcon('class_'+cls,10)} ${cls.toUpperCase()}</span>
             <span style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim)">· LV.${u.level}</span>
           </div>
         </div>
@@ -1436,11 +1433,21 @@ window.sendChat = async () => {
   if (!content) return
   input.value = ''
 
-  await sb.from('messages').insert({
+  const { data: inserted, error } = await sb.from('messages').insert({
     sender_id: ME.id,
     channel: `guild_${MY_GUILD.id}`,
     content
-  })
+  }).select().single()
+
+  if (!error && inserted) {
+    appendChatMsg(inserted, {
+      username: ME.username,
+      display_name: ME.display_name,
+      avatar_seed: ME.avatar_seed,
+      avatar_url: ME.avatar_url,
+      class: ME.class
+    })
+  }
 }
 
 // ============================================
