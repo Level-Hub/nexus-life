@@ -882,70 +882,203 @@ export const SYSTEM_ICONS = {
   star_filled: `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6"
                   stroke="url(#goldStroke)" stroke-width="1.3"
                   fill="url(#goldGrad)" fill-opacity="0.85" filter="url(#glowGold)"/>`,
-
-  // ─── GUILD SYSTEM ICONS ────────────────────────────────────
-
-  // Castle / Guild Hall — GOLD (main guild icon alternative)
-  castle: `<path d="M3 14V8h2V6h2V4h2V6h2V8h2v6z" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/>
-           <path d="M3 8H2V6h2M13 8h1V6h-2M6 4V2h1v2M9 4V2h1v2" stroke="url(#goldGrad)" stroke-width="1.2"/>
-           <rect x="7" y="10" width="2" height="4" fill="url(#goldGrad)" fill-opacity="0.3"/>`,
-
-  // Swords crossed — RUBY (battle/pvp guild)
-  axes: `<path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="square"/>
-         <path d="M3 3L13 13M6 3H3v3M10 13h3v-3" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="square" opacity="0.6"/>
-         <circle cx="8" cy="8" r="1.2" fill="url(#goldGrad)" filter="url(#glowGold)"/>`,
-
-  // Banner / flag — GOLD (guild banner)
-  banner: `<path d="M5 2v12" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="square"/>
-           <path d="M5 2h8l-2 4 2 4H5" stroke="url(#goldGrad)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.15" stroke-linejoin="round" filter="url(#glowGold)"/>
-           <path d="M5 6h5" stroke="url(#goldStroke)" stroke-width="1" opacity="0.6"/>`,
-
-  // Handshake / alliance — GOLD/SAPPHIRE (guild alliance)
-  handshake: `<path d="M2 10c0 0 2-3 4-3h2.5c.8 0 1.5.5 1.5 1.5H8" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-              <path d="M2 10l-1 1.5" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M14 10c0 0-2-3-4-3H7.5" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-              <path d="M14 10l1 1.5" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M8 7V5a1 1 0 012 0v2" stroke="url(#sapphireGrad)" stroke-width="1.2" fill="none"/>`,
-
-  // Key — GOLD (unlock/manage)
-  key: `<circle cx="6" cy="7" r="3" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.12" filter="url(#glowGold)"/>
-        <path d="M9 7h5M12 7v2M14 7v1.5" stroke="url(#goldGrad)" stroke-width="1.4" stroke-linecap="square"/>`,
-
-  // Door/exit — RUBY (leave guild)
-  door: `<rect x="4" y="2" width="8" height="12" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.07"/>
-         <path d="M12 8h3M13 7l2 1-2 1" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="square"/>
-         <circle cx="11" cy="8" r="0.8" fill="url(#rubyGrad)" opacity="0.8"/>`,
-
-  // Promote/levelup arrow — GOLD
-  levelup: `<path d="M8 3v10M4 7l4-4 4 4" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glowGold)"/>`,
-
-  // Demote arrow — RUBY
-  demote: `<path d="M8 13V3M4 9l4 4 4-4" stroke="url(#rubyGrad)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>`,
-
-  // Save — SAPPHIRE
-  save: `<path d="M3 2h8l3 3v9H3z" stroke="url(#sapphireGrad)" stroke-width="1.3" fill="url(#sapphireGrad)" fill-opacity="0.07" stroke-linejoin="round"/>
-         <rect x="5" y="2" width="6" height="4" stroke="url(#cyanGrad)" stroke-width="1" fill="url(#cyanGrad)" fill-opacity="0.06"/>
-         <rect x="4" y="9" width="8" height="5" stroke="url(#cyanGrad)" stroke-width="1" fill="url(#cyanGrad)" fill-opacity="0.06"/>`,
-
-  // Officer badge — GOLD star shield
-  officer_badge: `<path d="M8 2L2 5v4c0 3 2 4.5 6 5.5 4-1 6-2.5 6-5.5V5z"
-                    stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round" filter="url(#glowGold)"/>
-                  <polygon points="8,5 8.8,7.5 11.5,7.5 9.4,9 10.2,11.5 8,10 5.8,11.5 6.6,9 4.5,7.5 7.2,7.5"
-                    fill="url(#goldGrad)" fill-opacity="0.9" filter="url(#glowGold)"/>`,
-
-  // Kick / boot — RUBY
-  kick: `<path d="M4 14l4-8h2l1 4 3-2" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-         <path d="M10 6l2-4" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round"/>
-         <path d="M6 2l6 12M2 2l12 12" stroke="url(#rubyGrad)" stroke-width="0.7" opacity="0" />
-         <path d="M3 8l9-6M3 6l9 6" stroke="url(#rubyGrad)" stroke-width="0.7" opacity="0"/>
-         <circle cx="10" cy="6" r="2" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.12"/>
-         <path d="M2 14l3-3 3 3" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M5 11v-2l5-5" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round"/>`,
-
-  // Guild manage/settings gear with crown — GOLD
-  manage: `<circle cx="8" cy="8" r="2.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.15"/>
-           <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.2 3.2l1 1M11.8 11.8l1 1M3.2 12.8l1-1M11.8 4.2l1-1" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
 }
+
+
+// ============================================================
+// GUILD ICONS — AAA Grade (20 icons, 24×24 viewBox)
+// These are exclusively for guild emblems / selection picker.
+// Each uses multi-stop gradients + filter for premium look.
+// ============================================================
+export const GUILD_ICONS = {
+
+  // ── 1. FORTRESS — stone castle with towers ──
+  fortress: `
+    <rect x="3" y="10" width="18" height="12" fill="url(#goldGrad)" fill-opacity="0.10" stroke="url(#goldGrad)" stroke-width="1.4"/>
+    <rect x="5" y="6" width="4" height="7" fill="url(#goldGrad)" fill-opacity="0.14" stroke="url(#goldStroke)" stroke-width="1.3"/>
+    <rect x="15" y="6" width="4" height="7" fill="url(#goldGrad)" fill-opacity="0.14" stroke="url(#goldStroke)" stroke-width="1.3"/>
+    <rect x="10" y="4" width="4" height="9" fill="url(#goldGrad)" fill-opacity="0.18" stroke="url(#goldStroke)" stroke-width="1.4"/>
+    <path d="M5 6h1v-2h1v2h1V4H5z" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1"/>
+    <path d="M15 6h1v-2h1v2h1V4h-3z" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1"/>
+    <path d="M10 4h1v-2h1v2h1V2h-3z" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1"/>
+    <rect x="10" y="15" width="4" height="7" fill="url(#goldGrad)" fill-opacity="0.15" stroke="url(#goldStroke)" stroke-width="1.2"/>
+    <path d="M3 22h18" stroke="url(#goldStroke)" stroke-width="1.3"/>
+    <filter id="guildGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`,
+
+  // ── 2. DRAGON — wyrm in profile ──
+  dragon: `
+    <path d="M4 16c0-5 3-9 7-9 2.5 0 4.5 1.5 5.5 4" stroke="url(#rubyGrad)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M16.5 11c1 1.5 1.5 3.5 1 5.5-1 4-5 6-9 5" stroke="url(#rubyGrad)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M8 21c-2 0-4-1-4-3s2-3 4-2" stroke="url(#fireGrad)" stroke-width="1.4" fill="none"/>
+    <circle cx="18" cy="8" r="2.5" fill="url(#rubyGrad)" fill-opacity="0.15" stroke="url(#rubyGrad)" stroke-width="1.3"/>
+    <circle cx="18.8" cy="7.2" r="0.8" fill="url(#rubyGrad)" filter="url(#glowWarm)"/>
+    <path d="M14 7c1-2 3-3 5-2.5" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M15 5c0.5-2 2-2.5 3-2" stroke="url(#rubyGrad)" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/>
+    <path d="M4 16l-2 2 3-0.5" stroke="url(#fireGrad)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M8 21l2 2" stroke="url(#fireGrad)" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>`,
+
+  // ── 3. WOLF — snarling wolf head ──
+  wolf: `
+    <path d="M5 20c0-5 2-9 7-9s7 4 7 9" fill="url(#platinumGrad)" fill-opacity="0.08" stroke="url(#platinumGrad)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M8 11c-1-2-2-4-3-6l4 3" fill="url(#platinumGrad)" fill-opacity="0.2" stroke="url(#platinumGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M16 11c1-2 2-4 3-6l-4 3" fill="url(#platinumGrad)" fill-opacity="0.2" stroke="url(#platinumGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="9" cy="14" r="1.4" fill="url(#sapphireGrad)" filter="url(#glow)"/>
+    <circle cx="15" cy="14" r="1.4" fill="url(#sapphireGrad)" filter="url(#glow)"/>
+    <path d="M10 18c0.7-0.7 2.6-0.7 3.3 0" stroke="url(#platinumGrad)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    <path d="M10.5 20l1-1.5 1 1.5" stroke="url(#rubyGrad)" stroke-width="1" stroke-linecap="round" fill="none"/>
+    <path d="M12 16.5v-1" stroke="url(#platinumGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
+
+  // ── 4. PHOENIX — rising fire bird ──
+  phoenix: `
+    <path d="M12 20c0-6 3-10 6-13-2 0-4 1-5 3V6c-2 2-2 6-1 9-1-1-2-2-2-4-1 2-1 5 0 7-1-1-1-2-1-3-1 3 0 5 1 7z" fill="url(#fireGrad)" fill-opacity="0.2" stroke="url(#fireGrad)" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M12 20c0-6-3-10-6-13 2 0 4 1 5 3" fill="url(#fireGrad)" fill-opacity="0.12" stroke="url(#fireGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="12" cy="18" r="2" fill="url(#goldGrad)" fill-opacity="0.3" filter="url(#glowGold)"/>
+    <path d="M10 4c1-2 3-2 4 0" stroke="url(#goldStroke)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <path d="M8 7c0-2 1.5-3 2.5-2" stroke="url(#fireGrad)" stroke-width="1.1" fill="none" opacity="0.7"/>
+    <path d="M16 7c0-2-1.5-3-2.5-2" stroke="url(#fireGrad)" stroke-width="1.1" fill="none" opacity="0.7"/>`,
+
+  // ── 5. HAWK — falcon in dive ──
+  hawk: `
+    <path d="M12 4l-8 10 4-1-3 8 7-9-3 0 5-8z" fill="url(#sapphireGrad)" fill-opacity="0.15" stroke="url(#cyanGrad)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M16 6l4 8-4-1 3 8-5-9 3 0-4-7z" fill="url(#sapphireGrad)" fill-opacity="0.10" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="12" cy="6" r="1.5" fill="url(#goldGrad)" filter="url(#glowGold)"/>
+    <path d="M10 14l2 4 2-4" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linejoin="round" fill="none"/>`,
+
+  // ── 6. INFERNO — triple flame ──
+  inferno: `
+    <path d="M12 21c0-4 2-8 4-10-1 0-2 0.5-2.5 2 0-3-1.5-7-3.5-9 0 3-1 5-2 7-0.5-1-0.5-2-0.5-3.5-2 3-2 7 0 10-1-0.5-1.5-2-1.5-3.5-1 2-1 5 0 7h6z" fill="url(#fireGrad)" fill-opacity="0.25" stroke="url(#fireGrad)" stroke-width="1.4" stroke-linejoin="round" filter="url(#glowWarm)"/>
+    <circle cx="12" cy="18" r="2.5" fill="url(#goldGrad)" fill-opacity="0.4" filter="url(#glowGold)"/>`,
+
+  // ── 7. DIAMOND — faceted gem ──
+  diamond: `
+    <polygon points="12,3 20,10 12,21 4,10" fill="url(#sapphireGrad)" fill-opacity="0.15" stroke="url(#sapphireGrad)" stroke-width="1.5" filter="url(#gemShine)"/>
+    <polygon points="12,3 20,10 12,9 4,10" fill="url(#sapphireGrad)" fill-opacity="0.25" stroke="url(#cyanGrad)" stroke-width="1"/>
+    <polygon points="12,9 20,10 12,21" fill="url(#sapphireGrad)" fill-opacity="0.08"/>
+    <polygon points="12,9 4,10 12,21" fill="url(#platinumGrad)" fill-opacity="0.08"/>
+    <path d="M4 10l8-1 8 1" stroke="url(#cyanGrad)" stroke-width="1"/>
+    <path d="M9 5.5l3 3.5 3-3.5" stroke="url(#platinumGrad)" stroke-width="1" fill="none" opacity="0.6"/>`,
+
+  // ── 8. SKULL CROWN — crowned skull ──
+  skull_crown: `
+    <path d="M8 14v-2a4 4 0 018 0v2" stroke="url(#rubyGrad)" stroke-width="1.4" fill="none"/>
+    <rect x="7" y="14" width="10" height="6" rx="0" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.08"/>
+    <circle cx="10" cy="12" r="1.3" fill="url(#rubyGrad)" opacity="0.9"/>
+    <circle cx="14" cy="12" r="1.3" fill="url(#rubyGrad)" opacity="0.9"/>
+    <path d="M10 17v3M12 16v4M14 17v3" stroke="url(#rubyGrad)" stroke-width="1.1"/>
+    <path d="M7 8l1 3M12 6v3M17 8l-1 3" stroke="url(#goldStroke)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M5 7l2 1M12 4l0 1M19 7l-2 1M7 8h10" stroke="url(#goldStroke)" stroke-width="1.1" fill="none"/>`,
+
+  // ── 9. TOWER SHIELD — kite shield with emblem ──
+  tower_shield: `
+    <path d="M12 3l8 3v7c0 5-4 9-8 10C8 22 4 18 4 13V6z" fill="url(#shieldGrad)" fill-opacity="0.9" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M12 5l6 2.5v6c0 3.5-3 6.5-6 7.5-3-1-6-4-6-7.5v-6z" fill="url(#sapphireGrad)" fill-opacity="0.12" stroke="url(#goldStroke)" stroke-width="1" opacity="0.6"/>
+    <path d="M12 9v8M8 13h8" stroke="url(#goldGrad)" stroke-width="1.4" stroke-linecap="round" filter="url(#glowGold)"/>`,
+
+  // ── 10. CROSSED SWORDS — dueling blades ──
+  crossed_swords: `
+    <path d="M5 5l14 14" stroke="url(#platinumGrad)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M19 5L5 19" stroke="url(#platinumGrad)" stroke-width="2" stroke-linecap="round"/>
+    <rect x="3" y="3" width="3" height="3" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1" transform="rotate(45 4.5 4.5)"/>
+    <rect x="18" y="3" width="3" height="3" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1" transform="rotate(45 19.5 4.5)"/>
+    <circle cx="12" cy="12" r="2.5" fill="url(#rubyGrad)" fill-opacity="0.3" stroke="url(#rubyGrad)" stroke-width="1.2" filter="url(#glowWarm)"/>`,
+
+  // ── 11. LION — rampant lion head ──
+  lion: `
+    <circle cx="12" cy="13" r="5.5" fill="url(#goldGrad)" fill-opacity="0.12" stroke="url(#goldStroke)" stroke-width="1.4"/>
+    <path d="M8 10c-1-3 0-6 2-7 0 2 1 3 2 3s2-1 2-3c2 1 3 4 2 7" fill="url(#goldGrad)" fill-opacity="0.2" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="10" cy="13" r="1.1" fill="url(#goldGrad)" opacity="0.9"/>
+    <circle cx="14" cy="13" r="1.1" fill="url(#goldGrad)" opacity="0.9"/>
+    <path d="M10 16c0.7 0.8 2.6 0.8 3.3 0" stroke="url(#goldStroke)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <path d="M12 17v1" stroke="url(#goldStroke)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M6 13c-2 0-3-1-3-3" stroke="url(#goldGrad)" stroke-width="1.1" fill="none" opacity="0.5"/>
+    <path d="M18 13c2 0 3-1 3-3" stroke="url(#goldGrad)" stroke-width="1.1" fill="none" opacity="0.5"/>`,
+
+  // ── 12. ANCIENT AXE — war axe with runes ──
+  ancient_axe: `
+    <path d="M14 5c2-1 5 0 5 3s-3 4-5 3" fill="url(#platinumGrad)" fill-opacity="0.15" stroke="url(#platinumGrad)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M14 8c0 4-4 8-4 14" stroke="url(#orangeGrad)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M14 5c-2-1-5 0-5 3s3 4 5 3" fill="url(#platinumGrad)" fill-opacity="0.1" stroke="url(#platinumGrad)" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M12 10h2M11 12h3" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.6"/>`,
+
+  // ── 13. TRIDENT — three-pronged spear ──
+  trident: `
+    <path d="M12 4v16" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M8 8V4l2 3" stroke="url(#cyanGrad)" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
+    <path d="M16 8V4l-2 3" stroke="url(#cyanGrad)" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
+    <path d="M12 8V4" stroke="url(#cyanGrad)" stroke-width="1.4"/>
+    <path d="M8 12v-4" stroke="url(#cyanGrad)" stroke-width="1.3"/>
+    <path d="M16 12v-4" stroke="url(#cyanGrad)" stroke-width="1.3"/>
+    <ellipse cx="12" cy="19" rx="3" ry="1.5" fill="url(#sapphireGrad)" fill-opacity="0.25" stroke="url(#sapphireGrad)" stroke-width="1"/>`,
+
+  // ── 14. ECLIPSE — sun behind moon ──
+  eclipse: `
+    <circle cx="12" cy="12" r="8" fill="url(#goldGrad)" fill-opacity="0.15" stroke="url(#goldStroke)" stroke-width="1.4" filter="url(#glowGold)"/>
+    <circle cx="14.5" cy="10" r="6" fill="#010a0f" stroke="url(#amethystGrad)" stroke-width="1.4"/>
+    <path d="M12 4c-4 0.5-7 4-7 8s3 7.5 7 8" stroke="url(#goldGrad)" stroke-width="1.3" fill="none" stroke-linecap="round" opacity="0.7"/>`,
+
+  // ── 15. CROWN OF THORNS — thorned crown ──
+  thorn_crown: `
+    <path d="M4 16l2-6 2 4 2-7 2 6 2-6 2 7 2-4 2 6" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glowGold)"/>
+    <path d="M4 16h16" stroke="url(#goldStroke)" stroke-width="1.3"/>
+    <path d="M4 20h16" stroke="url(#goldStroke)" stroke-width="1.3"/>
+    <path d="M4 16v4M20 16v4" stroke="url(#goldStroke)" stroke-width="1.3"/>`,
+
+  // ── 16. RUNE STONE — ancient carved stone ──
+  rune_stone: `
+    <rect x="5" y="4" width="14" height="17" rx="2" fill="url(#amethystGrad)" fill-opacity="0.10" stroke="url(#amethystGrad)" stroke-width="1.4"/>
+    <path d="M9 8l3 8 3-8" stroke="url(#cyanGrad)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M8 12h8" stroke="url(#cyanGrad)" stroke-width="1.2"/>
+    <path d="M9 16h2M13 16h2" stroke="url(#amethystGrad)" stroke-width="1.1" opacity="0.7"/>
+    <path d="M5 8h2M17 8h2" stroke="url(#amethystGrad)" stroke-width="1" opacity="0.4"/>`,
+
+  // ── 17. THUNDER HAMMER — war hammer with lightning ──
+  thunder_hammer: `
+    <rect x="9" y="3" width="6" height="9" rx="1" fill="url(#platinumGrad)" fill-opacity="0.15" stroke="url(#platinumGrad)" stroke-width="1.5"/>
+    <path d="M12 12v9" stroke="url(#orangeGrad)" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M12 5l-2.5 3.5h2l-2 4 5-5.5H13z" fill="url(#lightningGrad)" fill-opacity="0.7" stroke="url(#lightningGrad)" stroke-width="0.8" filter="url(#glowGold)"/>`,
+
+  // ── 18. CELESTIAL EYE — all-seeing eye with stars ──
+  celestial_eye: `
+    <ellipse cx="12" cy="12" rx="9" ry="5" fill="none" stroke="url(#purpleGrad)" stroke-width="1.4" filter="url(#glowPurple)"/>
+    <circle cx="12" cy="12" r="3.5" fill="url(#amethystGrad)" fill-opacity="0.2" stroke="url(#amethystGrad)" stroke-width="1.3"/>
+    <circle cx="12" cy="12" r="1.5" fill="url(#purpleGrad)" filter="url(#glowPurple)"/>
+    <path d="M5 8l1.5-2M19 8l-1.5-2M12 4v2M4 12H2M22 12h-2" stroke="url(#purpleGrad)" stroke-width="1" opacity="0.6" stroke-linecap="round"/>
+    <circle cx="5" cy="6" r="0.8" fill="url(#amethystGrad)" opacity="0.7"/>
+    <circle cx="19" cy="6" r="0.8" fill="url(#amethystGrad)" opacity="0.7"/>`,
+
+  // ── 19. KRAKEN — tentacled sea beast ──
+  kraken: `
+    <circle cx="12" cy="10" r="4" fill="url(#sapphireGrad)" fill-opacity="0.15" stroke="url(#cyanGrad)" stroke-width="1.4"/>
+    <circle cx="10.5" cy="9" r="1" fill="url(#cyanGrad)" opacity="0.9"/>
+    <circle cx="13.5" cy="9" r="1" fill="url(#cyanGrad)" opacity="0.9"/>
+    <path d="M8 14c-1 2-2 5-1 7" stroke="url(#sapphireGrad)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+    <path d="M12 14v7" stroke="url(#sapphireGrad)" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M16 14c1 2 2 5 1 7" stroke="url(#sapphireGrad)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+    <path d="M9 14c-2 1-4 3-4 6" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.7" fill="none"/>
+    <path d="M15 14c2 1 4 3 4 6" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.7" fill="none"/>
+    <path d="M8 14c0-3 1.5-5 4-4s5 3 4 4" stroke="url(#cyanGrad)" stroke-width="1.2" fill="none"/>`,
+
+  // ── 20. VORTEX STAR — swirling star of power ──
+  vortex_star: `
+    <polygon points="12,2 14.5,9 21,9 15.5,13.5 17.5,21 12,16.5 6.5,21 8.5,13.5 3,9 9.5,9"
+      fill="url(#amethystGrad)" fill-opacity="0.18" stroke="url(#purpleGrad)" stroke-width="1.4"
+      stroke-linejoin="round" filter="url(#glowPurple)"/>
+    <circle cx="12" cy="12" r="3" fill="url(#amethystGrad)" fill-opacity="0.4" stroke="url(#purpleGrad)" stroke-width="1.1"/>
+    <path d="M12 9v1.5M12 13.5V15M9 12h1.5M13.5 12H15" stroke="url(#purpleGrad)" stroke-width="1" opacity="0.7"/>`,
+}
+
+// Helper — render a guild icon at given px size
+export function getGuildIcon(key, size = 40) {
+  const content = GUILD_ICONS[key]
+  if (!content) return ''
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true" class="nx-icon">${content}</svg>`
+}
+
+// Ordered list of all guild icon keys
+export const GUILD_ICON_KEYS = Object.keys(GUILD_ICONS)
 
 
 // ============================================================
@@ -1018,19 +1151,6 @@ export const ICONS = {
   hammer:           SYSTEM_ICONS.hammer,
   signal:           SYSTEM_ICONS.signal,
   group:            SYSTEM_ICONS.group,
-
-  // ── Guild system icons ──
-  castle:           SYSTEM_ICONS.castle,
-  banner:           SYSTEM_ICONS.banner,
-  handshake:        SYSTEM_ICONS.handshake,
-  key:              SYSTEM_ICONS.key,
-  door:             SYSTEM_ICONS.door,
-  levelup:          SYSTEM_ICONS.levelup,
-  demote:           SYSTEM_ICONS.demote,
-  save:             SYSTEM_ICONS.save,
-  officer_badge:    SYSTEM_ICONS.officer_badge,
-  kick:             SYSTEM_ICONS.kick,
-  manage:           SYSTEM_ICONS.manage,
 }
 
 

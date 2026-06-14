@@ -41,7 +41,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* PAGE HEADER */
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;animation:fadeInDown 0.5s ease both;flex-wrap:wrap;gap:12px}
 .page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
-.page-title span{color:var(--purple)}
+.page-title span{color:var(--g-gold)}
 .page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 
 /* BOX */
@@ -258,9 +258,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .form-input::placeholder{color:var(--text-dim)}
 .form-textarea{resize:vertical;min-height:70px}
 .form-hint{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
-.form-icon-row{display:flex;gap:8px;flex-wrap:wrap}
-.icon-opt{width:44px;height:44px;background:rgba(255,160,0,0.05);border:1px solid var(--g-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;opacity:0.6}
-.icon-opt.selected,.icon-opt:hover{border-color:var(--g-gold);background:rgba(255,180,0,0.14);opacity:1}
+.form-icon-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%}
+.icon-opt{background:rgba(255,160,0,0.04);border:1px solid var(--g-border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.22s;opacity:0.55;padding:6px 2px;gap:3px;position:relative}
+.icon-opt:hover{opacity:0.85;border-color:rgba(255,180,0,0.45);background:rgba(255,160,0,0.09);transform:translateY(-1px)}
+.icon-opt.selected{border-color:var(--g-gold);background:rgba(255,180,0,0.15);opacity:1;box-shadow:0 0 14px rgba(255,200,0,0.3)}
+.icon-opt.selected::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g-gold),transparent)}
 .form-cost{display:flex;align-items:center;gap:8px;padding:12px;border:1px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.04)}
 .form-cost-label{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)}
 .form-cost-val{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--g-gold)}
@@ -377,6 +379,63 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .g-load-core{font-size:20px;position:relative;z-index:1;animation:gCoreGlow 2s ease-in-out infinite}
 </style>
 
+<!-- SVG gradient/filter defs shared by all guild icons -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe066"/><stop offset="50%" stop-color="#ffd700"/><stop offset="100%" stop-color="#cc8800"/>
+    </linearGradient>
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe066"/><stop offset="100%" stop-color="#ffaa00"/>
+    </linearGradient>
+    <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6655"/><stop offset="100%" stop-color="#cc0022"/>
+    </linearGradient>
+    <linearGradient id="fireGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffdd44"/><stop offset="50%" stop-color="#ff8800"/><stop offset="100%" stop-color="#cc2200"/>
+    </linearGradient>
+    <linearGradient id="platinumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8e8f0"/><stop offset="100%" stop-color="#a0a0b8"/>
+    </linearGradient>
+    <linearGradient id="sapphireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4488ff"/><stop offset="100%" stop-color="#0022cc"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff"/><stop offset="100%" stop-color="#0088aa"/>
+    </linearGradient>
+    <linearGradient id="amethystGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cc88ff"/><stop offset="100%" stop-color="#7722cc"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dd66ff"/><stop offset="100%" stop-color="#8800dd"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffcc44"/><stop offset="100%" stop-color="#cc5500"/>
+    </linearGradient>
+    <linearGradient id="lightningGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ffee00"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a2244"/><stop offset="100%" stop-color="#0a0e22"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowGold" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowWarm" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowPurple" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="gemShine" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="grid-bg"></div>
@@ -467,7 +526,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <div class="form-group">
               <div class="form-label">สาธารณะ</div>
               <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-                <input type="checkbox" id="createPublic" checked style="accent-color:var(--purple);width:16px;height:16px">
+                <input type="checkbox" id="createPublic" checked style="accent-color:var(--g-gold);width:16px;height:16px">
                 <span style="font-size:12px;color:var(--text-dim)">ให้ทุกคนเห็นและสมัครเข้า Guild ได้</span>
               </label>
             </div>
@@ -632,7 +691,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="form-group">
           <div class="form-label">สาธารณะ</div>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-            <input type="checkbox" id="editPublic" style="accent-color:var(--purple);width:16px;height:16px">
+            <input type="checkbox" id="editPublic" style="accent-color:var(--g-gold);width:16px;height:16px">
             <span style="font-size:12px;color:var(--text-dim)">ให้ทุกคนเห็นและสมัครเข้า Guild ได้</span>
           </label>
         </div>
@@ -735,7 +794,7 @@ setTimeout(function() {
 <script type="module">
 import { supabase as sb } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon } from './icons.js'
+import { getIcon, getGuildIcon, GUILD_ICON_KEYS as GUILD_SVG_KEYS } from './icons.js'
 
 // ============================================
 // STATE
@@ -747,8 +806,8 @@ let ALL_GUILDS = []
 let CHAT_CHANNEL = null
 let SELECTED_ICON = ''
 
-const ICONS = ['guild','sword','trophy','star','crown','shield','axes','skull','lightning','fire','crystal','gold','chest','hammer','map','pioneer','users','guild']
-const GUILD_ICON_KEYS = ['guild','sword','trophy','star','crown','axes','skull','lightning','fire','crystal','gold','chest','hammer','map','pioneer','users','bar','chat']
+// ใช้ GUILD_SVG_KEYS ที่ import มาจาก icons.js (20 ไอคอน AAA)
+// GUILD_ICON_KEYS ตัวเก่าถูกแทนที่แล้ว
 const GUILD_XP_PER_LEVEL = 1000
 
 // ============================================
@@ -903,7 +962,7 @@ function renderGuildBrowse(list) {
     return `
     <div class="guild-browse-card">
       <div class="gbc-top">
-        <div class="gbc-icon">${g.metadata?.icon ? (g.metadata.icon.length <= 4 ? g.metadata.icon : getIcon(g.metadata.icon, 20)) : getIcon('guild', 20)}</div>
+        <div class="gbc-icon">${(() => { const ic = g.metadata?.icon || ''; return GUILD_SVG_KEYS.includes(ic) ? getGuildIcon(ic, 28) : (ic && ic.length <= 4 ? `<span style="font-size:20px">${ic}</span>` : getIcon(ic || 'guild', 20)) })()} </div>
         <div>
           <div class="gbc-name">${escHtml(g.name)}</div>
           <div class="gbc-tag">[${escHtml(g.tag)}] · LV.${gLv}</div>
@@ -963,18 +1022,38 @@ window.joinGuild = async (guildId, guildName) => {
 // CREATE GUILD
 // ============================================
 function buildIconRow() {
-  if (!SELECTED_ICON) SELECTED_ICON = GUILD_ICON_KEYS[0]
+  if (!SELECTED_ICON) SELECTED_ICON = GUILD_SVG_KEYS[0]
   const row = document.getElementById('iconRow')
-  row.innerHTML = GUILD_ICON_KEYS.map(key => `
-    <div class="icon-opt ${key===SELECTED_ICON?'selected':''}" data-key="${key}" onclick="selectIcon('${key}')">
-      ${getIcon(key, 22)}
-    </div>`).join('')
+  // ใช้ grid แทน flex wrap เพื่อจัดตารางสวยงาม
+  row.style.cssText = 'display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%'
+  row.innerHTML = GUILD_SVG_KEYS.map(key => {
+    const labels = {
+      fortress:'ปราสาท', dragon:'มังกร', wolf:'หมาป่า', phoenix:'ฟีนิกซ์',
+      hawk:'เหยี่ยว', inferno:'เพลิง', diamond:'เพชร', skull_crown:'กะโหลก',
+      tower_shield:'โล่', crossed_swords:'ดาบไขว้', lion:'สิงห์',
+      ancient_axe:'ขวาน', trident:'สามง่าม', eclipse:'สุริยุปราคา',
+      thorn_crown:'มงกุฎ', rune_stone:'รูนสโตน', thunder_hammer:'ค้อน',
+      celestial_eye:'ดวงตา', kraken:'ครากเก้น', vortex_star:'วอร์เท็กซ์'
+    }
+    const isSel = key === SELECTED_ICON
+    return `
+    <div class="icon-opt ${isSel?'selected':''}" data-key="${key}"
+      onclick="selectIcon('${key}')"
+      title="${labels[key]||key}"
+      style="width:100%;height:52px;flex-direction:column;gap:3px;padding:6px 2px;display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.2s">
+      ${getGuildIcon(key, 26)}
+      <span style="font-family:'Sarabun',sans-serif;font-size:8px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center;line-height:1">${labels[key]||key}</span>
+    </div>`
+  }).join('')
 }
 
 window.selectIcon = (key) => {
   SELECTED_ICON = key
   document.querySelectorAll('.icon-opt').forEach(el => {
-    el.classList.toggle('selected', el.dataset.key === key)
+    const isSel = el.dataset.key === key
+    el.classList.toggle('selected', isSel)
+    // glow เพิ่มเติมเมื่อเลือก
+    el.style.boxShadow = isSel ? '0 0 14px rgba(255,200,0,0.35)' : ''
   })
 }
 
@@ -1029,9 +1108,13 @@ async function showHasGuildView() {
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
   const gXpPct = Math.min(100, ((MY_GUILD.guild_xp % GUILD_XP_PER_LEVEL) / GUILD_XP_PER_LEVEL) * 100)
-  document.getElementById('gBannerIcon').innerHTML = MY_GUILD.metadata?.icon
-    ? (MY_GUILD.metadata.icon.length <= 4 ? MY_GUILD.metadata.icon : getIcon(MY_GUILD.metadata.icon, 32))
-    : getIcon('guild', 32)
+  const bannerIconKey = MY_GUILD.metadata?.icon || ''
+  const isSvgGuildIcon = GUILD_SVG_KEYS.includes(bannerIconKey)
+  document.getElementById('gBannerIcon').innerHTML = isSvgGuildIcon
+    ? getGuildIcon(bannerIconKey, 40)
+    : (bannerIconKey && bannerIconKey.length <= 4
+        ? `<span style="font-size:32px;line-height:1">${bannerIconKey}</span>`
+        : getIcon(bannerIconKey || 'guild', 32))
   document.getElementById('gBannerName').textContent = MY_GUILD.name
   document.getElementById('gBannerTag').textContent = `[${MY_GUILD.tag}]`
   document.getElementById('gBannerDesc').textContent = MY_GUILD.description || 'ไม่มีคำอธิบาย'
