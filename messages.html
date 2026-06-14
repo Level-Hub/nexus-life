@@ -697,18 +697,22 @@ function appendMessage(msg, scroll=true) {
     contentHtml = `<img class="msg-image" src="${imgUrl}" alt="รูปภาพ" onclick="window.open('${imgUrl}','_blank')">`
   } else if (rawContent.startsWith('[sticker]')) {
     contentHtml = `<span class="msg-sticker">${rawContent.slice(9)}</span>`
-  } else if (rawContent.startsWith('[voice]')) {
-    const parts = rawContent.slice(7).split('|')
-    const audioUrl = esc(parts[0])
-    const dur = parseInt(parts[1]||0)
+  } else if (rawContent.startsWith('[voice]') || rawContent.startsWith('[voiceb64]')) {
+    const isB64 = rawContent.startsWith('[voiceb64]')
+    const inner = rawContent.slice(isB64 ? 10 : 7)
+    const pipeIdx = inner.lastIndexOf('|')
+    const audioUrl = pipeIdx > -1 ? inner.slice(0, pipeIdx) : inner
+    const dur = pipeIdx > -1 ? parseInt(inner.slice(pipeIdx+1)||0) : 0
     const mm = String(Math.floor(dur/60)).padStart(2,'0')
     const ss = String(dur%60).padStart(2,'0')
     const bars = Array.from({length:20},(_,i)=>{
       const h = 4 + Math.sin(i*0.8)*8 + Math.random()*8
       return `<div class="voice-bar" style="height:${Math.max(4,h)}px"></div>`
     }).join('')
+    // Use data-audio attribute to avoid XSS with large base64 in onclick
+    const safeUrl = isB64 ? audioUrl : esc(audioUrl)
     contentHtml = `<div class="msg-bubble voice-bubble">
-      <button class="voice-play-btn" onclick="playVoice('${audioUrl}',this)">
+      <button class="voice-play-btn" data-audio="${isB64 ? '' : safeUrl}" ${isB64 ? `data-b64="${safeUrl}"` : ''} onclick="playVoiceBtn(this)">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 1l7 4-7 4z" fill="#010a0f"/></svg>
       </button>
       <div class="voice-waveform">${bars}</div>
@@ -921,27 +925,23 @@ window.toggleRecording = async function() {
   if (isRecording) { stopRecording(); return }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    // Android Chrome only truly supports webm/opus for MediaRecorder
-    // mp4 may report isTypeSupported=true but fails at record time → always try webm first
-    const supportedMime = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/ogg',
-      'audio/mp4'
-    ].find(t => {
-      try { return MediaRecorder.isTypeSupported(t) } catch(e) { return false }
-    })
-    const recOpts = supportedMime ? { mimeType: supportedMime } : {}
+    // Android Chrome supports webm/opus; try without mimeType first (browser picks best)
+    // then fallback to explicit webm if needed
+    let recorder
     try {
-      mediaRecorder = new MediaRecorder(stream, recOpts)
-    } catch(e) {
-      // if chosen mime fails at construction, try without options
-      mediaRecorder = new MediaRecorder(stream)
+      // Let browser pick — most reliable on Android Chrome
+      recorder = new MediaRecorder(stream)
+    } catch(e1) {
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' })
+      } catch(e2) {
+        recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+      }
     }
+    mediaRecorder = recorder
     audioChunks = []
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data) }
-    mediaRecorder.start()
+    mediaRecorder.start(250) // collect chunks every 250ms for reliability
     isRecording = true
     recSeconds = 0
     document.getElementById('voiceBtn').classList.add('recording')
@@ -951,10 +951,10 @@ window.toggleRecording = async function() {
       const m = String(Math.floor(recSeconds/60)).padStart(2,'0')
       const s = String(recSeconds%60).padStart(2,'0')
       document.getElementById('recTimer').textContent = `${m}:${s}`
-      if (recSeconds >= 120) stopRecording() // max 2 นาที
+      if (recSeconds >= 120) stopRecording()
     }, 1000)
   } catch(e) {
-    showToast('ไม่สามารถเข้าถึงไมค์ได้', 'error')
+    showToast('ไม่สามารถเข้าถึงไมค์ได้: ' + (e.message||'permission denied'), 'error')
   }
 }
 
@@ -967,25 +967,41 @@ window.stopRecording = async function() {
 
   mediaRecorder.onstop = async () => {
     const mimeType = mediaRecorder.mimeType || 'audio/webm'
-    const ext = mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'webm'
-    const uploadMime = mimeType.split(';')[0] || 'audio/webm' // strip codec params for Supabase
-    const blob = new Blob(audioChunks, { type: uploadMime })
     mediaRecorder.stream.getTracks().forEach(t => t.stop())
     if (!activeChannel) return
-    // Upload to Supabase storage
-    const path = `voice/${currentUser.id}/${Date.now()}.${ext}`
-    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: uploadMime })
-    if (error) { showToast('ส่งเสียงไม่สำเร็จ: ' + error.message, 'error'); return }
-    const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
+
+    const blob = new Blob(audioChunks, { type: mimeType })
+
+    // ── Strategy: convert to base64 data URL and store in Supabase Storage
+    // with explicit Content-Type header so Android Chrome can play it back
     const duration = recSeconds
-    const content = `[voice]${urlData.publicUrl}|${duration}`
-    const { error: e2 } = await supabase.from('messages').insert({
-      sender_id: currentUser.id, channel: activeChannel, content
-    })
-    if (!e2) {
-      appendMessage({ sender_id: currentUser.id, channel: activeChannel, content, created_at: new Date().toISOString(), users: myProfile })
-      await loadInbox()
+
+    // Convert blob → base64 data URL (bypass Supabase CDN Content-Type issue)
+    const reader = new FileReader()
+    reader.onload = async () => {
+      const dataUrl = reader.result // "data:audio/webm;base64,..."
+      // Store as [voiceb64]<dataUrl>|<duration>
+      // dataUrl already contains mime info so player can use it directly
+      const content = `[voiceb64]${dataUrl}|${duration}`
+
+      // Check size — Supabase text column limit ~1MB, base64 audio ~10s ≈ 50KB fine
+      if (content.length > 900000) {
+        showToast('ไฟล์เสียงยาวเกินไป กรุณาอัดสั้นกว่านี้', 'error')
+        return
+      }
+
+      const { error } = await supabase.from('messages').insert({
+        sender_id: currentUser.id, channel: activeChannel, content
+      })
+      if (!error) {
+        appendMessage({ sender_id: currentUser.id, channel: activeChannel, content, created_at: new Date().toISOString(), users: myProfile })
+        await loadInbox()
+      } else {
+        showToast('ส่งเสียงไม่สำเร็จ: ' + error.message, 'error')
+      }
     }
+    reader.onerror = () => showToast('แปลงไฟล์เสียงไม่สำเร็จ', 'error')
+    reader.readAsDataURL(blob)
   }
   mediaRecorder.stop()
 }
@@ -1186,11 +1202,20 @@ document.addEventListener('click', e => {
   }
 })
 
+window.playVoiceBtn = function(btn) {
+  const b64 = btn.dataset.b64
+  const url = b64 || btn.dataset.audio
+  playVoice(url, btn)
+}
+
 window.playVoice = function(url, btn) {
   const audio = new Audio(url)
   const origHtml = btn.innerHTML
   btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="1" width="2.5" height="8" fill="#010a0f"/><rect x="5.5" y="1" width="2.5" height="8" fill="#010a0f"/></svg>`
-  audio.play()
+  audio.play().catch(err => {
+    btn.innerHTML = origHtml
+    showToast('เล่นเสียงไม่ได้: ' + err.message, 'error')
+  })
   audio.onended = () => { btn.innerHTML = origHtml }
   audio.onerror = () => { btn.innerHTML = origHtml; showToast('เล่นเสียงไม่ได้', 'error') }
 }
