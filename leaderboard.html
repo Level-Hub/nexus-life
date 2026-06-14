@@ -510,7 +510,9 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .modal-player-avatar img { width:100%;height:100%;object-fit:cover; }
 .modal-player-info { flex:1;overflow:hidden; }
 .modal-player-name { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.modal-player-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--cls,var(--text-dim));letter-spacing:1px;margin-top:2px; }
+.modal-player-class { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;margin-top:2px; }
+.modal-player-class .cls-label { color:var(--cls,var(--text-dim)); }
+.modal-player-class .lv-label { color:var(--text-dim); }
 .modal-player-xp { font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--cyan);flex-shrink:0; }
 
 
@@ -1510,7 +1512,7 @@ window.filterCityPlayers = async function(cityName) {
         </div>
         <div class="modal-player-info">
           <div class="modal-player-name">${esc(u.display_name||u.username)}</div>
-          <div class="modal-player-class" style="display:inline-flex;align-items:center">${clsIconSvg}${cls.toUpperCase()} · LV ${u.level||1}</div>
+          <div class="modal-player-class" style="display:inline-flex;align-items:center"><span class="cls-label">${clsIconSvg}${cls.toUpperCase()}</span><span class="lv-label">&nbsp;· LV ${u.level||1}</span></div>
         </div>
         <div class="modal-player-xp">${fmtNum(u.xp_this_month)} XP</div>
       </div>`
