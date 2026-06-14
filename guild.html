@@ -309,6 +309,35 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .guild-name{font-size:16px}
   .guild-meta{gap:10px}
 }
+
+/* CUSTOM CONFIRM MODAL */
+.cconfirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:800;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.cconfirm-overlay.open{display:flex}
+.cconfirm-box{
+  background:linear-gradient(135deg,#0d0a00,#120c00);
+  border:1px solid rgba(255,160,0,0.35);
+  width:100%;max-width:360px;position:relative;
+  animation:fadeInUp 0.25s ease both;
+  box-shadow:0 0 40px rgba(255,160,0,0.12),inset 0 0 40px rgba(0,0,0,0.3);
+}
+.cconfirm-box::before{content:'';position:absolute;top:-1px;left:-1px;width:18px;height:18px;border-top:2px solid var(--g-gold);border-left:2px solid var(--g-gold)}
+.cconfirm-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:2px solid var(--g-rust);border-right:2px solid var(--g-rust)}
+.cconfirm-header{padding:18px 22px 14px;border-bottom:1px solid rgba(255,160,0,0.15);display:flex;align-items:center;gap:10px}
+.cconfirm-icon{font-size:20px;line-height:1}
+.cconfirm-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:900;letter-spacing:2px}
+.cconfirm-title.warn{color:var(--red)}
+.cconfirm-title.promote{color:var(--g-amber)}
+.cconfirm-body{padding:20px 22px}
+.cconfirm-msg{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px}
+.cconfirm-sub{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim)}
+.cconfirm-btns{display:flex;gap:10px;padding:0 22px 20px;justify-content:flex-end}
+.cconfirm-btn{padding:9px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;border:1px solid;background:transparent}
+.cconfirm-btn.cancel{color:var(--text-dim);border-color:rgba(255,160,0,0.2)}
+.cconfirm-btn.cancel:hover{color:var(--text);border-color:rgba(255,160,0,0.4)}
+.cconfirm-btn.confirm-red{color:var(--red);border-color:rgba(255,0,60,0.4);background:rgba(255,0,60,0.06)}
+.cconfirm-btn.confirm-red:hover{background:rgba(255,0,60,0.14);box-shadow:0 0 16px rgba(255,0,60,0.2)}
+.cconfirm-btn.confirm-gold{color:var(--g-gold);border-color:rgba(255,215,0,0.4);background:rgba(255,200,0,0.06)}
+.cconfirm-btn.confirm-gold:hover{background:rgba(255,200,0,0.14);box-shadow:0 0 16px rgba(255,200,0,0.2)}
 </style>
 </head>
 <body>
@@ -364,7 +393,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="page-header">
     <div>
       <div class="page-title"><span id="pageTitleIcon" style="display:inline-flex;align-items:center"></span> <span style="color:var(--g-gold)">GUILD</span></div>
-      <div class="page-sub" id="guildStatusSub" style="transition:color 0.3s">GUILD SYSTEM — กำลังโหลด...</div>
+      <div class="page-sub" id="guildStatusSub" style="transition:color 0.3s" id="guildDateTimeSub">GUILD SYSTEM — กำลังโหลด...</div>
     </div>
     <div id="headerActions"></div>
   </div>
@@ -612,6 +641,72 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
 <!-- Sidebar functions as regular script (works even if module fails) -->
+<!-- CUSTOM CONFIRM MODAL -->
+<div class="cconfirm-overlay" id="cconfirmOverlay">
+  <div class="cconfirm-box">
+    <div class="cconfirm-header">
+      <div class="cconfirm-icon" id="cconfirmIcon">⚠️</div>
+      <div class="cconfirm-title" id="cconfirmTitle">ยืนยันการดำเนินการ</div>
+    </div>
+    <div class="cconfirm-body">
+      <div class="cconfirm-msg" id="cconfirmMsg"></div>
+      <div class="cconfirm-sub" id="cconfirmSub"></div>
+    </div>
+    <div class="cconfirm-btns">
+      <button class="cconfirm-btn cancel" onclick="cconfirmCancel()">ยกเลิก</button>
+      <button class="cconfirm-btn" id="cconfirmOkBtn" onclick="cconfirmOk()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// DATE/TIME CLOCK (like map.html)
+// ============================================
+function updateGuildClock() {
+  const now = new Date()
+  const days = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์']
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+  const day = days[now.getDay()]
+  const date = now.getDate()
+  const month = months[now.getMonth()]
+  const year = now.getFullYear() + 543
+  const h = String(now.getHours()).padStart(2,'0')
+  const m = String(now.getMinutes()).padStart(2,'0')
+  const s = String(now.getSeconds()).padStart(2,'0')
+  const el = document.getElementById('guildStatusSub')
+  if (el) el.textContent = `${day}ที่ ${date} ${month} ${year}  ${h}:${m}:${s}`
+}
+updateGuildClock()
+setInterval(updateGuildClock, 1000)
+
+// ============================================
+// CUSTOM CONFIRM DIALOG
+// ============================================
+let _cconfirmResolve = null
+function showConfirm({ icon='⚠️', title, titleClass='warn', msg, sub='', btnClass='confirm-red', btnText='ยืนยัน' }) {
+  document.getElementById('cconfirmIcon').textContent = icon
+  const titleEl = document.getElementById('cconfirmTitle')
+  titleEl.textContent = title
+  titleEl.className = `cconfirm-title ${titleClass}`
+  document.getElementById('cconfirmMsg').textContent = msg
+  document.getElementById('cconfirmSub').textContent = sub
+  const okBtn = document.getElementById('cconfirmOkBtn')
+  okBtn.className = `cconfirm-btn ${btnClass}`
+  okBtn.textContent = btnText
+  document.getElementById('cconfirmOverlay').classList.add('open')
+  return new Promise(resolve => { _cconfirmResolve = resolve })
+}
+window.cconfirmOk = () => {
+  document.getElementById('cconfirmOverlay').classList.remove('open')
+  if (_cconfirmResolve) { _cconfirmResolve(true); _cconfirmResolve = null }
+}
+window.cconfirmCancel = () => {
+  document.getElementById('cconfirmOverlay').classList.remove('open')
+  if (_cconfirmResolve) { _cconfirmResolve(false); _cconfirmResolve = null }
+}
+</script>
+
 <script>
 function openSidebar() {
   document.getElementById('sidebar').classList.add('open')
@@ -930,7 +1025,7 @@ window.createGuild = async () => {
 async function showHasGuildView() {
   document.getElementById('noGuildView').style.display = 'none'
   document.getElementById('hasGuildView').style.display = 'block'
-  document.getElementById('guildStatusSub').textContent = `${MY_GUILD.name} [${MY_GUILD.tag}]`
+  // date/time sub stays as-is (set by clock)
 
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
@@ -1129,13 +1224,13 @@ function renderManageList() {
         </div>
         <div class="manage-member-actions">
           ${canPromote && !isMaster ? `
-            <button class="manage-btn promote" title="${isOfficer ? 'Demote เป็น Member' : 'Promote เป็น Officer'}"
+            <button class="manage-btn promote" title="${isOfficer ? 'ลดตำแหน่งเป็นสมาชิก' : 'แต่งตั้งเป็นรองหัวกิล'}"
               onclick="promoteOfficer('${u.id}','${escHtml(u.username)}','${m.role}')">
-              ${isOfficer ? getIcon('demote',12)+' Demote' : getIcon('levelup',12)+' Officer'}
+              ${isOfficer ? getIcon('demote',12)+' ลดตำแหน่ง' : getIcon('levelup',12)+' แต่งตั้ง'}
             </button>` : ''}
           ${canKick && !isMaster ? `
             <button class="manage-btn kick" onclick="kickMember('${u.id}','${escHtml(u.username)}')">
-              ${getIcon('door',12)} Kick
+              ${getIcon('door',12)} เตะออก
             </button>` : ''}
         </div>
       </div>`
@@ -1345,34 +1440,56 @@ window.sendChat = async () => {
 // MANAGE MEMBERS (MASTER)
 // ============================================
 window.kickMember = async (userId, uname) => {
-  // ✅ BUG FIX: ตรวจสอบ role ฝั่ง JS ก่อน execute (RLS ควรป้องกัน DB ด้วย)
   if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
-    toast('เฉพาะ Master เท่านั้นที่ Kick ได้', 'error'); return
+    toast('เฉพาะ Master เท่านั้นที่เตะออกได้', 'error'); return
   }
-  if (userId === ME?.id) { toast('ไม่สามารถ Kick ตัวเองได้', 'error'); return }
-  if (!confirm(`Kick ${uname} ออกจาก Guild?`)) return
+  if (userId === ME?.id) { toast('ไม่สามารถเตะตัวเองออกได้', 'error'); return }
+  const ok = await showConfirm({
+    icon: '🚫',
+    title: 'เตะออกจาก Guild',
+    titleClass: 'warn',
+    msg: `แน่ใจหรือไม่ว่าต้องการเตะ "${uname}" ออกจาก Guild?`,
+    sub: '// ผู้เล่นสามารถสมัครเข้า Guild ใหม่ได้ในภายหลัง',
+    btnClass: 'confirm-red',
+    btnText: '⚡ เตะออก'
+  })
+  if (!ok) return
   const { error } = await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
   if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
-  await sb.from('notifications').insert({ user_id: userId, title: 'ถูก Kick', body: `คุณถูก Kick ออกจาก Guild "${MY_GUILD.name}"` })
-  toast(`Kick ${uname} ออกแล้ว`, 'info')
+  await sb.from('notifications').insert({ user_id: userId, title: 'ถูกเตะออก', body: `คุณถูกเตะออกจาก Guild "${MY_GUILD.name}"` })
+  toast(`เตะ ${uname} ออกแล้ว`, 'info')
   loadMembers()
 }
 
 window.promoteOfficer = async (userId, uname, currentRole) => {
-  // ✅ BUG FIX: ตรวจสอบ role ก่อน execute
   if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
-    toast('เฉพาะ Master เท่านั้นที่ Promote/Demote ได้', 'error'); return
+    toast('เฉพาะ Master เท่านั้นที่แต่งตั้ง/ลดตำแหน่งได้', 'error'); return
   }
-  if (userId === ME?.id) { toast('ไม่สามารถเปลี่ยน role ตัวเองได้', 'error'); return }
+  if (userId === ME?.id) { toast('ไม่สามารถเปลี่ยนตำแหน่งตัวเองได้', 'error'); return }
   const newRole = currentRole === 'officer' ? 'member' : 'officer'
+  const isPromoting = newRole === 'officer'
+  const ok = await showConfirm({
+    icon: isPromoting ? '⭐' : '🔽',
+    title: isPromoting ? 'แต่งตั้งรองหัวกิล' : 'ลดตำแหน่ง',
+    titleClass: isPromoting ? 'promote' : 'warn',
+    msg: isPromoting
+      ? `แต่งตั้ง "${uname}" เป็นรองหัวกิล (Officer)?`
+      : `ลดตำแหน่ง "${uname}" กลับเป็นสมาชิก (Member)?`,
+    sub: isPromoting
+      ? '// Officer สามารถจัดการสมาชิกและ Quest ของ Guild ได้'
+      : '// ผู้เล่นจะสูญเสียสิทธิ์การจัดการ Guild',
+    btnClass: isPromoting ? 'confirm-gold' : 'confirm-red',
+    btnText: isPromoting ? '⭐ แต่งตั้ง' : '🔽 ลดตำแหน่ง'
+  })
+  if (!ok) return
   const { error } = await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
   if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
   await sb.from('notifications').insert({
     user_id: userId,
-    title: newRole === 'officer' ? 'ได้รับตำแหน่ง Officer!' : 'ถูก Demote เป็น Member',
+    title: isPromoting ? 'ได้รับตำแหน่งรองหัวกิล!' : 'ถูกปรับลดตำแหน่งเป็นสมาชิก',
     body: `สถานะของคุณใน Guild "${MY_GUILD.name}" เปลี่ยนแปลงแล้ว`
   })
-  toast(`${uname} → ${newRole.toUpperCase()}`, 'success')
+  toast(`${uname} → ${isPromoting ? 'รองหัวกิล (OFFICER)' : 'สมาชิก (MEMBER)'}`, 'success')
   loadMembers()
 }
 
@@ -1380,12 +1497,20 @@ window.promoteOfficer = async (userId, uname, currentRole) => {
 // LEAVE GUILD
 // ============================================
 window.confirmLeave = async () => {
-  // FIX: master ออกไม่ได้ถ้ายังไม่ transfer
   if (MY_MEMBER.role === 'master') {
-    toast('ต้อง Transfer Master ให้คนอื่นก่อนออก Guild', 'error')
+    toast('ต้องโอนตำแหน่ง Master ให้คนอื่นก่อนออก Guild', 'error')
     return
   }
-  if (!confirm(`ออกจาก Guild "${MY_GUILD.name}"?`)) return
+  const ok = await showConfirm({
+    icon: '🚪',
+    title: 'ออกจาก Guild',
+    titleClass: 'warn',
+    msg: `แน่ใจหรือไม่ว่าต้องการออกจาก Guild "${MY_GUILD.name}"?`,
+    sub: '// คุณสามารถสมัครเข้า Guild ใหม่ได้ในภายหลัง',
+    btnClass: 'confirm-red',
+    btnText: '🚪 ออกจาก Guild'
+  })
+  if (!ok) return
   await sb.from('guild_members').delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id)
   toast('ออกจาก Guild แล้ว', 'info')
   setTimeout(() => location.reload(), 1000)
