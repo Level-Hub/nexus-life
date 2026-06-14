@@ -7,11 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --cyan:#00e5cc; --cyan-dim:#00a896; --gold:#ffd700; --red:#ff003c;
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
-  --bg:#010a0f; --bg2:#020d14;
-  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
-  --text:#c8f0f5; --text-dim:#5a8a90;
+  --bg:#00100e; --bg2:#001a17;
+  --panel:rgba(0,229,204,0.04); --border:rgba(0,229,204,0.13);
+  --text:#b0f0ea; --text-dim:#2a6b64;
+  --teal:#00e5cc; --teal-bright:#44ffee; --teal-dim:#006b62;
 }
 .cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
@@ -19,19 +20,93 @@
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
-/* LOADING */
-.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
-.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
-.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
-@keyframes loadAnim{0%{width:0%}50%{width:70%}100%{width:100%}}
-.loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
-.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+/* LOADING — SIGNAL BROADCAST */
+.loading-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:9000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+}
+.loading-screen.warp-out{animation:feedWarp 0.65s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes feedWarp{
+  0%  {transform:scale(1);opacity:1;filter:blur(0)}
+  35% {transform:scale(0.96);filter:blur(0)}
+  75% {transform:scale(20);opacity:0.5;filter:blur(6px)}
+  100%{transform:scale(40);opacity:0;filter:blur(16px)}
+}
+
+/* ── Signal icon ── */
+.signal-wrap{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center}
+
+/* วงกระจาย */
+.signal-ring{
+  position:absolute;border-radius:50%;border:1.5px solid var(--teal);
+  opacity:0;
+}
+.signal-ring-1{width:30px;height:30px;animation:ringOut 2s ease-out infinite 0s}
+.signal-ring-2{width:30px;height:30px;animation:ringOut 2s ease-out infinite 0.5s}
+.signal-ring-3{width:30px;height:30px;animation:ringOut 2s ease-out infinite 1.0s}
+.signal-ring-4{width:30px;height:30px;animation:ringOut 2s ease-out infinite 1.5s}
+@keyframes ringOut{
+  0%  {transform:scale(1);opacity:0.9;border-color:var(--teal-bright)}
+  60% {opacity:0.3;border-color:var(--teal)}
+  100%{transform:scale(3.4);opacity:0;border-color:var(--teal-dim)}
+}
+
+/* จุดกลาง */
+.signal-core{
+  width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle,var(--teal-bright),var(--teal));
+  box-shadow:0 0 16px rgba(0,229,204,0.9),0 0 32px rgba(0,229,204,0.4);
+  animation:corePulse 1s ease-in-out infinite;
+  z-index:1;position:relative;
+}
+@keyframes corePulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 16px rgba(0,229,204,0.9),0 0 32px rgba(0,229,204,0.4)}
+  50%    {transform:scale(1.2);box-shadow:0 0 24px rgba(0,229,204,1),0 0 48px rgba(0,229,204,0.6)}
+}
+
+/* arc เส้นโค้งบน (wifi-like) */
+.signal-arc{
+  position:absolute;border-radius:50%;border:1.5px solid transparent;
+  border-top-color:var(--teal);
+}
+.signal-arc-1{width:36px;height:36px;top:calc(50% - 18px);left:calc(50% - 18px);animation:arcSpin 3s linear infinite}
+.signal-arc-2{width:56px;height:56px;top:calc(50% - 28px);left:calc(50% - 28px);animation:arcSpin 3s linear infinite 0.3s;opacity:0.5}
+@keyframes arcSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* glow พื้นหลัง */
+.signal-glow{
+  position:absolute;inset:-24px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,204,0.14) 0%,transparent 70%);
+  animation:glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+
+/* ── ข้อความ ── */
+.loading-logo{
+  font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
+  letter-spacing:6px;color:var(--teal-bright);
+  text-shadow:0 0 24px rgba(0,229,204,0.9),0 0 48px rgba(0,229,204,0.3);
+}
+.loading-bar-wrap{
+  width:160px;height:2px;
+  background:rgba(0,229,204,0.08);border:1px solid rgba(0,229,204,0.15);
+}
+.loading-bar{
+  height:100%;
+  background:linear-gradient(90deg,#006b62,#00e5cc,#44ffee);
+  animation:loadAnim 1.4s ease-in-out infinite;
+}
+@keyframes loadAnim{0%{width:0}55%{width:70%}100%{width:100%}}
+.loading-txt{
+  font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--text-dim);
+}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,229,204,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,204,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,204,0.022) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
-.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+.orb-1{width:500px;height:500px;background:rgba(0,229,204,0.06);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(0,180,160,0.04);bottom:100px;left:-50px}
 
 /* ===== MAIN ===== */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:24px}
@@ -191,9 +266,19 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </head>
 <body>
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="signal-wrap">
+    <div class="signal-glow"></div>
+    <div class="signal-ring signal-ring-1"></div>
+    <div class="signal-ring signal-ring-2"></div>
+    <div class="signal-ring signal-ring-3"></div>
+    <div class="signal-ring signal-ring-4"></div>
+    <div class="signal-arc signal-arc-2"></div>
+    <div class="signal-arc signal-arc-1"></div>
+    <div class="signal-core"></div>
+  </div>
+  <div class="loading-logo">FEED</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt">LOADING FEED...</div>
+  <div class="loading-txt" id="loadingTxt">CONNECTING...</div>
 </div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -1128,7 +1213,13 @@ if (signOutEl) signOutEl.addEventListener('click', async () => {
 
 // ===== INIT =====
 await loadProfile()
-document.getElementById('loadingScreen').style.display = 'none'
+  const ls = document.getElementById('loadingScreen')
+  const loadTxt = document.getElementById('loadingTxt')
+  if (loadTxt) loadTxt.textContent = 'BROADCASTING...'
+  setTimeout(() => {
+    if (ls) ls.classList.add('warp-out')
+    setTimeout(() => { if (ls) ls.style.display = 'none' }, 650)
+  }, 400)
 subscribeRealtime()
 </script>
 
