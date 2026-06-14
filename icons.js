@@ -882,6 +882,69 @@ export const SYSTEM_ICONS = {
   star_filled: `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6"
                   stroke="url(#goldStroke)" stroke-width="1.3"
                   fill="url(#goldGrad)" fill-opacity="0.85" filter="url(#glowGold)"/>`,
+
+  // ─── GUILD SYSTEM ICONS ────────────────────────────────────
+
+  // Castle / Guild Hall — GOLD (main guild icon alternative)
+  castle: `<path d="M3 14V8h2V6h2V4h2V6h2V8h2v6z" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/>
+           <path d="M3 8H2V6h2M13 8h1V6h-2M6 4V2h1v2M9 4V2h1v2" stroke="url(#goldGrad)" stroke-width="1.2"/>
+           <rect x="7" y="10" width="2" height="4" fill="url(#goldGrad)" fill-opacity="0.3"/>`,
+
+  // Swords crossed — RUBY (battle/pvp guild)
+  axes: `<path d="M3 13L13 3M10 3h3v3M6 13H3v-3" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="square"/>
+         <path d="M3 3L13 13M6 3H3v3M10 13h3v-3" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="square" opacity="0.6"/>
+         <circle cx="8" cy="8" r="1.2" fill="url(#goldGrad)" filter="url(#glowGold)"/>`,
+
+  // Banner / flag — GOLD (guild banner)
+  banner: `<path d="M5 2v12" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="square"/>
+           <path d="M5 2h8l-2 4 2 4H5" stroke="url(#goldGrad)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.15" stroke-linejoin="round" filter="url(#glowGold)"/>
+           <path d="M5 6h5" stroke="url(#goldStroke)" stroke-width="1" opacity="0.6"/>`,
+
+  // Handshake / alliance — GOLD/SAPPHIRE (guild alliance)
+  handshake: `<path d="M2 10c0 0 2-3 4-3h2.5c.8 0 1.5.5 1.5 1.5H8" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M2 10l-1 1.5" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14 10c0 0-2-3-4-3H7.5" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M14 10l1 1.5" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 7V5a1 1 0 012 0v2" stroke="url(#sapphireGrad)" stroke-width="1.2" fill="none"/>`,
+
+  // Key — GOLD (unlock/manage)
+  key: `<circle cx="6" cy="7" r="3" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.12" filter="url(#glowGold)"/>
+        <path d="M9 7h5M12 7v2M14 7v1.5" stroke="url(#goldGrad)" stroke-width="1.4" stroke-linecap="square"/>`,
+
+  // Door/exit — RUBY (leave guild)
+  door: `<rect x="4" y="2" width="8" height="12" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.07"/>
+         <path d="M12 8h3M13 7l2 1-2 1" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="square"/>
+         <circle cx="11" cy="8" r="0.8" fill="url(#rubyGrad)" opacity="0.8"/>`,
+
+  // Promote/levelup arrow — GOLD
+  levelup: `<path d="M8 3v10M4 7l4-4 4 4" stroke="url(#goldStroke)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glowGold)"/>`,
+
+  // Demote arrow — RUBY
+  demote: `<path d="M8 13V3M4 9l4 4 4-4" stroke="url(#rubyGrad)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"/>`,
+
+  // Save — SAPPHIRE
+  save: `<path d="M3 2h8l3 3v9H3z" stroke="url(#sapphireGrad)" stroke-width="1.3" fill="url(#sapphireGrad)" fill-opacity="0.07" stroke-linejoin="round"/>
+         <rect x="5" y="2" width="6" height="4" stroke="url(#cyanGrad)" stroke-width="1" fill="url(#cyanGrad)" fill-opacity="0.06"/>
+         <rect x="4" y="9" width="8" height="5" stroke="url(#cyanGrad)" stroke-width="1" fill="url(#cyanGrad)" fill-opacity="0.06"/>`,
+
+  // Officer badge — GOLD star shield
+  officer_badge: `<path d="M8 2L2 5v4c0 3 2 4.5 6 5.5 4-1 6-2.5 6-5.5V5z"
+                    stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round" filter="url(#glowGold)"/>
+                  <polygon points="8,5 8.8,7.5 11.5,7.5 9.4,9 10.2,11.5 8,10 5.8,11.5 6.6,9 4.5,7.5 7.2,7.5"
+                    fill="url(#goldGrad)" fill-opacity="0.9" filter="url(#glowGold)"/>`,
+
+  // Kick / boot — RUBY
+  kick: `<path d="M4 14l4-8h2l1 4 3-2" stroke="url(#rubyGrad)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+         <path d="M10 6l2-4" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round"/>
+         <path d="M6 2l6 12M2 2l12 12" stroke="url(#rubyGrad)" stroke-width="0.7" opacity="0" />
+         <path d="M3 8l9-6M3 6l9 6" stroke="url(#rubyGrad)" stroke-width="0.7" opacity="0"/>
+         <circle cx="10" cy="6" r="2" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.12"/>
+         <path d="M2 14l3-3 3 3" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M5 11v-2l5-5" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round"/>`,
+
+  // Guild manage/settings gear with crown — GOLD
+  manage: `<circle cx="8" cy="8" r="2.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.15"/>
+           <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.2 3.2l1 1M11.8 11.8l1 1M3.2 12.8l1-1M11.8 4.2l1-1" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linecap="round"/>`,
 }
 
 
@@ -955,6 +1018,19 @@ export const ICONS = {
   hammer:           SYSTEM_ICONS.hammer,
   signal:           SYSTEM_ICONS.signal,
   group:            SYSTEM_ICONS.group,
+
+  // ── Guild system icons ──
+  castle:           SYSTEM_ICONS.castle,
+  banner:           SYSTEM_ICONS.banner,
+  handshake:        SYSTEM_ICONS.handshake,
+  key:              SYSTEM_ICONS.key,
+  door:             SYSTEM_ICONS.door,
+  levelup:          SYSTEM_ICONS.levelup,
+  demote:           SYSTEM_ICONS.demote,
+  save:             SYSTEM_ICONS.save,
+  officer_badge:    SYSTEM_ICONS.officer_badge,
+  kick:             SYSTEM_ICONS.kick,
+  manage:           SYSTEM_ICONS.manage,
 }
 
 
