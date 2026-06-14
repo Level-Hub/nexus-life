@@ -737,7 +737,7 @@ function appendMessage(msg, scroll=true) {
       </div>
     </div>
     <div>
-      ${!isMine ? `<div class="msg-sender" style="color:${CLASS_COLOR[cls]}">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
+      ${!isMine ? `<div class="msg-sender" style="color:#fff">${esc(sender?.display_name||sender?.username||'?')}</div>` : ''}
       ${contentHtml}
       <div class="msg-time">${timeStr}${tickHtml}</div>
     </div>`
@@ -921,19 +921,24 @@ window.toggleRecording = async function() {
   if (isRecording) { stopRecording(); return }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    // Try formats in order of broadest support; mp4/aac works on iOS Safari
+    // Android Chrome only truly supports webm/opus for MediaRecorder
+    // mp4 may report isTypeSupported=true but fails at record time → always try webm first
     const supportedMime = [
-      'audio/mp4',
-      'audio/mp4;codecs=mp4a.40.2',
       'audio/webm;codecs=opus',
       'audio/webm',
       'audio/ogg;codecs=opus',
-      'audio/ogg'
+      'audio/ogg',
+      'audio/mp4'
     ].find(t => {
       try { return MediaRecorder.isTypeSupported(t) } catch(e) { return false }
     })
     const recOpts = supportedMime ? { mimeType: supportedMime } : {}
-    mediaRecorder = new MediaRecorder(stream, recOpts)
+    try {
+      mediaRecorder = new MediaRecorder(stream, recOpts)
+    } catch(e) {
+      // if chosen mime fails at construction, try without options
+      mediaRecorder = new MediaRecorder(stream)
+    }
     audioChunks = []
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data) }
     mediaRecorder.start()
@@ -962,13 +967,14 @@ window.stopRecording = async function() {
 
   mediaRecorder.onstop = async () => {
     const mimeType = mediaRecorder.mimeType || 'audio/webm'
-    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm'
-    const blob = new Blob(audioChunks, { type: mimeType })
+    const ext = mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'mp4' : 'webm'
+    const uploadMime = mimeType.split(';')[0] || 'audio/webm' // strip codec params for Supabase
+    const blob = new Blob(audioChunks, { type: uploadMime })
     mediaRecorder.stream.getTracks().forEach(t => t.stop())
     if (!activeChannel) return
     // Upload to Supabase storage
     const path = `voice/${currentUser.id}/${Date.now()}.${ext}`
-    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: mimeType })
+    const { data, error } = await supabase.storage.from('nexuslife').upload(path, blob, { upsert: true, contentType: uploadMime })
     if (error) { showToast('ส่งเสียงไม่สำเร็จ: ' + error.message, 'error'); return }
     const { data: urlData } = supabase.storage.from('nexuslife').getPublicUrl(path)
     const duration = recSeconds
