@@ -209,7 +209,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .chat-msg{display:flex;gap:10px;animation:slideIn 0.2s ease}
 .chat-msg.own{flex-direction:row-reverse}
-.chat-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid var(--border)}
+.chat-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--cls,var(--cyan))}
 .chat-avatar img{width:100%;height:100%;object-fit:cover}
 .chat-bubble{max-width:75%;padding:8px 12px;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);position:relative}
 .chat-msg.own .chat-bubble{background:rgba(0,245,255,0.1);border-color:rgba(0,245,255,0.2)}
@@ -352,7 +352,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">// <span id="cityPageTitle">CITY</span></div>
+      <div class="page-title" style="display:flex;align-items:center;gap:10px"><span id="cityPageTitleIcon" style="display:inline-flex"></span><span id="cityPageTitle">CITY</span></div>
       <div class="page-sub" id="cityPageSub">LOADING...</div>
     </div>
     <button class="city-switch-btn" id="citySwitchBtn" onclick="openCityModal()">เปลี่ยนเมือง</button>
@@ -633,7 +633,11 @@ async function init() {
   // ── INJECT STATIC ICONS ──────────────────────
   // City hero icon
   const cityHeroIcon = document.getElementById('cityHeroIcon')
-  if (cityHeroIcon) cityHeroIcon.innerHTML = getIcon('city', 28)
+  if (cityHeroIcon) cityHeroIcon.innerHTML = getIcon('map', 28)
+
+  // Page title icon (pin/location)
+  const cityPageTitleIcon = document.getElementById('cityPageTitleIcon')
+  if (cityPageTitleIcon) cityPageTitleIcon.innerHTML = getIcon('map', 22)
 
   // City switch btn
   const citySwitchBtn = document.getElementById('citySwitchBtn')
@@ -768,7 +772,7 @@ async function loadCityData(city) {
   const bonus = (lv * 5)
 
   document.getElementById('cityPageTitle').textContent = city
-  document.getElementById('cityPageSub').textContent = `// จังหวัด ${data.province || city}`
+  document.getElementById('cityPageSub').textContent = `จังหวัด ${data.province || city}`
   document.getElementById('heroName').textContent = city
   document.getElementById('heroProvince').textContent = data.province || city
   document.getElementById('prosperityBadge').textContent = `PROSPERITY LV.${lv}`
@@ -823,6 +827,15 @@ async function loadCityProject(city) {
     document.getElementById('projectDesc').textContent = 'รอโครงการใหม่จากผู้ดูแลระบบ...'
     document.getElementById('joinProjectBtn').disabled = true
     document.getElementById('statProject').textContent = '0'
+    // Red dot = no project
+    document.querySelector('.project-timer-dot').style.background = 'var(--red)'
+    document.querySelector('.project-timer-dot').style.boxShadow = '0 0 6px var(--red)'
+    document.querySelector('.project-timer-dot').style.animation = 'none'
+    document.getElementById('projectTimer').textContent = 'ยังไม่เปิด'
+    // Replace reward section with waiting message
+    document.getElementById('projRewardIcon').innerHTML = getIcon('hammer', 16)
+    document.getElementById('projReward').textContent = 'รอโครงการจาก Admin'
+    document.querySelector('.proj-reward-label').textContent = 'สถานะโครงการ'
     return
   }
 
@@ -979,7 +992,7 @@ async function loadContributors(city) {
       <div class="contrib-avatar cls-${cls}"><img src="${getAvatar(u,40)}" alt=""></div>
       <div class="contrib-info">
         <div class="contrib-name">${u.display_name || u.username}</div>
-        <div class="contrib-class" style="display:flex;align-items:center;gap:3px;color:${color}">${clsIcon(cls)} LV.${u.level}</div>
+        <div class="contrib-class" style="display:flex;align-items:center;gap:3px">${clsIcon(cls)}<span style="color:${color}">${cls.toUpperCase()}</span><span style="color:var(--text-dim)"> · LV.${u.level}</span></div>
       </div>
       <div class="contrib-val">${fmtNum(u.xp_this_month)} XP</div>
     </a>`
@@ -1123,7 +1136,7 @@ function appendChatMsg(msg, fromSelf) {
   div.className = `chat-msg ${isOwn?'own':''}`
   if (msg.id) div.dataset.msgId = msg.id
   div.innerHTML = `
-    <div class="chat-avatar"><img src="${getAvatar(u,28)}" alt=""></div>
+    <div class="chat-avatar cls-${cls}"><img src="${getAvatar(u,28)}" alt=""></div>
     <div class="chat-bubble">
       ${!isOwn ? `<div class="chat-sender cls-${cls}" style="display:flex;align-items:center;gap:4px">${clsIcon(cls)} ${u.display_name||u.username||'?'}</div>` : ''}
       <div class="chat-text">${escHtml(msg.content)}</div>
