@@ -1184,9 +1184,9 @@ async function init() {
     loadQuestHistory(),
     loadActivity(),
     loadGuild(),
-  ])
+  ].map(p => p.catch(e => console.warn('[profile] load error:', e))))
 
-  if (!isOwnProfile) await checkFollowing()
+  if (!isOwnProfile) await checkFollowing().catch(e => console.warn('[profile] checkFollowing:', e))
 
   renderActions()
   renderStreakDays(userProfile?.streak_current || 0, userProfile?.streak_last_date)
@@ -2081,7 +2081,12 @@ document.addEventListener('click', e => {
 // ============================================================
 // START
 // ============================================================
-init()
+init().catch(err => {
+  console.error('[profile] fatal init error:', err)
+  // ซ่อน loading screen เสมอ แม้ error จะ fatal
+  const ls = document.getElementById('profileLoadingScreen')
+  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+})
 </script>
 </body>
 </html>
