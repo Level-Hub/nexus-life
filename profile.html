@@ -1114,9 +1114,16 @@ let userTitles   = []
 // INIT
 // ============================================================
 async function init() {
+  __dbg('🚀 init() started')
   const { user } = await initSidebar('profile')
-  if (!user) return
+  __dbg(user ? `✅ user: ${user.id.slice(0,8)}` : '❌ no user — stopping', user ? '#00f5ff' : '#ff4444')
+  if (!user) {
+    const ls = document.getElementById('profileLoadingScreen')
+    if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+    return
+  }
   currentUser = user
+  __dbg('✅ user ok: ' + user.id)
   injectTitleStyles()
   const pageTitleEl = document.getElementById('pageTitle')
   if (pageTitleEl) pageTitleEl.innerHTML = getIcon('person', 16) + ' <span>PROFILE</span>'
@@ -1176,6 +1183,7 @@ async function init() {
   viewedUser   = uid || currentUser.id
   isOwnProfile = !uid || uid === currentUser.id
 
+  __dbg('🔄 starting Promise.all data load...')
   await Promise.all([
     loadProfile(),
     loadStats(),
@@ -1184,17 +1192,21 @@ async function init() {
     loadQuestHistory(),
     loadActivity(),
     loadGuild(),
-  ].map(p => p.catch(e => console.warn('[profile] load error:', e))))
+  ].map(p => p.catch(e => __dbg('❌ load error: ' + e.message, '#ff4444'))))
+  __dbg('✅ all data loaded')
 
-  if (!isOwnProfile) await checkFollowing().catch(e => console.warn('[profile] checkFollowing:', e))
+  if (!isOwnProfile) await checkFollowing().catch(e => __dbg('❌ checkFollowing: ' + e.message, '#ff4444'))
 
+  __dbg('🔄 renderActions...')
   renderActions()
   renderStreakDays(userProfile?.streak_current || 0, userProfile?.streak_last_date)
   updateQuestStats()
 
+  __dbg('✅ showing profile layout')
   document.getElementById('profileLayout').style.display = 'grid'
   const ls = document.getElementById('profileLoadingScreen')
   if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+  __dbg('✅ DONE — loading screen hidden', '#44ff88')
 
   initCursor()
   checkNotifications()
@@ -2079,8 +2091,38 @@ document.addEventListener('click', e => {
 })
 
 // ============================================================
-// START
+// MOBILE DEBUG CONSOLE
 // ============================================================
+const __dbg = (() => {
+  const panel = document.createElement('div')
+  panel.id = '__dbg'
+  panel.style.cssText = `
+    position:fixed;bottom:0;left:0;right:0;z-index:99999;
+    background:rgba(0,0,0,0.92);border-top:2px solid #00f5ff;
+    max-height:40vh;overflow-y:auto;font-family:monospace;font-size:11px;
+    color:#00f5ff;padding:8px;display:none;
+  `
+  const btn = document.createElement('button')
+  btn.textContent = 'DEBUG'
+  btn.style.cssText = `
+    position:fixed;bottom:8px;right:8px;z-index:100000;
+    background:#00f5ff;color:#000;font-family:monospace;font-size:10px;
+    font-weight:900;border:none;padding:6px 10px;cursor:pointer;
+    letter-spacing:1px;
+  `
+  btn.onclick = () => { panel.style.display = panel.style.display === 'none' ? 'block' : 'none' }
+  document.body.appendChild(panel)
+  document.body.appendChild(btn)
+
+  return function(msg, color = '#00f5ff') {
+    const line = document.createElement('div')
+    line.style.cssText = `color:${color};border-bottom:1px solid rgba(255,255,255,0.05);padding:3px 0`
+    line.textContent = `${new Date().toISOString().slice(11,19)} ${msg}`
+    panel.appendChild(line)
+    panel.scrollTop = panel.scrollHeight
+    console.log(msg)
+  }
+})()
 init().catch(err => {
   console.error('[profile] fatal init error:', err)
   // ซ่อน loading screen เสมอ แม้ error จะ fatal
