@@ -1076,79 +1076,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 </div>
 
-<!-- ══ MOBILE DEBUG — แยกออกจาก module เพื่อให้ทำงานได้แม้ import พัง ══ -->
-<script>
-(function() {
-  // สร้างปุ่ม DEBUG ลอย
-  const btn = document.createElement('button')
-  btn.id = '__dbgBtn'
-  btn.textContent = '🐛 DEBUG'
-  btn.style.cssText = [
-    'position:fixed','bottom:16px','right:16px','z-index:2147483647',
-    'background:#ff0080','color:#fff','font-family:monospace','font-size:13px',
-    'font-weight:900','border:3px solid #fff','padding:10px 16px',
-    'border-radius:8px','cursor:pointer','box-shadow:0 0 20px rgba(255,0,128,0.8)',
-    'letter-spacing:1px','min-width:80px'
-  ].join(';')
-
-  // panel log
-  const panel = document.createElement('div')
-  panel.id = '__dbgPanel'
-  panel.style.cssText = [
-    'position:fixed','bottom:0','left:0','right:0','z-index:2147483646',
-    'background:rgba(0,0,0,0.95)','border-top:3px solid #ff0080',
-    'max-height:50vh','overflow-y:auto','font-family:monospace','font-size:12px',
-    'color:#00ff88','padding:10px','display:none','line-height:1.6'
-  ].join(';')
-
-  btn.onclick = function() {
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
-    btn.style.background = panel.style.display === 'block' ? '#00aa44' : '#ff0080'
-  }
-
-  // รอ body พร้อม
-  function inject() {
-    document.body.appendChild(panel)
-    document.body.appendChild(btn)
-  }
-  if (document.body) inject()
-  else document.addEventListener('DOMContentLoaded', inject)
-
-  // global __dbg function
-  window.__dbg = function(msg, color) {
-    const line = document.createElement('div')
-    line.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.08);padding:4px 0;color:' + (color || '#00ff88')
-    const ts = new Date().toISOString().slice(11,19)
-    line.textContent = ts + '  ' + msg
-    panel.appendChild(line)
-    panel.scrollTop = panel.scrollHeight
-    console.log('[DBG]', msg)
-    // flash ปุ่ม
-    btn.style.background = '#ff0080'
-    clearTimeout(btn.__flash)
-    btn.__flash = setTimeout(function() {
-      btn.style.background = panel.style.display === 'block' ? '#00aa44' : '#ff0080'
-    }, 300)
-  }
-
-  // จับ JS error ทั่วไป
-  window.onerror = function(msg, src, line, col, err) {
-    window.__dbg('❌ JS ERROR: ' + msg + ' (' + (src||'').split('/').pop() + ':' + line + ')', '#ff4444')
-    return false
-  }
-
-  // จับ unhandled promise rejection (รวม import fail)
-  window.addEventListener('unhandledrejection', function(e) {
-    var reason = e.reason
-    var msg = reason instanceof Error ? reason.message : String(reason)
-    window.__dbg('❌ PROMISE REJECT: ' + msg, '#ff4444')
-  })
-
-  // บอกว่า script นี้โหลดสำเร็จ
-  window.__dbg('✅ Debug panel ready — waiting for module...', '#ffff00')
-})()
-</script>
-
 <script type="module">
 function getAvatarUrl(avatarSeed, size=80) {
   if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
@@ -1162,7 +1089,7 @@ function getAvatarUrl(avatarSeed, size=80) {
 
 import { supabase } from './supabase.js'
 import { initSidebar, updateSidebarAvatar, updateSidebarName } from './sidebar.js'
-import { getIcon, injectGlobalDefs, GUILD_ICONS, renderGuildIcon, SYSTEM_ICONS } from './icons.js'
+import { getIcon, injectGlobalDefs, GUILD_ICONS, getGuildIcon as renderGuildIcon, SYSTEM_ICONS } from './icons.js'
 injectGlobalDefs()
 import { renderBadgeItem, renderTitleCard, renderTitleBadge, injectTitleStyles } from './titles.js'
 
@@ -1187,16 +1114,16 @@ let userTitles   = []
 // INIT
 // ============================================================
 async function init() {
-  __dbg('🚀 init() started')
+  
   const { user } = await initSidebar('profile')
-  __dbg(user ? `✅ user: ${user.id.slice(0,8)}` : '❌ no user — stopping', user ? '#00f5ff' : '#ff4444')
+  
   if (!user) {
     const ls = document.getElementById('profileLoadingScreen')
     if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
     return
   }
   currentUser = user
-  __dbg('✅ user ok: ' + user.id)
+  
   injectTitleStyles()
   const pageTitleEl = document.getElementById('pageTitle')
   if (pageTitleEl) pageTitleEl.innerHTML = getIcon('person', 16) + ' <span>PROFILE</span>'
@@ -1256,7 +1183,7 @@ async function init() {
   viewedUser   = uid || currentUser.id
   isOwnProfile = !uid || uid === currentUser.id
 
-  __dbg('🔄 starting Promise.all data load...')
+  
   await Promise.all([
     loadProfile(),
     loadStats(),
@@ -1265,21 +1192,19 @@ async function init() {
     loadQuestHistory(),
     loadActivity(),
     loadGuild(),
-  ].map(p => p.catch(e => __dbg('❌ load error: ' + e.message, '#ff4444'))))
-  __dbg('✅ all data loaded')
+  ].map(p => p.catch(e => console.warn('load error:', e.message))))
 
-  if (!isOwnProfile) await checkFollowing().catch(e => __dbg('❌ checkFollowing: ' + e.message, '#ff4444'))
+  if (!isOwnProfile) await checkFollowing().catch(e => console.warn('checkFollowing:', e.message))
 
-  __dbg('🔄 renderActions...')
   renderActions()
   renderStreakDays(userProfile?.streak_current || 0, userProfile?.streak_last_date)
   updateQuestStats()
 
-  __dbg('✅ showing profile layout')
+  
   document.getElementById('profileLayout').style.display = 'grid'
   const ls = document.getElementById('profileLoadingScreen')
   if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
-  __dbg('✅ DONE — loading screen hidden', '#44ff88')
+  
 
   initCursor()
   checkNotifications()
@@ -2163,9 +2088,6 @@ document.addEventListener('click', e => {
   }
 })
 
-// __dbg อยู่ใน <script> แยกข้างบนแล้ว (ทำงานได้แม้ module พัง)
-// ใช้ window.__dbg ตรงได้เลย — alias สำหรับ calls ใน module
-const __dbg = (...a) => window.__dbg(...a)
 init().catch(err => {
   console.error('[profile] fatal init error:', err)
   // ซ่อน loading screen เสมอ แม้ error จะ fatal
