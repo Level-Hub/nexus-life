@@ -1076,6 +1076,79 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 </div>
 
+<!-- ══ MOBILE DEBUG — แยกออกจาก module เพื่อให้ทำงานได้แม้ import พัง ══ -->
+<script>
+(function() {
+  // สร้างปุ่ม DEBUG ลอย
+  const btn = document.createElement('button')
+  btn.id = '__dbgBtn'
+  btn.textContent = '🐛 DEBUG'
+  btn.style.cssText = [
+    'position:fixed','bottom:16px','right:16px','z-index:2147483647',
+    'background:#ff0080','color:#fff','font-family:monospace','font-size:13px',
+    'font-weight:900','border:3px solid #fff','padding:10px 16px',
+    'border-radius:8px','cursor:pointer','box-shadow:0 0 20px rgba(255,0,128,0.8)',
+    'letter-spacing:1px','min-width:80px'
+  ].join(';')
+
+  // panel log
+  const panel = document.createElement('div')
+  panel.id = '__dbgPanel'
+  panel.style.cssText = [
+    'position:fixed','bottom:0','left:0','right:0','z-index:2147483646',
+    'background:rgba(0,0,0,0.95)','border-top:3px solid #ff0080',
+    'max-height:50vh','overflow-y:auto','font-family:monospace','font-size:12px',
+    'color:#00ff88','padding:10px','display:none','line-height:1.6'
+  ].join(';')
+
+  btn.onclick = function() {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
+    btn.style.background = panel.style.display === 'block' ? '#00aa44' : '#ff0080'
+  }
+
+  // รอ body พร้อม
+  function inject() {
+    document.body.appendChild(panel)
+    document.body.appendChild(btn)
+  }
+  if (document.body) inject()
+  else document.addEventListener('DOMContentLoaded', inject)
+
+  // global __dbg function
+  window.__dbg = function(msg, color) {
+    const line = document.createElement('div')
+    line.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.08);padding:4px 0;color:' + (color || '#00ff88')
+    const ts = new Date().toISOString().slice(11,19)
+    line.textContent = ts + '  ' + msg
+    panel.appendChild(line)
+    panel.scrollTop = panel.scrollHeight
+    console.log('[DBG]', msg)
+    // flash ปุ่ม
+    btn.style.background = '#ff0080'
+    clearTimeout(btn.__flash)
+    btn.__flash = setTimeout(function() {
+      btn.style.background = panel.style.display === 'block' ? '#00aa44' : '#ff0080'
+    }, 300)
+  }
+
+  // จับ JS error ทั่วไป
+  window.onerror = function(msg, src, line, col, err) {
+    window.__dbg('❌ JS ERROR: ' + msg + ' (' + (src||'').split('/').pop() + ':' + line + ')', '#ff4444')
+    return false
+  }
+
+  // จับ unhandled promise rejection (รวม import fail)
+  window.addEventListener('unhandledrejection', function(e) {
+    var reason = e.reason
+    var msg = reason instanceof Error ? reason.message : String(reason)
+    window.__dbg('❌ PROMISE REJECT: ' + msg, '#ff4444')
+  })
+
+  // บอกว่า script นี้โหลดสำเร็จ
+  window.__dbg('✅ Debug panel ready — waiting for module...', '#ffff00')
+})()
+</script>
+
 <script type="module">
 function getAvatarUrl(avatarSeed, size=80) {
   if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
@@ -2090,39 +2163,9 @@ document.addEventListener('click', e => {
   }
 })
 
-// ============================================================
-// MOBILE DEBUG CONSOLE
-// ============================================================
-const __dbg = (() => {
-  const panel = document.createElement('div')
-  panel.id = '__dbg'
-  panel.style.cssText = `
-    position:fixed;bottom:0;left:0;right:0;z-index:99999;
-    background:rgba(0,0,0,0.92);border-top:2px solid #00f5ff;
-    max-height:40vh;overflow-y:auto;font-family:monospace;font-size:11px;
-    color:#00f5ff;padding:8px;display:none;
-  `
-  const btn = document.createElement('button')
-  btn.textContent = 'DEBUG'
-  btn.style.cssText = `
-    position:fixed;bottom:8px;right:8px;z-index:100000;
-    background:#00f5ff;color:#000;font-family:monospace;font-size:10px;
-    font-weight:900;border:none;padding:6px 10px;cursor:pointer;
-    letter-spacing:1px;
-  `
-  btn.onclick = () => { panel.style.display = panel.style.display === 'none' ? 'block' : 'none' }
-  document.body.appendChild(panel)
-  document.body.appendChild(btn)
-
-  return function(msg, color = '#00f5ff') {
-    const line = document.createElement('div')
-    line.style.cssText = `color:${color};border-bottom:1px solid rgba(255,255,255,0.05);padding:3px 0`
-    line.textContent = `${new Date().toISOString().slice(11,19)} ${msg}`
-    panel.appendChild(line)
-    panel.scrollTop = panel.scrollHeight
-    console.log(msg)
-  }
-})()
+// __dbg อยู่ใน <script> แยกข้างบนแล้ว (ทำงานได้แม้ module พัง)
+// ใช้ window.__dbg ตรงได้เลย — alias สำหรับ calls ใน module
+const __dbg = (...a) => window.__dbg(...a)
 init().catch(err => {
   console.error('[profile] fatal init error:', err)
   // ซ่อน loading screen เสมอ แม้ error จะ fatal
