@@ -104,9 +104,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(max-width:900px){.guild-grid{grid-template-columns:1fr}}
 
 /* TABS (MEMBERS / QUEST / CHAT / FEED / จัดการ) */
-.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--g-border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none}
+.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--g-border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}
 .inner-tabs::-webkit-scrollbar{display:none}
-.itab{padding:10px 14px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.itab{padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;flex-shrink:0}
 .itab.active{color:var(--g-gold);border-bottom-color:var(--g-gold)}
 .itab.active.manage-tab{color:var(--g-amber);border-bottom-color:var(--g-amber)}
 .itab:hover:not(.active){color:var(--g-amber)}
@@ -308,16 +308,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <!-- GUILD LOADING SCREEN -->
 <div id="guildLoadingScreen" style="position:fixed;inset:0;background:#0a0800;z-index:9990;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity 0.5s ease;">
-  <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:4px">
-    <div style="width:64px;height:64px;border:1px solid rgba(255,180,0,0.15);border-radius:50%;position:absolute;animation:gLoadPulse 2s ease-in-out infinite;"></div>
-    <div style="width:48px;height:48px;border:1px solid rgba(255,180,0,0.3);border-radius:50%;position:absolute;animation:gLoadPulse 2s ease-in-out infinite 0.3s;"></div>
-    <svg width="28" height="28" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(255,200,0,0.6))">
-      <path d="M3 14V8h2V6h2V4h2V6h2V8h2v6z" stroke="#ffd700" stroke-width="1.3" fill="rgba(255,180,0,0.12)" stroke-linejoin="round"/>
-      <path d="M3 8H2V6h2M13 8h1V6h-2M6 4V2h1v2M9 4V2h1v2" stroke="#ffaa00" stroke-width="1.2"/>
-      <rect x="7" y="10" width="2" height="4" fill="rgba(255,180,0,0.35)"/>
-    </svg>
-  </div>
-  <div style="font-family:'Orbitron',monospace;font-size:15px;font-weight:900;letter-spacing:5px;color:#ffd700;text-shadow:0 0 24px rgba(255,200,0,0.5);">GUILD</div>
+  <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;letter-spacing:8px;color:#ffd700;text-shadow:0 0 32px rgba(255,200,0,0.6);">GUILD</div>
   <div style="width:180px;height:2px;background:rgba(255,160,0,0.1);overflow:hidden;position:relative;border-radius:1px;">
     <div style="position:absolute;left:-60%;width:60%;height:100%;background:linear-gradient(90deg,transparent,#ffaa00,#ffd700,transparent);animation:gLoadSlide 1.1s infinite linear;"></div>
   </div>
@@ -325,7 +316,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 <style>
 @keyframes gLoadSlide{from{left:-60%}to{left:160%}}
-@keyframes gLoadPulse{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.7;transform:scale(1.08)}}
 </style>
 
 <div class="cursor" id="cursor"></div>
@@ -345,7 +335,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title"><span id="pageTitleIcon" style="display:inline-flex;align-items:center;filter:drop-shadow(0 0 8px rgba(255,200,0,0.7))"></span> <span style="color:var(--g-amber)">GUILD</span></div>
+      <div class="page-title"><span id="pageTitleIcon" style="display:none"></span> <span id="guildTitleName" style="color:#fff">GUILD</span></div>
       <div class="page-sub" id="guildStatusSub" style="transition:color 0.3s">GUILD SYSTEM — กำลังโหลด...</div>
     </div>
     <div id="headerActions"></div>
@@ -478,7 +468,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <button class="itab" id="itabQuests" onclick="switchInnerTab('quests',this)">Guild Quest</button>
             <button class="itab" id="itabChat" onclick="switchInnerTab('chat',this)">Chat</button>
             <button class="itab" id="itabFeed" onclick="switchInnerTab('feed',this)">Feed</button>
-            <button class="itab manage-tab" id="itabManage" onclick="switchInnerTab('manage',this)" style="display:none">จัดการ</button>
+            <button class="itab manage-tab" id="itabManage" onclick="switchInnerTab('manage',this)">จัดการ</button>
           </div>
 
           <!-- MEMBERS TAB -->
@@ -517,6 +507,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
           <!-- MANAGE TAB (master/officer only) -->
           <div class="box-body" id="tabManage" style="display:none">
+            <!-- ปุ่มจัดการ Guild (ออก / แก้ไข) -->
+            <div id="manageGuildActions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g-border)">
+              <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-bottom:2px">// การจัดการ Guild</div>
+              <button class="btn-secondary" id="editGuildBtn2" style="display:none;width:100%;padding:10px;font-size:9px" onclick="openEditModal()">✏️ แก้ไข Guild</button>
+              <button class="leave-btn" id="leaveGuildBtn2" style="width:100%" onclick="confirmLeave()">🚪 ออกจาก Guild</button>
+            </div>
+            <!-- รายชื่อสมาชิก (master/officer จัดการได้) -->
             <div id="manageList" class="manage-member-list">
               <div class="empty-state"><div class="empty-state-txt">กำลังโหลด...</div></div>
             </div>
@@ -907,6 +904,12 @@ async function showHasGuildView() {
   document.getElementById('hasGuildView').style.display = 'block'
   document.getElementById('guildStatusSub').textContent = `${MY_GUILD.name} [${MY_GUILD.tag}]`
 
+  // Update page title: guild name white + tag gold
+  const titleEl = document.getElementById('guildTitleName')
+  if (titleEl) {
+    titleEl.innerHTML = `<span style="color:#fff">${escHtml(MY_GUILD.name)}</span> <span style="color:var(--g-gold);font-size:14px">[${escHtml(MY_GUILD.tag)}]</span>`
+  }
+
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
   const gXpPct = Math.min(100, ((MY_GUILD.guild_xp % GUILD_XP_PER_LEVEL) / GUILD_XP_PER_LEVEL) * 100)
@@ -933,9 +936,9 @@ async function showHasGuildView() {
   const itabFeed = document.getElementById('itabFeed')
   if (itabFeed) itabFeed.innerHTML = getIcon('signal', 13) + ' Feed'
 
-  // แสดง tab จัดการเฉพาะ master/officer
+  // แสดง tab จัดการให้ทุกคน
   const itabManage = document.getElementById('itabManage')
-  if (itabManage && (role === 'master' || role === 'officer')) {
+  if (itabManage) {
     itabManage.style.display = 'inline-flex'
     itabManage.innerHTML = getIcon('manage', 13) + ' จัดการ'
   }
@@ -969,10 +972,23 @@ async function showHasGuildView() {
   else if (role === 'officer') roleBadge.innerHTML = getIcon('star', 11) + ' OFFICER'
   else roleBadge.innerHTML = getIcon('users', 11) + ' MEMBER'
 
-  // show edit / leave
+  // show edit / leave — right panel
   if (role === 'master') {
-    document.getElementById('editGuildBtn').style.display = 'block'
-    document.getElementById('leaveGuildBtn').style.display = 'none'
+    const editBtn = document.getElementById('editGuildBtn')
+    if (editBtn) editBtn.style.display = 'block'
+    const leaveBtn = document.getElementById('leaveGuildBtn')
+    if (leaveBtn) leaveBtn.style.display = 'none'
+  }
+
+  // show edit / leave — inside manage tab (mobile)
+  const editBtn2 = document.getElementById('editGuildBtn2')
+  const leaveBtn2 = document.getElementById('leaveGuildBtn2')
+  if (role === 'master') {
+    if (editBtn2) editBtn2.style.display = 'block'
+    if (leaveBtn2) leaveBtn2.style.display = 'none'
+  } else {
+    if (editBtn2) editBtn2.style.display = 'none'
+    if (leaveBtn2) leaveBtn2.style.display = 'block'
   }
 
   // inject chat/feed empty icons
@@ -1056,9 +1072,20 @@ async function loadMembers() {
 let _memberCache = []
 function renderManageList() {
   const el = document.getElementById('manageList')
+  const role = MY_MEMBER?.role
+
+  // member ธรรมดาไม่มีสิทธิ์จัดการสมาชิก
+  if (role === 'member') {
+    el.innerHTML = `<div class="manage-empty" style="padding:20px 0;text-align:center">
+      <div style="font-size:24px;opacity:0.3;margin-bottom:10px">🔒</div>
+      <div style="font-family:Orbitron,monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim)">// เฉพาะ MASTER / OFFICER เท่านั้น</div>
+    </div>`
+    return
+  }
+
   if (!_memberCache.length) { el.innerHTML = `<div class="manage-empty">// ยังไม่มีสมาชิก</div>`; return }
-  const canKick = MY_MEMBER.role === 'master'
-  const canPromote = MY_MEMBER.role === 'master'
+  const canKick = role === 'master'
+  const canPromote = role === 'master'
   el.innerHTML = _memberCache
     .filter(m => m.users.id !== ME.id)
     .map(m => {
@@ -1216,7 +1243,7 @@ async function loadGuildFeed() {
     <div class="gfeed-item">
       <div class="gfeed-icon">${icons[a.type]||getIcon('announce',16)}</div>
       <div class="gfeed-text">
-        <div class="gfeed-main"><span style="color:#fff;font-weight:600">${escHtml(name)}</span> <span style="color:var(--purple)">${labels[a.type]||a.type}</span></div>
+        <div class="gfeed-main"><span style="color:#fff;font-weight:600">${escHtml(name)}</span> <span style="color:var(--g-gold)">${labels[a.type]||a.type}</span></div>
         <div class="gfeed-time">${t}</div>
       </div>
     </div>`
