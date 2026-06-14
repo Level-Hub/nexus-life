@@ -298,16 +298,29 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .leave-btn:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
 
 @media(max-width:768px){
-  .main{margin-left:0;padding:80px 16px 100px}
+  .main{margin-left:0;padding:80px 12px 100px}
   .guild-grid{grid-template-columns:1fr}
   .right-panel{display:none}
+  .inner-tabs{width:100%;overflow-x:auto}
+  .itab{padding:8px 8px;font-size:8px;letter-spacing:0.5px;gap:3px}
+  .itab-count{font-size:7px;padding:1px 4px}
+  .guild-banner-inner{gap:12px}
+  .guild-icon{width:52px;height:52px;font-size:22px}
+  .guild-name{font-size:16px}
+  .guild-meta{gap:10px}
 }
 </style>
 </head>
 <body>
 
 <!-- GUILD LOADING SCREEN -->
-<div id="guildLoadingScreen" style="position:fixed;inset:0;background:#0a0800;z-index:9990;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity 0.5s ease;">
+<div id="guildLoadingScreen" style="position:fixed;inset:0;background:#0a0800;z-index:9990;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity 0.5s ease;">
+  <div class="g-load-aura">
+    <div class="g-load-ring g-load-ring-1"></div>
+    <div class="g-load-ring g-load-ring-2"></div>
+    <div class="g-load-ring g-load-ring-3"></div>
+    <div class="g-load-core">⚔</div>
+  </div>
   <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;letter-spacing:8px;color:#ffd700;text-shadow:0 0 32px rgba(255,200,0,0.6);">GUILD</div>
   <div style="width:180px;height:2px;background:rgba(255,160,0,0.1);overflow:hidden;position:relative;border-radius:1px;">
     <div style="position:absolute;left:-60%;width:60%;height:100%;background:linear-gradient(90deg,transparent,#ffaa00,#ffd700,transparent);animation:gLoadSlide 1.1s infinite linear;"></div>
@@ -316,6 +329,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 <style>
 @keyframes gLoadSlide{from{left:-60%}to{left:160%}}
+@keyframes gAuraPulse{
+  0%{transform:scale(1);opacity:0.6}
+  50%{transform:scale(1.18);opacity:0.15}
+  100%{transform:scale(1);opacity:0.6}
+}
+@keyframes gCoreGlow{
+  0%,100%{text-shadow:0 0 12px rgba(255,200,0,0.6);color:#ffaa00}
+  50%{text-shadow:0 0 28px rgba(255,220,0,1);color:#ffd700}
+}
+.g-load-aura{position:relative;width:80px;height:80px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.g-load-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,180,0,0.35)}
+.g-load-ring-1{width:80px;height:80px;animation:gAuraPulse 2s ease-in-out infinite}
+.g-load-ring-2{width:58px;height:58px;animation:gAuraPulse 2s ease-in-out infinite 0.4s}
+.g-load-ring-3{width:36px;height:36px;animation:gAuraPulse 2s ease-in-out infinite 0.8s}
+.g-load-core{font-size:20px;position:relative;z-index:1;animation:gCoreGlow 2s ease-in-out infinite}
 </style>
 
 <div class="cursor" id="cursor"></div>
@@ -335,7 +363,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- PAGE HEADER -->
   <div class="page-header">
     <div>
-      <div class="page-title"><span id="pageTitleIcon" style="display:none"></span> <span id="guildTitleName" style="color:#fff">GUILD</span></div>
+      <div class="page-title"><span id="pageTitleIcon" style="display:inline-flex;align-items:center"></span> <span style="color:var(--g-gold)">GUILD</span></div>
       <div class="page-sub" id="guildStatusSub" style="transition:color 0.3s">GUILD SYSTEM — กำลังโหลด...</div>
     </div>
     <div id="headerActions"></div>
@@ -903,12 +931,6 @@ async function showHasGuildView() {
   document.getElementById('noGuildView').style.display = 'none'
   document.getElementById('hasGuildView').style.display = 'block'
   document.getElementById('guildStatusSub').textContent = `${MY_GUILD.name} [${MY_GUILD.tag}]`
-
-  // Update page title: guild name white + tag gold
-  const titleEl = document.getElementById('guildTitleName')
-  if (titleEl) {
-    titleEl.innerHTML = `<span style="color:#fff">${escHtml(MY_GUILD.name)}</span> <span style="color:var(--g-gold);font-size:14px">[${escHtml(MY_GUILD.tag)}]</span>`
-  }
 
   // Banner
   const gLv = Math.max(1, Math.floor(MY_GUILD.guild_xp / GUILD_XP_PER_LEVEL) + 1)
