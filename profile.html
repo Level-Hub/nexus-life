@@ -1666,22 +1666,13 @@ async function loadGuild() {
 
   const { data: guild } = await supabase
     .from('guilds')
-    .select('name, tag, guild_level, icon_key')
+    .select('name, tag, guild_level')
     .eq('id', member.guild_id)
     .single()
 
   if (!guild) return
 
-  // ดึง guild icon จาก imports ที่ top-level (ไม่ใช้ dynamic import เพื่อหลีกเลี่ยง silent fail)
-  const iconKey = guild.icon_key || 'shield'
-  let iconHtml = ''
-  if (typeof renderGuildIcon === 'function') {
-    iconHtml = renderGuildIcon(iconKey, 36)
-  } else if (GUILD_ICONS && GUILD_ICONS[iconKey]) {
-    iconHtml = `<svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">${GUILD_ICONS[iconKey]}</svg>`
-  } else {
-    iconHtml = getIcon('guild', 30)
-  }
+  const iconHtml = getIcon('guild', 30)
 
   document.getElementById('guildInfo').innerHTML = `<div class="guild-info-card">
     <div class="guild-icon" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:rgba(0,60,255,0.08);border:1px solid rgba(0,100,255,0.30);">${iconHtml}</div>
