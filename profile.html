@@ -1089,9 +1089,16 @@ function getAvatarUrl(avatarSeed, size=80) {
 
 import { supabase } from './supabase.js'
 import { initSidebar, updateSidebarAvatar, updateSidebarName } from './sidebar.js'
-import { getIcon, injectGlobalDefs } from './icons.js'
+import { getIcon, injectGlobalDefs, GUILD_ICONS, renderGuildIcon, SYSTEM_ICONS } from './icons.js'
 injectGlobalDefs()
 import { renderBadgeItem, renderTitleCard, renderTitleBadge, injectTitleStyles } from './titles.js'
+
+// lockIcon — ใช้ SYSTEM_ICONS.lock โดยตรงเพราะ 'lock' ยังไม่อยู่ใน ICONS map
+function lockIcon(size = 24) {
+  const content = SYSTEM_ICONS?.lock || ''
+  if (!content) return ''
+  return `<svg width="${size}" height="${size}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle" aria-hidden="true" class="nx-icon">${content}</svg>`
+}
 
 let currentUser  = null   // logged-in user
 let viewedUser   = null   // profile being viewed (may differ)
@@ -1263,6 +1270,58 @@ async function loadProfile() {
   }
   userProfile = data
   renderHero(data)
+
+  // ── PRIVACY CHECKS (เฉพาะเมื่อคนอื่นดู) ──────────────────────────────────
+  if (!isOwnProfile) {
+
+    // profile_public = false → แสดงแค่หน้า locked ทั้งหมด
+    if (data.profile_public === false) {
+      document.getElementById('profileLayout').style.display = 'none'
+      document.getElementById('profileHero').innerHTML = `
+        <div style="padding:60px 32px;text-align:center">
+          <div style="margin-bottom:16px;display:flex;justify-content:center">${lockIcon(36)}</div>
+          <div style="font-family:'Orbitron',monospace;font-size:13px;
+            color:var(--text-dim);letter-spacing:3px;margin-bottom:8px">
+            PROFILE นี้เป็นส่วนตัว
+          </div>
+          <div style="font-family:'Orbitron',monospace;font-size:9px;
+            color:var(--text-dim);letter-spacing:1px;opacity:0.5">
+            ผู้เล่นนี้ตั้งค่า Profile เป็น Private
+          </div>
+        </div>`
+      return
+    }
+
+    // stats_public = false → ซ่อน attributes box
+    if (data.stats_public === false) {
+      const statsBox = document.querySelector('.stats-grid')?.closest('.box')
+      if (statsBox) statsBox.innerHTML = `
+        <div style="padding:32px;text-align:center">
+          <div style="margin-bottom:10px;display:flex;justify-content:center">${lockIcon(24)}</div>
+          <div style="font-family:'Orbitron',monospace;font-size:10px;
+            color:var(--text-dim);letter-spacing:2px">
+            STATS เป็นส่วนตัว
+          </div>
+        </div>`
+    }
+
+    // feed_public = false → ซ่อน activity tab
+    if (data.feed_public === false) {
+      const tabBtn = document.getElementById('tabBtnActivity')
+      if (tabBtn) tabBtn.style.display = 'none'
+      const tabPanel = document.getElementById('tabActivity')
+      if (tabPanel) tabPanel.innerHTML = `
+        <div style="padding:32px;text-align:center">
+          <div style="margin-bottom:10px;display:flex;justify-content:center">${lockIcon(24)}</div>
+          <div style="font-family:'Orbitron',monospace;font-size:10px;
+            color:var(--text-dim);letter-spacing:2px">
+            ACTIVITY เป็นส่วนตัว
+          </div>
+        </div>`
+    }
+
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   // update last_seen ถ้าดูโปรไฟล์ตัวเอง
   if (viewedUser === currentUser?.id) {
@@ -1603,37 +1662,25 @@ async function loadGuild() {
 
   if (!guild) return
 
-  // ดึง guild icon จาก icons.js ตาม icon_key จาก DB
-  import('./icons.js').then(({ GUILD_ICONS, renderGuildIcon }) => {
-    const iconKey = guild.icon_key || 'shield'
-    let iconHtml = ''
-    if (renderGuildIcon) {
-      iconHtml = renderGuildIcon(iconKey, 36)
-    } else if (GUILD_ICONS && GUILD_ICONS[iconKey]) {
-      iconHtml = `<svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">${GUILD_ICONS[iconKey]}</svg>`
-    } else {
-      iconHtml = getIcon('guild', 30)
-    }
+  // ดึง guild icon จาก imports ที่ top-level (ไม่ใช้ dynamic import เพื่อหลีกเลี่ยง silent fail)
+  const iconKey = guild.icon_key || 'shield'
+  let iconHtml = ''
+  if (typeof renderGuildIcon === 'function') {
+    iconHtml = renderGuildIcon(iconKey, 36)
+  } else if (GUILD_ICONS && GUILD_ICONS[iconKey]) {
+    iconHtml = `<svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">${GUILD_ICONS[iconKey]}</svg>`
+  } else {
+    iconHtml = getIcon('guild', 30)
+  }
 
-    document.getElementById('guildInfo').innerHTML = `<div class="guild-info-card">
-      <div class="guild-icon" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:rgba(0,60,255,0.08);border:1px solid rgba(0,100,255,0.30);">${iconHtml}</div>
-      <div>
-        <div class="guild-name">${escHtml(guild.name)} [${escHtml(guild.tag)}]</div>
-        <div class="guild-tag">LV.${guild.guild_level} Guild</div>
-        <div class="guild-role">${(member.role || 'MEMBER').toUpperCase()}</div>
-      </div>
-    </div>`
-  }).catch(() => {
-    // fallback if dynamic import not available
-    document.getElementById('guildInfo').innerHTML = `<div class="guild-info-card">
-      <div class="guild-icon">${getIcon('guild', 28)}</div>
-      <div>
-        <div class="guild-name">${escHtml(guild.name)} [${escHtml(guild.tag)}]</div>
-        <div class="guild-tag">LV.${guild.guild_level} Guild</div>
-        <div class="guild-role">${(member.role || 'MEMBER').toUpperCase()}</div>
-      </div>
-    </div>`
-  })
+  document.getElementById('guildInfo').innerHTML = `<div class="guild-info-card">
+    <div class="guild-icon" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:rgba(0,60,255,0.08);border:1px solid rgba(0,100,255,0.30);">${iconHtml}</div>
+    <div>
+      <div class="guild-name">${escHtml(guild.name)} [${escHtml(guild.tag)}]</div>
+      <div class="guild-tag">LV.${guild.guild_level} Guild</div>
+      <div class="guild-role">${(member.role || 'MEMBER').toUpperCase()}</div>
+    </div>
+  </div>`
 }
 
 function escHtml(s) {
@@ -1862,9 +1909,10 @@ window.saveProfile = async function() {
   }
 
   // ── COOLDOWN CHECKS ───────────────────────────────────────────────────────
+  // Fallback null เผื่อ column ยังไม่มีใน DB (migration ยังไม่ได้รัน)
   // Username: เปลี่ยนได้ทุก 30 วัน
   if (username !== userProfile.username) {
-    const remaining = getCooldownRemaining(userProfile.username_changed_at, COOLDOWNS.username)
+    const remaining = getCooldownRemaining(userProfile.username_changed_at ?? null, COOLDOWNS.username)
     if (remaining > 0) {
       showModalMsg('error', `⏱ Username: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
       btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
@@ -1872,7 +1920,7 @@ window.saveProfile = async function() {
   }
   // Class: เปลี่ยนได้ทุก 14 วัน
   if (cls !== userProfile.class) {
-    const remaining = getCooldownRemaining(userProfile.class_changed_at, COOLDOWNS.class)
+    const remaining = getCooldownRemaining(userProfile.class_changed_at ?? null, COOLDOWNS.class)
     if (remaining > 0) {
       showModalMsg('error', `⏱ Class: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
       btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
@@ -1880,7 +1928,7 @@ window.saveProfile = async function() {
   }
   // City: เปลี่ยนได้ทุก 7 วัน
   if (city !== userProfile.city) {
-    const remaining = getCooldownRemaining(userProfile.city_changed_at, COOLDOWNS.city)
+    const remaining = getCooldownRemaining(userProfile.city_changed_at ?? null, COOLDOWNS.city)
     if (remaining > 0) {
       showModalMsg('error', `⏱ City: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
       btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
