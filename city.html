@@ -13,7 +13,8 @@
   --panel:rgba(176,136,255,0.04); --border:rgba(176,136,255,0.14);
   --accent:#b088ff;
 }
-*{transition:color var(--t-base,0.3s) ease,background var(--t-base,0.3s) ease,border-color var(--t-base,0.3s) ease,opacity var(--t-base,0.3s) ease}
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 .cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
 
@@ -362,7 +363,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
   <div class="city-load-title">CITY</div>
   <div class="city-load-bar-wrap"><div class="city-load-bar-slide"></div></div>
-  <div class="city-load-txt">LOADING CITY DATA...</div>
+  <div class="city-load-txt" id="loadingTxt">LOADING CITY DATA...</div>
 </div>
 
 <div class="cursor" id="cursor"></div>
@@ -787,7 +788,15 @@ async function init() {
   startProjectTimer()
 
   const ls = document.getElementById('loadingScreen')
-  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  const loadTxt = document.getElementById('loadingTxt')
+  const cityPhases = ['CONNECTING TO CITY...', 'LOADING DISTRICTS...', 'SYNCING RESIDENTS...', 'OPENING CITY GATES...']
+  if (loadTxt) loadTxt.textContent = cityPhases[0]
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = cityPhases[1] }, 150)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = cityPhases[2] }, 350)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = cityPhases[3] }, 550)
+  setTimeout(() => {
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  }, 750)
   initCursor()
 }
 

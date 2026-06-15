@@ -6,27 +6,25 @@
 <title>NEXUS LIFE — Shop</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-/* ── shop accent override ── */
-:root { --accent: #ff44cc; }
+:root {
+  --accent: #ffaa00;
+  --cyan:#ffaa00;--cyan-dim:#cc7700;--gold:#ffd700;--red:#ff003c;
+  --green:#44ff88;--purple:#cc44ff;--bg:#0a0600;--bg2:#0f0800;
+  --panel:rgba(255,170,0,0.04);--border:rgba(255,170,0,0.14);
+}
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
 .no-transition, .no-transition * { transition: none !important; }
-:root {
-  --cyan:#ff44cc;--cyan-dim:#cc2299;--gold:#ffd700;--red:#ff003c;
-  --green:#44ff88;--purple:#cc44ff;--bg:#010a0f;--bg2:#0d0209;
-  --panel:rgba(255,68,204,0.04);--border:rgba(255,68,204,0.14);
-  --text:#f5c8ef;--text-dim:#8a5a82;
-}
 .cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
-.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(255,170,0,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,170,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,170,0,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-1{width:500px;height:500px;background:rgba(255,170,0,0.04);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
 
 /* MAIN */
@@ -44,18 +42,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .wallet-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .currency-chip{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--panel);border:1px solid var(--border);font-family:'Orbitron',monospace;font-size:13px;font-weight:700}
 .currency-chip.gold-chip{border-color:rgba(255,215,0,0.3);color:var(--gold)}
-.currency-chip.crystal-chip{border-color:rgba(0,245,255,0.3);color:var(--cyan)}
-.btn-topup{padding:10px 18px;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(176,68,255,0.15));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s;text-decoration:none;display:flex;align-items:center;gap:8px}
-.btn-topup:hover{background:rgba(0,245,255,0.2);box-shadow:0 0 20px rgba(0,245,255,0.2)}
+.currency-chip.crystal-chip{border-color:rgba(255,170,0,0.3);color:var(--cyan)}
+.btn-topup{padding:10px 18px;background:linear-gradient(135deg,rgba(255,170,0,0.15),rgba(176,68,255,0.15));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s;text-decoration:none;display:flex;align-items:center;gap:8px}
+.btn-topup:hover{background:rgba(255,170,0,0.2);box-shadow:0 0 20px rgba(255,170,0,0.2)}
 
 /* CATEGORY TABS */
 .cat-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown 0.4s ease both}
 .cat-tab{padding:8px 16px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;transition:all 0.25s}
 .cat-tab:hover{border-color:var(--cyan);color:var(--cyan)}
-.cat-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08)}
+.cat-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(255,170,0,0.08)}
 
 /* FEATURED BANNER */
-.featured-banner{background:linear-gradient(135deg,rgba(176,68,255,0.12),rgba(0,245,255,0.08));border:1px solid rgba(176,68,255,0.3);padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden;animation:fadeInDown 0.5s ease both}
+.featured-banner{background:linear-gradient(135deg,rgba(176,68,255,0.12),rgba(255,170,0,0.08));border:1px solid rgba(176,68,255,0.3);padding:24px 28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden;animation:fadeInDown 0.5s ease both}
 .featured-banner::before{content:'FEATURED';position:absolute;top:12px;right:16px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:var(--purple);opacity:0.6}
 .featured-banner-icon{font-size:52px;flex-shrink:0;filter:drop-shadow(0 0 20px rgba(176,68,255,0.6))}
 .featured-banner-info{flex:1}
@@ -66,14 +64,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .price-old{font-family:'Orbitron',monospace;font-size:12px;color:var(--text-dim);text-decoration:line-through}
 .price-new{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--cyan)}
 .btn-buy-featured{padding:12px 28px;background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;color:#000;font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.3s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-.btn-buy-featured:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(0,245,255,0.4)}
+.btn-buy-featured:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(255,170,0,0.4)}
 
 /* SHOP GRID */
 .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;animation:fadeInUp 0.5s ease both}
 
 /* ITEM CARD */
 .item-card{background:var(--panel);border:1px solid var(--border);padding:20px;transition:all 0.3s;position:relative;display:flex;flex-direction:column;gap:12px}
-.item-card:hover{border-color:rgba(0,245,255,0.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,245,255,0.08)}
+.item-card:hover{border-color:rgba(255,170,0,0.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,170,0,0.08)}
 .item-card.rarity-rare{border-color:rgba(0,100,255,0.3)}
 .item-card.rarity-epic{border-color:rgba(176,68,255,0.4)}
 .item-card.rarity-legendary{border-color:rgba(255,215,0,0.5);background:rgba(255,215,0,0.03)}
@@ -84,7 +82,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .item-rarity.epic{color:var(--purple)}
 .item-rarity.legendary{color:var(--gold)}
 .item-owned-badge{position:absolute;top:10px;left:10px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px;background:rgba(68,255,136,0.15);border:1px solid var(--green);color:var(--green)}
-.item-icon{font-size:40px;text-align:center;filter:drop-shadow(0 0 12px rgba(0,245,255,0.3));min-height:52px;display:flex;align-items:center;justify-content:center}
+.item-icon{font-size:40px;text-align:center;filter:drop-shadow(0 0 12px rgba(255,170,0,0.3));min-height:52px;display:flex;align-items:center;justify-content:center}
 .item-icon.frame-preview{width:52px;height:52px;margin:0 auto;border-radius:50%;overflow:hidden;position:relative}
 .item-icon.frame-preview img{width:100%;height:100%;object-fit:cover}
 .item-category-tag{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-dim)}
@@ -93,18 +91,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .item-tags{display:flex;gap:6px;flex-wrap:wrap}
 .item-tag{font-family:'Orbitron',monospace;font-size:7px;padding:2px 8px;border:1px solid var(--border);color:var(--text-dim)}
 .item-tag.consumable{border-color:rgba(255,170,0,0.4);color:var(--gold)}
-.item-tag.duration{border-color:rgba(0,245,255,0.3);color:var(--cyan)}
+.item-tag.duration{border-color:rgba(255,170,0,0.3);color:var(--cyan)}
 .item-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px;gap:8px}
 .item-price{display:flex;align-items:center;gap:6px;font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:var(--cyan)}
 .item-price-gold{color:var(--gold)}
-.btn-buy{padding:8px 16px;background:rgba(0,245,255,0.08);border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all 0.25s;flex-shrink:0}
-.btn-buy:hover{background:rgba(0,245,255,0.18);box-shadow:0 0 16px rgba(0,245,255,0.2)}
+.btn-buy{padding:8px 16px;background:rgba(255,170,0,0.08);border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all 0.25s;flex-shrink:0}
+.btn-buy:hover{background:rgba(255,170,0,0.18);box-shadow:0 0 16px rgba(255,170,0,0.2)}
 .btn-buy:disabled{opacity:0.4;cursor:not-allowed;border-color:var(--border);color:var(--text-dim);background:transparent}
 .btn-buy.owned{border-color:var(--green);color:var(--green);background:rgba(68,255,136,0.06)}
 .btn-buy.owned:hover{background:rgba(68,255,136,0.12)}
 
 /* SEASON PASS CARD */
-.season-card{background:linear-gradient(135deg,rgba(176,68,255,0.1),rgba(0,245,255,0.06));border:1px solid rgba(176,68,255,0.4);padding:24px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden}
+.season-card{background:linear-gradient(135deg,rgba(176,68,255,0.1),rgba(255,170,0,0.06));border:1px solid rgba(176,68,255,0.4);padding:24px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden}
 .season-card::after{content:'SEASON PASS';position:absolute;top:14px;right:14px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--purple);opacity:0.7}
 .season-features{display:flex;flex-direction:column;gap:6px}
 .season-feature{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim)}
@@ -142,14 +140,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .confirm-item-icon{font-size:36px}
 .confirm-item-name{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
 .confirm-item-desc{font-size:12px;color:var(--text-dim)}
-.confirm-cost{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);margin-bottom:20px}
+.confirm-cost{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,170,0,0.04);border:1px solid rgba(255,170,0,0.12);margin-bottom:20px}
 .confirm-cost-label{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px}
 .confirm-cost-amount{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--cyan);display:flex;align-items:center;gap:6px}
 .confirm-balance{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);margin-bottom:20px;text-align:center}
 .confirm-balance span{color:var(--cyan)}
 .modal-actions{display:flex;gap:10px}
-.btn-confirm{flex:1;padding:14px;background:linear-gradient(135deg,rgba(0,245,255,0.2),rgba(176,68,255,0.1));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s}
-.btn-confirm:hover{background:rgba(0,245,255,0.25);box-shadow:0 0 20px rgba(0,245,255,0.2)}
+.btn-confirm{flex:1;padding:14px;background:linear-gradient(135deg,rgba(255,170,0,0.2),rgba(176,68,255,0.1));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s}
+.btn-confirm:hover{background:rgba(255,170,0,0.25);box-shadow:0 0 20px rgba(255,170,0,0.2)}
 .btn-confirm:disabled{opacity:0.5;cursor:not-allowed}
 .btn-cancel{flex:1;padding:14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s}
 .btn-cancel:hover{border-color:var(--red);color:var(--red)}
@@ -186,11 +184,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── GROUND LINE ── */
 .cart-ground{
   position:absolute;bottom:18px;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,68,204,0.6),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,170,0,0.6),transparent);
 }
 .cart-ground-glow{
   position:absolute;bottom:14px;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,transparent,rgba(255,68,204,0.15),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,170,0,0.15),transparent);
   filter:blur(3px);
 }
 
@@ -223,7 +221,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 }
 .speed-line{
   height:1px;
-  background:linear-gradient(90deg,rgba(255,68,204,0.4),transparent);
+  background:linear-gradient(90deg,rgba(255,170,0,0.4),transparent);
   animation:speedLine 0.5s linear infinite;
   transform-origin:left center;
 }
@@ -239,7 +237,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── CART GLOW ── */
 .cart-glow{
   position:absolute;inset:-30px;
-  background:radial-gradient(ellipse,rgba(255,68,204,0.15) 0%,transparent 70%);
+  background:radial-gradient(ellipse,rgba(255,170,0,0.15) 0%,transparent 70%);
   animation:cartGlow 1.5s ease-in-out infinite;
   pointer-events:none;
 }
@@ -248,17 +246,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── TEXT ── */
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#ff44cc;
-  text-shadow:0 0 24px rgba(255,68,204,0.8),0 0 48px rgba(255,68,204,0.3);
+  letter-spacing:6px;color:#ffaa00;
+  text-shadow:0 0 24px rgba(255,170,0,0.8),0 0 48px rgba(255,170,0,0.3);
 }
 .loading-bar-wrap{
   width:160px;height:2px;
-  background:rgba(255,68,204,0.1);
-  border:1px solid rgba(255,68,204,0.2);
+  background:rgba(255,170,0,0.1);
+  border:1px solid rgba(255,170,0,0.2);
 }
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#cc2299,#ff44cc,#ff88dd);
+  background:linear-gradient(90deg,#cc7700,#ffaa00,#ffcc44);
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 @keyframes loadAnim{0%{width:0}55%{width:70%}100%{width:100%}}
@@ -284,35 +282,35 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="cart-wrap">
       <svg width="72" height="56" viewBox="0 0 72 56" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- ตัวตะกร้า -->
-        <path d="M8 8 L64 8 L58 38 L14 38 Z" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.08)" stroke-linejoin="round"/>
+        <path d="M8 8 L64 8 L58 38 L14 38 Z" stroke="#ffaa00" stroke-width="2" fill="rgba(255,170,0,0.08)" stroke-linejoin="round"/>
         <!-- ขอบบน -->
-        <line x1="4" y1="8" x2="8" y2="8" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
+        <line x1="4" y1="8" x2="8" y2="8" stroke="#ffaa00" stroke-width="2" stroke-linecap="round"/>
         <!-- แกนล่าง -->
-        <line x1="18" y1="38" x2="14" y2="44" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
-        <line x1="54" y1="38" x2="58" y2="44" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18" y1="38" x2="14" y2="44" stroke="#ffaa00" stroke-width="2" stroke-linecap="round"/>
+        <line x1="54" y1="38" x2="58" y2="44" stroke="#ffaa00" stroke-width="2" stroke-linecap="round"/>
         <!-- ก้านจับ -->
-        <path d="M2 4 L10 4 L8 8" stroke="#ff88dd" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 4 L10 4 L8 8" stroke="#ffcc44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <!-- ซี่ตะกร้า -->
-        <line x1="24" y1="8" x2="21" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
-        <line x1="36" y1="8" x2="36" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
-        <line x1="48" y1="8" x2="51" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
+        <line x1="24" y1="8" x2="21" y2="38" stroke="rgba(255,170,0,0.4)" stroke-width="1"/>
+        <line x1="36" y1="8" x2="36" y2="38" stroke="rgba(255,170,0,0.4)" stroke-width="1"/>
+        <line x1="48" y1="8" x2="51" y2="38" stroke="rgba(255,170,0,0.4)" stroke-width="1"/>
         <!-- กล่องสินค้าในตะกร้า -->
-        <rect x="20" y="20" width="12" height="14" rx="1" fill="rgba(255,68,204,0.2)" stroke="rgba(255,68,204,0.5)" stroke-width="1"/>
-        <rect x="35" y="18" width="14" height="16" rx="1" fill="rgba(204,68,255,0.2)" stroke="rgba(204,68,255,0.5)" stroke-width="1"/>
+        <rect x="20" y="20" width="12" height="14" rx="1" fill="rgba(255,170,0,0.2)" stroke="rgba(255,170,0,0.5)" stroke-width="1"/>
+        <rect x="35" y="18" width="14" height="16" rx="1" fill="rgba(255,140,0,0.2)" stroke="rgba(255,140,0,0.5)" stroke-width="1"/>
         <!-- ล้อ -->
         <g class="cart-wheel">
-          <circle cx="20" cy="48" r="6" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.1)"/>
-          <line x1="20" y1="42" x2="20" y2="54" stroke="#ff44cc" stroke-width="1"/>
-          <line x1="14" y1="48" x2="26" y2="48" stroke="#ff44cc" stroke-width="1"/>
+          <circle cx="20" cy="48" r="6" stroke="#ffaa00" stroke-width="2" fill="rgba(255,170,0,0.1)"/>
+          <line x1="20" y1="42" x2="20" y2="54" stroke="#ffaa00" stroke-width="1"/>
+          <line x1="14" y1="48" x2="26" y2="48" stroke="#ffaa00" stroke-width="1"/>
         </g>
         <g class="cart-wheel">
-          <circle cx="52" cy="48" r="6" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.1)"/>
-          <line x1="52" y1="42" x2="52" y2="54" stroke="#ff44cc" stroke-width="1"/>
-          <line x1="46" y1="48" x2="58" y2="48" stroke="#ff44cc" stroke-width="1"/>
+          <circle cx="52" cy="48" r="6" stroke="#ffaa00" stroke-width="2" fill="rgba(255,170,0,0.1)"/>
+          <line x1="52" y1="42" x2="52" y2="54" stroke="#ffaa00" stroke-width="1"/>
+          <line x1="46" y1="48" x2="58" y2="48" stroke="#ffaa00" stroke-width="1"/>
         </g>
         <!-- glow ล้อ -->
-        <circle cx="20" cy="48" r="7" stroke="rgba(255,68,204,0.2)" stroke-width="2" fill="none"/>
-        <circle cx="52" cy="48" r="7" stroke="rgba(255,68,204,0.2)" stroke-width="2" fill="none"/>
+        <circle cx="20" cy="48" r="7" stroke="rgba(255,170,0,0.2)" stroke-width="2" fill="none"/>
+        <circle cx="52" cy="48" r="7" stroke="rgba(255,170,0,0.2)" stroke-width="2" fill="none"/>
       </svg>
     </div>
   </div>

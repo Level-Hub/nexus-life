@@ -6,16 +6,126 @@
 <title>NEXUS LIFE — Wallet</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{--cyan:#00f5ff;--cyan-dim:#00a8b5;--gold:#ffd700;--red:#ff003c;--green:#44ff88;--purple:#b044ff;--bg:#010a0f;--bg2:#020d14;--panel:rgba(0,245,255,0.04);--border:rgba(0,245,255,0.12);--text:#c8f0f5;--text-dim:#5a8a90}
-.cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}.cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
+:root{
+  --cyan:#39ff14; --cyan-dim:#22cc0a; --gold:#ffd700; --red:#ff003c;
+  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --bg:#030f01; --bg2:#060f02;
+  --panel:rgba(57,255,20,0.04); --border:rgba(57,255,20,0.12);
+  --accent:#39ff14;
+}
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
-.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(57,255,20,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
-.orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
+.orb-1{width:500px;height:500px;background:rgba(57,255,20,0.05);top:-150px;right:-100px}
+.orb-2{width:300px;height:300px;background:rgba(34,204,10,0.04);bottom:100px;left:-50px}
+
+/* ── LOADING SCREEN ── */
+.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.loading-screen.warp-out{animation:walletWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes walletWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
+
+/* ── WALLET SVG ANIMATION ── */
+/* ── WALLET SCENE WRAPPER ── */
+.wallet-load-wrap{
+  position:relative;width:200px;height:160px;
+  display:flex;align-items:center;justify-content:center;
+}
+/* glow ring behind wallet */
+.wallet-glow-ring{
+  position:absolute;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(57,255,20,0.18) 0%,transparent 70%);
+  animation:walletGlowPulse 1.8s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes walletGlowPulse{
+  0%,100%{transform:scale(0.9);opacity:0.5}
+  50%{transform:scale(1.2);opacity:1}
+}
+/* particle coins floating around */
+.w-particle{
+  position:absolute;font-size:12px;opacity:0;
+  animation:wParticle 2.4s ease-in-out infinite;
+}
+.w-particle:nth-child(1){top:20px;left:20px;animation-delay:0s}
+.w-particle:nth-child(2){top:10px;right:30px;animation-delay:0.4s}
+.w-particle:nth-child(3){bottom:20px;left:30px;animation-delay:0.8s}
+.w-particle:nth-child(4){bottom:10px;right:20px;animation-delay:1.2s}
+@keyframes wParticle{
+  0%{opacity:0;transform:translateY(0) scale(0.5)}
+  30%{opacity:1;transform:translateY(-12px) scale(1)}
+  70%{opacity:0.6;transform:translateY(-20px) scale(0.8)}
+  100%{opacity:0;transform:translateY(-28px) scale(0.4)}
+}
+
+.wallet-svg{
+  width:100px;height:80px;
+  filter:drop-shadow(0 0 20px rgba(57,255,20,0.6)) drop-shadow(0 0 40px rgba(57,255,20,0.25));
+  animation:walletFloat 1.8s ease-in-out infinite;
+}
+@keyframes walletFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-6px) scale(1.04)}
+}
+.wallet-svg .w-body{fill:#060f02;stroke:var(--cyan);stroke-width:2}
+.wallet-svg .w-flap{
+  fill:#060f02;stroke:var(--cyan);stroke-width:2;
+  transform-origin:50% 2px;
+  animation:walletOpen 1.8s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+.wallet-svg .w-flap.opening{animation:walletOpenFull 0.8s cubic-bezier(0.4,0,0.2,1) forwards}
+.wallet-svg .w-coin{fill:var(--gold);opacity:0;animation:coinPop 1.8s ease infinite}
+.wallet-svg .w-coin2{fill:var(--gold);opacity:0;animation:coinPop 1.8s 0.2s ease infinite}
+.wallet-svg .w-coin3{fill:var(--gold);opacity:0;animation:coinPop 1.8s 0.38s ease infinite}
+.wallet-svg .w-shine{stroke:var(--cyan);stroke-width:1;opacity:0;animation:shineFlash 1.8s ease infinite}
+
+@keyframes walletOpen{
+  0%,100%{transform:rotateX(0deg)}
+  25%{transform:rotateX(-40deg)}
+  55%{transform:rotateX(-55deg)}
+  80%{transform:rotateX(0deg)}
+}
+@keyframes walletOpenFull{
+  0%  {transform:rotateX(0deg) scale(1)}
+  35% {transform:rotateX(-75deg) scale(1.1)}
+  100%{transform:rotateX(-75deg) scale(1.2);opacity:0}
+}
+@keyframes coinPop{
+  0%,35%{opacity:0;transform:translateY(0) scale(0.6)}
+  55%{opacity:1;transform:translateY(-14px) scale(1)}
+  85%,100%{opacity:0;transform:translateY(-26px) scale(0.7)}
+}
+@keyframes shineFlash{
+  0%,45%{opacity:0}58%{opacity:1}80%,100%{opacity:0}
+}
+
+/* zoom-in warp on open — same style as other pages */
+.wallet-svg.zoom-open{
+  animation:walletZoomIn 0.8s cubic-bezier(0.4,0,0.2,1) forwards !important;
+}
+@keyframes walletZoomIn{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px) drop-shadow(0 0 20px rgba(57,255,20,0.6))}
+  40% {transform:scale(1.15);opacity:1;filter:blur(0px) drop-shadow(0 0 40px rgba(57,255,20,1))}
+  70% {transform:scale(8);opacity:0.5;filter:blur(3px) drop-shadow(0 0 60px rgba(57,255,20,0.8))}
+  100%{transform:scale(20);opacity:0;filter:blur(8px)}
+}
+
+.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:6px;color:var(--cyan);text-shadow:0 0 24px rgba(57,255,20,0.6)}
+.loading-bar-wrap{width:200px;height:2px;background:rgba(57,255,20,0.1);overflow:hidden;position:relative}
+.loading-bar-slide{position:absolute;left:-60%;width:60%;height:100%;background:linear-gradient(90deg,transparent,var(--cyan),rgba(57,255,20,0.6),transparent);animation:walletSlide 1.1s infinite linear}
+@keyframes walletSlide{from{left:-60%}to{left:160%}}
+.loading-txt{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:var(--text-dim)}
+
 /* MAIN */
 .main{margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -26,36 +136,36 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .page-date{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 /* BALANCE CARDS */
 .balance-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;animation:fadeInDown 0.4s ease both}
-.balance-card{background:var(--panel);border:1px solid var(--border);padding:24px;position:relative;overflow:hidden;transition:all 0.3s}
+.balance-card{background:var(--panel);border:1px solid var(--border);padding:24px;position:relative;overflow:hidden}
 .balance-card:hover{transform:translateY(-2px)}
 .balance-card.gold{border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.03)}
-.balance-card.crystal{border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.03)}
+.balance-card.crystal{border-color:rgba(57,255,20,0.25);background:rgba(57,255,20,0.03)}
 .balance-card.spent{border-color:rgba(255,0,60,0.2);background:rgba(255,0,60,0.02)}
 .balance-card.earned{border-color:rgba(68,255,136,0.2);background:rgba(68,255,136,0.02)}
 .balance-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);margin-bottom:10px}
 .balance-amount{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1}
 .balance-card.gold .balance-amount{color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,0.3)}
-.balance-card.crystal .balance-amount{color:var(--cyan);text-shadow:0 0 20px rgba(0,245,255,0.3)}
+.balance-card.crystal .balance-amount{color:var(--cyan);text-shadow:0 0 20px rgba(57,255,20,0.3)}
 .balance-card.spent .balance-amount{color:var(--red)}
 .balance-card.earned .balance-amount{color:var(--green)}
 .balance-sub{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim);margin-top:6px}
 .balance-card-icon{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:36px;opacity:0.12}
 /* TOPUP BTN */
-.btn-topup{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(176,68,255,0.1));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s;text-decoration:none;margin-bottom:28px}
-.btn-topup:hover{background:rgba(0,245,255,0.2);box-shadow:0 0 20px rgba(0,245,255,0.2)}
+.btn-topup{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,rgba(57,255,20,0.15),rgba(34,204,10,0.1));border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-decoration:none;margin-bottom:28px}
+.btn-topup:hover{background:rgba(57,255,20,0.2);box-shadow:0 0 20px rgba(57,255,20,0.2)}
 /* FILTER TABS */
 .filter-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.filter-tab{padding:8px 16px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;transition:all 0.25s}
+.filter-tab{padding:8px 16px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer}
 .filter-tab:hover{border-color:var(--cyan);color:var(--cyan)}
-.filter-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08)}
+.filter-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(57,255,20,0.08)}
 /* TX LIST */
 .tx-panel{background:var(--panel);border:1px solid var(--border);animation:fadeInUp 0.5s ease both}
 .tx-panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
 .tx-panel-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;letter-spacing:2px}
 .tx-count{font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim)}
-.tx-row{display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid rgba(0,245,255,0.05);transition:background 0.2s}
+.tx-row{display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid rgba(57,255,20,0.05)}
 .tx-row:last-child{border-bottom:none}
-.tx-row:hover{background:rgba(0,245,255,0.03)}
+.tx-row:hover{background:rgba(57,255,20,0.03)}
 .tx-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
 .tx-icon.topup{border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.05)}
 .tx-icon.spend{border-color:rgba(255,0,60,0.3);background:rgba(255,0,60,0.05)}
@@ -74,9 +184,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tx-status.failed{color:var(--red);border-color:rgba(255,0,60,0.4)}
 .tx-status.refunded{color:var(--purple);border-color:rgba(176,68,255,0.4)}
 /* PURCHASES */
-.purchase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:0}
-.purchase-card{background:var(--panel);border:1px solid var(--border);padding:16px;display:flex;gap:12px;align-items:flex-start;transition:all 0.3s}
-.purchase-card:hover{border-color:rgba(0,245,255,0.25)}
+.purchase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.purchase-card{background:var(--panel);border:1px solid var(--border);padding:16px;display:flex;gap:12px;align-items:flex-start}
+.purchase-card:hover{border-color:rgba(57,255,20,0.25)}
 .purchase-card-icon{font-size:28px;flex-shrink:0}
 .purchase-card-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3}
 .purchase-card-cost{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan)}
@@ -94,8 +204,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* DAILY LIMIT */
 .daily-limit-bar{background:var(--panel);border:1px solid var(--border);padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .daily-limit-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);flex-shrink:0}
-.daily-limit-track{flex:1;min-width:120px;height:6px;background:rgba(0,245,255,0.08);position:relative}
-.daily-limit-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width 0.5s}
+.daily-limit-track{flex:1;min-width:120px;height:6px;background:rgba(57,255,20,0.08);position:relative}
+.daily-limit-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple))}
 .daily-limit-text{font-family:'Orbitron',monospace;font-size:9px;color:var(--cyan);flex-shrink:0}
 @media(max-width:768px){
   .main{margin-left:0;padding:80px 16px 60px}
@@ -105,15 +215,46 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </head>
 <body>
 
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="wallet-load-wrap">
+    <div class="wallet-glow-ring"></div>
+    <div class="w-particle">💰</div>
+    <div class="w-particle">💎</div>
+    <div class="w-particle">🪙</div>
+    <div class="w-particle">✦</div>
+    <svg class="wallet-svg" id="walletSvg" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <rect class="w-body" x="4" y="20" width="72" height="40" rx="6" fill="#060f02" stroke="#39ff14" stroke-width="2"/>
+      <!-- inner card slot -->
+      <rect x="10" y="30" width="28" height="16" rx="2" fill="rgba(57,255,20,0.06)" stroke="rgba(57,255,20,0.25)" stroke-width="1"/>
+      <!-- clasp circle -->
+      <circle cx="58" cy="40" r="8" fill="#060f02" stroke="#39ff14" stroke-width="1.5"/>
+      <circle cx="58" cy="40" r="4" fill="#39ff14" opacity="0.6"/>
+      <!-- flap -->
+      <rect class="w-flap" id="walletFlap" x="4" y="4" width="72" height="22" rx="6" fill="#060f02" stroke="#39ff14" stroke-width="2"/>
+      <!-- coins popping out -->
+      <circle class="w-coin"  cx="24" cy="18" r="6" fill="#ffd700"/>
+      <circle class="w-coin2" cx="38" cy="14" r="5" fill="#ffd700"/>
+      <circle class="w-coin3" cx="52" cy="18" r="4" fill="#ffd700"/>
+      <!-- shine lines -->
+      <line class="w-shine" x1="14" y1="28" x2="14" y2="52" stroke="#39ff14" stroke-width="1" opacity="0"/>
+      <line class="w-shine" x1="20" y1="28" x2="20" y2="52" stroke="#39ff14" stroke-width="1" opacity="0" style="animation-delay:0.12s"/>
+      <line class="w-shine" x1="26" y1="28" x2="26" y2="52" stroke="#39ff14" stroke-width="1" opacity="0" style="animation-delay:0.24s"/>
+    </svg>
+  </div>
+  <div class="loading-logo">WALLET</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-slide"></div></div>
+  <div class="loading-txt" id="loadingTxt">LOADING ASSETS...</div>
+</div>
+
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
-
-
-
 <div id="sidebar-root"></div>
+
 <main class="main">
   <div class="page-header">
     <div>
@@ -199,70 +340,71 @@ let currentUser = null
 let allTx = []
 let currentFilter = 'all'
 
+// ── Avatar URL (เหมือน profile.html) ──────────────────────────
 function getAvatarUrl(avatarSeed, size = 80) {
   if (!avatarSeed) return `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=${size}`
   const parts = avatarSeed.split(':')
   if (parts.length === 3) {
     const [style, seed, bg] = parts
-    return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=${bg}&size=${size}`
+    return `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(seed||'nexus')}&backgroundColor=${bg||'0a1628'}&size=${size}`
   }
-  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&size=${size}`
+  return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=${size}`
+}
+function getAvatar(user, size = 80) {
+  if (user && user.avatar_url) return user.avatar_url
+  return getAvatarUrl(user && user.avatar_seed, size)
 }
 
+// ── Cursor ────────────────────────────────────────────────────
 function initCursor() {
   const c = document.getElementById('cursor'), r = document.getElementById('cursorRing')
-  document.addEventListener('mousemove', e => {
-    c.style.left = e.clientX+'px'; c.style.top = e.clientY+'px'
-    r.style.left = e.clientX+'px'; r.style.top = e.clientY+'px'
+  let mx=0,my=0,rx=0,ry=0
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; c.style.left=mx+'px'; c.style.top=my+'px' })
+  ;(function loop(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; r.style.left=rx+'px'; r.style.top=ry+'px'; requestAnimationFrame(loop) })()
+  document.querySelectorAll('button,a,.tx-row,.purchase-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { r.style.width='44px'; r.style.height='44px' })
+    el.addEventListener('mouseleave', () => { r.style.width='32px'; r.style.height='32px' })
   })
 }
 
 function updateDate() {
-  const d = new Date()
-  document.getElementById('pageDate').textContent =
-    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
+  const el = document.getElementById('pageDate')
+  if (el) el.textContent = new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
 }
 
+// ── TX RENDER ─────────────────────────────────────────────────
+const TX_ICON = { topup:'💎', spend:'🛒', bonus:'⭐', refund:'↩️', quest:'📋', admin:'⚙️' }
+const TX_LABEL = { topup:'เติม Crystal', spend:'ซื้อไอเทม', bonus:'โบนัส', refund:'คืนเงิน', quest:'รางวัล Quest', admin:'ปรับโดย Admin' }
 
-
-function fmtDate(iso) {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+function fmtDate(ts) {
+  if (!ts) return '—'
+  return new Date(ts).toLocaleDateString('th-TH', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' })
 }
-
-const txIcon = { topup: getIcon('crystal',20), spend: getIcon('cart',20), bonus: getIcon('gift',20), refund: getIcon('refresh',20), gift: getIcon('gift',20) }
-const txLabel = { topup:'เติม Crystal', spend:'ซื้อของ', bonus:'โบนัส', refund:'คืนเงิน', gift:'ของขวัญ' }
 
 function renderTxList() {
   const list = document.getElementById('txList')
+  const countEl = document.getElementById('txCountLabel')
   const filtered = currentFilter === 'all' ? allTx : allTx.filter(t => t.type === currentFilter)
-  document.getElementById('txCountLabel').textContent = `${filtered.length} รายการ`
-
+  if (countEl) countEl.textContent = `${filtered.length} รายการ`
   if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon" style="opacity:0.4;margin-bottom:8px"></div><div class="empty-text">ไม่มีรายการ</div></div>`
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">${getIcon('scroll',24)}</div><div class="empty-text">ไม่มีรายการ</div></div>`
     return
   }
-
   list.innerHTML = filtered.map(tx => {
-    const isPlus = tx.type === 'topup' || tx.type === 'bonus' || tx.type === 'refund'
-    const amountSign = isPlus ? '+' : '-'
-    const amountClass = isPlus ? 'plus' : 'minus'
+    const isPlus = ['topup','bonus','refund','quest'].includes(tx.type)
+    const iconClass = tx.type === 'topup' ? 'topup' : tx.type === 'spend' ? 'spend' : tx.type === 'bonus' || tx.type === 'quest' ? 'bonus' : 'refund'
+    const statusHtml = tx.status && tx.status !== 'completed'
+      ? `<span class="tx-status ${tx.status}">${tx.status.toUpperCase()}</span>` : ''
     return `
-      <div class="tx-row">
-        <div class="tx-icon ${tx.type}">${txIcon[tx.type] || getIcon('diamond',20)}</div>
-        <div class="tx-info">
-          <div class="tx-title">${txLabel[tx.type] || tx.type}</div>
-          <div class="tx-meta">
-            ${tx.amount_thb ? `฿${tx.amount_thb.toLocaleString()} → ` : ''}
-            <span class="tx-status ${tx.status}">${tx.status.toUpperCase()}</span>
-          </div>
-        </div>
-        <div>
-          <div class="tx-amount ${amountClass}">${amountSign}${tx.crystal_amount} Crystal</div>
-          <div class="tx-date">${fmtDate(tx.created_at)}</div>
-        </div>
-      </div>`
+    <div class="tx-row">
+      <div class="tx-icon ${iconClass}">${TX_ICON[tx.type] || '💰'}</div>
+      <div class="tx-info">
+        <div class="tx-title">${tx.description || TX_LABEL[tx.type] || tx.type}</div>
+        <div class="tx-meta">${tx.ref_id ? `REF: ${tx.ref_id}` : ''}${statusHtml}</div>
+      </div>
+      <div class="tx-date">${fmtDate(tx.created_at)}</div>
+      <div class="tx-amount ${isPlus ? 'plus' : 'minus'}">${isPlus ? '+' : '-'}${(tx.amount || tx.crystal_amount || 0).toLocaleString()} 💎</div>
+    </div>`
   }).join('')
 }
 
@@ -273,60 +415,56 @@ window.filterTx = function(type, btn) {
   renderTxList()
 }
 
+// ── PURCHASES ─────────────────────────────────────────────────
 function getItemIcon(item) {
-  if (!item) return getIcon('package', 20)
-  const meta = item.metadata || {}
-  if (item.category === 'pet') return meta.emoji || getIcon('paw', 20)
-  if (item.category === 'booster') return getIcon('quest_challenge', 20)
-  if (item.category === 'season_pass') return meta.tier === 'premium' ? getIcon('crown', 20) : getIcon('star', 20)
-  if (item.category === 'frame') return getIcon('frame', 20)
-  if (item.category === 'utility') return getIcon('wrench', 20)
-  return getIcon('camera', 20)
+  if (!item) return '📦'
+  const t = item.type || ''
+  if (t === 'title') return '🏷️'
+  if (t === 'frame') return '🖼️'
+  if (t === 'effect') return '✨'
+  if (t === 'boost') return '⚡'
+  if (t === 'slot') return '🗂️'
+  return '🎁'
 }
 
 function renderPurchases(purchases, items) {
   const grid = document.getElementById('purchaseGrid')
   const now = new Date()
-
-  // FIX: แยก active vs expired
-  const active  = purchases.filter(p => !p.expires_at || new Date(p.expires_at) > now)
+  const active = purchases.filter(p => !p.expires_at || new Date(p.expires_at) > now)
   const expired = purchases.filter(p => p.expires_at && new Date(p.expires_at) <= now)
   const display = [...active, ...expired]
-
   document.getElementById('purchaseCountLabel').textContent = `${active.length} รายการ (active)`
-
   if (!display.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon" id="ownedEmptyIcon"></div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>`
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">${getIcon('cart',24)}</div><div class="empty-text">ยังไม่ได้ซื้ออะไร</div></div>`
     return
   }
-
   grid.innerHTML = display.map(p => {
     const item = items.find(i => i.id === p.item_id)
     const icon = getItemIcon(item)
     const isExpired = p.expires_at && new Date(p.expires_at) <= now
     return `
-      <div class="purchase-card" style="${isExpired ? 'opacity:0.45;filter:grayscale(0.7)' : ''}">
-        <div class="purchase-card-icon">${icon}</div>
-        <div>
-          <div class="purchase-card-name">${item?.name || 'Unknown Item'}</div>
-          <div class="purchase-card-cost">${getIcon('crystal',13)} ${p.crystal_spent}</div>
-          <div class="purchase-card-date">${fmtDate(p.purchased_at)}</div>
-          ${p.expires_at
-            ? isExpired
-              ? `<div class="purchase-card-expired">หมดอายุแล้ว</div>`
-              : `<div class="purchase-card-exp">หมดอายุ: ${fmtDate(p.expires_at)}</div>`
-            : ''
-          }
-        </div>
-      </div>`
+    <div class="purchase-card" style="${isExpired ? 'opacity:0.45;filter:grayscale(0.7)' : ''}">
+      <div class="purchase-card-icon">${icon}</div>
+      <div>
+        <div class="purchase-card-name">${item?.name || 'Unknown Item'}</div>
+        <div class="purchase-card-cost">${getIcon('crystal',13)} ${p.crystal_spent}</div>
+        <div class="purchase-card-date">${fmtDate(p.purchased_at)}</div>
+        ${p.expires_at
+          ? isExpired
+            ? `<div class="purchase-card-expired">หมดอายุแล้ว</div>`
+            : `<div class="purchase-card-exp">หมดอายุ: ${fmtDate(p.expires_at)}</div>`
+          : ''}
+      </div>
+    </div>`
   }).join('')
 }
 
+// ── INIT ──────────────────────────────────────────────────────
 async function init() {
   initCursor()
   updateDate()
 
-  // inject static icons
+  // inject icons
   const walletTitle = document.getElementById('walletPageTitle')
   if (walletTitle) walletTitle.innerHTML = getIcon('diamond',18) + ' <span>WALLET</span>'
   const balIconCrystal = document.getElementById('balIconCrystal')
@@ -337,16 +475,17 @@ async function init() {
   if (balIconGold) balIconGold.innerHTML = getIcon('gold', 22)
   const balIconShop = document.getElementById('balIconShop')
   if (balIconShop) balIconShop.innerHTML = getIcon('cart', 22)
-  const txEmptyIcon = document.getElementById('txEmptyIcon')
-  if (txEmptyIcon) txEmptyIcon.innerHTML = getIcon('scroll', 24)
-  const ownedEmptyIcon = document.getElementById('ownedEmptyIcon')
-  if (ownedEmptyIcon) ownedEmptyIcon.innerHTML = getIcon('cart', 24)
+
+  const loadTxt = document.getElementById('loadingTxt')
 
   try {
     const { user } = await initSidebar('wallet')
     if (!user) return
     currentUser = user
 
+    if (loadTxt) loadTxt.textContent = 'FETCHING WALLET...'
+
+    // ── ดึงข้อมูลทั้งหมดจาก DB ──────────────────────────────
     const [profileRes, walletRes, txRes, purchasesRes, itemsRes] = await Promise.all([
       supabase.from('users').select('*').eq('id', currentUser.id).single(),
       supabase.from('wallet').select('*').eq('user_id', currentUser.id).maybeSingle(),
@@ -361,45 +500,38 @@ async function init() {
     const purchases = purchasesRes.data || []
     const items = itemsRes.data || []
 
-    // ✅ BUG FIX: fallback city ป้องกัน null ทำให้ query คืนผลผิด
+    if (loadTxt) loadTxt.textContent = 'DECRYPTING...'
+
+    // verify badge
     const userCity = profile?.city || 'กรุงเทพมหานคร'
-    // navVerifyBadge — นับ quest ของคนอื่นในเมืองเดียวกัน ที่รอ verify และยังไม่เคย vote
     const { data: pendingInCity } = await supabase
-      .from('user_quests')
-      .select('id, users!inner(city)')
-      .eq('status', 'pending_review')
-      .eq('users.city', userCity)
-      .neq('user_id', currentUser.id)
+      .from('user_quests').select('id, users!inner(city)')
+      .eq('status', 'pending_review').eq('users.city', userCity).neq('user_id', currentUser.id)
     const { data: alreadyVoted } = await supabase
-      .from('quest_verifications')
-      .select('user_quest_id')
-      .eq('voter_id', currentUser.id)
+      .from('quest_verifications').select('user_quest_id').eq('voter_id', currentUser.id)
     const votedSet = new Set((alreadyVoted || []).map(v => v.user_quest_id))
     const verifyCount = (pendingInCity || []).filter(p => !votedSet.has(p.id)).length
     if (verifyCount > 0) {
       const badge = document.getElementById('navVerifyBadge')
-      badge.style.display = 'inline'
-      badge.textContent = verifyCount > 99 ? '99+' : verifyCount
+      if (badge) { badge.style.display = 'inline'; badge.textContent = verifyCount > 99 ? '99+' : verifyCount }
     }
 
-    // navQuestBadge — นับ quest ที่ยัง in_progress
+    // quest badge
     const { count: questCount } = await supabase
-      .from('user_quests')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', currentUser.id)
-      .eq('status', 'in_progress')
+      .from('user_quests').select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id).eq('status', 'in_progress')
     if (questCount > 0) {
       const qb = document.getElementById('navQuestBadge')
-      qb.textContent = questCount > 99 ? '99+' : questCount
-      qb.style.display = 'inline'
+      if (qb) { qb.textContent = questCount > 99 ? '99+' : questCount; qb.style.display = 'inline' }
     }
 
+    // render balances
     document.getElementById('crystalBalance').textContent = (profile?.crystal || 0).toLocaleString()
     document.getElementById('goldBalance').textContent = (profile?.gold || 0).toLocaleString()
     document.getElementById('crystalPurchased').textContent = (wallet?.crystal_purchased || 0).toLocaleString()
     document.getElementById('crystalSpent').textContent = (wallet?.crystal_spent || 0).toLocaleString()
 
-    // daily limit — ยอดเติมวันนี้
+    // daily limit
     const today = new Date().toISOString().slice(0, 10)
     const todayTotal = allTx
       .filter(t => t.type === 'topup' && t.status === 'completed' && t.created_at?.startsWith(today))
@@ -410,10 +542,28 @@ async function init() {
 
     renderTxList()
     renderPurchases(purchases, items)
+
   } catch (err) {
     console.error('Wallet init error:', err)
     const txList = document.getElementById('txList')
-    if (txList) txList.innerHTML = '<div class="empty-state"><div class="empty-icon" style="opacity:0.4"></div><div class="empty-text">ไม่สามารถโหลดข้อมูลได้ในขณะนี้</div></div>'
+    if (txList) txList.innerHTML = '<div class="empty-state"><div class="empty-text">ไม่สามารถโหลดข้อมูลได้</div></div>'
+  } finally {
+    // 1) flip flap open
+    const flap = document.getElementById('walletFlap')
+    const svg  = document.getElementById('walletSvg')
+    const ls   = document.getElementById('loadingScreen')
+    if (flap) flap.classList.add('opening')
+    // 2) zoom wallet in (zoom-in class) after flap opens
+    setTimeout(() => {
+      if (svg) svg.classList.add('zoom-open')
+    }, 400)
+    // 3) warp out whole screen
+    setTimeout(() => {
+      if (ls) {
+        ls.classList.add('warp-out')
+        setTimeout(() => { ls.style.display = 'none' }, 700)
+      }
+    }, 900)
   }
 }
 

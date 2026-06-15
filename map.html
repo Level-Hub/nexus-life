@@ -20,6 +20,8 @@
   --border: rgba(0,255,136,0.12);
   --accent: #00ff88;
 }
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 
 .cls-warrior  { --cls:#ff4444; }
 .cls-mage     { --cls:#aa44ff; }
@@ -463,7 +465,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   </div>
   <div class="loading-logo">WORLD MAP</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt">LOADING MAP DATA...</div>
+  <div class="loading-txt" id="loadingTxt">LOADING MAP DATA...</div>
 </div>
 
 <!-- CURSOR -->
@@ -758,7 +760,15 @@ async function init() {
   getUserLocation()
   loadNotifBadge()
   const ls = document.getElementById('loadingScreen')
-  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  const loadTxt = document.getElementById('loadingTxt')
+  const mapPhases = ['TRIANGULATING POSITION...', 'LOADING TERRITORIES...', 'PLACING PLAYERS...', 'RENDERING WORLD...']
+  if (loadTxt) loadTxt.textContent = mapPhases[0]
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = mapPhases[1] }, 150)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = mapPhases[2] }, 350)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = mapPhases[3] }, 550)
+  setTimeout(() => {
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  }, 750)
 
   // Realtime — อัปเดต players บนแผนที่ทันทีเมื่อมีคนย้ายตำแหน่ง
   supabase.channel('map-live')

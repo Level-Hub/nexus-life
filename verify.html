@@ -11,8 +11,10 @@
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
   --bg:#06030f; --bg2:#0a0618;
   --panel:rgba(102,68,255,0.04); --border:rgba(102,68,255,0.15);
-  --text:#c8c0ff; --text-dim:#5a4888;
+  --accent:#6644ff;
 }
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 .cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
 
@@ -419,8 +421,16 @@ async function init() {
   await loadData()
 
   const ls = document.getElementById('loadingScreen')
-  ls.classList.add('warp-out')
-  setTimeout(() => ls.style.display = 'none', 700)
+  const loadTxt = document.getElementById('loadingTxt')
+  const verifyPhases = ['FETCHING SUBMISSIONS...', 'CROSS-REFERENCING DATA...', 'PREPARING VERDICTS...', 'INITIALIZING JURY...']
+  if (loadTxt) loadTxt.textContent = verifyPhases[0]
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = verifyPhases[1] }, 150)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = verifyPhases[2] }, 350)
+  setTimeout(() => { if(loadTxt) loadTxt.textContent = verifyPhases[3] }, 550)
+  setTimeout(() => {
+    ls.classList.add('warp-out')
+    setTimeout(() => ls.style.display = 'none', 700)
+  }, 750)
   initCursor()
 }
 
