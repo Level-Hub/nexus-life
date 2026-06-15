@@ -6,11 +6,15 @@
 <title>NEXUS LIFE — Shop</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+/* ── shop accent override ── */
+:root { --accent: #ff44cc; }
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 :root {
-  --cyan:#00f5ff;--cyan-dim:#00a8b5;--gold:#ffd700;--red:#ff003c;
-  --green:#44ff88;--purple:#b044ff;--bg:#010a0f;--bg2:#020d14;
-  --panel:rgba(0,245,255,0.04);--border:rgba(0,245,255,0.12);
-  --text:#c8f0f5;--text-dim:#5a8a90;
+  --cyan:#ff44cc;--cyan-dim:#cc2299;--gold:#ffd700;--red:#ff003c;
+  --green:#44ff88;--purple:#cc44ff;--bg:#010a0f;--bg2:#0d0209;
+  --panel:rgba(255,68,204,0.04);--border:rgba(255,68,204,0.14);
+  --text:#f5c8ef;--text-dim:#8a5a82;
 }
 .cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
@@ -158,9 +162,164 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .shop-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
   .featured-banner{flex-direction:column;text-align:center}
 }
+
+/* ══════════════════════════════════════════
+   SHOP LOADING SCREEN — Cart Rush Animation
+══════════════════════════════════════════ */
+.loading-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:9000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+}
+.loading-screen.warp-out{animation:shopWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes shopWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
+
+/* ── SCENE WRAPPER ── */
+.cart-scene{
+  position:relative;width:320px;height:120px;overflow:hidden;
+}
+
+/* ── GROUND LINE ── */
+.cart-ground{
+  position:absolute;bottom:18px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,68,204,0.6),transparent);
+}
+.cart-ground-glow{
+  position:absolute;bottom:14px;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,transparent,rgba(255,68,204,0.15),transparent);
+  filter:blur(3px);
+}
+
+/* ── CART SVG — วิ่งจากซ้ายไปขวา ── */
+.cart-wrap{
+  position:absolute;bottom:19px;
+  animation:cartRun 2.2s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+@keyframes cartRun{
+  0%  {left:-80px;opacity:0}
+  8%  {opacity:1}
+  85% {opacity:1}
+  100%{left:330px;opacity:0}
+}
+
+/* ── WHEELS SPIN ── */
+.cart-wheel{
+  animation:wheelSpin 0.4s linear infinite;
+  transform-origin:50% 50%;
+}
+@keyframes wheelSpin{
+  from{transform:rotate(0deg)}
+  to  {transform:rotate(360deg)}
+}
+
+/* ── SPEED LINES ── */
+.speed-lines{
+  position:absolute;bottom:28px;left:0;right:0;
+  display:flex;flex-direction:column;gap:5px;pointer-events:none;
+}
+.speed-line{
+  height:1px;
+  background:linear-gradient(90deg,rgba(255,68,204,0.4),transparent);
+  animation:speedLine 0.5s linear infinite;
+  transform-origin:left center;
+}
+.speed-line:nth-child(1){width:60px;left:0;animation-delay:0s}
+.speed-line:nth-child(2){width:40px;left:10px;animation-delay:0.15s;opacity:0.6}
+.speed-line:nth-child(3){width:50px;left:5px;animation-delay:0.3s;opacity:0.4}
+@keyframes speedLine{
+  0%  {transform:scaleX(1);opacity:0.6}
+  50% {transform:scaleX(0.3);opacity:0.2}
+  100%{transform:scaleX(1);opacity:0.6}
+}
+
+/* ── CART GLOW ── */
+.cart-glow{
+  position:absolute;inset:-30px;
+  background:radial-gradient(ellipse,rgba(255,68,204,0.15) 0%,transparent 70%);
+  animation:cartGlow 1.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes cartGlow{0%,100%{opacity:0.5}50%{opacity:1}}
+
+/* ── TEXT ── */
+.loading-logo{
+  font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
+  letter-spacing:6px;color:#ff44cc;
+  text-shadow:0 0 24px rgba(255,68,204,0.8),0 0 48px rgba(255,68,204,0.3);
+}
+.loading-bar-wrap{
+  width:160px;height:2px;
+  background:rgba(255,68,204,0.1);
+  border:1px solid rgba(255,68,204,0.2);
+}
+.loading-bar{
+  height:100%;
+  background:linear-gradient(90deg,#cc2299,#ff44cc,#ff88dd);
+  animation:loadAnim 1.4s ease-in-out infinite;
+}
+@keyframes loadAnim{0%{width:0}55%{width:70%}100%{width:100%}}
+.loading-txt{
+  font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--text-dim);
+}
 </style>
 </head>
 <body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="cart-scene">
+    <div class="cart-glow"></div>
+    <div class="cart-ground"></div>
+    <div class="cart-ground-glow"></div>
+    <div class="speed-lines">
+      <div class="speed-line"></div>
+      <div class="speed-line"></div>
+      <div class="speed-line"></div>
+    </div>
+    <!-- รถเข็น -->
+    <div class="cart-wrap">
+      <svg width="72" height="56" viewBox="0 0 72 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- ตัวตะกร้า -->
+        <path d="M8 8 L64 8 L58 38 L14 38 Z" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.08)" stroke-linejoin="round"/>
+        <!-- ขอบบน -->
+        <line x1="4" y1="8" x2="8" y2="8" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
+        <!-- แกนล่าง -->
+        <line x1="18" y1="38" x2="14" y2="44" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
+        <line x1="54" y1="38" x2="58" y2="44" stroke="#ff44cc" stroke-width="2" stroke-linecap="round"/>
+        <!-- ก้านจับ -->
+        <path d="M2 4 L10 4 L8 8" stroke="#ff88dd" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- ซี่ตะกร้า -->
+        <line x1="24" y1="8" x2="21" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
+        <line x1="36" y1="8" x2="36" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
+        <line x1="48" y1="8" x2="51" y2="38" stroke="rgba(255,68,204,0.4)" stroke-width="1"/>
+        <!-- กล่องสินค้าในตะกร้า -->
+        <rect x="20" y="20" width="12" height="14" rx="1" fill="rgba(255,68,204,0.2)" stroke="rgba(255,68,204,0.5)" stroke-width="1"/>
+        <rect x="35" y="18" width="14" height="16" rx="1" fill="rgba(204,68,255,0.2)" stroke="rgba(204,68,255,0.5)" stroke-width="1"/>
+        <!-- ล้อ -->
+        <g class="cart-wheel">
+          <circle cx="20" cy="48" r="6" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.1)"/>
+          <line x1="20" y1="42" x2="20" y2="54" stroke="#ff44cc" stroke-width="1"/>
+          <line x1="14" y1="48" x2="26" y2="48" stroke="#ff44cc" stroke-width="1"/>
+        </g>
+        <g class="cart-wheel">
+          <circle cx="52" cy="48" r="6" stroke="#ff44cc" stroke-width="2" fill="rgba(255,68,204,0.1)"/>
+          <line x1="52" y1="42" x2="52" y2="54" stroke="#ff44cc" stroke-width="1"/>
+          <line x1="46" y1="48" x2="58" y2="48" stroke="#ff44cc" stroke-width="1"/>
+        </g>
+        <!-- glow ล้อ -->
+        <circle cx="20" cy="48" r="7" stroke="rgba(255,68,204,0.2)" stroke-width="2" fill="none"/>
+        <circle cx="52" cy="48" r="7" stroke="rgba(255,68,204,0.2)" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+  </div>
+  <div class="loading-logo">SHOP</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-txt" id="loadingTxt">LOADING ITEMS...</div>
+</div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -598,6 +757,15 @@ async function init() {
     document.getElementById('confirmModal').addEventListener('click', e => {
       if (e.target === document.getElementById('confirmModal')) closeConfirm()
     })
+
+    // ── Cart dash → warp out ──
+    const ls = document.getElementById('loadingScreen')
+    const loadTxt = document.getElementById('loadingTxt')
+    if (loadTxt) loadTxt.textContent = 'OPENING SHOP...'
+    setTimeout(() => {
+      if (ls) ls.classList.add('warp-out')
+      setTimeout(() => { if (ls) ls.style.display = 'none' }, 700)
+    }, 1800)
   } catch (err) {
     console.error('Shop init error:', err)
     const grid = document.getElementById('shopGrid')

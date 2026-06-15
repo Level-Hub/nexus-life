@@ -36,6 +36,16 @@ const NAV_ITEMS = [
 // ─── CSS ──────────────────────────────────────────────────────
 const SIDEBAR_CSS = `
 <style id="sidebar-css">
+/* ── GLOBAL TOKENS — ทับ :root ของทุกหน้า bg/text ให้นิ่ง ── */
+:root {
+  --bg:       #010a0f;
+  --bg2:      #020d14;
+  --text:     #c8eef5;
+  --text-dim: #4a7a82;
+  --t-fast:   0.15s;
+  --t-base:   0.3s;
+  --t-slow:   0.55s;
+}
 .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid rgba(0,245,255,0.12);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(0,245,255,0.12)}
 .sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:#00f5ff;text-shadow:0 0 16px #00f5ff;display:flex;align-items:center;gap:8px}

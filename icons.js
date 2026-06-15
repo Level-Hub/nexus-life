@@ -455,45 +455,61 @@ export const NAV_ICONS = {
 // ============================================================
 export const CLASS_ICONS = {
 
-  // Warrior — crossed swords (RUBY + warm glow)
-  warrior: `<path d="M4 16L16 4M12 4h4v4M8 16H4v-4"
-              stroke="url(#rubyGrad)" stroke-width="2.0" stroke-linecap="square" stroke-linejoin="miter"
-              filter="url(#glowWarm)"/>
-            <path d="M7 13l3-3" stroke="url(#rubyGrad)" stroke-width="1.2" opacity="0.65"/>
-            <circle cx="10" cy="10" r="1.2" fill="url(#goldGrad)" opacity="0.7"/>`,
+  // Warrior — ascending greatsword with battle aura (RUBY + GOLD, glowWarm)
+  warrior: `<circle cx="10" cy="10" r="8.3" fill="url(#rubyGrad)" fill-opacity="0.05" stroke="url(#rubyGrad)" stroke-width="0.5" opacity="0.35"/>
+            <path d="M10 1.5v13" stroke="url(#rubyGrad)" stroke-width="2.2" stroke-linecap="round" filter="url(#glowWarm)"/>
+            <path d="M10 1.5v13" stroke="url(#goldStroke)" stroke-width="0.6" stroke-linecap="round" opacity="0.7"/>
+            <path d="M9.3 2l0.7 1.4 0.7-1.4z" fill="url(#goldStroke)" opacity="0.8"/>
+            <path d="M5.5 7.2h9" stroke="url(#goldGrad)" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M5.5 7.2c-0.8 0.3-1 1-0.8 1.8M14.5 7.2c0.8 0.3 1 1 0.8 1.8" stroke="url(#goldStroke)" stroke-width="1" opacity="0.6" fill="none" stroke-linecap="round"/>
+            <rect x="8.6" y="14.5" width="2.8" height="3.6" rx="0.6" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1"/>
+            <circle cx="10" cy="18.2" r="1.2" fill="url(#goldRadial)" filter="url(#glowGold)"/>
+            <path d="M4 11c-1 1-1.3 2.3-0.6 3.4M16 11c1 1 1.3 2.3 0.6 3.4" stroke="url(#fireGrad)" stroke-width="1.1" stroke-linecap="round" fill="none" opacity="0.8"/>`,
 
-  // Mage — crystal orb (AMETHYST + glow)
-  mage: `<circle cx="10" cy="11" r="4" stroke="url(#amethystGrad)" stroke-width="1.8" fill="none" filter="url(#glowPurple)"/>
-         <path d="M10 4v2M10 15v2M4 11H2M16 11h2M5.5 6.5l1.4 1.4M13.1 14.1l1.4 1.4M5.5 15.5l1.4-1.4M13.1 7.9l1.4-1.4" stroke="url(#amethystGrad)" stroke-width="1.3"/>
-         <circle cx="10" cy="11" r="2.0" fill="url(#amethystGrad)" filter="url(#glowPurple)"/>
-         <circle cx="10" cy="10" r="0.8" fill="white" opacity="0.5"/>`,
+  // Mage — arcane staff with floating orb & orbiting sigil (AMETHYST + glowPurple)
+  mage: `<ellipse cx="9.5" cy="6" rx="6" ry="2.1" stroke="url(#purpleGrad)" stroke-width="0.9" fill="none" opacity="0.55" transform="rotate(-12 9.5 6)"/>
+         <path d="M9 18.5V6.5" stroke="url(#amethystGrad)" stroke-width="1.6" stroke-linecap="round"/>
+         <path d="M9 18.5l-2.2 1.2M9 18.5l2.2 1.2" stroke="url(#amethystGrad)" stroke-width="1.3" stroke-linecap="round"/>
+         <circle cx="9.5" cy="5.5" r="3" fill="url(#amethystGrad)" fill-opacity="0.35" stroke="url(#purpleGrad)" stroke-width="1.4" filter="url(#glowPurple)"/>
+         <circle cx="8.5" cy="4.5" r="0.9" fill="white" opacity="0.6"/>
+         <path d="M15 4l1.2-1.6M16 7.5l1.7 0.4M3.5 3l1.5 1.3M3 8l1.8-0.7" stroke="url(#purpleGrad)" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+         <circle cx="16.8" cy="2.5" r="0.6" fill="url(#amethystGrad)"/>
+         <circle cx="2.3" cy="9" r="0.55" fill="url(#cyanGrad)" opacity="0.85"/>`,
 
-  // Explorer — compass (EMERALD)
-  explorer: `<circle cx="10" cy="10" r="7" stroke="url(#emeraldGrad)" stroke-width="1.8" fill="none"/>
-             <circle cx="10" cy="10" r="5" stroke="url(#emeraldGrad)" stroke-width="0.6" opacity="0.3"/>
-             <path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="url(#emeraldGrad)" stroke-width="1.1"/>
-             <polygon points="10,6 12,11 10,10 8,11" fill="url(#rubyGrad)" opacity="0.95"/>
-             <polygon points="10,14 8,9 10,10 12,9" fill="url(#cyanGrad)" opacity="0.4"/>`,
+  // Explorer — ornate compass over distant peaks (EMERALD)
+  explorer: `<path d="M2 16l3.5-8 3.5 4.5 2.7-6.2L16 16z" fill="url(#emeraldGrad)" fill-opacity="0.08" stroke="url(#emeraldGrad)" stroke-width="1.1" stroke-linejoin="round"/>
+             <circle cx="10" cy="10" r="7.3" stroke="url(#emeraldGrad)" stroke-width="1.6" fill="none"/>
+             <circle cx="10" cy="10" r="5.2" stroke="url(#cyanGrad)" stroke-width="0.5" opacity="0.3" fill="none"/>
+             <path d="M10 3.5v1.3M10 15.2v1.3M3.5 10h1.3M15.2 10h1.3" stroke="url(#emeraldGrad)" stroke-width="1.1"/>
+             <polygon points="10,6 12,11 10,10 8,11" fill="url(#rubyGrad)" filter="url(#glowWarm)"/>
+             <polygon points="10,14 8,9 10,10 12,9" fill="url(#cyanGrad)" opacity="0.45"/>
+             <circle cx="10" cy="10" r="0.9" fill="url(#goldGrad)"/>`,
 
-  // Merchant — coin stack (GOLD)
-  merchant: `<ellipse cx="10" cy="6" rx="5" ry="2" stroke="url(#goldGrad)" stroke-width="1.8" fill="url(#goldGrad)" fill-opacity="0.12"/>
-             <path d="M5 6v4c0 1.1 2.24 2 5 2s5-.9 5-2V6" stroke="url(#goldGrad)" stroke-width="1.6" fill="none"/>
-             <path d="M5 10v3c0 1.1 2.24 2 5 2s5-.9 5-2v-3" stroke="url(#goldGrad)" stroke-width="1.6" fill="none"/>
-             <path d="M8 5.5l1 .5 1-.5" stroke="url(#goldStroke)" stroke-width="1.2" opacity="0.8"/>
-             <ellipse cx="10" cy="6" rx="2" ry="0.8" fill="url(#goldStroke)" opacity="0.4"/>`,
+  // Merchant — gilded coin pouch with floating coins (GOLD, glowGold)
+  merchant: `<path d="M7.2 6.2V5a2.8 2.8 0 015.6 0v1.2" stroke="url(#goldStroke)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+             <path d="M5 6.2h10l1.6 10.3a1.6 1.6 0 01-1.6 1.8H5a1.6 1.6 0 01-1.6-1.8z" fill="url(#goldGrad)" fill-opacity="0.15" stroke="url(#goldStroke)" stroke-width="1.4" stroke-linejoin="round" filter="url(#glowGold)"/>
+             <circle cx="10" cy="12" r="3" fill="url(#goldRadial)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+             <path d="M10 10.3v3.4M9 11.2c0-.7.5-1.1 1-1.1s1 .4 1 .9-.4.8-1 1-1 .5-1 1 .5.9 1 .9 1-.3 1-.9" stroke="url(#goldGrad)" stroke-width="0.7" fill="none" opacity="0.85"/>
+             <circle cx="3" cy="4" r="1.5" fill="url(#goldRadial)" opacity="0.85"/>
+             <circle cx="17.2" cy="3.2" r="1.1" fill="url(#goldRadial)" opacity="0.75"/>`,
 
-  // Artist — diamond gem (AMETHYST → CYAN)
-  artist: `<path d="M10 3L15 8l-5 9-5-9z" stroke="url(#amethystGrad)" stroke-width="1.8" fill="url(#amethystGrad)" fill-opacity="0.1" stroke-linejoin="round" filter="url(#gemShine)"/>
-           <path d="M5 8h10M7 5l-2 3M13 5l2 3" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.8"/>
-           <path d="M10 8l-2 4M10 8l2 4" stroke="url(#amethystGrad)" stroke-width="1" opacity="0.6"/>
-           <circle cx="10" cy="8" r="0.8" fill="white" opacity="0.7"/>`,
+  // Artist — gemstone palette with paint drops & brush (AMETHYST → CYAN, gemShine)
+  artist: `<path d="M3 9.2c0-4.2 3.5-7.2 8-7.2s8 2.6 8 6.1c0 2.1-1.6 3.6-3.6 3.6h-2c-1 0-1.5.7-1.5 1.5 0 1 .7 1.5 1.5 1.5h.4c.85 0 1.6.7 1.6 1.6 0 1.6-1.6 2.7-3.7 2.7C5.5 18.5 2 14.7 2 9.7z" fill="url(#amethystGrad)" fill-opacity="0.1" stroke="url(#purpleGrad)" stroke-width="1.3" stroke-linejoin="round" filter="url(#gemShine)"/>
+           <circle cx="6.5" cy="8" r="1.35" fill="url(#rubyGrad)"/>
+           <circle cx="10" cy="6" r="1.35" fill="url(#cyanGrad)"/>
+           <circle cx="13.5" cy="8" r="1.35" fill="url(#emeraldGrad)"/>
+           <circle cx="7" cy="12.3" r="1.35" fill="url(#goldGrad)"/>
+           <path d="M14.5 3l3-1.6-1 3.3z" fill="url(#amethystGrad)" stroke="url(#purpleGrad)" stroke-width="0.8" stroke-linejoin="round"/>`,
 
-  // Diplomat — handshake (SAPPHIRE)
-  diplomat: `<path d="M3 12c0 0 2-3 4-3h3c1 0 1.5.5 1.5 1s-.5 1-1.5 1H8" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-             <path d="M3 12l-1.5 1.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round"/>
-             <path d="M17 12c0 0-2-3-4-3H9.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-             <path d="M17 12l1.5 1.5" stroke="url(#sapphireGrad)" stroke-width="1.8" stroke-linecap="round"/>
-             <path d="M8 10V8a1 1 0 012 0v2" stroke="url(#cyanGrad)" stroke-width="1.3" fill="none"/>`,
+  // Diplomat — laurel-wrapped balance scale (SAPPHIRE + CYAN, glow)
+  diplomat: `<path d="M10 2v15" stroke="url(#sapphireGrad)" stroke-width="1.4" stroke-linecap="round"/>
+             <path d="M4 5h12" stroke="url(#cyanGrad)" stroke-width="1.3" stroke-linecap="round"/>
+             <path d="M4 5l-2.6 5.2a2.6 2.6 0 005.2 0z" stroke="url(#sapphireGrad)" stroke-width="1.2" fill="url(#sapphireGrad)" fill-opacity="0.12" stroke-linejoin="round"/>
+             <path d="M16 5l-2.6 5.2a2.6 2.6 0 005.2 0z" stroke="url(#sapphireGrad)" stroke-width="1.2" fill="url(#sapphireGrad)" fill-opacity="0.12" stroke-linejoin="round"/>
+             <path d="M6 17.5h8" stroke="url(#sapphireGrad)" stroke-width="1.4" stroke-linecap="round"/>
+             <path d="M10 17.5v-1.5" stroke="url(#cyanGrad)" stroke-width="1.2"/>
+             <circle cx="10" cy="2" r="1.3" fill="url(#sapphireGrad)" filter="url(#glow)"/>
+             <path d="M2.5 13c1.2-1 2.6-1 3.8 0M13.7 13c1.2-1 2.6-1 3.8 0" stroke="url(#emeraldGrad)" stroke-width="1" opacity="0.6" stroke-linecap="round" fill="none"/>`,
 }
 
 
@@ -882,6 +898,177 @@ export const SYSTEM_ICONS = {
   star_filled: `<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6"
                   stroke="url(#goldStroke)" stroke-width="1.3"
                   fill="url(#goldGrad)" fill-opacity="0.85" filter="url(#glowGold)"/>`,
+
+  // ════════════════════════════════════════════════
+  // NEW ICON SET v3.1 — 16×16, stroke/fill="currentColor"
+  // CSS-themeable (no gradient/filter dependency)
+  // ════════════════════════════════════════════════
+
+  // ── City System ──
+  city_war: `<rect x="1" y="7" width="3" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/>
+             <rect x="6.5" y="3" width="3" height="11" stroke="currentColor" stroke-width="1.2" fill="none"/>
+             <rect x="12" y="6" width="3" height="8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+             <path d="M5 11l6-6M11 11L5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>`,
+
+  city_tournament: `<ellipse cx="8" cy="11.5" rx="6.5" ry="3" stroke="currentColor" stroke-width="1.3" fill="none"/>
+                    <ellipse cx="8" cy="11.5" rx="3.3" ry="1.3" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/>
+                    <path d="M4 8.5V2M4 2l3.2 1.6L4 5.2" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/>
+                    <path d="M12 8.5V3.5M12 3.5l3 1.3-3 1.3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/>`,
+
+  neighborhood: `<path d="M1.5 14V9l2.5-2L6.5 9v5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+                 <path d="M7.5 14V7l3.5-3L14.5 7v7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+                 <path d="M3.2 14v-2h1.6v2M9.8 14v-2.5h2V14" stroke="currentColor" stroke-width="1" fill="none"/>`,
+
+  contributors: `<circle cx="5" cy="6" r="2.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                 <circle cx="10" cy="6" r="2.3" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55"/>
+                 <path d="M1.5 14c0-2.8 1.6-4.5 3.5-4.5s3.5 1.7 3.5 4.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                 <path d="M7.5 9.7c1.8 0.2 3 1.8 3 4.3" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.55"/>
+                 <path d="M12.5 3.5v3M11 5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+
+  city_buff: `<rect x="2" y="8" width="3.2" height="6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              <rect x="6.2" y="4" width="3.2" height="10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              <rect x="10.4" y="6" width="3.2" height="8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              <path d="M11.5 3.2V1M10.4 2.1l1.1-1.1 1.1 1.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M4 2.5l0.5-1.3 0.5 1.3M3.4 1.8h2.2" stroke="currentColor" stroke-width="0.9" opacity="0.6" fill="none"/>`,
+
+  // ── Leaderboard / Ranking ──
+  podium: `<rect x="6" y="6" width="4" height="8" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.08"/>
+           <rect x="1" y="9" width="4" height="5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.08"/>
+           <rect x="11" y="10.5" width="4" height="3.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.08"/>
+           <path d="M8 3.5l1.2 2.2H6.8z" fill="currentColor"/>`,
+
+  global_rank: `<circle cx="8" cy="6.8" r="5.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                <path d="M8 1.5c-1.9 1.6-1.9 8.4 0 10.6M8 1.5c1.9 1.6 1.9 8.4 0 10.6" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.55"/>
+                <path d="M2.7 6.8h10.6" stroke="currentColor" stroke-width="0.9" opacity="0.55"/>
+                <path d="M6 11.5l2 3 2-3z" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>`,
+
+  city_rank_lb: `<rect x="9" y="2" width="6" height="12" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                 <path d="M11 5h3M11 8h3M11 11h2" stroke="currentColor" stroke-width="1" opacity="0.7" stroke-linecap="round" fill="none"/>
+                 <path d="M1.5 14V9l2-1.5L5.5 9v5z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1" stroke-linejoin="round"/>`,
+
+  guild_rank: `<path d="M8 1.5L2.5 4v4c0 3.3 2.4 5.8 5.5 6.5 3.1-0.7 5.5-3.2 5.5-6.5V4z" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.06" stroke-linejoin="round"/>
+               <path d="M6.5 9.5L8 7.5v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  medal_gold: `<circle cx="8" cy="10" r="4.2" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.14"/>
+               <path d="M6 5L4 1h8L10 5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+               <path d="M7 9.5l1.2-1.7v4.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  medal_silver: `<circle cx="8" cy="10" r="4.2" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.09"/>
+                 <path d="M6 5L4 1h8L10 5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+                 <path d="M6.5 8.7c0-0.85 0.7-1.5 1.5-1.5s1.5 0.65 1.5 1.5c0 1.5-3 2.3-3 3.5h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  medal_bronze: `<circle cx="8" cy="10" r="4.2" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.06"/>
+                 <path d="M6 5L4 1h8L10 5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+                 <path d="M6.6 8h1.8L6.8 9.8c1 0 2 0.5 2 1.6s-1 1.7-2.1 1.7c-0.7 0-1.3-0.2-1.7-0.6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  // ── Messages ──
+  inbox: `<path d="M2 3h12v6.2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+          <path d="M2 3v6.2M2 9.2h3.6l1.4 2h2l1.4-2H14" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+          <path d="M2 9.2v3.3a1 1 0 001 1h10a1 1 0 001-1V9.2" stroke="currentColor" stroke-width="1.2" fill="none"/>`,
+
+  send_msg: `<path d="M14 2L2 7.4l4.6 1.8L9 14z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1" stroke-linejoin="round"/>
+             <path d="M14 2L6.6 9.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>`,
+
+  emoji: `<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3" fill="none"/>
+          <circle cx="5.6" cy="6.4" r="0.9" fill="currentColor"/>
+          <circle cx="10.4" cy="6.4" r="0.9" fill="currentColor"/>
+          <path d="M5 10c1 1.2 5 1.2 6 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>`,
+
+  sticker: `<path d="M2 3a1 1 0 011-1h7l4 4v7a1 1 0 01-1 1H3a1 1 0 01-1-1z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+            <path d="M10 2v4h4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+            <path d="M6.7 6.8l0.9 1.8 2 0.3-1.4 1.4 0.3 2-1.8-0.9-1.8 0.9 0.3-2-1.4-1.4 2-0.3z" fill="currentColor" fill-opacity="0.55"/>`,
+
+  attach: `<path d="M10.6 5.4L6 10a2.5 2.5 0 003.5 3.5l5-5a4 4 0 00-5.7-5.7l-5 5a1.5 1.5 0 002.1 2.1L10 5.7" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+
+  mic: `<rect x="6" y="1.5" width="4" height="8" rx="2" stroke="currentColor" stroke-width="1.3" fill="none"/>
+        <path d="M3.5 8a4.5 4.5 0 009 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M8 12.5V15M5.5 15h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>`,
+
+  read_receipt: `<path d="M1 8l2.5 2.5L9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+                 <path d="M6 8l2.5 2.5L15 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  chevron_left: `<path d="M10.5 2.5L4.5 8l6 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  voice_play: `<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+               <path d="M6.5 5.3v5.4l4.3-2.7z" fill="currentColor"/>`,
+
+  // ── PvP / Guild War ──
+  duel: `<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45"/>
+         <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+         <path d="M4 4l1.5 0.4M12 4l-1.5 0.4M4 12l1.5-0.4M12 12l-1.5-0.4" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.7" fill="none"/>`,
+
+  guildwar: `<path d="M3 1.8L1 2.9v3c0 2.3 1 3.8 2 4.4 1-0.6 2-2.1 2-4.4v-3z" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-linejoin="round"/>
+             <path d="M13 1.8l2 1.1v3c0 2.3-1 3.8-2 4.4-1-0.6-2-2.1-2-4.4v-3z" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-linejoin="round"/>
+             <path d="M5 8l3 3M11 8l-3 3M8 11v3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>`,
+
+  tournament: `<path d="M3 14V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+               <path d="M3 2l5 1.6L3 5.2z" fill="currentColor" fill-opacity="0.75"/>
+               <path d="M9.5 14V5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.55"/>
+               <path d="M9.5 5.5l4 1.3-4 1.3z" fill="currentColor" fill-opacity="0.4"/>
+               <path d="M1 14h14" stroke="currentColor" stroke-width="1.2" fill="none"/>`,
+
+  bracket: `<path d="M2 2v3h3M2 13v-3h3M5 3.5h2.5M5 11.5h2.5M7.5 3.5v8M7.5 7.5h3.5M11 4v3h3M11 12v-3h3" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+
+  history: `<circle cx="8" cy="8.5" r="6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            <path d="M8 5.2v3.3l2.4 1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            <path d="M8 1.5a6 6 0 00-5 2.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M3.4 1.5v2.6H1" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+
+  challenge: `<path d="M4 8V4a1.4 1.4 0 012.8 0v3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M6.8 7V3a1.4 1.4 0 012.8 0v4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M9.6 7V4a1.4 1.4 0 012.8 0v5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M4 8v1.8c0 2.4 2 3.9 4.7 3.9s4.7-1.5 4.7-3.9V9" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.06" stroke-linejoin="round"/>
+              <path d="M4 8L1.6 9.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>`,
+
+  win: `<path d="M8 1.5l5.5 2v4c0 4-2.5 6.3-5.5 7-3-0.7-5.5-3-5.5-7v-4z" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.08" stroke-linejoin="round"/>
+        <path d="M5.5 8l2 2 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  loss: `<path d="M8 1.5l5.5 2v4c0 4-2.5 6.3-5.5 7-3-0.7-5.5-3-5.5-7v-4z" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.05" stroke-linejoin="round" opacity="0.65"/>
+         <path d="M5.5 6.2l5 5M10.5 6.2l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>`,
+
+  pvp_rank: `<path d="M2 14L9 7M14 2L7 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+             <path d="M2 14l0.7-2.7 2 2zM14 2l-0.7 2.7-2-2z" fill="currentColor" opacity="0.8"/>
+             <path d="M11 11l2 2M13 9l2 2" stroke="currentColor" stroke-width="1" opacity="0.5" stroke-linecap="round" fill="none"/>`,
+
+  // ── Guild Management ──
+  manage: `<path d="M2 4h6M11 4h3M2 8h2.5M7 8h7M2 12h8.5M13 12h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+           <circle cx="8.5" cy="4" r="1.5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2"/>
+           <circle cx="5" cy="8" r="1.5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2"/>
+           <circle cx="11.5" cy="12" r="1.5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2"/>`,
+
+  officer_badge: `<path d="M8 1.5L2.5 3.7v3.8c0 3.4 2.4 6 5.5 6.8 3.1-0.8 5.5-3.4 5.5-6.8V3.7z" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.06" stroke-linejoin="round"/>
+                  <path d="M8 5l1 2 2.2 0.3-1.6 1.5 0.4 2.2L8 9.9l-2 1.1 0.4-2.2-1.6-1.5L7 7z" fill="currentColor" fill-opacity="0.65"/>`,
+
+  kick: `<circle cx="6" cy="4.5" r="2.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+         <path d="M1.5 14c0-3 2-4.8 4.5-4.8s4.5 1.8 4.5 4.8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+         <path d="M11 8h4M15 8l-2-2M15 8l-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  promote: `<circle cx="6" cy="4.5" r="2.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            <path d="M1.5 14c0-3 2-4.8 4.5-4.8s4.5 1.8 4.5 4.8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            <path d="M13 11V5M10.5 7.5L13 5l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  demote: `<circle cx="6" cy="4.5" r="2.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+           <path d="M1.5 14c0-3 2-4.8 4.5-4.8s4.5 1.8 4.5 4.8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+           <path d="M13 5v6M10.5 8.5L13 11l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+
+  // ── Social ──
+  follow: `<circle cx="6" cy="5" r="2.8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+           <path d="M1 14c0-3.3 2.2-5.3 5-5.3s5 2 5 5.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+           <path d="M13 5.5v4M11 7.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>`,
+
+  unfollow: `<circle cx="6" cy="5" r="2.8" stroke="currentColor" stroke-width="1.2" fill="none"/>
+             <path d="M1 14c0-3.3 2.2-5.3 5-5.3s5 2 5 5.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+             <path d="M11 7.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>`,
+
+  suggest: `<path d="M8 1.5a4.5 4.5 0 00-2.5 8.2c0.3 0.2 0.5 0.5 0.5 0.9V11h4v-0.4c0-0.4 0.2-0.7 0.5-0.9A4.5 4.5 0 008 1.5z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1" stroke-linejoin="round"/>
+            <path d="M6 13h4M6.5 14.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            <path d="M8 4v3M6.5 6l1.5 1 1.5-1" stroke="currentColor" stroke-width="0.9" opacity="0.6" stroke-linecap="round" fill="none"/>`,
+
+  // ── UI Utilities ──
+  filter: `<path d="M1.5 2h13l-5 6v4.3l-3 1.7V8z" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.08" stroke-linejoin="round"/>`,
+
+  sort: `<path d="M4 11V2M4 2L1.5 4.5M4 2l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+         <path d="M12 5v9M12 14l2.5-2.5M12 14l-2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>`,
 }
 
 
@@ -1151,6 +1338,48 @@ export const ICONS = {
   hammer:           SYSTEM_ICONS.hammer,
   signal:           SYSTEM_ICONS.signal,
   group:            SYSTEM_ICONS.group,
+
+  // ── New icon set v3.1 — explicit map ──
+  city_war:         SYSTEM_ICONS.city_war,
+  city_tournament:  SYSTEM_ICONS.city_tournament,
+  neighborhood:     SYSTEM_ICONS.neighborhood,
+  contributors:     SYSTEM_ICONS.contributors,
+  city_buff:        SYSTEM_ICONS.city_buff,
+  podium:           SYSTEM_ICONS.podium,
+  global_rank:      SYSTEM_ICONS.global_rank,
+  city_rank_lb:     SYSTEM_ICONS.city_rank_lb,
+  guild_rank:       SYSTEM_ICONS.guild_rank,
+  medal_gold:       SYSTEM_ICONS.medal_gold,
+  medal_silver:     SYSTEM_ICONS.medal_silver,
+  medal_bronze:     SYSTEM_ICONS.medal_bronze,
+  inbox:            SYSTEM_ICONS.inbox,
+  send_msg:         SYSTEM_ICONS.send_msg,
+  emoji:            SYSTEM_ICONS.emoji,
+  sticker:          SYSTEM_ICONS.sticker,
+  attach:           SYSTEM_ICONS.attach,
+  mic:              SYSTEM_ICONS.mic,
+  read_receipt:     SYSTEM_ICONS.read_receipt,
+  chevron_left:     SYSTEM_ICONS.chevron_left,
+  voice_play:       SYSTEM_ICONS.voice_play,
+  duel:             SYSTEM_ICONS.duel,
+  guildwar:         SYSTEM_ICONS.guildwar,
+  tournament:       SYSTEM_ICONS.tournament,
+  bracket:          SYSTEM_ICONS.bracket,
+  history:          SYSTEM_ICONS.history,
+  challenge:        SYSTEM_ICONS.challenge,
+  win:              SYSTEM_ICONS.win,
+  loss:             SYSTEM_ICONS.loss,
+  pvp_rank:         SYSTEM_ICONS.pvp_rank,
+  manage:           SYSTEM_ICONS.manage,
+  officer_badge:    SYSTEM_ICONS.officer_badge,
+  kick:             SYSTEM_ICONS.kick,
+  promote:          SYSTEM_ICONS.promote,
+  demote:           SYSTEM_ICONS.demote,
+  follow:           SYSTEM_ICONS.follow,
+  unfollow:         SYSTEM_ICONS.unfollow,
+  suggest:          SYSTEM_ICONS.suggest,
+  filter:           SYSTEM_ICONS.filter,
+  sort:             SYSTEM_ICONS.sort,
 }
 
 
