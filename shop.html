@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent: #ff44cc;
-  --cyan:#ff44cc;--cyan-dim:#cc0099;--gold:#ffd700;--red:#ff003c;
+  --accent: #ffaa00;
+  --cyan:#ffaa00;--cyan-dim:#cc7700;--gold:#ffd700;--red:#ff003c;
   --green:#44ff88;--purple:#cc44ff;--bg:#0a0600;--bg2:#0f0800;
   --panel:rgba(255,170,0,0.04);--border:rgba(255,170,0,0.14);
 }
@@ -438,9 +438,8 @@ function initCursor() {
 
 // ─── DATE ────────────────────────────────────────────────
 function updateDate() {
-  const d = new Date()
-  document.getElementById('pageDate').textContent =
-    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
+  const el = document.getElementById('pageDate')
+  if (el) el.textContent = new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
 }
 
 // ─── SIDEBAR ─────────────────────────────────────────────
@@ -550,7 +549,6 @@ function renderShop() {
           <div class="item-name">${item.name}</div>
         </div>
         <div class="item-desc">${item.description || '—'}</div>
-        ${tags.length ? `<div class="item-tags">${tags.join('')}</div>` : ''}
         <div class="item-footer">
           <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
           <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned&&!item.is_consumable?'disabled':''}>
