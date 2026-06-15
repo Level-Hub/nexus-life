@@ -48,13 +48,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* LOADING */
 .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.loading-screen.warp-out{animation:profileWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
-@keyframes profileWarpOut{
-  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
-  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
-  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
-  100%{transform:scale(40);opacity:0;filter:blur(12px)}
-}
 .loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
 .loading-bar-wrap{width:200px;height:2px;background:var(--border)}
 .loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
@@ -988,7 +981,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="avatar-preview-img" style="position:relative;cursor:pointer" onclick="document.getElementById('avatarFileInput').click()">
           <img id="editAvatarPreview" src="" alt="">
           <div style="position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s" id="avatarOverlay">
-            <span style="font-size:18px">📷</span>
+            <span id="avatarCameraIcon"></span>
           </div>
         </div>
         <div>
@@ -1076,7 +1069,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div class="form-group">
         <label class="form-label">STATUS EMOJI</label>
-        <input class="form-input" id="editStatusEmoji" type="text" placeholder="เช่น 🔥 🎯 ⚡" maxlength="4">
+        <input class="form-input" id="editStatusEmoji" type="text" placeholder="เช่น * # +" maxlength="4">
       </div>
       <div class="modal-msg" id="editModalMsg"></div>
       <button class="btn-primary" id="editSaveBtn" onclick="saveProfile()">SAVE CHANGES →</button>
@@ -1128,7 +1121,7 @@ async function init() {
   
   if (!user) {
     const ls = document.getElementById('profileLoadingScreen')
-    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+    if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
     return
   }
   currentUser = user
@@ -1136,6 +1129,8 @@ async function init() {
   injectTitleStyles()
   const pageTitleEl = document.getElementById('pageTitle')
   if (pageTitleEl) pageTitleEl.innerHTML = getIcon('person', 16) + ' <span>PROFILE</span>'
+  const avatarCameraIcon = document.getElementById('avatarCameraIcon')
+  if (avatarCameraIcon) avatarCameraIcon.innerHTML = getIcon('upload_img', 18)
   const heroCityIcon = document.getElementById('heroCityIcon')
   if (heroCityIcon) heroCityIcon.innerHTML = getIcon('checkin', 12)
   const currIconXP = document.getElementById('currIconXP')
@@ -1212,7 +1207,7 @@ async function init() {
   
   document.getElementById('profileLayout').style.display = 'grid'
   const ls = document.getElementById('profileLoadingScreen')
-  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
   
 
   initCursor()
@@ -2092,7 +2087,7 @@ init().catch(err => {
   console.error('[profile] fatal init error:', err)
   // ซ่อน loading screen เสมอ แม้ error จะ fatal
   const ls = document.getElementById('profileLoadingScreen')
-  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
+  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
 })
 </script>
 </body>
