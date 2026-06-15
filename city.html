@@ -11,8 +11,9 @@
   --green:#44ff88; --purple:#b088ff; --orange:#ff9500;
   --bg:#08060f; --bg2:#0c0916;
   --panel:rgba(176,136,255,0.04); --border:rgba(176,136,255,0.14);
-  --text:#e0d4ff; --text-dim:#6a5490;
+  --accent:#b088ff;
 }
+*{transition:color var(--t-base,0.3s) ease,background var(--t-base,0.3s) ease,border-color var(--t-base,0.3s) ease,opacity var(--t-base,0.3s) ease}
 .cls-warrior{--cls:#ff4444}.cls-mage{--cls:#aa44ff}.cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00}.cls-artist{--cls:#ff66aa}.cls-diplomat{--cls:#00ccff}
 
@@ -31,6 +32,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* ===== LOADING ===== */
 .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity 0.5s ease}
+.loading-screen.warp-out{animation:cityWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes cityWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
 .city-load-skyline{display:flex;align-items:flex-end;gap:3px;margin-bottom:28px;filter:drop-shadow(0 0 18px rgba(176,136,255,0.5))}
 .city-load-bld{background:var(--cyan);opacity:0.7;border-radius:1px 1px 0 0;animation:cityRise 1.4s ease-in-out infinite}
 @keyframes cityRise{
@@ -778,7 +786,8 @@ async function init() {
   buildCitySelectGrid()
   startProjectTimer()
 
-  document.getElementById('loadingScreen').style.display = 'none'
+  const ls = document.getElementById('loadingScreen')
+  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
   initCursor()
 }
 

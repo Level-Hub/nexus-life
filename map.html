@@ -18,8 +18,7 @@
   --bg2: #020d05;
   --panel: rgba(0,255,136,0.04);
   --border: rgba(0,255,136,0.12);
-  --text: #c8f5d8;
-  --text-dim: #3a7a55;
+  --accent: #00ff88;
 }
 
 .cls-warrior  { --cls:#ff4444; }
@@ -348,6 +347,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .loading-screen {
   position:fixed;inset:0;background:#010a0f;z-index:9000;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.loading-screen.warp-out{animation:mapWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes mapWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
 }
 @keyframes radarSpin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 @keyframes radarPing { 0%,100%{opacity:0.15;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.06)} }
@@ -751,7 +757,8 @@ async function init() {
   // เรียกหลัง loadProfile เสร็จเพื่อให้ userProfile.avatar_seed พร้อมแน่ใจ
   getUserLocation()
   loadNotifBadge()
-  document.getElementById('loadingScreen').style.display = 'none'
+  const ls = document.getElementById('loadingScreen')
+  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
 
   // Realtime — อัปเดต players บนแผนที่ทันทีเมื่อมีคนย้ายตำแหน่ง
   supabase.channel('map-live')

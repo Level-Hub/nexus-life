@@ -471,6 +471,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
   transition:opacity 0.5s ease;
 }
+.loading-screen.warp-out{animation:dashWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes dashWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
 .terminal-box {
   width:320px;
   background:#000;
@@ -1013,7 +1020,10 @@ async function init() {
   ])
 
   const ls = document.getElementById('loadingScreen')
-  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+  if (ls) {
+    ls.classList.add('warp-out')
+    setTimeout(() => { ls.style.display = 'none' }, 700)
+  }
   updateDate()
   updateQuestResetTimer()
   setInterval(updateQuestResetTimer, 60000)

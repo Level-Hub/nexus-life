@@ -18,8 +18,7 @@
   --bg2: #140005;
   --panel: rgba(255,0,60,0.04);
   --border: rgba(255,0,60,0.15);
-  --text: #f5c8cc;
-  --text-dim: #7a404a;
+  --accent: #ff003c;
 }
 
 .cls-warrior  { --cls:#ff4444; }
@@ -489,6 +488,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   }
   .bracket-wrap .bracket { min-width:480px; }
   .box-body { overflow:hidden; }
+}
+#loadingScreen.warp-out{animation:pvpWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes pvpWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
 }
 </style>
 </head>
@@ -1144,7 +1150,7 @@ async function init() {
 
   // ✅ ซ่อน loading screen หลังข้อมูลโหลดเสร็จ
   const ls = document.getElementById('loadingScreen')
-  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 400) }
+  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
 
   // Realtime: incoming challenges (ต้องอยู่หลัง currentUser มีค่าแล้ว)
   supabase.channel('pvp-challenges')

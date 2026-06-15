@@ -11,7 +11,7 @@
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
   --bg:#0a0800; --bg2:#0d0a00;
   --panel:rgba(255,215,0,0.04); --border:rgba(255,165,0,0.15);
-  --text:#f0e8c8; --text-dim:#7a6a40;
+  --accent:#ffd700;
   /* Guild palette overrides */
   --g-gold:#ffd700; --g-amber:#ffaa00; --g-rust:#cc5500; --g-dark:#1a1000;
   --g-panel:rgba(255,180,0,0.05); --g-border:rgba(255,160,0,0.18);
@@ -342,6 +342,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .cconfirm-btn.confirm-red:hover{background:rgba(255,0,60,0.14);box-shadow:0 0 16px rgba(255,0,60,0.2)}
 .cconfirm-btn.confirm-gold{color:var(--g-gold);border-color:rgba(255,215,0,0.4);background:rgba(255,200,0,0.06)}
 .cconfirm-btn.confirm-gold:hover{background:rgba(255,200,0,0.14);box-shadow:0 0 16px rgba(255,200,0,0.2)}
+#guildLoadingScreen.warp-out{animation:guildWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes guildWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
 </style>
 </head>
 <body>
@@ -788,7 +795,7 @@ setTimeout(function() {
     }
   }
   var ls = document.getElementById('guildLoadingScreen')
-  if (ls) { ls.style.opacity = '0'; setTimeout(function(){ ls.remove() }, 500) }
+  if (ls) { ls.classList.add('warp-out'); setTimeout(function(){ ls.style.display='none' }, 700) }
 }, 20000)
 </script>
 <script type="module">
@@ -845,7 +852,7 @@ async function init() {
     }
     // ซ่อน loading screen
     const ls = document.getElementById('guildLoadingScreen')
-    if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display='none' }, 700) }
   } catch (err) {
     console.error('Guild init error:', err)
     const sub = document.getElementById('guildStatusSub')
@@ -854,7 +861,7 @@ async function init() {
     document.getElementById('noGuildView').style.display = 'block'
     document.getElementById('hasGuildView').style.display = 'none'
     const ls = document.getElementById('guildLoadingScreen')
-    if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display='none' }, 700) }
   }
 }
 

@@ -48,6 +48,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* LOADING */
 .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-screen.warp-out{animation:profileWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes profileWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
 .loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
 .loading-bar-wrap{width:200px;height:2px;background:var(--border)}
 .loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
@@ -1121,7 +1128,7 @@ async function init() {
   
   if (!user) {
     const ls = document.getElementById('profileLoadingScreen')
-    if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
     return
   }
   currentUser = user
@@ -1205,7 +1212,7 @@ async function init() {
   
   document.getElementById('profileLayout').style.display = 'grid'
   const ls = document.getElementById('profileLoadingScreen')
-  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
   
 
   initCursor()
@@ -2085,7 +2092,7 @@ init().catch(err => {
   console.error('[profile] fatal init error:', err)
   // ซ่อน loading screen เสมอ แม้ error จะ fatal
   const ls = document.getElementById('profileLoadingScreen')
-  if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500) }
+  if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
 })
 </script>
 </body>

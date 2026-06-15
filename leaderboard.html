@@ -17,8 +17,7 @@
   --bg2: #160b00;
   --panel: rgba(255,149,0,0.04);
   --border: rgba(255,149,0,0.15);
-  --text: #fff0d4;
-  --text-dim: #7a5a20;
+  --accent: #ff9500;
 }
 
 .cls-warrior  { --cls:#ff4444; }
@@ -42,6 +41,13 @@ body {
 
 /* LOADING */
 .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity 0.5s ease}
+.loading-screen.warp-out{animation:lbWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes lbWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0px)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0px)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
 /* confetti particles */
 .lb-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .lb-conf-dot{position:absolute;border-radius:50%;animation:confDrift linear infinite}
@@ -964,7 +970,8 @@ async function init() {
   } catch(e) {
     console.warn('[leaderboard init error]', e)
   } finally {
-    document.getElementById('loadingScreen').style.display = 'none'
+    const ls = document.getElementById('loadingScreen')
+    if (ls) { ls.classList.add('warp-out'); setTimeout(() => { ls.style.display = 'none' }, 700) }
   }
   checkNotifications()
 
