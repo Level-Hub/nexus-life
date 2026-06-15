@@ -14,14 +14,16 @@
   --cyan:#4db8ff; --cyan-dim:#003eaa;
   --gold:#ffd700; --red:#ff003c;
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
+  --accent:#0066ff;
   --bg:#00020f; --bg2:#000818;
   --panel:rgba(0,102,255,0.04); --border:rgba(0,102,255,0.18);
-  --text:#c8d8ff; --text-dim:#3a5a9a;
   /* profile palette */
   --p-blue:#0066ff; --p-bright:#4db8ff; --p-mid:#0044cc;
   --p-panel:rgba(0,80,255,0.05); --p-border:rgba(0,102,255,0.20);
   --p-glow:rgba(0,120,255,0.30);
 }
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 .cls-warrior  { --cls:#ff4444; }
 .cls-mage     { --cls:#aa44ff; }
 .cls-explorer { --cls:#44ff88; }
