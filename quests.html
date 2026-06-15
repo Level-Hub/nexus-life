@@ -575,12 +575,8 @@ async function loadProfile() {
   userProfile = data
   if (!data) return
 
-  const cls = data.class || 'warrior'
-  const clsColor = CLASS_COLOR[cls] || '#00f5ff'
-  document.getElementById('pageSub').innerHTML =
-    `<span style="color:#fff"> ${(data.display_name||data.username).toUpperCase()}</span>` +
-    `<span style="color:var(--text-dim)"> · LV.${data.level} · </span>` +
-    `<span style="color:${clsColor};display:inline-flex;align-items:center;gap:4px;vertical-align:middle">${clsIcon(cls,14)} ${cls.toUpperCase()}</span>`
+  document.getElementById('pageSub').textContent =
+    new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
 
   // navQuestBadge
   const { count: questCount } = await supabase

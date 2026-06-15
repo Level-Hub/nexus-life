@@ -483,7 +483,7 @@ async function loadProfile() {
 
   const clsClass = 'cls-' + (u.class || 'warrior')
 
-  document.getElementById('cityLabel').innerHTML = `${getIcon('city', 13)} ${myCity} — Feed สด`
+  document.getElementById('cityLabel').textContent = new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
 
   // ✅ BUG FIX: navVerifyBadge ต้องกรองเฉพาะเมืองเดียวกัน
   // เดิมไม่ได้ filter city ทำให้นับ pending_review ของทั้งประเทศ

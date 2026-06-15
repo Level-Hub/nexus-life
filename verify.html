@@ -37,7 +37,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .page-title{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff;display:flex;align-items:center;gap:12px}
-.page-title span{color:var(--green)}
+.page-title span{color:var(--cyan)}
 .page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 
 /* STATS BAR */
@@ -46,7 +46,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .sbar-icon{font-size:20px}
 .sbar-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan)}
 .sbar-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);margin-top:2px}
-.sbar-item.green .sbar-val{color:var(--green)}
+.sbar-item.green .sbar-val{color:var(--cyan)}
 .sbar-item.gold .sbar-val{color:var(--gold)}
 
 /* TABS */
@@ -64,7 +64,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* VERIFY CARD */
 .vcard{background:rgba(102,68,255,0.02);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.25s}
 .vcard:hover{border-color:rgba(102,68,255,0.25);box-shadow:0 8px 32px rgba(102,68,255,0.06)}
-.vcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green)}
+.vcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan)}
 
 /* CARD HEADER */
 .vcard-header{padding:14px 16px 12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
@@ -294,7 +294,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="page-header">
     <div>
       <div class="page-title" id="pageTitleEl"><span>VERIFY</span></div>
-      <div class="page-sub" id="pageSub">COMMUNITY VERIFICATION SYSTEM</div>
+      <div class="page-sub" id="pageSub">—</div>
     </div>
   </div>
 
@@ -432,6 +432,7 @@ async function init() {
     setTimeout(() => ls.style.display = 'none', 700)
   }, 750)
   initCursor()
+  updateDate()
 }
 
 async function loadProfile() {
@@ -732,6 +733,11 @@ function showToast(msg, type = 'success') {
   t.textContent = msg
   t.className = `toast ${type} show`
   setTimeout(() => { t.className = `toast ${type}` }, 3500)
+}
+
+function updateDate() {
+  const el = document.getElementById('pageSub')
+  if (el) el.textContent = new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
 }
 
 function initCursor() {
