@@ -7,11 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --cyan:#39ff14; --cyan-dim:#22cc0a; --gold:#ffd700; --red:#ff003c;
+  --cyan:#ccff00; --cyan-dim:#99cc00; --gold:#ffd700; --red:#ff003c;
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
   --bg:#030f01; --bg2:#060f02;
   --panel:rgba(57,255,20,0.04); --border:rgba(57,255,20,0.12);
-  --accent:#39ff14;
+  --accent:#ccff00;
 }
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
 .no-transition, .no-transition * { transition: none !important; }
@@ -219,10 +219,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="loading-screen" id="loadingScreen">
   <div class="wallet-load-wrap">
     <div class="wallet-glow-ring"></div>
-    <div class="w-particle">💰</div>
-    <div class="w-particle">💎</div>
-    <div class="w-particle">🪙</div>
-    <div class="w-particle">✦</div>
+    <div class="w-particle" id="wp1"></div>
+    <div class="w-particle" id="wp2"></div>
+    <div class="w-particle" id="wp3"></div>
+    <div class="w-particle" id="wp4"></div>
     <svg class="wallet-svg" id="walletSvg" viewBox="0 0 80 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- body -->
       <rect class="w-body" x="4" y="20" width="72" height="40" rx="6" fill="#060f02" stroke="#39ff14" stroke-width="2"/>
@@ -334,7 +334,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon } from './icons.js'
+import { getIcon, injectGlobalDefs } from './icons.js'
 
 let currentUser = null
 let allTx = []
@@ -373,7 +373,14 @@ function updateDate() {
 }
 
 // ── TX RENDER ─────────────────────────────────────────────────
-const TX_ICON = { topup:'💎', spend:'🛒', bonus:'⭐', refund:'↩️', quest:'📋', admin:'⚙️' }
+const TX_ICON = {
+  topup:  () => getIcon('crystal', 14),
+  spend:  () => getIcon('cart',    14),
+  bonus:  () => getIcon('star_filled', 14),
+  refund: () => getIcon('chevron_left', 14),
+  quest:  () => getIcon('list',    14),
+  admin:  () => getIcon('settings',14)
+}
 const TX_LABEL = { topup:'เติม Crystal', spend:'ซื้อไอเทม', bonus:'โบนัส', refund:'คืนเงิน', quest:'รางวัล Quest', admin:'ปรับโดย Admin' }
 
 function fmtDate(ts) {
@@ -397,13 +404,13 @@ function renderTxList() {
       ? `<span class="tx-status ${tx.status}">${tx.status.toUpperCase()}</span>` : ''
     return `
     <div class="tx-row">
-      <div class="tx-icon ${iconClass}">${TX_ICON[tx.type] || '💰'}</div>
+      <div class="tx-icon ${iconClass}">${(TX_ICON[tx.type] || (() => getIcon('gold', 14)))()}</div>
       <div class="tx-info">
         <div class="tx-title">${tx.description || TX_LABEL[tx.type] || tx.type}</div>
         <div class="tx-meta">${tx.ref_id ? `REF: ${tx.ref_id}` : ''}${statusHtml}</div>
       </div>
       <div class="tx-date">${fmtDate(tx.created_at)}</div>
-      <div class="tx-amount ${isPlus ? 'plus' : 'minus'}">${isPlus ? '+' : '-'}${(tx.amount || tx.crystal_amount || 0).toLocaleString()} 💎</div>
+      <div class="tx-amount ${isPlus ? 'plus' : 'minus'}">${isPlus ? '+' : '-'}${(tx.amount || tx.crystal_amount || 0).toLocaleString()} ${getIcon('crystal', 12)}</div>
     </div>`
   }).join('')
 }
@@ -417,14 +424,14 @@ window.filterTx = function(type, btn) {
 
 // ── PURCHASES ─────────────────────────────────────────────────
 function getItemIcon(item) {
-  if (!item) return '📦'
+  if (!item) return getIcon('chest', 18)
   const t = item.type || ''
-  if (t === 'title') return '🏷️'
-  if (t === 'frame') return '🖼️'
-  if (t === 'effect') return '✨'
-  if (t === 'boost') return '⚡'
-  if (t === 'slot') return '🗂️'
-  return '🎁'
+  if (t === 'title')  return getIcon('tag',     18)
+  if (t === 'frame')  return getIcon('palette', 18)
+  if (t === 'effect') return getIcon('crystal', 18)
+  if (t === 'boost')  return getIcon('lightning', 18)
+  if (t === 'slot')   return getIcon('clipboard', 18)
+  return getIcon('chest', 18)
 }
 
 function renderPurchases(purchases, items) {
@@ -463,6 +470,7 @@ function renderPurchases(purchases, items) {
 async function init() {
   initCursor()
   updateDate()
+  injectGlobalDefs()
 
   // inject icons
   const walletTitle = document.getElementById('walletPageTitle')
@@ -475,6 +483,9 @@ async function init() {
   if (balIconGold) balIconGold.innerHTML = getIcon('gold', 22)
   const balIconShop = document.getElementById('balIconShop')
   if (balIconShop) balIconShop.innerHTML = getIcon('cart', 22)
+  // loading particles
+  const wp = [['wp1','gold',10],['wp2','crystal',10],['wp3','xp',10],['wp4','diamond',10]]
+  wp.forEach(([id, name, sz]) => { const el = document.getElementById(id); if(el) el.innerHTML = getIcon(name, sz) })
 
   const loadTxt = document.getElementById('loadingTxt')
 

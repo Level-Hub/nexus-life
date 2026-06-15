@@ -638,7 +638,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <!-- confetti -->
   <div class="lb-confetti" id="lbConfetti"></div>
   <div class="lb-trophy-wrap">
-    <div class="lb-trophy-glow">🏆</div>
+    <div class="lb-trophy-glow" id="lbTrophyGlow"></div>
   </div>
   <div class="lb-load-title">LEADERBOARD</div>
   <div class="lb-load-bar-wrap"><div class="lb-load-bar-slide"></div></div>
@@ -859,7 +859,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <!-- CLASS DROPDOWN — body level to escape stacking context -->
 <div class="nexus-dropdown" id="classDropdown" style="position:fixed;z-index:9500;display:none">
   <div class="nexus-option selected" data-val="all" onclick="selectClass('all','ทุก Class',this)">
-    <span class="no-icon">✦</span>ทุก Class
+    <span class="no-icon" id="classAllIcon"></span>ทุก Class
   </div>
   <div class="nexus-option cls-warrior" data-val="warrior" onclick="selectClass('warrior','Warrior',this)" id="clsOpt-warrior">
     <span class="cls-icon-warrior"></span>Warrior
@@ -927,6 +927,11 @@ async function init() {
   initCursor()
   updateDate()
   startSeasonTimer()
+  injectGlobalDefs()
+
+  // inject trophy ก่อน initSidebar เพื่อให้ gradient พร้อมก่อน loading screen แสดง
+  const lbTrophyGlow = document.getElementById('lbTrophyGlow')
+  if (lbTrophyGlow) lbTrophyGlow.innerHTML = getIcon('trophy', 56, { prestige: true })
 
   const { user } = await initSidebar('leaderboard')
   if (!user) return
@@ -934,11 +939,13 @@ async function init() {
 
   injectTitleStyles()
   injectDropdownIcons()
-  injectGlobalDefs()
 
   // inject static icons
   const pageTitleIcon = document.getElementById('pageTitleIcon')
   if (pageTitleIcon) pageTitleIcon.innerHTML = getIcon('bar', 24)
+
+  const classAllIcon = document.getElementById('classAllIcon')
+  if (classAllIcon) classAllIcon.innerHTML = getIcon('star_filled', 12)
 
   const seasonIcon = document.getElementById('seasonIcon')
   if (seasonIcon) seasonIcon.innerHTML = getIcon('trophy', 28, { prestige: true })

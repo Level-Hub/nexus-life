@@ -316,10 +316,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <!-- EMOJI PICKER -->
         <div class="emoji-picker" id="emojiPicker">
           <div class="emoji-picker-tabs">
-            <button class="emoji-tab active" onclick="showEmojiCat('faces',this)">😀</button>
-            <button class="emoji-tab" onclick="showEmojiCat('hearts',this)">❤️</button>
-            <button class="emoji-tab" onclick="showEmojiCat('hands',this)">👋</button>
-            <button class="emoji-tab" onclick="showEmojiCat('symbols',this)">⭐</button>
+            <button class="emoji-tab active" onclick="showEmojiCat('faces',this)" id="emojiTabFaces"></button>
+            <button class="emoji-tab" onclick="showEmojiCat('hearts',this)" id="emojiTabHearts"></button>
+            <button class="emoji-tab" onclick="showEmojiCat('hands',this)" id="emojiTabHands"></button>
+            <button class="emoji-tab" onclick="showEmojiCat('symbols',this)" id="emojiTabSymbols"></button>
           </div>
           <div class="emoji-grid" id="emojiGrid"></div>
         </div>
@@ -342,8 +342,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         </div>
         <!-- TOOLBAR -->
         <div class="chat-input-toolbar">
-          <button class="toolbar-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="Emoji">😊</button>
-          <button class="toolbar-btn" id="stickerBtn" onclick="toggleStickerPicker()" title="Sticker">🎭</button>
+          <button class="toolbar-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="Emoji"></button>
+          <button class="toolbar-btn" id="stickerBtn" onclick="toggleStickerPicker()" title="Sticker"></button>
           <button class="toolbar-btn" onclick="document.getElementById('imageUploadInput').click()" title="รูปภาพ" id="toolbarImgBtn"></button>
           <button class="toolbar-btn" id="voiceBtn" onclick="toggleRecording()" title="บันทึกเสียง"></button>
           <input type="file" id="imageUploadInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
@@ -418,6 +418,19 @@ async function init() {
 
   const toolbarImgBtn = document.getElementById('toolbarImgBtn')
   if (toolbarImgBtn) toolbarImgBtn.innerHTML = getIcon('upload_img', 14)
+  const emojiBtn = document.getElementById('emojiBtn')
+  if (emojiBtn) emojiBtn.innerHTML = getIcon('emoji', 14)
+  const stickerBtn = document.getElementById('stickerBtn')
+  if (stickerBtn) stickerBtn.innerHTML = getIcon('sticker', 14)
+  // emoji picker category tab icons
+  const emojiTabFaces   = document.getElementById('emojiTabFaces')
+  if (emojiTabFaces)   emojiTabFaces.innerHTML   = getIcon('emoji',    13)
+  const emojiTabHearts  = document.getElementById('emojiTabHearts')
+  if (emojiTabHearts)  emojiTabHearts.innerHTML  = getIcon('star_filled', 13)
+  const emojiTabHands   = document.getElementById('emojiTabHands')
+  if (emojiTabHands)   emojiTabHands.innerHTML   = getIcon('wave',     13)
+  const emojiTabSymbols = document.getElementById('emojiTabSymbols')
+  if (emojiTabSymbols) emojiTabSymbols.innerHTML = getIcon('lightning', 13)
 
   const voiceBtn = document.getElementById('voiceBtn')
   if (voiceBtn) { voiceBtn.innerHTML = getIcon('wave', 14); voiceBtn._defaultHtml = voiceBtn.innerHTML }

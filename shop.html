@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent: #ffaa00;
-  --cyan:#ffaa00;--cyan-dim:#cc7700;--gold:#ffd700;--red:#ff003c;
+  --accent: #ff44cc;
+  --cyan:#ff44cc;--cyan-dim:#cc0099;--gold:#ffd700;--red:#ff003c;
   --green:#44ff88;--purple:#cc44ff;--bg:#0a0600;--bg2:#0f0800;
   --panel:rgba(255,170,0,0.04);--border:rgba(255,170,0,0.14);
 }
@@ -405,7 +405,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon } from './icons.js'
+import { getIcon, injectGlobalDefs } from './icons.js'
 
 // ─── STATE ───────────────────────────────────────────────
 let currentUser = null
@@ -695,6 +695,7 @@ async function loadData() {
 async function init() {
   initCursor()
   updateDate()
+  injectGlobalDefs()
 
   // inject static icons
   const shopTitle = document.getElementById('shopPageTitle')

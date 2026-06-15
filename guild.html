@@ -17,6 +17,8 @@
   --g-panel:rgba(255,180,0,0.05); --g-border:rgba(255,160,0,0.18);
   --g-glow:rgba(255,200,0,0.25);
 }
+* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+.no-transition, .no-transition * { transition: none !important; }
 .cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
 
@@ -359,7 +361,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="g-load-ring g-load-ring-1"></div>
     <div class="g-load-ring g-load-ring-2"></div>
     <div class="g-load-ring g-load-ring-3"></div>
-    <div class="g-load-core">⚔</div>
+    <div class="g-load-core" id="gLoadCore"></div>
   </div>
   <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;letter-spacing:8px;color:#ffd700;text-shadow:0 0 32px rgba(255,200,0,0.6);">GUILD</div>
   <div style="width:180px;height:2px;background:rgba(255,160,0,0.1);overflow:hidden;position:relative;border-radius:1px;">
@@ -635,8 +637,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <!-- ปุ่มจัดการ Guild (ออก / แก้ไข) -->
             <div id="manageGuildActions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g-border)">
               <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-bottom:2px">// การจัดการ Guild</div>
-              <button class="btn-secondary" id="editGuildBtn2" style="display:none;width:100%;padding:10px;font-size:9px" onclick="openEditModal()">✏️ แก้ไข Guild</button>
-              <button class="leave-btn" id="leaveGuildBtn2" style="width:100%" onclick="confirmLeave()">🚪 ออกจาก Guild</button>
+              <button class="btn-secondary" id="editGuildBtn2" style="display:none;width:100%;padding:10px;font-size:9px" onclick="openEditModal()"><span id="editGuildBtn2Icon"></span> แก้ไข Guild</button>
+              <button class="leave-btn" id="leaveGuildBtn2" style="width:100%" onclick="confirmLeave()">ออกจาก Guild</button>
             </div>
             <!-- รายชื่อสมาชิก (master/officer จัดการได้) -->
             <div id="manageList" class="manage-member-list">
@@ -713,7 +715,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="cconfirm-overlay" id="cconfirmOverlay">
   <div class="cconfirm-box">
     <div class="cconfirm-header">
-      <div class="cconfirm-icon" id="cconfirmIcon">⚠️</div>
+      <div class="cconfirm-icon" id="cconfirmIcon"></div>
       <div class="cconfirm-title" id="cconfirmTitle">ยืนยันการดำเนินการ</div>
     </div>
     <div class="cconfirm-body">
@@ -749,8 +751,8 @@ setInterval(updateGuildClock, 60000)
 // CUSTOM CONFIRM DIALOG
 // ============================================
 let _cconfirmResolve = null
-function showConfirm({ icon='⚠️', title, titleClass='warn', msg, sub='', btnClass='confirm-red', btnText='ยืนยัน' }) {
-  document.getElementById('cconfirmIcon').textContent = icon
+function showConfirm({ icon='warning', title, titleClass='warn', msg, sub='', btnClass='confirm-red', btnText='ยืนยัน' }) {
+  document.getElementById('cconfirmIcon').innerHTML = getIcon(icon, 24)
   const titleEl = document.getElementById('cconfirmTitle')
   titleEl.textContent = title
   titleEl.className = `cconfirm-title ${titleClass}`
@@ -801,7 +803,7 @@ setTimeout(function() {
 <script type="module">
 import { supabase as sb } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon, getGuildIcon, GUILD_ICON_KEYS as GUILD_SVG_KEYS } from './icons.js'
+import { getIcon, getGuildIcon, GUILD_ICON_KEYS as GUILD_SVG_KEYS, injectGlobalDefs } from './icons.js'
 
 // ============================================
 // STATE
@@ -822,6 +824,11 @@ const GUILD_XP_PER_LEVEL = 1000
 // ============================================
 async function init() {
   try {
+    injectGlobalDefs()
+    // inject loading icon
+    const gLoadCore = document.getElementById('gLoadCore')
+    if (gLoadCore) gLoadCore.innerHTML = getIcon('sword', 20)
+
     const { user } = await initSidebar('guild')
     if (!user) return
 
@@ -1285,7 +1292,7 @@ function renderManageList() {
   // member ธรรมดาไม่มีสิทธิ์จัดการสมาชิก
   if (role === 'member') {
     el.innerHTML = `<div class="manage-empty" style="padding:20px 0;text-align:center">
-      <div style="font-size:24px;opacity:0.3;margin-bottom:10px">🔒</div>
+      <div style="opacity:0.3;margin-bottom:10px">${getIcon('lock', 24)}</div>
       <div style="font-family:Orbitron,monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim)">// เฉพาะ MASTER / OFFICER เท่านั้น</div>
     </div>`
     return
@@ -1549,13 +1556,13 @@ window.kickMember = async (userId, uname) => {
   }
   if (userId === ME?.id) { toast('ไม่สามารถเตะตัวเองออกได้', 'error'); return }
   const ok = await showConfirm({
-    icon: '🚫',
+    icon: 'kick',
     title: 'เตะออกจาก Guild',
     titleClass: 'warn',
     msg: `แน่ใจหรือไม่ว่าต้องการเตะ "${uname}" ออกจาก Guild?`,
     sub: '// ผู้เล่นสามารถสมัครเข้า Guild ใหม่ได้ในภายหลัง',
     btnClass: 'confirm-red',
-    btnText: '⚡ เตะออก'
+    btnText: 'เตะออก'
   })
   if (!ok) return
   const { error } = await sb.from('guild_members').delete().eq('user_id', userId).eq('guild_id', MY_GUILD.id)
@@ -1573,7 +1580,7 @@ window.promoteOfficer = async (userId, uname, currentRole) => {
   const newRole = currentRole === 'officer' ? 'member' : 'officer'
   const isPromoting = newRole === 'officer'
   const ok = await showConfirm({
-    icon: isPromoting ? '⭐' : '🔽',
+    icon: isPromoting ? 'promote' : 'demote',
     title: isPromoting ? 'แต่งตั้งรองหัวกิล' : 'ลดตำแหน่ง',
     titleClass: isPromoting ? 'promote' : 'warn',
     msg: isPromoting
@@ -1583,7 +1590,7 @@ window.promoteOfficer = async (userId, uname, currentRole) => {
       ? '// Officer สามารถจัดการสมาชิกและ Quest ของ Guild ได้'
       : '// ผู้เล่นจะสูญเสียสิทธิ์การจัดการ Guild',
     btnClass: isPromoting ? 'confirm-gold' : 'confirm-red',
-    btnText: isPromoting ? '⭐ แต่งตั้ง' : '🔽 ลดตำแหน่ง'
+    btnText: isPromoting ? 'แต่งตั้ง' : 'ลดตำแหน่ง'
   })
   if (!ok) return
   const { error } = await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
@@ -1606,13 +1613,13 @@ window.confirmLeave = async () => {
     return
   }
   const ok = await showConfirm({
-    icon: '🚪',
+    icon: 'unfollow',
     title: 'ออกจาก Guild',
     titleClass: 'warn',
     msg: `แน่ใจหรือไม่ว่าต้องการออกจาก Guild "${MY_GUILD.name}"?`,
     sub: '// คุณสามารถสมัครเข้า Guild ใหม่ได้ในภายหลัง',
     btnClass: 'confirm-red',
-    btnText: '🚪 ออกจาก Guild'
+    btnText: 'ออกจาก Guild'
   })
   if (!ok) return
   await sb.from('guild_members').delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id)

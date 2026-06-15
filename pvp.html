@@ -814,10 +814,10 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="tab-panel" id="tab-tournament">
     <div class="tourn-subtab-bar">
       <button class="tourn-subtab-btn active" id="subtabCity" onclick="switchTournamentLevel('city')">
-        <span id="subtabCityLabel">🏙️ CITY TOURNAMENT</span>
+        <span id="subtabCityLabel"><span id="subtabCityIcon"></span> CITY TOURNAMENT</span>
       </button>
       <button class="tourn-subtab-btn" id="subtabNational" onclick="switchTournamentLevel('national')">
-        <span id="subtabNationalLabel">🏆 NATIONAL TOURNAMENT</span>
+        <span id="subtabNationalLabel"><span id="subtabNationalIcon"></span> NATIONAL TOURNAMENT</span>
       </button>
     </div>
     <div class="tournament-header">
@@ -983,7 +983,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { getIcon, CLASS_COLOR } from './icons.js'
+import { getIcon, CLASS_COLOR, injectGlobalDefs } from './icons.js'
 
 // ============================================================
 // GLOBALS
@@ -1029,6 +1029,7 @@ function xpForLevel(n) {
 // INIT
 // ============================================================
 async function init() {
+  injectGlobalDefs()
   const { user } = await initSidebar('pvp')
   if (!user) return
   currentUser = user
@@ -1058,6 +1059,10 @@ async function init() {
   if (myStatsTitle) myStatsTitle.innerHTML = getIcon('chart',12) + ' MY STATS'
   const arenaRankTitle = document.getElementById('arenaRankTitle')
   if (arenaRankTitle) arenaRankTitle.innerHTML = getIcon('crown',12) + ' ARENA RANKING'
+  const subtabCityIcon = document.getElementById('subtabCityIcon')
+  if (subtabCityIcon) subtabCityIcon.innerHTML = getIcon('building', 12)
+  const subtabNationalIcon = document.getElementById('subtabNationalIcon')
+  if (subtabNationalIcon) subtabNationalIcon.innerHTML = getIcon('trophy', 12)
   const duelRewardsTitle = document.getElementById('duelRewardsTitle')
   if (duelRewardsTitle) duelRewardsTitle.innerHTML = getIcon('trophy',12) + ' DUEL REWARDS'
   const rwIconXP1 = document.getElementById('rwIconXP1')

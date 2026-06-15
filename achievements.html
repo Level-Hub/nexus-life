@@ -7,17 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent: #c0c0c0;
-  --cyan: #c0c0c0;
-  --cyan-dim: #888888;
+  --accent: #cc44ff;
+  --cyan: #cc44ff;
+  --cyan-dim: #9922cc;
   --gold: #ffd700;
   --red: #ff003c;
   --green: #44ff88;
-  --purple: #e0e0e0;
-  --bg: #080808;
-  --bg2: #0d0d0d;
-  --panel: rgba(192,192,192,0.04);
-  --border: rgba(192,192,192,0.14);
+  --purple: #ee88ff;
+  --bg: #08010f;
+  --bg2: #0d0218;
+  --panel: rgba(204,68,255,0.04);
+  --border: rgba(204,68,255,0.14);
 }
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
 .no-transition, .no-transition * { transition: none !important; }
@@ -39,12 +39,12 @@ body {
   min-height:100vh;
 }
 .cursor { position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan); }
-.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(192,192,192,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
+.cursor-ring { position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease; }
 body::before { content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000; }
-.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(192,192,192,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(192,192,192,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
+.grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
 .orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
-.orb-1 { width:500px;height:500px;background:rgba(192,192,192,0.06);top:-150px;right:-100px; }
-.orb-2 { width:300px;height:300px;background:rgba(140,140,140,0.05);bottom:100px;left:-50px; }
+.orb-1 { width:500px;height:500px;background:rgba(204,68,255,0.06);top:-150px;right:-100px; }
+.orb-2 { width:300px;height:300px;background:rgba(150,20,200,0.05);bottom:100px;left:-50px; }
 
 /* MAIN */
 .main { margin-left:220px;min-height:100vh;position:relative;z-index:1;padding:32px 28px 60px; }
@@ -76,7 +76,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .trophy-svg {
   animation:trophyFloat 2.4s ease-in-out infinite;
-  filter:drop-shadow(0 0 18px rgba(192,192,192,0.7));
+  filter:drop-shadow(0 0 18px rgba(204,68,255,0.7));
 }
 @keyframes trophyFloat {
   0%,100%{ transform:translateY(0) scale(1); }
@@ -84,7 +84,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .trophy-glow {
   position:absolute;inset:-24px;
-  background:radial-gradient(ellipse,rgba(192,192,192,0.18) 0%,transparent 70%);
+  background:radial-gradient(ellipse,rgba(204,68,255,0.18) 0%,transparent 70%);
   animation:trophyGlow 2.4s ease-in-out infinite;
   pointer-events:none;
 }
@@ -98,14 +98,14 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 @keyframes raysRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .trophy-ray {
   position:absolute;width:1px;height:36px;
-  background:linear-gradient(to top,rgba(192,192,192,0.5),transparent);
+  background:linear-gradient(to top,rgba(204,68,255,0.5),transparent);
   transform-origin:50% 100%;
   top:calc(50% - 36px);left:calc(50%);
 }
 /* ── sparkles ── */
 .ach-spark {
   position:absolute;width:4px;height:4px;border-radius:50%;
-  background:#c0c0c0;animation:sparkPop 1.8s ease-in-out infinite;opacity:0;
+  background:#cc44ff;animation:sparkPop 1.8s ease-in-out infinite;opacity:0;
 }
 .ach-spark:nth-child(1){top:10px;left:20px;animation-delay:0s}
 .ach-spark:nth-child(2){top:20px;right:15px;animation-delay:0.4s}
@@ -119,13 +119,13 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .loading-logo {
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#c0c0c0;
-  text-shadow:0 0 24px rgba(192,192,192,0.8),0 0 48px rgba(192,192,192,0.3);
+  letter-spacing:6px;color:#cc44ff;
+  text-shadow:0 0 24px rgba(204,68,255,0.8),0 0 48px rgba(204,68,255,0.3);
 }
-.loading-bar-wrap { width:160px;height:2px;background:rgba(192,192,192,0.1);border:1px solid rgba(192,192,192,0.2); }
+.loading-bar-wrap { width:160px;height:2px;background:rgba(204,68,255,0.1);border:1px solid rgba(204,68,255,0.2); }
 .loading-bar {
   height:100%;
-  background:linear-gradient(90deg,#888888,#c0c0c0,#e8e8e8);
+  background:linear-gradient(90deg,#9922cc,#cc44ff,#ee88ff);
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 @keyframes loadAnim { 0%{width:0}55%{width:70%}100%{width:100%} }
@@ -138,7 +138,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .toast.error { border-left-color:var(--red);color:#ff6680; }
 
 /* BOX */
-.box { background:rgba(192,192,192,0.02);border:1px solid var(--border);position:relative; }
+.box { background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative; }
 .box::before { content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan); }
 .box::after  { content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan); }
 .box-header { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border); }
@@ -159,7 +159,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   padding:20px;position:relative;overflow:hidden;
   transition:border-color 0.3s;
 }
-.sum-card:hover { border-color:rgba(192,192,192,0.3); }
+.sum-card:hover { border-color:rgba(0,245,255,0.3); }
 .sum-card-icon { font-size:24px;margin-bottom:8px; }
 .sum-card-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px; }
 .sum-card-val { font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff; }
@@ -181,7 +181,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   padding:7px 16px;background:transparent;
   border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s;
 }
-.tab-btn.active,.tab-btn:hover { border-color:var(--cyan);color:var(--cyan);background:rgba(192,192,192,0.06); }
+.tab-btn.active,.tab-btn:hover { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
 
 /* TITLE GRID */
 .title-grid {
@@ -228,7 +228,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 /* RECENT BADGES */
 .recent-badges { display:flex;gap:8px;flex-wrap:wrap; }
 .recent-badge { display:flex;flex-direction:column;align-items:center;gap:4px; }
-.rb-icon { font-size:24px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(192,192,192,0.06);border:1px solid rgba(0,245,255,0.15); }
+.rb-icon { font-size:24px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15); }
 .rb-name { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);text-align:center;max-width:50px; }
 
 /* EMPTY */
@@ -268,56 +268,29 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <div class="ach-spark"></div>
     <div class="ach-spark"></div>
     <div class="ach-spark"></div>
-    <svg class="trophy-svg" width="80" height="96" viewBox="0 0 80 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="tGold" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#fff0a0"/>
-          <stop offset="28%"  stop-color="#ffd700"/>
-          <stop offset="65%"  stop-color="#ff9500"/>
-          <stop offset="100%" stop-color="#cc6600"/>
-        </linearGradient>
-        <linearGradient id="tStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#fffacc"/>
-          <stop offset="40%"  stop-color="#ffe566"/>
-          <stop offset="100%" stop-color="#ffaa00"/>
-        </linearGradient>
-        <radialGradient id="tRadial" cx="35%" cy="30%" r="70%">
-          <stop offset="0%"   stop-color="#fff5b0"/>
-          <stop offset="40%"  stop-color="#ffd700"/>
-          <stop offset="80%"  stop-color="#cc8800"/>
-          <stop offset="100%" stop-color="#996600"/>
-        </radialGradient>
-        <filter id="tGlow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <!-- ถ้วย -->
-      <path d="M22 8 H58 V40 C58 56 40 64 40 64 C40 64 22 56 22 40 Z"
-        stroke="url(#tStroke)" stroke-width="2.2" fill="url(#tGold)" fill-opacity="0.18"
-        stroke-linejoin="round" filter="url(#tGlow)"/>
-      <!-- หูจับซ้าย -->
-      <path d="M22 18 C8 18 6 32 16 37 C19 38 22 38 22 38"
-        stroke="url(#tStroke)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- หูจับขวา -->
-      <path d="M58 18 C72 18 74 32 64 37 C61 38 58 38 58 38"
-        stroke="url(#tStroke)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- ดาวกลางถ้วย -->
-      <polygon points="40,22 42.5,29 50,29 44,33.5 46.5,40.5 40,36.5 33.5,40.5 36,33.5 30,29 37.5,29"
-        stroke="url(#tStroke)" stroke-width="1.2" fill="url(#tRadial)" fill-opacity="0.4"
-        stroke-linejoin="round"/>
-      <!-- เส้นประดับ -->
-      <line x1="30" y1="48" x2="50" y2="48" stroke="url(#tStroke)" stroke-width="1.2" opacity="0.6"/>
-      <line x1="33" y1="55" x2="47" y2="55" stroke="url(#tStroke)" stroke-width="1" opacity="0.4"/>
+    <svg class="trophy-svg" width="72" height="88" viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- ถ้วยรางวัล -->
+      <path d="M22 8 H50 V38 C50 52 36 60 36 60 C36 60 22 52 22 38 Z"
+        stroke="#cc44ff" stroke-width="2" fill="rgba(204,68,255,0.1)" stroke-linejoin="round"/>
+      <!-- หูจับ ซ้าย -->
+      <path d="M22 16 C10 16 8 28 16 32 C18 33 22 33 22 33"
+        stroke="#cc44ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- หูจับ ขวา -->
+      <path d="M50 16 C62 16 64 28 56 32 C54 33 50 33 50 33"
+        stroke="#cc44ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
       <!-- ก้าน -->
-      <line x1="40" y1="64" x2="40" y2="76" stroke="url(#tStroke)" stroke-width="2.2"/>
-      <!-- ฐานล่าง -->
-      <rect x="28" y="76" width="24" height="7" rx="1.5"
-        stroke="url(#tStroke)" stroke-width="2" fill="url(#tGold)" fill-opacity="0.15"/>
-      <rect x="23" y="83" width="34" height="6" rx="1.5"
-        stroke="url(#tStroke)" stroke-width="2" fill="url(#tGold)" fill-opacity="0.2"/>
-      <!-- shine highlight -->
-      <path d="M28 16 Q32 12 36 14" stroke="rgba(255,255,200,0.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="36" y1="60" x2="36" y2="72" stroke="#cc44ff" stroke-width="2"/>
+      <!-- ฐาน -->
+      <rect x="24" y="72" width="24" height="6" rx="1"
+        stroke="#cc44ff" stroke-width="1.8" fill="rgba(204,68,255,0.15)"/>
+      <rect x="20" y="78" width="32" height="5" rx="1"
+        stroke="#cc44ff" stroke-width="1.8" fill="rgba(204,68,255,0.2)"/>
+      <!-- ดาวกลางถ้วย -->
+      <polygon points="36,20 38,26 44,26 39,30 41,36 36,32 31,36 33,30 28,26 34,26"
+        stroke="#ee88ff" stroke-width="1" fill="rgba(238,136,255,0.25)" stroke-linejoin="round"/>
+      <!-- เส้นประดับ -->
+      <line x1="28" y1="44" x2="44" y2="44" stroke="rgba(204,68,255,0.4)" stroke-width="1"/>
+      <line x1="30" y1="50" x2="42" y2="50" stroke="rgba(204,68,255,0.3)" stroke-width="1"/>
     </svg>
   </div>
   <div class="loading-logo">ACHIEVEMENTS</div>
@@ -352,28 +325,28 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="summary-row">
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(255,215,0,0.2)"></div>
-      <div class="sum-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg></div>
+      <div class="sum-card-icon" id="sumIconTitles"></div>
       <div class="sum-card-label">TITLES</div>
       <div class="sum-card-val" id="sumTitles">—</div>
       <div class="sum-card-sub">ที่ปลดล็อคแล้ว</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(0,245,255,0.15)"></div>
-      <div class="sum-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></div>
+      <div class="sum-card-icon" id="sumIconBadges"></div>
       <div class="sum-card-label">BADGES</div>
       <div class="sum-card-val" id="sumBadges">—</div>
       <div class="sum-card-sub">ที่ได้รับแล้ว</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(176,68,255,0.15)"></div>
-      <div class="sum-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="11" r="1.5" fill="currentColor" opacity="0.6"/></svg></div>
+      <div class="sum-card-icon" id="sumIconStreak"></div>
       <div class="sum-card-label">STREAK</div>
       <div class="sum-card-val" id="sumStreak">—</div>
       <div class="sum-card-sub">วันติดต่อกัน</div>
     </div>
     <div class="sum-card">
       <div class="sum-glow" style="background:rgba(68,255,136,0.1)"></div>
-      <div class="sum-card-icon"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1.2"/></svg></div>
+      <div class="sum-card-icon" id="sumIconQuests"></div>
       <div class="sum-card-label">QUESTS DONE</div>
       <div class="sum-card-val" id="sumQuests">—</div>
       <div class="sum-card-sub">Quest สำเร็จทั้งหมด</div>
@@ -387,10 +360,10 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <div>
       <!-- TAB BAR -->
       <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('titles',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>TITLES</button>
-        <button class="tab-btn" onclick="switchTab('badges',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>BADGES</button>
-        <button class="tab-btn" onclick="switchTab('all-titles',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="10" height="12" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h6M5 10h6M5 13h4" stroke="currentColor" stroke-width="1" opacity="0.6"/></svg>ทั้งหมด (Titles)</button>
-        <button class="tab-btn" onclick="switchTab('all-badges',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="10" height="12" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h6M5 10h6M5 13h4" stroke="currentColor" stroke-width="1" opacity="0.6"/></svg>ทั้งหมด (Badges)</button>
+        <button class="tab-btn active" onclick="switchTab('titles',this)" id="tabBtnTitles">TITLES</button>
+        <button class="tab-btn" onclick="switchTab('badges',this)" id="tabBtnBadges">BADGES</button>
+        <button class="tab-btn" onclick="switchTab('all-titles',this)" id="tabBtnAllTitles">ทั้งหมด (Titles)</button>
+        <button class="tab-btn" onclick="switchTab('all-badges',this)" id="tabBtnAllBadges">ทั้งหมด (Badges)</button>
       </div>
 
       <!-- TITLES TAB -->
@@ -480,7 +453,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, getIcon } from './icons.js'
+import { CLASS_ICONS, getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleCard, renderBadgeItem, renderTitleBadge, injectTitleStyles } from './titles.js'
 
 let currentUser = null
@@ -505,9 +478,28 @@ function getAvatarUrl(seed, size=80) {
 
 // ===================== INIT =====================
 async function init() {
+  injectGlobalDefs()
   const { user } = await initSidebar('achievements')
   if (!user) return
   currentUser = user
+
+  // inject icons
+  const sumIconTitles = document.getElementById('sumIconTitles')
+  if (sumIconTitles) sumIconTitles.innerHTML = getIcon('crown', 22)
+  const sumIconBadges = document.getElementById('sumIconBadges')
+  if (sumIconBadges) sumIconBadges.innerHTML = getIcon('medal', 22)
+  const sumIconStreak = document.getElementById('sumIconStreak')
+  if (sumIconStreak) sumIconStreak.innerHTML = getIcon('fire', 22)
+  const sumIconQuests = document.getElementById('sumIconQuests')
+  if (sumIconQuests) sumIconQuests.innerHTML = getIcon('check_circle', 22)
+  const tabBtnTitles = document.getElementById('tabBtnTitles')
+  if (tabBtnTitles) tabBtnTitles.innerHTML = getIcon('crown', 12) + ' TITLES'
+  const tabBtnBadges = document.getElementById('tabBtnBadges')
+  if (tabBtnBadges) tabBtnBadges.innerHTML = getIcon('medal', 12) + ' BADGES'
+  const tabBtnAllTitles = document.getElementById('tabBtnAllTitles')
+  if (tabBtnAllTitles) tabBtnAllTitles.innerHTML = getIcon('clipboard', 12) + ' ทั้งหมด (Titles)'
+  const tabBtnAllBadges = document.getElementById('tabBtnAllBadges')
+  if (tabBtnAllBadges) tabBtnAllBadges.innerHTML = getIcon('clipboard', 12) + ' ทั้งหมด (Badges)'
 
   injectTitleStyles()
   await loadProfile()
@@ -534,13 +526,14 @@ async function loadProfile() {
   if (!profile) return
 
   const cls = profile.class || 'warrior'
-  const avatarUrl = profile.avatar_url || getAvatarUrl(profile.avatar_seed)
+  const avatarUrl = getAvatarUrl(profile.avatar_seed)
+
 
   // Equipped panel — fix รูปไม่ขึ้น + class color border
   const epAvatarEl = document.getElementById('epAvatar')
   epAvatarEl.src = avatarUrl
   epAvatarEl.onerror = () => {
-    if (profile.avatar_seed) epAvatarEl.src = getAvatarUrl(profile.avatar_seed)
+    epAvatarEl.src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(profile.username||'nexus')}&backgroundColor=0a1628&size=80`
   }
   const CLASS_COLORS_MAP = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
   document.getElementById('equippedPanel').className = 'equipped-panel cls-' + cls
@@ -811,8 +804,8 @@ function initCursor() {
   document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px' })
   ;(function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing) })()
   document.querySelectorAll('button,a,.title-card,.badge-card,.nav-item').forEach(el => {
-    el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(192,192,192,0.7)' })
-    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(192,192,192,0.4)' })
+    el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(0,245,255,0.7)' })
+    el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,245,255,0.4)' })
   })
 }
 
@@ -871,7 +864,7 @@ async function checkAndUnlockAchievements() {
       })
       if (!error) {
         myBadgeIds.add(badge.id)
-        showToast(`ปลดล็อค Badge: ${badge.name}!`, 'gold')
+        showToast(`[BADGE] ปลดล็อค: ${badge.name}!`, 'gold')
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'badge_unlock',
@@ -905,7 +898,7 @@ async function checkAndUnlockAchievements() {
       })
       if (!error) {
         myTitleIds.add(title.id)
-        showToast(`ปลดล็อคฉายา: ${title.name}!`, 'gold')
+        showToast(`[TITLE] ปลดล็อคฉายา: ${title.name}!`, 'gold')
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'title_unlock',
@@ -913,7 +906,7 @@ async function checkAndUnlockAchievements() {
         })
         await supabase.from('notifications').insert({
           user_id: currentUser.id,
-          title: `ได้รับฉายา: ${title.name}!`,
+          title: `[TITLE] ได้รับฉายา: ${title.name}!`,
           body: title.description || 'ฉายาใหม่ของคุณรอใช้งานที่หน้า Achievements'
         })
       }
