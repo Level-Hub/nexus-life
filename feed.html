@@ -22,10 +22,11 @@
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
-/* LOADING — SIGNAL BROADCAST */
+/* LOADING — DATA STREAM */
 .loading-screen{
   position:fixed;inset:0;background:var(--bg);z-index:9000;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  overflow:hidden;
 }
 .loading-screen.warp-out{animation:feedWarp 0.65s cubic-bezier(0.4,0,0.2,1) forwards}
 @keyframes feedWarp{
@@ -35,53 +36,54 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;ove
   100%{transform:scale(40);opacity:0;filter:blur(16px)}
 }
 
-/* ── Signal icon ── */
-.signal-wrap{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center}
-
-/* วงกระจาย */
-.signal-ring{
-  position:absolute;border-radius:50%;border:1.5px solid var(--teal);
-  opacity:0;
-}
-.signal-ring-1{width:30px;height:30px;animation:ringOut 2s ease-out infinite 0s}
-.signal-ring-2{width:30px;height:30px;animation:ringOut 2s ease-out infinite 0.5s}
-.signal-ring-3{width:30px;height:30px;animation:ringOut 2s ease-out infinite 1.0s}
-.signal-ring-4{width:30px;height:30px;animation:ringOut 2s ease-out infinite 1.5s}
-@keyframes ringOut{
-  0%  {transform:scale(1);opacity:0.9;border-color:var(--teal-bright)}
-  60% {opacity:0.3;border-color:var(--teal)}
-  100%{transform:scale(3.4);opacity:0;border-color:var(--teal-dim)}
+/* ── Data Stream Container ── */
+.stream-wrap{
+  position:relative;width:120px;height:120px;
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* จุดกลาง */
-.signal-core{
-  width:18px;height:18px;border-radius:50%;
-  background:radial-gradient(circle,var(--teal-bright),var(--teal));
-  box-shadow:0 0 16px rgba(0,229,204,0.9),0 0 32px rgba(0,229,204,0.4);
-  animation:corePulse 1s ease-in-out infinite;
-  z-index:1;position:relative;
+/* เส้น stream ไหลลงมา */
+.stream-cols{
+  position:absolute;inset:0;display:flex;gap:8px;justify-content:center;
+  align-items:flex-start;overflow:hidden;
 }
-@keyframes corePulse{
-  0%,100%{transform:scale(1);box-shadow:0 0 16px rgba(0,229,204,0.9),0 0 32px rgba(0,229,204,0.4)}
-  50%    {transform:scale(1.2);box-shadow:0 0 24px rgba(0,229,204,1),0 0 48px rgba(0,229,204,0.6)}
+.stream-col{
+  width:2px;background:linear-gradient(to bottom,transparent,var(--teal),transparent);
+  border-radius:1px;
+  animation:streamFall 1.4s ease-in-out infinite;
+}
+.stream-col:nth-child(1){height:40px;animation-delay:0s;   opacity:0.9}
+.stream-col:nth-child(2){height:70px;animation-delay:0.18s;opacity:1}
+.stream-col:nth-child(3){height:55px;animation-delay:0.06s;opacity:0.7}
+.stream-col:nth-child(4){height:80px;animation-delay:0.28s;opacity:1}
+.stream-col:nth-child(5){height:45px;animation-delay:0.12s;opacity:0.8}
+.stream-col:nth-child(6){height:65px;animation-delay:0.22s;opacity:0.6}
+.stream-col:nth-child(7){height:50px;animation-delay:0.35s;opacity:0.9}
+@keyframes streamFall{
+  0%  {transform:translateY(-60px);opacity:0}
+  30% {opacity:1}
+  70% {opacity:1}
+  100%{transform:translateY(120px);opacity:0}
 }
 
-/* arc เส้นโค้งบน (wifi-like) */
-.signal-arc{
-  position:absolute;border-radius:50%;border:1.5px solid transparent;
-  border-top-color:var(--teal);
+/* SVG icon กลาง */
+.stream-icon{
+  position:relative;z-index:2;
+  filter:drop-shadow(0 0 10px rgba(0,229,204,0.8));
+  animation:iconPulse 1.8s ease-in-out infinite;
 }
-.signal-arc-1{width:36px;height:36px;top:calc(50% - 18px);left:calc(50% - 18px);animation:arcSpin 3s linear infinite}
-.signal-arc-2{width:56px;height:56px;top:calc(50% - 28px);left:calc(50% - 28px);animation:arcSpin 3s linear infinite 0.3s;opacity:0.5}
-@keyframes arcSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes iconPulse{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(0,229,204,0.7))}
+  50%    {filter:drop-shadow(0 0 18px rgba(0,229,204,1)) drop-shadow(0 0 32px rgba(0,229,204,0.4))}
+}
 
 /* glow พื้นหลัง */
-.signal-glow{
-  position:absolute;inset:-24px;border-radius:50%;
-  background:radial-gradient(circle,rgba(0,229,204,0.14) 0%,transparent 70%);
+.stream-glow{
+  position:absolute;inset:-20px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,204,0.12) 0%,transparent 70%);
   animation:glowPulse 2s ease-in-out infinite;
 }
-@keyframes glowPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+@keyframes glowPulse{0%,100%{opacity:0.5}50%{opacity:1}}
 
 /* ── ข้อความ ── */
 .loading-logo{
@@ -268,19 +270,32 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </head>
 <body>
 <div class="loading-screen" id="loadingScreen">
-  <div class="signal-wrap">
-    <div class="signal-glow"></div>
-    <div class="signal-ring signal-ring-1"></div>
-    <div class="signal-ring signal-ring-2"></div>
-    <div class="signal-ring signal-ring-3"></div>
-    <div class="signal-ring signal-ring-4"></div>
-    <div class="signal-arc signal-arc-2"></div>
-    <div class="signal-arc signal-arc-1"></div>
-    <div class="signal-core"></div>
+  <div class="stream-wrap">
+    <div class="stream-glow"></div>
+    <div class="stream-cols">
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+      <div class="stream-col"></div>
+    </div>
+    <svg class="stream-icon" width="36" height="36" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#88ffff"/>
+          <stop offset="40%" stop-color="#00e5cc"/>
+          <stop offset="100%" stop-color="#006b62"/>
+        </linearGradient>
+      </defs>
+      <path d="M1 2h14v10H9l-3 3v-3H1z" stroke="url(#sGrad)" stroke-width="1.3" stroke-linejoin="round" fill="url(#sGrad)" fill-opacity="0.08"/>
+      <path d="M4 6h8M4 9h5" stroke="url(#sGrad)" stroke-width="1.1" opacity="0.7"/>
+    </svg>
   </div>
   <div class="loading-logo">FEED</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt" id="loadingTxt">CONNECTING...</div>
+  <div class="loading-txt" id="loadingTxt">LOADING FEED...</div>
 </div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
