@@ -384,7 +384,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="page-title" style="display:flex;align-items:center;gap:10px"><span id="cityPageTitleIcon" style="display:inline-flex"></span><span id="cityPageTitle">CITY</span></div>
       <div class="page-sub" id="cityPageSub">LOADING...</div>
     </div>
-    <button class="city-switch-btn" id="citySwitchBtn" onclick="openCityModal()">เปลี่ยนเมือง</button>
+
   </div>
 
   <!-- CITY HERO -->
@@ -811,7 +811,7 @@ async function loadCityData(city) {
   const bonus = (lv * 5)
 
   document.getElementById('cityPageTitle').textContent = 'CITY'
-  document.getElementById('cityPageSub').textContent = `${city} — จังหวัด ${data.province || city}`
+  document.getElementById('cityPageSub').textContent = new Date().toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase()
   document.getElementById('heroName').textContent = city
   document.getElementById('heroProvince').textContent = data.province || city
   document.getElementById('prosperityBadge').textContent = `PROSPERITY LV.${lv}`
