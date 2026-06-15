@@ -7,11 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
+  --cyan:#6644ff; --cyan-dim:#3322aa; --gold:#ffd700; --red:#ff003c;
   --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
-  --bg:#010a0f; --bg2:#020d14;
-  --panel:rgba(0,245,255,0.04); --border:rgba(0,245,255,0.12);
-  --text:#c8f0f5; --text-dim:#5a8a90;
+  --bg:#06030f; --bg2:#0a0618;
+  --panel:rgba(102,68,255,0.04); --border:rgba(102,68,255,0.15);
+  --text:#c8c0ff; --text-dim:#5a4888;
 }
 .cls-warrior{--cls:#ff4444} .cls-mage{--cls:#aa44ff} .cls-explorer{--cls:#44ff88}
 .cls-merchant{--cls:#ffaa00} .cls-artist{--cls:#ff66aa} .cls-diplomat{--cls:#00ccff}
@@ -19,11 +19,11 @@
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh}
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
-.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(102,68,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(102,68,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(102,68,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(0,245,255,0.04);top:-150px;right:-100px}
+.orb-1{width:500px;height:500px;background:rgba(102,68,255,0.04);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(176,68,255,0.04);bottom:100px;left:-50px}
 
 /* MAIN */
@@ -40,7 +40,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* STATS BAR */
 .stats-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;animation:fadeInUp 0.5s 0.05s ease both}
-.sbar-item{background:rgba(0,245,255,0.02);border:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;flex:1;min-width:140px}
+.sbar-item{background:rgba(102,68,255,0.02);border:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;flex:1;min-width:140px}
 .sbar-icon{font-size:20px}
 .sbar-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--cyan)}
 .sbar-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);margin-top:2px}
@@ -52,7 +52,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tab-btn{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;padding:12px 20px;background:transparent;border:none;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.25s;display:flex;align-items:center;gap:8px}
 .tab-btn:hover{color:var(--cyan)}
 .tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
-.tab-count{font-size:8px;padding:2px 7px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.2);border-radius:10px}
+.tab-count{font-size:8px;padding:2px 7px;background:rgba(102,68,255,0.1);border:1px solid rgba(102,68,255,0.2);border-radius:10px}
 .tab-count.red{background:rgba(255,0,60,0.1);border-color:rgba(255,0,60,0.2);color:var(--red)}
 .tab-count.green{background:rgba(68,255,136,0.1);border-color:rgba(68,255,136,0.2);color:var(--green)}
 
@@ -60,8 +60,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .verify-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;animation:fadeInUp 0.5s 0.1s ease both}
 
 /* VERIFY CARD */
-.vcard{background:rgba(0,245,255,0.02);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.25s}
-.vcard:hover{border-color:rgba(0,245,255,0.25);box-shadow:0 8px 32px rgba(0,245,255,0.06)}
+.vcard{background:rgba(102,68,255,0.02);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.25s}
+.vcard:hover{border-color:rgba(102,68,255,0.25);box-shadow:0 8px 32px rgba(102,68,255,0.06)}
 .vcard-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green)}
 
 /* CARD HEADER */
@@ -77,7 +77,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* QUEST INFO */
 .vcard-quest{padding:12px 16px 12px 20px;border-bottom:1px solid var(--border)}
 .vcard-quest-type{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:2px 8px;border:1px solid;display:inline-block;margin-bottom:6px}
-.vcard-quest-type.daily{color:var(--cyan);border-color:rgba(0,245,255,0.3)}
+.vcard-quest-type.daily{color:var(--cyan);border-color:rgba(102,68,255,0.3)}
 .vcard-quest-type.weekly{color:var(--orange);border-color:rgba(255,149,0,0.3)}
 .vcard-quest-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;line-height:1.4}
 .vcard-quest-reward{font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);margin-top:4px}
@@ -88,7 +88,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .vcard-proof:hover img{transform:scale(1.02)}
 .vcard-proof-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);pointer-events:none}
 .vcard-proof-expand{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s}
-.vcard-proof-expand:hover{background:rgba(0,245,255,0.3);border-color:var(--cyan)}
+.vcard-proof-expand:hover{background:rgba(102,68,255,0.3);border-color:var(--cyan)}
 .vcard-no-proof{padding:20px;text-align:center;background:rgba(0,0,0,0.2);border-bottom:1px solid var(--border)}
 .vcard-no-proof-txt{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim)}
 
@@ -116,7 +116,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .vote-btn.voted-reject{background:rgba(255,0,60,0.08);border-color:var(--red);opacity:0.7;cursor:default}
 
 /* VOTED ALREADY */
-.already-voted-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:8px;text-align:center;border:1px solid var(--border);color:var(--text-dim);background:rgba(0,245,255,0.02)}
+.already-voted-badge{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:8px;text-align:center;border:1px solid var(--border);color:var(--text-dim);background:rgba(102,68,255,0.02)}
 
 /* HISTORY CARD (voted) */
 .hcard{background:rgba(0,245,255,0.01);border:1px solid var(--border);padding:14px 16px 14px 20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
@@ -137,12 +137,85 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .empty-txt{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--text-dim);margin-bottom:8px}
 .empty-sub{font-size:13px;color:var(--text-dim);opacity:0.6}
 
-/* LOADING */
-.loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.loading-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px var(--cyan)}
-.loading-bar-wrap{width:200px;height:2px;background:var(--border)}
-.loading-bar{height:100%;background:var(--cyan);animation:loadAnim 1.2s ease-in-out infinite}
-@keyframes loadAnim{0%{width:0}50%{width:70%}100%{width:100%}}
+/* LOADING — CHECKMARK DRAW */
+.loading-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:9000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  overflow:hidden;
+}
+.loading-screen.warp-out{animation:verifyWarpOut 0.7s cubic-bezier(0.4,0,0.2,1) forwards}
+@keyframes verifyWarpOut{
+  0%  {transform:scale(1);opacity:1;filter:blur(0)}
+  40% {transform:scale(0.95);opacity:1;filter:blur(0)}
+  70% {transform:scale(18);opacity:0.6;filter:blur(4px)}
+  100%{transform:scale(40);opacity:0;filter:blur(12px)}
+}
+
+/* ── Checkmark wrap ── */
+.check-wrap{
+  position:relative;width:100px;height:100px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* วงกลมรอบนอก */
+.check-circle-svg{
+  position:absolute;inset:0;
+  animation:circleSpin 3s linear infinite;
+}
+@keyframes circleSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* glow */
+.check-glow{
+  position:absolute;inset:-16px;border-radius:50%;
+  background:radial-gradient(circle,rgba(102,68,255,0.2) 0%,transparent 70%);
+  animation:checkGlow 2s ease-in-out infinite;
+}
+@keyframes checkGlow{0%,100%{opacity:0.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+
+/* SVG ติ๊กถูก */
+.check-svg{
+  position:relative;z-index:2;
+  filter:drop-shadow(0 0 12px rgba(102,68,255,0.9));
+}
+.check-path{
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation:drawCheck 0.8s cubic-bezier(0.4,0,0.2,1) infinite alternate;
+}
+@keyframes drawCheck{
+  0%  {stroke-dashoffset:60;opacity:0.4}
+  60% {stroke-dashoffset:0;opacity:1}
+  100%{stroke-dashoffset:0;opacity:1}
+}
+
+/* sparkles */
+.check-spark{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:#6644ff;animation:sparkPop 1.6s ease-in-out infinite;opacity:0;
+}
+.check-spark:nth-child(1){top:8px;left:18px;animation-delay:0.2s}
+.check-spark:nth-child(2){top:12px;right:14px;animation-delay:0.5s}
+.check-spark:nth-child(3){bottom:14px;left:12px;animation-delay:0.9s}
+.check-spark:nth-child(4){bottom:8px;right:18px;animation-delay:1.3s}
+@keyframes sparkPop{
+  0%  {transform:scale(0);opacity:0}
+  30% {transform:scale(1.5);opacity:1}
+  60% {transform:scale(1);opacity:0.6}
+  100%{transform:scale(0);opacity:0}
+}
+
+.loading-logo{
+  font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
+  letter-spacing:6px;color:#8877ff;
+  text-shadow:0 0 24px rgba(102,68,255,0.9),0 0 48px rgba(102,68,255,0.3);
+}
+.loading-bar-wrap{width:160px;height:2px;background:rgba(102,68,255,0.1);border:1px solid rgba(102,68,255,0.2)}
+.loading-bar{
+  height:100%;
+  background:linear-gradient(90deg,#3322aa,#6644ff,#9977ff);
+  animation:loadAnim 1.4s ease-in-out infinite;
+}
+@keyframes loadAnim{0%{width:0}55%{width:70%}100%{width:100%}}
 .loading-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim)}
 
 /* LIGHTBOX */
@@ -172,9 +245,38 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <body>
 
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-logo">NEXUS LIFE</div>
+  <div class="check-wrap">
+    <div class="check-glow"></div>
+    <div class="check-spark"></div>
+    <div class="check-spark"></div>
+    <div class="check-spark"></div>
+    <div class="check-spark"></div>
+    <!-- วงกลมหมุน -->
+    <svg class="check-circle-svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="44" stroke="rgba(102,68,255,0.2)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="44"
+        stroke="url(#circleGrad)" stroke-width="1.5"
+        stroke-dasharray="80 196" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#6644ff"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <!-- ติ๊กถูก -->
+    <svg class="check-svg" width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <circle cx="26" cy="26" r="22" stroke="#6644ff" stroke-width="1.8" fill="rgba(102,68,255,0.08)"/>
+      <polyline class="check-path"
+        points="14,27 22,35 38,18"
+        stroke="#9977ff" stroke-width="3.5"
+        stroke-linecap="round" stroke-linejoin="round"
+        fill="none"/>
+    </svg>
+  </div>
+  <div class="loading-logo">VERIFY</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt">LOADING VERIFY...</div>
+  <div class="loading-txt" id="loadingTxt">LOADING VERIFY...</div>
 </div>
 
 <div class="cursor" id="cursor"></div>
@@ -316,7 +418,9 @@ async function init() {
   await loadProfile()
   await loadData()
 
-  document.getElementById('loadingScreen').style.display = 'none'
+  const ls = document.getElementById('loadingScreen')
+  ls.classList.add('warp-out')
+  setTimeout(() => ls.style.display = 'none', 700)
   initCursor()
 }
 
