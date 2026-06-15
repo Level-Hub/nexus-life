@@ -40,8 +40,10 @@ const SIDEBAR_CSS = `
 :root {
   --bg:       #010a0f;
   --bg2:      #020d14;
-  --text:     #c8eef5;
-  --text-dim: #4a7a82;
+  --border:   rgba(0,245,255,0.12);
+  --panel:    rgba(0,245,255,0.04);
+  --text:     #e8f0f2;
+  --text-dim: #7a9099;
   --t-fast:   0.15s;
   --t-base:   0.3s;
   --t-slow:   0.55s;
