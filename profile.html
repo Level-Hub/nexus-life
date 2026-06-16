@@ -1072,7 +1072,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <input class="form-input" id="editStatusEmoji" type="text" placeholder="เช่น * # +" maxlength="4">
       </div>
       <div class="modal-msg" id="editModalMsg"></div>
-      <button class="btn-primary" id="editSaveBtn" onclick="saveProfile()">SAVE CHANGES →</button>
+      <button class="btn-primary" id="editSaveBtn" onclick="saveProfile()">SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>
       <button class="btn-secondary" onclick="closeEditModal()">CANCEL</button>
     </div>
   </div>
@@ -1910,7 +1910,7 @@ window.saveProfile = async function() {
   const feedPublic    = document.getElementById('editFeedPublic').checked
 
   if (!username) {
-    showModalMsg('error', 'กรุณากรอก Username'); btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+    showModalMsg('error', 'กรุณากรอก Username'); btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
   }
 
   // ── COOLDOWN CHECKS ───────────────────────────────────────────────────────
@@ -1920,7 +1920,7 @@ window.saveProfile = async function() {
     const remaining = getCooldownRemaining(userProfile.username_changed_at ?? null, COOLDOWNS.username)
     if (remaining > 0) {
       showModalMsg('error', `⏱ Username: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
-      btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+      btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
   // Class: เปลี่ยนได้ทุก 14 วัน
@@ -1928,7 +1928,7 @@ window.saveProfile = async function() {
     const remaining = getCooldownRemaining(userProfile.class_changed_at ?? null, COOLDOWNS.class)
     if (remaining > 0) {
       showModalMsg('error', `⏱ Class: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
-      btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+      btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
   // City: เปลี่ยนได้ทุก 7 วัน
@@ -1936,7 +1936,7 @@ window.saveProfile = async function() {
     const remaining = getCooldownRemaining(userProfile.city_changed_at ?? null, COOLDOWNS.city)
     if (remaining > 0) {
       showModalMsg('error', `⏱ City: เปลี่ยนได้อีกใน ${fmtCooldown(remaining)}`)
-      btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+      btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
 
@@ -1944,7 +1944,7 @@ window.saveProfile = async function() {
   if (username !== userProfile.username) {
     const { data: exists } = await supabase.from('users').select('id').eq('username', username).neq('id', currentUser.id).maybeSingle()
     if (exists) {
-      showModalMsg('error', 'Username นี้ถูกใช้แล้ว'); btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+      showModalMsg('error', 'Username นี้ถูกใช้แล้ว'); btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
 
@@ -1959,7 +1959,7 @@ window.saveProfile = async function() {
       .upload(path, pendingAvatarFile, { upsert: true, contentType: pendingAvatarFile.type })
     if (uploadErr) {
       showModalMsg('error', 'อัพโหลดรูปไม่ได้: ' + uploadErr.message)
-      btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+      btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
     const { data: urlData } = supabase.storage.from('nexuslife-avatars').getPublicUrl(path)
     avatarUrl = urlData.publicUrl + '?t=' + Date.now()
@@ -1991,7 +1991,7 @@ window.saveProfile = async function() {
 
   if (error) {
     showModalMsg('error', error.message || 'เกิดข้อผิดพลาด')
-    btn.disabled = false; btn.textContent = 'SAVE CHANGES →'; return
+    btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
   }
 
   showToast('บันทึกโปรไฟล์แล้ว!', 'success')
@@ -2004,7 +2004,7 @@ window.saveProfile = async function() {
   if (typeof updateSidebarName === 'function') {
     updateSidebarName(updatePayload.display_name || username)
   }
-  btn.disabled = false; btn.textContent = 'SAVE CHANGES →'
+  btn.disabled = false; btn.innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
 }
 
 function showModalMsg(type, msg) {
@@ -2012,7 +2012,7 @@ function showModalMsg(type, msg) {
   el.className = `modal-msg ${type} show`
   el.textContent = msg
   document.getElementById('editSaveBtn').disabled = false
-  document.getElementById('editSaveBtn').textContent = 'SAVE CHANGES →'
+  document.getElementById('editSaveBtn').innerHTML = 'SAVE CHANGES <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
 }
 
 // ============================================================

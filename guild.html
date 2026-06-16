@@ -377,15 +377,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   100%{transform:scale(1);opacity:0.6}
 }
 @keyframes gCoreGlow{
-  0%,100%{text-shadow:0 0 12px rgba(255,200,0,0.6);color:#ffaa00}
-  50%{text-shadow:0 0 28px rgba(255,220,0,1);color:#ffd700}
+  0%,100%{filter:drop-shadow(0 0 6px rgba(255,200,0,0.6));opacity:0.85}
+  50%{filter:drop-shadow(0 0 14px rgba(255,220,0,1));opacity:1}
 }
 .g-load-aura{position:relative;width:80px;height:80px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 .g-load-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,180,0,0.35)}
 .g-load-ring-1{width:80px;height:80px;animation:gAuraPulse 2s ease-in-out infinite}
 .g-load-ring-2{width:58px;height:58px;animation:gAuraPulse 2s ease-in-out infinite 0.4s}
 .g-load-ring-3{width:36px;height:36px;animation:gAuraPulse 2s ease-in-out infinite 0.8s}
-.g-load-core{font-size:20px;position:relative;z-index:1;animation:gCoreGlow 2s ease-in-out infinite}
+.g-load-core{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;animation:gCoreGlow 2s ease-in-out infinite}
 </style>
 
 <!-- SVG gradient/filter defs shared by all guild icons -->
@@ -689,7 +689,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="editModalTitle">แก้ไข Guild</div>
-      <button class="modal-close" onclick="closeModal('editModal')">×</button>
+      <button class="modal-close" id="editModalCloseBtn" onclick="closeModal('editModal')"></button>
     </div>
     <div class="modal-body">
       <div class="create-form">
@@ -842,6 +842,10 @@ async function init() {
     const pageTitleIcon = document.getElementById('pageTitleIcon')
     if (pageTitleIcon) pageTitleIcon.innerHTML = getIcon('guild', 24)
 
+    // Modal close icon
+    const editModalCloseBtn = document.getElementById('editModalCloseBtn')
+    if (editModalCloseBtn) editModalCloseBtn.innerHTML = getIcon('close', 16)
+
     // ดึง gold balance สำหรับ form สร้าง guild (null-safe)
     const goldEl = document.getElementById('goldBalance')
     if (goldEl) goldEl.textContent = `คงเหลือ: ${(me.gold ?? 0).toLocaleString()} Gold`
@@ -976,7 +980,7 @@ function renderGuildBrowse(list) {
     return `
     <div class="guild-browse-card">
       <div class="gbc-top">
-        <div class="gbc-icon">${(() => { const ic = g.metadata?.icon || ''; return GUILD_SVG_KEYS.includes(ic) ? getGuildIcon(ic, 28) : (ic && ic.length <= 4 ? `<span style="font-size:20px">${ic}</span>` : getIcon(ic || 'guild', 20)) })()} </div>
+        <div class="gbc-icon">${(() => { const ic = g.metadata?.icon || ''; return GUILD_SVG_KEYS.includes(ic) ? getGuildIcon(ic, 28) : getIcon('guild', 20) })()} </div>
         <div>
           <div class="gbc-name">${escHtml(g.name)}</div>
           <div class="gbc-tag">[${escHtml(g.tag)}] · LV.${gLv}</div>
@@ -1093,7 +1097,7 @@ window.createGuild = async () => {
   // Insert master member
   await sb.from('guild_members').insert({ guild_id: newGuild.id, user_id: ME.id, role: 'master' })
 
-  // ✅ BUG FIX: re-fetch gold ก่อนหัก ป้องกัน race condition
+  // BUG FIX: re-fetch gold ก่อนหัก ป้องกัน race condition
   const { data: freshMe } = await sb.from('users').select('gold').eq('id', ME.id).single()
   const currentGold = freshMe?.gold ?? ME.gold
   if (currentGold < 500) {
@@ -1126,9 +1130,7 @@ async function showHasGuildView() {
   const isSvgGuildIcon = GUILD_SVG_KEYS.includes(bannerIconKey)
   document.getElementById('gBannerIcon').innerHTML = isSvgGuildIcon
     ? getGuildIcon(bannerIconKey, 40)
-    : (bannerIconKey && bannerIconKey.length <= 4
-        ? `<span style="font-size:32px;line-height:1">${bannerIconKey}</span>`
-        : getIcon(bannerIconKey || 'guild', 32))
+    : getIcon('guild', 32)
   document.getElementById('gBannerName').textContent = MY_GUILD.name
   document.getElementById('gBannerTag').textContent = `[${MY_GUILD.tag}]`
   document.getElementById('gBannerDesc').textContent = MY_GUILD.description || 'ไม่มีคำอธิบาย'

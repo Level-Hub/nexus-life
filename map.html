@@ -646,7 +646,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="checkinModalTitle">CHECK-IN</div>
-      <button class="modal-close" onclick="closeCheckinModal()">×</button>
+      <button class="modal-close" id="checkinModalCloseBtn" onclick="closeCheckinModal()"></button>
     </div>
     <div class="modal-body">
       <div class="checkin-location-display">
@@ -668,7 +668,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="xp-tag" style="border-color:rgba(68,255,136,0.3);color:var(--green);background:rgba(68,255,136,0.06)">+EXP STAT</div>
       </div>
 
-      <button class="submit-btn" id="checkinBtn" onclick="submitCheckin()">CHECK-IN →</button>
+      <button class="submit-btn" id="checkinBtn" onclick="submitCheckin()">CHECK-IN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>
     </div>
   </div>
 </div>
@@ -744,6 +744,8 @@ async function init() {
   if (legendTitle) legendTitle.innerHTML = getIcon('scroll', 13) + ' LEGEND'
   const checkinModalTitle = document.getElementById('checkinModalTitle')
   if (checkinModalTitle) checkinModalTitle.innerHTML = getIcon('checkin', 13) + ' CHECK-IN'
+  const checkinModalCloseBtn = document.getElementById('checkinModalCloseBtn')
+  if (checkinModalCloseBtn) checkinModalCloseBtn.innerHTML = getIcon('close', 16)
 
   await loadProfile()
   initMap()
@@ -1280,7 +1282,7 @@ window.toggleLayer = function(layer, btn) {
 // ============================================================
 window.openCheckinModal = function() {
   document.getElementById('checkinModal').classList.add('open')
-  document.getElementById('checkinBtn').textContent = 'CHECK-IN →'
+  document.getElementById('checkinBtn').innerHTML = 'CHECK-IN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
   document.getElementById('checkinBtn').disabled = false
 
   if (myLat) {
@@ -1317,7 +1319,7 @@ window.submitCheckin = async function() {
 
   if (!myLat || !myLng) {
     showToast('ไม่พบตำแหน่ง — กรุณาเปิด GPS', 'error')
-    btn.disabled = false; btn.textContent = 'CHECK-IN →'
+    btn.disabled = false; btn.innerHTML = 'CHECK-IN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
     return
   }
 
@@ -1340,7 +1342,7 @@ window.submitCheckin = async function() {
       const hh = Math.floor(remaining / 60)
       const mm = remaining % 60
       showToast(`เช็คอินได้อีกใน ${hh > 0 ? hh + ' ชม. ' : ''}${mm} นาที`, 'error')
-      btn.disabled = false; btn.textContent = 'CHECK-IN →'
+      btn.disabled = false; btn.innerHTML = 'CHECK-IN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
       return
     }
   }
@@ -1436,7 +1438,7 @@ window.submitCheckin = async function() {
 
   } catch(e) {
     showToast(e.message || 'เกิดข้อผิดพลาด', 'error')
-    btn.disabled = false; btn.textContent = 'CHECK-IN →'
+    btn.disabled = false; btn.innerHTML = 'CHECK-IN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
   }
 }
 

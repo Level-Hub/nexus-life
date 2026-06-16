@@ -292,7 +292,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div id="chatActive" style="display:none;flex-direction:column;height:100%">
       <div class="chat-header" id="chatHeader">
         <div class="chat-header-top">
-          <button class="chat-action-btn" id="backBtn" onclick="showInbox()" style="display:none">← กลับ</button>
+          <button class="chat-action-btn" id="backBtn" onclick="showInbox()" style="display:none"><span id="backBtnIcon"></span> กลับ</button>
           <div class="chat-peer-card">
             <div class="chat-peer-avatar-wrap">
               <div class="chat-peer-avatar cls-warrior" id="peerAvatarWrap"><img id="peerAvatar" src="" alt=""></div>
@@ -330,7 +330,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <!-- IMAGE PREVIEW -->
         <div class="img-preview" id="imgPreview">
           <img id="imgPreviewImg" src="" alt="">
-          <button class="img-preview-rm" onclick="clearImageUpload()">×</button>
+          <button class="img-preview-rm" id="imgPreviewRmBtn" onclick="clearImageUpload()"></button>
         </div>
         <!-- RECORDING INDICATOR -->
         <div class="recording-indicator" id="recordingIndicator">
@@ -403,6 +403,12 @@ async function init() {
   // inject static icons via getIcon
   const inboxTitle = document.getElementById('inboxTitleEl')
   if (inboxTitle) inboxTitle.innerHTML = getIcon('msg', 16) + ' MESSAGES'
+
+  const backBtnIcon = document.getElementById('backBtnIcon')
+  if (backBtnIcon) backBtnIcon.innerHTML = getIcon('chevron_left', 14)
+
+  const imgPreviewRmBtn = document.getElementById('imgPreviewRmBtn')
+  if (imgPreviewRmBtn) imgPreviewRmBtn.innerHTML = getIcon('close', 12)
 
   const inboxSearchIcon = document.getElementById('inboxSearchIconEl')
   if (inboxSearchIcon) inboxSearchIcon.innerHTML = getIcon('search', 14)

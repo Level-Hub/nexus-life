@@ -7,16 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cyan: #00f5ff;
-    --cyan-dim: #00a8b5;
+    --cyan: #7c3aed;
+    --cyan-dim: #5b21b6;
     --gold: #ffd700;
     --red: #ff003c;
     --bg: #010a0f;
     --bg2: #020d14;
-    --panel: rgba(0,245,255,0.04);
-    --border: rgba(0,245,255,0.15);
-    --text: #c8f0f5;
-    --text-dim: #5a8a90;
+    --panel: rgba(124,58,237,0.04);
+    --border: rgba(124,58,237,0.18);
+    --text: #e8e0f5;
+    --text-dim: #7a6a99;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -48,7 +48,7 @@
   .cursor-ring {
     position: fixed;
     width: 36px; height: 36px;
-    border: 1px solid rgba(0,245,255,0.5);
+    border: 1px solid rgba(124,58,237,0.5);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
@@ -75,8 +75,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
     background-size: 60px 60px;
     z-index: 0;
   }
@@ -89,7 +89,7 @@
     pointer-events: none;
     z-index: 0;
   }
-  .orb-1 { width:500px; height:500px; background:rgba(0,245,255,0.05); top:-150px; right:-150px; animation: orbFloat 8s ease-in-out infinite; }
+  .orb-1 { width:500px; height:500px; background:rgba(124,58,237,0.05); top:-150px; right:-150px; animation: orbFloat 8s ease-in-out infinite; }
   .orb-2 { width:350px; height:350px; background:rgba(255,0,60,0.04); bottom:50px; left:-100px; animation: orbFloat 10s ease-in-out infinite reverse; }
   .orb-3 { width:250px; height:250px; background:rgba(255,215,0,0.03); top:40%; left:40%; animation: orbFloat 12s ease-in-out infinite 2s; }
 
@@ -271,7 +271,7 @@
     font-weight: 900;
     color: var(--cyan);
     display: block;
-    text-shadow: 0 0 15px rgba(0,245,255,0.5);
+    text-shadow: 0 0 15px rgba(124,58,237,0.5);
   }
   .left-stat-label {
     font-size: 10px;
@@ -295,7 +295,7 @@
   }
 
   .login-box {
-    background: rgba(0,245,255,0.02);
+    background: rgba(124,58,237,0.02);
     border: 1px solid var(--border);
     padding: 48px 40px;
     position: relative;
@@ -378,7 +378,7 @@
   .tab.active {
     color: var(--cyan);
     border-bottom-color: var(--cyan);
-    text-shadow: 0 0 10px rgba(0,245,255,0.4);
+    text-shadow: 0 0 10px rgba(124,58,237,0.4);
   }
   .tab:hover:not(.active) { color: var(--text); }
 
@@ -416,7 +416,7 @@
 
   .field-input {
     width: 100%;
-    background: rgba(0,245,255,0.03);
+    background: rgba(124,58,237,0.03);
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'Sarabun', sans-serif;
@@ -428,8 +428,8 @@
   .field-input::placeholder { color: var(--text-dim); }
   .field-input:focus {
     border-color: var(--cyan);
-    background: rgba(0,245,255,0.06);
-    box-shadow: 0 0 20px rgba(0,245,255,0.08);
+    background: rgba(124,58,237,0.06);
+    box-shadow: 0 0 20px rgba(124,58,237,0.08);
   }
   .field-input:focus + svg,
   .field-wrap:focus-within svg { opacity: 0.8; }
@@ -463,7 +463,7 @@
     line-height: 1.5;
   }
   .msg.error { border-color: var(--red); color: #ff6680; background: rgba(255,0,60,0.08); }
-  .msg.success { border-color: var(--cyan); color: var(--cyan); background: rgba(0,245,255,0.06); }
+  .msg.success { border-color: var(--cyan); color: var(--cyan); background: rgba(124,58,237,0.06); }
   .msg.show { display: block; }
 
   /* SUBMIT BTN */
@@ -493,7 +493,7 @@
     transition: transform 0.5s;
   }
   .btn-submit:hover::before { transform: translateX(100%); }
-  .btn-submit:hover { box-shadow: 0 0 30px rgba(0,245,255,0.5); transform: translateY(-1px); }
+  .btn-submit:hover { box-shadow: 0 0 30px rgba(124,58,237,0.5); transform: translateY(-1px); }
   .btn-submit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -689,12 +689,11 @@
 
       <span class="box-tag">// AUTHENTICATION</span>
       <h2 class="box-title">เข้าสู่ระบบ</h2>
-      <p class="box-sub">ยังไม่มีบัญชี? <a href="#" id="go-register">สร้างตัวละครเลย →</a></p>
+      <p class="box-sub">ยังไม่มีบัญชี? <a href="./register.html">สร้างตัวละครเลย <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
 
       <!-- TABS -->
       <div class="tabs">
         <button class="tab active" id="tab-login" onclick="switchTab('login')">LOGIN</button>
-        <button class="tab" id="tab-register" onclick="switchTab('register')">REGISTER</button>
       </div>
 
       <!-- LOGIN FORM -->
@@ -706,8 +705,8 @@
           <div class="field-wrap">
             <input type="text" class="field-input" id="login-email" placeholder="nexus@example.com หรือ username" autocomplete="username">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-              <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
+              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#7c3aed" stroke-width="1.2"/>
+              <path d="M1 5L8 9L15 5" stroke="#7c3aed" stroke-width="1.2"/>
             </svg>
           </div>
         </div>
@@ -717,9 +716,9 @@
           <div class="field-wrap">
             <input type="password" class="field-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-              <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
-              <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
+              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#7c3aed" stroke-width="1.2"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="#7c3aed" stroke-width="1.2"/>
+              <circle cx="8" cy="10.5" r="1" fill="#7c3aed"/>
             </svg>
             <button class="toggle-pw" type="button" onclick="togglePw('login-password', this)">
               <svg id="eye-login" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -748,108 +747,6 @@
         </button>
       </div>
 
-      <!-- REGISTER FORM -->
-      <div class="form-panel" id="panel-register">
-        <div class="msg" id="msg-register"></div>
-
-        <div class="field">
-          <label class="field-label">EMAIL</label>
-          <div class="field-wrap">
-            <input type="email" class="field-input" id="reg-email" placeholder="nexus@example.com" autocomplete="email">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-              <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="field-label">USERNAME</label>
-          <div class="field-wrap">
-            <input type="text" class="field-input" id="reg-username" placeholder="ชื่อตัวละคร (ภาษาอังกฤษ)" autocomplete="username" maxlength="20">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <circle cx="8" cy="5" r="3" stroke="#00f5ff" stroke-width="1.2"/>
-              <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="field-label">PASSWORD</label>
-          <div class="field-wrap">
-            <input type="password" class="field-input" id="reg-password" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-              <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
-              <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
-            </svg>
-            <button class="toggle-pw" type="button" onclick="togglePw('reg-password', this)">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/>
-                <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- PASSWORD STRENGTH -->
-        <div style="margin-top:-12px; margin-bottom:20px;">
-          <div style="display:flex;gap:4px;margin-bottom:4px;">
-            <div class="pw-bar" id="pb1" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
-            <div class="pw-bar" id="pb2" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
-            <div class="pw-bar" id="pb3" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
-            <div class="pw-bar" id="pb4" style="height:3px;flex:1;background:var(--border);transition:background 0.3s;"></div>
-          </div>
-          <span id="pw-label" style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim);">PASSWORD STRENGTH</span>
-        </div>
-
-        <!-- CLASS SELECTION -->
-        <div class="field">
-          <label class="field-label" style="margin-bottom:10px;display:block;">เลือกอาชีพ <span style="color:var(--red)">*</span></label>
-          <div id="classPickerMsg" style="font-family:'Orbitron',monospace;font-size:9px;color:var(--red);margin-bottom:6px;display:none;">กรุณาเลือกอาชีพก่อน</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-            <div class="class-pick-btn" data-class="warrior" onclick="selectClass('warrior',this)" style="border:1px solid rgba(255,68,68,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">WARRIOR</div>
-            </div>
-            <div class="class-pick-btn" data-class="mage" onclick="selectClass('mage',this)" style="border:1px solid rgba(170,68,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MAGE</div>
-            </div>
-            <div class="class-pick-btn" data-class="explorer" onclick="selectClass('explorer',this)" style="border:1px solid rgba(68,255,136,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">EXPLORER</div>
-            </div>
-            <div class="class-pick-btn" data-class="merchant" onclick="selectClass('merchant',this)" style="border:1px solid rgba(255,170,0,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">MERCHANT</div>
-            </div>
-            <div class="class-pick-btn" data-class="artist" onclick="selectClass('artist',this)" style="border:1px solid rgba(255,102,170,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">ARTIST</div>
-            </div>
-            <div class="class-pick-btn" data-class="diplomat" onclick="selectClass('diplomat',this)" style="border:1px solid rgba(0,204,255,0.3);padding:10px 6px;text-align:center;cursor:pointer;transition:all 0.2s;border-radius:0;">
-              <div class="cls-icon-wrap" style="height:28px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;"></div>
-              <div style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim);">DIPLOMAT</div>
-            </div>
-          </div>
-        </div>
-
-        <button class="btn-submit" id="btn-register" onclick="handleRegister()">
-          <span class="btn-text">CREATE CHARACTER</span>
-          <div class="spinner"></div>
-        </button>
-
-        <div class="divider-or">
-          <div class="divider-or-line"></div>
-          <div class="divider-or-text">OR</div>
-          <div class="divider-or-line"></div>
-        </div>
-
-        <button class="btn-register" onclick="switchTab('login')">
-          มีบัญชีแล้ว — LOGIN
-        </button>
-      </div>
 
     </div><!-- /.login-box -->
   </div><!-- /.right-panel -->
@@ -861,8 +758,8 @@
 </footer>
 
 <script type="module">
-  import { supabase, signIn, signUp, redirectIfLoggedIn } from './supabase.js'
-  import { CLASS_ICONS, CLASS_COLOR, getIcon } from './icons.js'
+  import { supabase, signIn, redirectIfLoggedIn } from './supabase.js'
+  import { CLASS_ICONS, CLASS_COLOR } from './icons.js'
 
   // ถ้า login แล้วให้ redirect ไป dashboard ทันที
   await redirectIfLoggedIn('./dashboard.html')
@@ -873,14 +770,6 @@
     const el = document.querySelector(`.mini-class.${cls} .mini-class-icon`)
     if (el && CLASS_ICONS[cls]) {
       el.innerHTML = `<svg width="24" height="24" viewBox="0 0 20 20" fill="none" style="color:${CLASS_COLOR[cls]}">${CLASS_ICONS[cls]}</svg>`
-    }
-  })
-
-  // ====== INJECT CLASS ICONS ใน class-pick-btn (register form) ======
-  classMap.forEach(cls => {
-    const wrap = document.querySelector(`.class-pick-btn[data-class="${cls}"] .cls-icon-wrap`)
-    if (wrap && CLASS_ICONS[cls]) {
-      wrap.innerHTML = `<svg width="24" height="24" viewBox="0 0 20 20" fill="none" style="color:${CLASS_COLOR[cls]}">${CLASS_ICONS[cls]}</svg>`
     }
   })
 
@@ -906,27 +795,24 @@
   document.querySelectorAll('button, a, .mini-class').forEach(el => {
     el.addEventListener('mouseenter', () => {
       ring.style.width = '56px'; ring.style.height = '56px'
-      ring.style.borderColor = 'rgba(0,245,255,0.8)'
+      ring.style.borderColor = 'rgba(124,58,237,0.8)'
     })
     el.addEventListener('mouseleave', () => {
       ring.style.width = '36px'; ring.style.height = '36px'
-      ring.style.borderColor = 'rgba(0,245,255,0.5)'
+      ring.style.borderColor = 'rgba(124,58,237,0.5)'
     })
   })
 
-  // ====== TABS ======
+  // ====== TABS (login only now) ======
   window.switchTab = function(tab) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
     document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'))
-    document.getElementById('tab-' + tab).classList.add('active')
-    document.getElementById('panel-' + tab).classList.add('active')
+    const tabEl = document.getElementById('tab-' + tab)
+    const panelEl = document.getElementById('panel-' + tab)
+    if (tabEl) tabEl.classList.add('active')
+    if (panelEl) panelEl.classList.add('active')
     clearMsgs()
   }
-
-  document.getElementById('go-register').addEventListener('click', e => {
-    e.preventDefault()
-    switchTab('register')
-  })
 
   function clearMsgs() {
     document.querySelectorAll('.msg').forEach(m => {
@@ -953,24 +839,6 @@
     inp.type = isHidden ? 'text' : 'password'
     btn.querySelector('svg').style.opacity = isHidden ? '1' : '0.5'
   }
-
-  // ====== PASSWORD STRENGTH ======
-  document.getElementById('reg-password').addEventListener('input', function() {
-    const pw = this.value
-    let score = 0
-    if (pw.length >= 6)  score++
-    if (pw.length >= 10) score++
-    if (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) score++
-    if (/[^A-Za-z0-9]/.test(pw)) score++
-
-    const colors = ['', '#ff003c', '#ffaa00', '#00f5ff', '#44ff88']
-    const labels = ['', 'WEAK', 'FAIR', 'GOOD', 'STRONG']
-    for (let i = 1; i <= 4; i++) {
-      document.getElementById('pb' + i).style.background = i <= score ? colors[score] : 'var(--border)'
-    }
-    document.getElementById('pw-label').textContent = pw.length > 0 ? labels[score] : 'PASSWORD STRENGTH'
-    document.getElementById('pw-label').style.color = pw.length > 0 ? colors[score] : 'var(--text-dim)'
-  })
 
   // ====== LOGIN ======
   window.handleLogin = async function() {
@@ -1018,104 +886,6 @@
   // enter key on login fields
   document.getElementById('login-email').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
   document.getElementById('login-password').addEventListener('keydown', e => e.key === 'Enter' && handleLogin())
-
-  // ====== CLASS SELECTION ======
-  let selectedClass = null
-
-  window.selectClass = function(cls, el) {
-    selectedClass = cls
-    document.querySelectorAll('.class-pick-btn').forEach(b => {
-      b.style.background = 'transparent'
-      b.style.opacity = '0.6'
-    })
-    el.style.background = 'rgba(0,245,255,0.08)'
-    el.style.opacity = '1'
-    el.style.borderColor = 'var(--cyan)'
-    document.getElementById('classPickerMsg').style.display = 'none'
-  }
-
-  // ====== REGISTER ======
-  window.handleRegister = async function() {
-    const email    = document.getElementById('reg-email').value.trim()
-    const username = document.getElementById('reg-username').value.trim()
-    const password = document.getElementById('reg-password').value
-    clearMsgs()
-
-    if (!email || !username || !password) return showMsg('msg-register', 'error', 'กรอกข้อมูลให้ครบก่อนนะ')
-    if (username.length < 3) return showMsg('msg-register', 'error', 'Username ต้องมีอย่างน้อย 3 ตัวอักษร')
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) return showMsg('msg-register', 'error', 'Username ใช้ได้แค่ a-z 0-9 และ _')
-    if (password.length < 6) return showMsg('msg-register', 'error', 'Password ต้องมีอย่างน้อย 6 ตัวอักษร')
-
-    // FIX 1: validate class
-    if (!selectedClass) {
-      document.getElementById('classPickerMsg').style.display = 'block'
-      return showMsg('msg-register', 'error', 'กรุณาเลือกอาชีพก่อน')
-    }
-
-    setLoading('btn-register', true)
-
-    // Sign up via Supabase Auth
-    const { data, error } = await signUp(email, password)
-    if (error) {
-      setLoading('btn-register', false)
-      const errMap = {
-        'User already registered': 'อีเมลนี้มีบัญชีอยู่แล้ว',
-        'Password should be at least 6 characters': 'Password ต้องมีอย่างน้อย 6 ตัวอักษร',
-      }
-      showMsg('msg-register', 'error', errMap[error.message] || error.message)
-      return
-    }
-
-    // FIX 2: insert users ครบ fields + avatar_seed + class + city
-    if (data.user) {
-      const avatarSeed = `pixel-art:${username.toLowerCase()}:0a1628`
-
-      const { error: dbErr } = await supabase.from('users').insert({
-        id: data.user.id,
-        username: username.toLowerCase(),
-        display_name: username,
-        email: email,
-        class: selectedClass,
-        avatar_seed: avatarSeed,
-        city: 'กรุงเทพมหานคร',
-        level: 1,
-        xp_total: 0,
-        xp_this_month: 0,
-        gold: 100,
-        crystal: 0,
-        rank: 'bronze',
-        streak_current: 0,
-        streak_longest: 0,
-        profile_public: true,
-        stats_public: true,
-        feed_public: true,
-        location_public: true,
-        map_visible: true,
-        // FIX: เพิ่ม fields ที่ขาดหายไป
-        status_emoji: '',
-        status_text: '',
-        grace_day_used: false,
-        pvp_win_streak: 0,
-        class_changed_at: new Date().toISOString(),
-        equipped_frame_id: null,
-        equipped_pet_id: null,
-      })
-
-      // FIX: error handling หลัง insert
-      if (dbErr) {
-        setLoading('btn-register', false)
-        const errMap = { 'duplicate key value violates unique constraint': 'Username นี้ถูกใช้ไปแล้ว' }
-        showMsg('msg-register', 'error', errMap[dbErr.message] || dbErr.message || 'ไม่สามารถสร้างโปรไฟล์ได้ กรุณาลองใหม่')
-        return
-      }
-
-      // หมายเหตุ: user_stats และ wallet สร้างอัตโนมัติผ่าน DB trigger
-      // create_user_stats_on_insert และ create_wallet_on_insert — ไม่ต้อง insert เอง
-    }
-
-    setLoading('btn-register', false)
-    showMsg('msg-register', 'success', 'สร้างตัวละครสำเร็จ! ตรวจสอบอีเมลเพื่อยืนยันบัญชี แล้วกลับมา Login')
-  }
 
   // ====== FORGOT PASSWORD ======
   window.handleForgot = async function(e) {

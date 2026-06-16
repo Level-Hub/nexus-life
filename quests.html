@@ -477,7 +477,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <textarea class="text-area" id="proofText" placeholder="เขียนรายละเอียดสิ่งที่ทำวันนี้..." maxlength="500" oninput="updateCount()"></textarea>
         <div class="text-area-count"><span id="charCount">0</span>/500</div>
       </div>
-      <button class="submit-btn" id="submitBtn" onclick="submitProof()">ส่งหลักฐาน →</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitProof()">ส่งหลักฐาน <span id="submitArrow"></span></button>
     </div>
   </div>
 </div>
@@ -538,6 +538,8 @@ async function init() {
   if (loadIcon) loadIcon.innerHTML = getIcon('scroll', 28)
   const closeBtn = document.getElementById('closeQuestModalBtn')
   if (closeBtn) closeBtn.innerHTML = getIcon('close', 16)
+  const submitArrow = document.getElementById('submitArrow')
+  if (submitArrow) submitArrow.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>`
   const uploadIcon = document.getElementById('uploadZoneIcon')
   if (uploadIcon) uploadIcon.innerHTML = getIcon('camera', 28)
   // inject weekly reset SVG icon (จาก QUEST_ICONS.weekly ผ่าน getIcon)
@@ -788,7 +790,7 @@ function renderQuestCard(q, uq) {
   if (isDone)    btnHtml = `<button class="qbtn done-btn">${getIcon('check',12)} สำเร็จ</button>`
   else if (isPend) btnHtml = `<button class="qbtn pending-btn">${getIcon('refresh',12)} รอ Vote</button>`
   else if (isRej)  btnHtml = `<button class="qbtn rejected-btn" onclick="openModal(${q.id})">${getIcon('refresh',12)} ส่งใหม่</button>`
-  else             btnHtml = `<button class="qbtn" onclick="openModal(${q.id})">ส่งหลักฐาน →</button>`
+  else             btnHtml = `<button class="qbtn" onclick="openModal(${q.id})">ส่งหลักฐาน <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>`
 
   const statusLabel = isDone ? 'สำเร็จแล้ว' : isPend ? 'รอชุมชนตรวจสอบ' : isRej ? 'ถูกปฏิเสธ' : 'รอดำเนินการ'
   const statusCls   = isDone ? 'approved' : isPend ? 'pending' : isRej ? 'rejected' : 'todo'
@@ -1201,7 +1203,7 @@ function showModalMsg(type, msg) {
   el.className = `modal-msg ${type} show`
   el.textContent = msg
   document.getElementById('submitBtn').disabled = false
-  document.getElementById('submitBtn').textContent = 'ส่งหลักฐาน →'
+  document.getElementById('submitBtn').innerHTML = `ส่งหลักฐาน <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>`
 }
 function clearModalMsg() {
   const el = document.getElementById('modalMsg')

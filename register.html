@@ -7,15 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cyan: #00f5ff;
+    --cyan: #ff006e;
     --gold: #ffd700;
     --red: #ff003c;
     --bg: #010a0f;
     --bg2: #020d14;
-    --panel: rgba(0,245,255,0.04);
-    --border: rgba(0,245,255,0.15);
-    --text: #c8f0f5;
-    --text-dim: #5a8a90;
+    --panel: rgba(255,0,110,0.04);
+    --border: rgba(255,0,110,0.18);
+    --text: #f5e0ee;
+    --text-dim: #99607a;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -40,7 +40,7 @@
   }
   .cursor-ring {
     position:fixed; width:36px; height:36px;
-    border:1px solid rgba(0,245,255,0.5); border-radius:50%;
+    border:1px solid rgba(255,0,110,0.5); border-radius:50%;
     pointer-events:none; z-index:9998;
     transform:translate(-50%,-50%);
     transition:all 0.15s ease;
@@ -56,13 +56,13 @@
   .grid-bg {
     position:fixed; inset:0;
     background-image:
-      linear-gradient(rgba(0,245,255,0.03) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(0,245,255,0.03) 1px,transparent 1px);
+      linear-gradient(rgba(255,0,110,0.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,0,110,0.03) 1px,transparent 1px);
     background-size:60px 60px; z-index:0;
   }
 
   .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
-  .orb-1 { width:500px;height:500px;background:rgba(0,245,255,0.05);top:-150px;right:-100px; }
+  .orb-1 { width:500px;height:500px;background:rgba(255,0,110,0.05);top:-150px;right:-100px; }
   .orb-2 { width:350px;height:350px;background:rgba(255,0,60,0.04);bottom:0;left:-100px; }
 
   /* NAV */
@@ -117,7 +117,7 @@
     clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
     transition:all 0.4s;
   }
-  .step-num.active { border-color:var(--cyan); color:var(--cyan); background:rgba(0,245,255,0.08); box-shadow:0 0 20px rgba(0,245,255,0.2); }
+  .step-num.active { border-color:var(--cyan); color:var(--cyan); background:rgba(255,0,110,0.08); box-shadow:0 0 20px rgba(255,0,110,0.2); }
   .step-num.done { border-color:var(--cyan); background:var(--cyan); color:var(--bg); }
 
   .step-label {
@@ -141,7 +141,7 @@
   @keyframes fadeInUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
 
   .panel-box {
-    background:rgba(0,245,255,0.02);
+    background:rgba(255,0,110,0.02);
     border:1px solid var(--border);
     padding:48px 40px;
     position:relative;
@@ -161,13 +161,13 @@
   .field-wrap { position:relative; }
   .field-wrap svg.icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;transition:opacity 0.3s; }
   .field-input {
-    width:100%; background:rgba(0,245,255,0.03);
+    width:100%; background:rgba(255,0,110,0.03);
     border:1px solid var(--border); color:var(--text);
     font-family:'Sarabun',sans-serif; font-size:14px;
     padding:14px 14px 14px 44px; outline:none; transition:all 0.3s;
   }
   .field-input::placeholder { color:var(--text-dim); }
-  .field-input:focus { border-color:var(--cyan);background:rgba(0,245,255,0.06);box-shadow:0 0 20px rgba(0,245,255,0.08); }
+  .field-input:focus { border-color:var(--cyan);background:rgba(255,0,110,0.06);box-shadow:0 0 20px rgba(255,0,110,0.08); }
   .field-input:focus ~ svg.icon { opacity:0.8; }
 
   /* USERNAME CHECK */
@@ -191,7 +191,7 @@
   /* MSG */
   .msg { font-size:12px;padding:12px 16px;margin-bottom:20px;border-left:3px solid;display:none;font-family:'Orbitron',monospace;letter-spacing:1px;line-height:1.5; }
   .msg.error  { border-color:var(--red);color:#ff6680;background:rgba(255,0,60,0.08); }
-  .msg.success{ border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.06); }
+  .msg.success{ border-color:var(--cyan);color:var(--cyan);background:rgba(255,0,110,0.06); }
   .msg.show   { display:block; }
 
   /* BUTTONS */
@@ -204,7 +204,7 @@
   }
   .btn-primary::before { content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.5s; }
   .btn-primary:hover::before { transform:translateX(100%); }
-  .btn-primary:hover { box-shadow:0 0 30px rgba(0,245,255,0.5);transform:translateY(-1px); }
+  .btn-primary:hover { box-shadow:0 0 30px rgba(255,0,110,0.5);transform:translateY(-1px); }
   .btn-primary:disabled { opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none; }
   .btn-primary .spinner { display:none;width:14px;height:14px;border:2px solid rgba(1,10,15,0.3);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto; }
   .btn-primary.loading .btn-text { display:none; }
@@ -278,8 +278,8 @@
     display:flex; align-items:center; justify-content:center;
     position:relative; margin-bottom:20px;
     clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
-    background:rgba(0,245,255,0.04);
-    box-shadow:0 0 30px rgba(0,245,255,0.15);
+    background:rgba(255,0,110,0.04);
+    box-shadow:0 0 30px rgba(255,0,110,0.2);
   }
   .avatar-frame img { width:110px;height:110px;image-rendering:pixelated; }
   .avatar-frame-label { font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim); }
@@ -302,7 +302,7 @@
     color:var(--text-dim); text-align:center;
   }
   .style-btn:hover { border-color:var(--cyan);color:var(--cyan); }
-  .style-btn.active { border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,255,0.08); }
+  .style-btn.active { border-color:var(--cyan);color:var(--cyan);background:rgba(255,0,110,0.08); }
   .style-btn .style-preview { width:32px;height:32px;margin:0 auto 6px;display:block;image-rendering:pixelated; }
 
   /* COLOR PICKER */
@@ -317,17 +317,17 @@
   /* SEED INPUT */
   .seed-row { display:flex;gap:8px;margin-bottom:24px; }
   .seed-input {
-    flex:1; background:rgba(0,245,255,0.03); border:1px solid var(--border);
+    flex:1; background:rgba(255,0,110,0.03); border:1px solid var(--border);
     color:var(--text); font-family:'Sarabun',sans-serif; font-size:14px;
     padding:12px 16px; outline:none; transition:all 0.3s;
   }
-  .seed-input:focus { border-color:var(--cyan);background:rgba(0,245,255,0.06); }
+  .seed-input:focus { border-color:var(--cyan);background:rgba(255,0,110,0.06); }
   .seed-input::placeholder { color:var(--text-dim); }
   .btn-random {
     padding:12px 16px; background:var(--panel); border:1px solid var(--border);
     color:var(--cyan); cursor:pointer; font-size:18px; transition:all 0.25s;
   }
-  .btn-random:hover { border-color:var(--cyan);background:rgba(0,245,255,0.08); }
+  .btn-random:hover { border-color:var(--cyan);background:rgba(255,0,110,0.08); }
 
   /* DISPLAY NAME */
   .display-name-preview {
@@ -359,7 +359,7 @@
     NEXUS LIFE
   </a>
   <div class="nav-right">
-    มีบัญชีแล้ว? <a href="login.html">LOGIN →</a>
+    มีบัญชีแล้ว? <a href="login.html">LOGIN <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
 </nav>
 
@@ -399,8 +399,8 @@
         <div class="field-wrap">
           <input type="email" class="field-input" id="s1-email" placeholder="nexus@example.com" autocomplete="email">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="3" width="14" height="10" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-            <path d="M1 5L8 9L15 5" stroke="#00f5ff" stroke-width="1.2"/>
+            <rect x="1" y="3" width="14" height="10" rx="1" stroke="#ff006e" stroke-width="1.2"/>
+            <path d="M1 5L8 9L15 5" stroke="#ff006e" stroke-width="1.2"/>
           </svg>
         </div>
       </div>
@@ -410,8 +410,8 @@
         <div class="field-wrap">
           <input type="text" class="field-input" id="s1-username" placeholder="ชื่อตัวละครของคุณ" autocomplete="username" maxlength="20">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="5" r="3" stroke="#00f5ff" stroke-width="1.2"/>
-            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#00f5ff" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="8" cy="5" r="3" stroke="#ff006e" stroke-width="1.2"/>
+            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#ff006e" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
         </div>
         <div class="username-status" id="username-status"></div>
@@ -429,9 +429,9 @@
         <div class="field-wrap">
           <input type="password" class="field-input" id="s1-password" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="3" y="7" width="10" height="7" rx="1" stroke="#00f5ff" stroke-width="1.2"/>
-            <path d="M5 7V5a3 3 0 016 0v2" stroke="#00f5ff" stroke-width="1.2"/>
-            <circle cx="8" cy="10.5" r="1" fill="#00f5ff"/>
+            <rect x="3" y="7" width="10" height="7" rx="1" stroke="#ff006e" stroke-width="1.2"/>
+            <path d="M5 7V5a3 3 0 016 0v2" stroke="#ff006e" stroke-width="1.2"/>
+            <circle cx="8" cy="10.5" r="1" fill="#ff006e"/>
           </svg>
           <button class="toggle-pw" type="button" onclick="togglePw('s1-password',this)">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -451,7 +451,7 @@
 
       <div class="btn-row" style="margin-top:8px;">
         <button class="btn-primary" id="btn-next1" onclick="goStep2()">
-          <span class="btn-text">ถัดไป — เลือกอาชีพ →</span>
+          <span class="btn-text">ถัดไป — เลือกอาชีพ <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div class="spinner"></div>
         </button>
       </div>
@@ -524,9 +524,9 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-ghost" onclick="goStep(1)">← BACK</button>
+        <button class="btn-ghost" onclick="goStep(1)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M13 8H3M7 12l-4-4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>BACK</button>
         <button class="btn-primary" id="btn-next2" onclick="goStep3()">
-          <span class="btn-text">ถัดไป — สร้าง Avatar →</span>
+          <span class="btn-text">ถัดไป — สร้าง Avatar <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div class="spinner"></div>
         </button>
       </div>
@@ -618,7 +618,7 @@
       </div>
 
       <div class="btn-row" style="margin-top:8px;">
-        <button class="btn-ghost" onclick="goStep(2)">← BACK</button>
+        <button class="btn-ghost" onclick="goStep(2)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M13 8H3M7 12l-4-4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>BACK</button>
         <button class="btn-primary" id="btn-finish" onclick="handleFinish()">
           <span class="btn-text" id="enterBtnText">ENTER THE NEXUS</span>
           <div class="spinner"></div>
@@ -690,8 +690,8 @@ document.addEventListener('mousemove', e => {
   requestAnimationFrame(animRing)
 })()
 document.querySelectorAll('button,a,.class-card,.color-dot').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{ ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(0,245,255,0.8)' })
-  el.addEventListener('mouseleave',()=>{ ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(0,245,255,0.5)' })
+  el.addEventListener('mouseenter',()=>{ ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(255,0,110,0.8)' })
+  el.addEventListener('mouseleave',()=>{ ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(255,0,110,0.5)' })
 })
 
 // ==================== HELPERS ====================
@@ -719,7 +719,7 @@ document.getElementById('s1-password').addEventListener('input', function(){
   if(pw.length>=10) s++
   if(/[A-Z]/.test(pw)||/[0-9]/.test(pw)) s++
   if(/[^A-Za-z0-9]/.test(pw)) s++
-  const cols=['','#ff003c','#ffaa00','#00f5ff','#44ff88']
+  const cols=['','#ff003c','#ffaa00','#ff006e','#44ff88']
   const labs=['','WEAK','FAIR','GOOD','STRONG']
   for(let i=1;i<=4;i++) document.getElementById('pb'+i).style.background = i<=s ? cols[s] : 'var(--border)'
   const lbl=document.getElementById('pw-label')

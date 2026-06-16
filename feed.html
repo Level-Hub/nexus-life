@@ -410,7 +410,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <div class="city-stat-lbl">STREAK</div>
           </div>
         </div>
-        <a href="./city.html" style="display:block;text-align:center;margin-top:12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,245,255,0.2);padding:8px;transition:background 0.2s" onmouseover="this.style.background='rgba(0,245,255,0.06)'" onmouseout="this.style.background='transparent'">CITY DASHBOARD →</a>
+        <a href="./city.html" id="cityDashLink" style="display:block;text-align:center;margin-top:12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);text-decoration:none;border:1px solid rgba(0,245,255,0.2);padding:8px;transition:background 0.2s" onmouseover="this.style.background='rgba(0,245,255,0.06)'" onmouseout="this.style.background='transparent'">CITY DASHBOARD <span id="cityDashArrow"></span></a>
       </div>
 
       <!-- TRENDING -->
@@ -441,6 +441,10 @@ injectTitleStyles()
 // inject page title icon
 const pageTitleEl = document.getElementById('pageTitleEl')
 if (pageTitleEl) pageTitleEl.innerHTML = getIcon('chat', 16) + ' <span>SOCIAL FEED</span>'
+
+// city dash arrow
+const cityDashArrow = document.getElementById('cityDashArrow')
+if (cityDashArrow) cityDashArrow.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>`
 
 // inject static icon-wrap elements
 document.querySelectorAll('.icon-wrap[data-icon]').forEach(el => {

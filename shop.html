@@ -353,7 +353,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="price-new" id="featuredPrice">—</div>
       </div>
     </div>
-    <button class="btn-buy-featured" id="featuredBtn" onclick="openConfirm(0)">GET NOW →</button>
+    <button class="btn-buy-featured" id="featuredBtn" onclick="openConfirm(0)">GET NOW <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>
   </div>
 
   <!-- CATEGORY TABS -->
@@ -396,7 +396,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="modal-msg" id="confirmMsg"></div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeConfirm()">CANCEL</button>
-        <button class="btn-confirm" id="confirmBtn" onclick="doPurchase()">CONFIRM →</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="doPurchase()">CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>
       </div>
     </div>
   </div>
@@ -469,7 +469,7 @@ function getRarityFromCost(cost) {
 function getItemIcon(item) {
   const meta = item.metadata || {}
   if (item.category === 'frame') return getIcon('frame', 24)
-  if (item.category === 'pet') return meta.emoji || getIcon('paw', 24)
+  if (item.category === 'pet') return getIcon('paw', 24)
   if (item.category === 'booster') return getIcon('quest_challenge', 24)
   if (item.category === 'utility') {
     const u = { streak_shield: getIcon('shield',24), class_change: getIcon('refresh',24), quest_slot: getIcon('plus',24), name_change: getIcon('edit',24), guild_slot: getIcon('group',24) }
@@ -533,7 +533,7 @@ function renderShop() {
           <div class="item-footer">
             <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
             <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned?'disabled':''}>
-              ${owned ? 'OWNED' : 'GET →'}
+              ${owned ? 'OWNED' : 'GET &#x2192;'}
             </button>
           </div>
         </div>`
@@ -552,7 +552,7 @@ function renderShop() {
         <div class="item-footer">
           <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
           <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned&&!item.is_consumable?'disabled':''}>
-            ${owned && !item.is_consumable ? 'OWNED' : 'BUY →'}
+            ${owned && !item.is_consumable ? 'OWNED' : 'BUY <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'}
           </button>
         </div>
       </div>`
@@ -602,14 +602,14 @@ window.doPurchase = async function() {
   const crystal = userProfile?.crystal || 0
   if (crystal < selectedItem.crystal_cost) {
     msgEl.className = 'modal-msg error'; msgEl.textContent = 'Crystal ไม่เพียงพอ!'
-    btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+    btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
   }
 
   // FIX: เช็ค limited item หมดอายุหรือยัง
   if (selectedItem.is_limited && selectedItem.available_until) {
     if (new Date(selectedItem.available_until) < new Date()) {
       msgEl.className = 'modal-msg error'; msgEl.textContent = 'สินค้านี้หมดแล้ว!'
-      btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+      btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
 
@@ -618,7 +618,7 @@ window.doPurchase = async function() {
     const alreadyOwned = myPurchases.some(p => p.item_id === selectedItem.id)
     if (alreadyOwned) {
       msgEl.className = 'modal-msg error'; msgEl.textContent = 'คุณมีสินค้านี้แล้ว!'
-      btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+      btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
     }
   }
 
@@ -626,16 +626,16 @@ window.doPurchase = async function() {
   // กรณีที่ user เปิด 2 tab แล้วซื้อพร้อมกัน จะได้ยอดจริงจาก server เสมอ
   const { data: freshUser, error: fetchErr } = await supabase
     .from('users').select('crystal').eq('id', currentUser.id).single()
-  if (fetchErr) { msgEl.className = 'modal-msg error'; msgEl.textContent = fetchErr.message; btn.disabled = false; btn.textContent = 'CONFIRM →'; return }
+  if (fetchErr) { msgEl.className = 'modal-msg error'; msgEl.textContent = fetchErr.message; btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return }
   const freshCrystal = freshUser?.crystal || 0
   if (freshCrystal < selectedItem.crystal_cost) {
     msgEl.className = 'modal-msg error'; msgEl.textContent = 'Crystal ไม่เพียงพอ (ยอดจริงจาก Server)!'
-    btn.disabled = false; btn.textContent = 'CONFIRM →'; return
+    btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
   }
   const { error: e1 } = await supabase.from('users')
     .update({ crystal: freshCrystal - selectedItem.crystal_cost })
     .eq('id', currentUser.id)
-  if (e1) { msgEl.className = 'modal-msg error'; msgEl.textContent = e1.message; btn.disabled = false; btn.textContent = 'CONFIRM →'; return }
+  if (e1) { msgEl.className = 'modal-msg error'; msgEl.textContent = e1.message; btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return }
 
   // 2. บันทึก transaction
   const { data: tx } = await supabase.from('transactions').insert({
@@ -672,7 +672,7 @@ window.doPurchase = async function() {
   closeConfirm()
   await loadData()
   renderShop()
-  btn.textContent = 'CONFIRM →'
+  btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
 }
 
 // ─── LOAD DATA ───────────────────────────────────────────

@@ -775,7 +775,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="box">
         <div class="box-header">
           <div class="box-title" id="lbBoxTitle">TOP PLAYERS</div>
-          <a href="./leaderboard.html" style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--cyan);text-decoration:none;opacity:0.7">ดูทั้งหมด →</a>
+          <a href="./leaderboard.html" style="font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--cyan);text-decoration:none;opacity:0.7">ดูทั้งหมด <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></a>
         </div>
         <div class="box-body" style="padding:0 20px">
           <div class="lb-list" id="lbList">
@@ -812,7 +812,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <img id="previewImg" style="width:100%;max-height:220px;object-fit:cover;display:none;margin-bottom:12px;border:1px solid var(--border)">
         <div id="uploadZone" style="border:2px dashed rgba(0,245,255,0.18);padding:36px;text-align:center;cursor:pointer;position:relative;transition:all 0.3s;margin-bottom:16px">
           <input type="file" id="proofFile" accept="image/*" capture="environment" onchange="handleFileChange(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
-          <div style="font-size:32px;margin-bottom:8px">📷</div>
+          <div id="uploadZoneIcon" style="margin-bottom:8px"></div>
           <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim)">แตะเพื่อถ่ายรูปหลักฐาน</div>
           <div style="font-size:11px;color:var(--text-dim);opacity:0.6;margin-top:4px">ต้องถ่ายสด — ระบบจะประทับ timestamp อัตโนมัติ</div>
         </div>
@@ -825,7 +825,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       </div>
 
       <button class="submit-btn" id="submitBtn" onclick="submitProof()">
-        ส่งหลักฐาน →
+        ส่งหลักฐาน <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
       </button>
     </div>
   </div>
@@ -1002,6 +1002,8 @@ async function init() {
   if (feedLoadingIcon)  feedLoadingIcon.innerHTML  = getIcon('signal', 32)
   if (lbLoadingIcon)    lbLoadingIcon.innerHTML    = `<span style="color:var(--gold)">${getIcon('trophy', 32)}</span>`
   if (modalCloseBtn)    modalCloseBtn.innerHTML    = getIcon('close', 18)
+  const uploadZoneIcon = document.getElementById('uploadZoneIcon')
+  if (uploadZoneIcon) uploadZoneIcon.innerHTML = getIcon('camera', 32)
 
   // รอให้ทั้ง data load และ terminal animation จบก่อนซ่อน loading screen
   await Promise.all([
@@ -1340,7 +1342,7 @@ function renderQuestList(type) {
     let btnHtml = ''
     if (isDone)         btnHtml = `<button class="quest-btn done-btn">${getIcon('check',12)} สำเร็จ</button>`
     else if (isPending) btnHtml = `<button class="quest-btn pending-btn">${getIcon('refresh',12)} รอ Verify</button>`
-    else                btnHtml = `<button class="quest-btn" onclick="openQuestModal(${q.id})">ส่งหลักฐาน →</button>`
+    else                btnHtml = `<button class="quest-btn" onclick="openQuestModal(${q.id})">ส่งหลักฐาน <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></button>`
 
     // badge บอก class ถ้าไม่ใช่ class ตัวเอง
     const clsBadge = q.class_target && !isMyClass
@@ -1676,7 +1678,7 @@ window.submitProof = async function() {
   } catch(e) {
     showModalMsg('error', e.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
   } finally {
-    btn.disabled = false; btn.textContent = 'ส่งหลักฐาน →'
+    btn.disabled = false; btn.innerHTML = 'ส่งหลักฐาน <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
   }
 }
 
@@ -1765,7 +1767,7 @@ function showModalMsg(type, msg) {
   el.className = `modal-msg ${type} show`
   el.textContent = msg
   document.getElementById('submitBtn').disabled = false
-  document.getElementById('submitBtn').textContent = 'ส่งหลักฐาน →'
+  document.getElementById('submitBtn').innerHTML = 'ส่งหลักฐาน <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
 }
 function clearModalMsg() {
   const el = document.getElementById('modalMsg')

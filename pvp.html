@@ -972,7 +972,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       </div>
 
       <button class="modal-submit" id="sendChallengeBtn" onclick="sendChallenge()">
-        <span id="sendChallengeText">SEND CHALLENGE →</span>
+        <span id="sendChallengeText">SEND CHALLENGE <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></span>
       </button>
     </div>
   </div>
@@ -1097,7 +1097,7 @@ async function init() {
   const regBtnTournText = document.getElementById('regBtnTournText')
   if (regBtnTournText) regBtnTournText.innerHTML = getIcon('sword',13) + ' REGISTER NOW'
   const sendChallengeText = document.getElementById('sendChallengeText')
-  if (sendChallengeText) sendChallengeText.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE →'
+  if (sendChallengeText) sendChallengeText.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
   const pvpTournEmpty = document.getElementById('pvpTournEmpty')
   if (pvpTournEmpty) pvpTournEmpty.innerHTML = getIcon('sword', 28)
   const pvpResultEmptyIcon = document.getElementById('pvpResultEmptyIcon')
@@ -1579,7 +1579,7 @@ window.sendChallenge = async function() {
     defender_xp: 0
   })
 
-  btn.disabled = false; btn.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE →'
+  btn.disabled = false; btn.innerHTML = getIcon('sword',13) + ' SEND CHALLENGE <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
 
   if (error) {
     if (error.code === '23505') showToast('คุณมี Duel กับผู้เล่นคนนี้อยู่แล้ว', 'error')
@@ -1733,7 +1733,7 @@ async function loadGuildWar() {
         <div class="empty-state-txt">คุณยังไม่ได้อยู่ใน Guild</div>
         <div class="empty-state-sub">เข้าร่วม Guild เพื่อเข้าร่วม Guild War</div>
         <br>
-        <a href="./guild.html" style="font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);border:1px solid rgba(176,68,255,0.3);padding:8px 16px;text-decoration:none">JOIN GUILD →</a>
+        <a href="./guild.html" style="font-family:'Orbitron',monospace;font-size:9px;color:var(--purple);border:1px solid rgba(176,68,255,0.3);padding:8px 16px;text-decoration:none">JOIN GUILD <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></a>
       </div>
     </div>`
     return
