@@ -82,8 +82,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .guild-meta-val{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--g-gold)}
 .guild-role-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:4px 12px;border:1px solid;display:inline-flex;align-items:center;gap:5px}
 .guild-role-badge.master{color:var(--g-gold);border-color:var(--g-gold);background:rgba(255,215,0,0.10)}
+.guild-role-badge.vice_master{color:#ffcc00;border-color:#ffcc00;background:rgba(255,200,0,0.09)}
 .guild-role-badge.officer{color:var(--g-amber);border-color:var(--g-amber);background:rgba(255,160,0,0.08)}
-.guild-role-badge.member{color:var(--text-dim);border-color:var(--g-border)}
+.guild-role-badge.sergeant{color:#dd8800;border-color:#dd8800;background:rgba(200,120,0,0.07)}
+.guild-role-badge.member{color:#88aaaa;border-color:rgba(100,180,180,0.3);background:rgba(100,180,180,0.05)}
 
 /* GUILD XP BAR */
 .guild-xp-bar{margin-top:16px;border-top:1px solid rgba(255,180,0,0.2);padding-top:16px}
@@ -132,7 +134,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .member-xp{font-family:'Orbitron',monospace;font-size:10px;color:var(--g-amber);flex-shrink:0;text-align:right;min-width:60px}
 .member-role{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:2px 7px;border:1px solid;display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
 .member-role.master{color:var(--g-gold);border-color:rgba(255,215,0,0.4)}
+.member-role.vice_master{color:#ffcc00;border-color:rgba(255,200,0,0.4)}
 .member-role.officer{color:var(--g-amber);border-color:rgba(255,160,0,0.4)}
+.member-role.sergeant{color:#dd8800;border-color:rgba(180,100,0,0.4)}
+.member-role.member{color:#88aaaa;border-color:rgba(100,180,180,0.3)}
 
 /* MANAGE TAB — action buttons (master/officer only) */
 .manage-member-list{display:flex;flex-direction:column;gap:0}
@@ -145,6 +150,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .manage-btn.kick{color:rgba(255,50,50,0.6);border-color:rgba(255,50,50,0.25)}
 .manage-btn.kick:hover{color:var(--red);border-color:var(--red);background:rgba(255,0,60,0.06)}
 .manage-empty{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);text-align:center;padding:24px 0}
+.role-menu-item:hover{background:rgba(255,180,0,0.08)}
 
 /* GUILD QUESTS */
 .gquest-list{display:flex;flex-direction:column;gap:12px}
@@ -1208,9 +1214,15 @@ async function showHasGuildView() {
   // inject role badge icon
   const roleBadge = document.getElementById('myRoleBadge')
   roleBadge.className = `guild-role-badge ${role}`
-  if (role === 'master') roleBadge.innerHTML = getIcon('crown', 11) + ' MASTER'
-  else if (role === 'officer') roleBadge.innerHTML = getIcon('star', 11) + ' OFFICER'
-  else roleBadge.innerHTML = getIcon('users', 11) + ' MEMBER'
+  const ROLE_LABELS = {
+    master:      [getIcon('crown',11),      'GUILD MASTER'],
+    vice_master: [getIcon('crown',11),      'รองหัวกิล'],
+    officer:     [getIcon('star',11),       'เสนาธิการ'],
+    sergeant:    [getIcon('star',11),       'นายหมู่'],
+    member:      [getIcon('users',11),      'MEMBER'],
+  }
+  const [rl_icon, rl_text] = ROLE_LABELS[role] || ROLE_LABELS.member
+  roleBadge.innerHTML = rl_icon + ' ' + rl_text
 
   // show edit / leave — right panel
   if (role === 'master') {
@@ -1276,6 +1288,14 @@ async function loadMembers() {
     const clsColors = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
     const clsColor = clsColors[cls] || '#ffaa00'
     const isOnline = u.last_seen && (Date.now() - new Date(u.last_seen).getTime()) < 5 * 60 * 1000
+    const ROLE_DISPLAY = {
+      master:      { icon: getIcon('crown',10),      label: 'GUILD MASTER' },
+      vice_master: { icon: getIcon('crown',10),      label: 'รองหัวกิล' },
+      officer:     { icon: getIcon('officer_badge',10), label: 'เสนาธิการ' },
+      sergeant:    { icon: getIcon('users',10),      label: 'นายหมู่' },
+      member:      { icon: '',                        label: 'MEMBER' },
+    }
+    const rd = ROLE_DISPLAY[m.role] || ROLE_DISPLAY.member
     return `
     <div class="member-item cls-${cls}">
       <div class="member-avatar-wrap">
@@ -1285,7 +1305,7 @@ async function loadMembers() {
       <div class="member-info">
         <div class="member-name-row">
           <span class="member-name">${escHtml(u.display_name || u.username)}</span>
-          <span class="member-role ${m.role}">${m.role === 'master' ? getIcon('crown',10)+' MASTER' : m.role === 'officer' ? getIcon('officer_badge',10)+' OFFICER' : 'MEMBER'}</span>
+          <span class="member-role ${m.role}">${rd.icon} ${rd.label}</span>
         </div>
         <div class="member-meta-row">
           <span class="member-cls" style="color:${clsColor}">${getIcon('class_'+cls,10)} ${cls.toUpperCase()}</span>
@@ -1315,23 +1335,47 @@ async function loadMembers() {
 // ============================================
 // MANAGE TAB — render สำหรับ master/officer
 // ============================================
+// Role hierarchy: master > vice_master > officer > sergeant > member
+const ROLE_RANK = { master: 5, vice_master: 4, officer: 3, sergeant: 2, member: 1 }
+const ROLE_DISPLAY_MANAGE = {
+  master:      { label: 'GUILD MASTER', color: 'var(--g-gold)' },
+  vice_master: { label: 'รองหัวกิล',    color: '#ffcc00' },
+  officer:     { label: 'เสนาธิการ',    color: 'var(--g-amber)' },
+  sergeant:    { label: 'นายหมู่',      color: '#dd8800' },
+  member:      { label: 'MEMBER',       color: '#88aaaa' },
+}
+// บอกว่าแต่ละ role promote target ขึ้นไปได้แค่ไหน และลงได้แค่ไหน
+// master → สามารถ set ได้ทุก role ยกเว้น master (ต้องใช้ transfer)
+// vice_master → promote ได้ถึง officer, ลดได้ถึง member
+// officer → promote ได้ถึง sergeant, ลดได้ถึง member
+// sergeant → ไม่มีสิทธิ์
+// member → ไม่มีสิทธิ์
+
+function getPromoteOptions(myRole, targetRole) {
+  // คืน array ของ role ที่สามารถ set ให้ target ได้ (ไม่รวม role ปัจจุบัน)
+  const myRank = ROLE_RANK[myRole] || 0
+  const targetRank = ROLE_RANK[targetRole] || 0
+  if (myRank <= targetRank) return []  // ไม่สามารถจัดการคนที่ rank >= ตัวเอง
+  const maxSet = myRole === 'master' ? 4 : myRole === 'vice_master' ? 3 : myRole === 'officer' ? 2 : 0
+  return Object.keys(ROLE_RANK).filter(r => ROLE_RANK[r] <= maxSet && r !== targetRole && r !== 'master')
+}
+
 let _memberCache = []
 function renderManageList() {
   const el = document.getElementById('manageList')
-  const role = MY_MEMBER?.role
+  const myRole = MY_MEMBER?.role
+  const myRank = ROLE_RANK[myRole] || 0
 
-  // member ธรรมดาไม่มีสิทธิ์จัดการสมาชิก
-  if (role === 'member') {
+  if (myRank < 2) {  // sergeant และ member ไม่มีสิทธิ์
     el.innerHTML = `<div class="manage-empty" style="padding:20px 0;text-align:center">
       <div style="opacity:0.3;margin-bottom:10px">${getIcon('lock', 24)}</div>
-      <div style="font-family:Orbitron,monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim)">// เฉพาะ MASTER / OFFICER เท่านั้น</div>
+      <div style="font-family:Orbitron,monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim)">// เฉพาะ OFFICER ขึ้นไปเท่านั้น</div>
     </div>`
     return
   }
 
   if (!_memberCache.length) { el.innerHTML = `<div class="manage-empty">// ยังไม่มีสมาชิก</div>`; return }
-  const canKick = role === 'master'
-  const canPromote = role === 'master'
+
   el.innerHTML = _memberCache
     .filter(m => m.users.id !== ME.id)
     .map(m => {
@@ -1339,34 +1383,113 @@ function renderManageList() {
       const cls = u.class || 'warrior'
       const clsColors = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
       const clsColor = clsColors[cls] || '#ffaa00'
-      const isOfficer = m.role === 'officer'
-      const isMaster = m.role === 'master'
+      const targetRank = ROLE_RANK[m.role] || 0
+      const rd = ROLE_DISPLAY_MANAGE[m.role] || ROLE_DISPLAY_MANAGE.member
+      const promoteOpts = getPromoteOptions(myRole, m.role)
+      const canKick = myRank > targetRank  // เตะได้เฉพาะคนที่ rank ต่ำกว่า
+
+      // สร้าง promote dropdown ถ้ามีตัวเลือก
+      const promoteBtn = promoteOpts.length > 0 ? `
+        <div style="position:relative;display:inline-block">
+          <button class="manage-btn promote" onclick="openRoleMenu(this,'${u.id}','${escHtml(u.username || u.display_name)}')">
+            ${getIcon('levelup',12)} ตำแหน่ง
+          </button>
+          <div class="role-menu" id="rmenu_${u.id}" style="display:none;position:absolute;right:0;top:100%;margin-top:6px;
+            background:linear-gradient(135deg,rgba(30,18,0,0.98),rgba(20,12,0,0.98));
+            border:1px solid rgba(255,180,0,0.35);
+            box-shadow:0 0 20px rgba(255,160,0,0.12),inset 0 0 30px rgba(0,0,0,0.4);
+            z-index:50;min-width:160px;overflow:hidden;
+            clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)">
+            <div style="height:2px;background:linear-gradient(90deg,var(--g-rust),var(--g-gold),transparent)"></div>
+            ${promoteOpts.map((r, ri) => {
+              const rrd = ROLE_DISPLAY_MANAGE[r]
+              const isUp = (ROLE_RANK[r]||0) > targetRank
+              return `<div class="role-menu-item" style="
+                padding:10px 16px;font-family:Orbitron,monospace;font-size:8px;letter-spacing:1px;
+                color:${rrd.color};cursor:pointer;
+                border-bottom:1px solid rgba(255,160,0,0.08);
+                display:flex;align-items:center;gap:8px;
+                transition:background 0.15s,border-left 0.15s;
+                border-left:2px solid transparent"
+                onmouseenter="this.style.background='rgba(255,160,0,0.10)';this.style.borderLeft='2px solid ${rrd.color}'"
+                onmouseleave="this.style.background='';this.style.borderLeft='2px solid transparent'"
+                onclick="setRole('${u.id}','${escHtml(u.username || u.display_name)}','${r}','${m.role}')">
+                <span style="opacity:0.5;font-size:9px">${isUp ? '▲' : '▼'}</span>
+                ${rrd.label}
+              </div>`
+            }).join('')}
+          </div>
+        </div>` : ''
+
+      const kickBtn = canKick ? `
+        <button class="manage-btn kick" onclick="kickMember('${u.id}','${escHtml(u.username || u.display_name)}','${m.role}')">
+          ${getIcon('door',12)} เตะออก
+        </button>` : ''
+
       return `
       <div class="manage-member-item cls-${cls}">
         <div class="member-avatar" style="border-color:${clsColor};width:38px;height:38px;flex-shrink:0"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
         <div class="member-info" style="flex:1;min-width:0">
           <div class="member-name-row">
             <span style="font-family:Orbitron,monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(u.display_name||u.username)}</span>
-            <span class="member-role ${m.role}" style="flex-shrink:0">${isMaster ? getIcon('crown',9)+' MASTER' : isOfficer ? getIcon('officer_badge',9)+' OFFICER' : 'MEMBER'}</span>
+            <span class="member-role ${m.role}" style="flex-shrink:0;color:${rd.color}">${rd.label}</span>
           </div>
           <div class="member-meta-row">
             <span style="font-family:Orbitron,monospace;font-size:8px;color:${clsColor}">${getIcon('class_'+cls,10)} ${cls.toUpperCase()}</span>
             <span style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim)">· LV.${u.level}</span>
           </div>
         </div>
-        <div class="manage-member-actions">
-          ${canPromote && !isMaster ? `
-            <button class="manage-btn promote" title="${isOfficer ? 'ลดตำแหน่งเป็นสมาชิก' : 'แต่งตั้งเป็นรองหัวกิล'}"
-              onclick="promoteOfficer('${u.id}','${escHtml(u.username)}','${m.role}')">
-              ${isOfficer ? getIcon('demote',12)+' ลดตำแหน่ง' : getIcon('levelup',12)+' แต่งตั้ง'}
-            </button>` : ''}
-          ${canKick && !isMaster ? `
-            <button class="manage-btn kick" onclick="kickMember('${u.id}','${escHtml(u.username)}')">
-              ${getIcon('door',12)} เตะออก
-            </button>` : ''}
-        </div>
+        <div class="manage-member-actions">${promoteBtn}${kickBtn}</div>
       </div>`
     }).join('') || `<div class="manage-empty">// ไม่มีสมาชิกอื่น</div>`
+}
+
+// เปิด/ปิด role dropdown
+window.openRoleMenu = (btn, userId, uname) => {
+  document.querySelectorAll('.role-menu').forEach(m => {
+    if (m.id !== `rmenu_${userId}`) m.style.display = 'none'
+  })
+  const menu = document.getElementById(`rmenu_${userId}`)
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none'
+  // ปิดเมื่อคลิกที่อื่น
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.style.display = 'none'
+        document.removeEventListener('click', handler)
+      }
+    })
+  }, 10)
+}
+
+// set role ใหม่
+window.setRole = async (userId, uname, newRole, oldRole) => {
+  document.querySelectorAll('.role-menu').forEach(m => m.style.display = 'none')
+  const rd = ROLE_DISPLAY_MANAGE[newRole]
+  const oldRd = ROLE_DISPLAY_MANAGE[oldRole]
+  const isPromoting = (ROLE_RANK[newRole] || 0) > (ROLE_RANK[oldRole] || 0)
+  const ok = await showConfirm({
+    icon: isPromoting ? 'promote' : 'demote',
+    title: isPromoting ? 'แต่งตั้ง' : 'ลดตำแหน่ง',
+    titleClass: isPromoting ? 'promote' : 'warn',
+    msg: `เปลี่ยนตำแหน่ง "${uname}" จาก ${oldRd.label} → ${rd.label}?`,
+    sub: isPromoting
+      ? `// ${rd.label} จะได้รับสิทธิ์ใหม่ใน Guild`
+      : `// ผู้เล่นจะสูญเสียสิทธิ์บางส่วน`,
+    btnClass: isPromoting ? 'confirm-gold' : 'confirm-red',
+    btnText: isPromoting ? 'แต่งตั้ง' : 'ลดตำแหน่ง'
+  })
+  if (!ok) return
+  const { error } = await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
+  if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
+  await sb.from('notifications').insert({
+    user_id: userId,
+    title: isPromoting ? `ได้รับตำแหน่ง ${rd.label}!` : `ถูกปรับตำแหน่งเป็น ${rd.label}`,
+    body: `สถานะของคุณใน Guild "${MY_GUILD.name}" เปลี่ยนแปลงแล้ว`
+  })
+  toast(`${uname} → ${rd.label}`, 'success')
+  await loadMembers()
+  renderManageList()
 }
 
 // ============================================
@@ -1586,9 +1709,11 @@ window.sendChat = async () => {
 // ============================================
 // MANAGE MEMBERS (MASTER)
 // ============================================
-window.kickMember = async (userId, uname) => {
-  if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
-    toast('เฉพาะ Master เท่านั้นที่เตะออกได้', 'error'); return
+window.kickMember = async (userId, uname, targetRole) => {
+  const myRank = ROLE_RANK[MY_MEMBER?.role] || 0
+  const targetRank = ROLE_RANK[targetRole] || 0
+  if (myRank <= targetRank) {
+    toast('ไม่มีสิทธิ์เตะสมาชิกที่มีตำแหน่งสูงกว่าหรือเท่ากัน', 'error'); return
   }
   if (userId === ME?.id) { toast('ไม่สามารถเตะตัวเองออกได้', 'error'); return }
   const ok = await showConfirm({
@@ -1608,37 +1733,7 @@ window.kickMember = async (userId, uname) => {
   loadMembers()
 }
 
-window.promoteOfficer = async (userId, uname, currentRole) => {
-  if (!MY_MEMBER || MY_MEMBER.role !== 'master') {
-    toast('เฉพาะ Master เท่านั้นที่แต่งตั้ง/ลดตำแหน่งได้', 'error'); return
-  }
-  if (userId === ME?.id) { toast('ไม่สามารถเปลี่ยนตำแหน่งตัวเองได้', 'error'); return }
-  const newRole = currentRole === 'officer' ? 'member' : 'officer'
-  const isPromoting = newRole === 'officer'
-  const ok = await showConfirm({
-    icon: isPromoting ? 'promote' : 'demote',
-    title: isPromoting ? 'แต่งตั้งรองหัวกิล' : 'ลดตำแหน่ง',
-    titleClass: isPromoting ? 'promote' : 'warn',
-    msg: isPromoting
-      ? `แต่งตั้ง "${uname}" เป็นรองหัวกิล (Officer)?`
-      : `ลดตำแหน่ง "${uname}" กลับเป็นสมาชิก (Member)?`,
-    sub: isPromoting
-      ? '// Officer สามารถจัดการสมาชิกและ Quest ของ Guild ได้'
-      : '// ผู้เล่นจะสูญเสียสิทธิ์การจัดการ Guild',
-    btnClass: isPromoting ? 'confirm-gold' : 'confirm-red',
-    btnText: isPromoting ? 'แต่งตั้ง' : 'ลดตำแหน่ง'
-  })
-  if (!ok) return
-  const { error } = await sb.from('guild_members').update({ role: newRole }).eq('user_id', userId).eq('guild_id', MY_GUILD.id)
-  if (error) { toast('เกิดข้อผิดพลาด: ' + error.message, 'error'); return }
-  await sb.from('notifications').insert({
-    user_id: userId,
-    title: isPromoting ? 'ได้รับตำแหน่งรองหัวกิล!' : 'ถูกปรับลดตำแหน่งเป็นสมาชิก',
-    body: `สถานะของคุณใน Guild "${MY_GUILD.name}" เปลี่ยนแปลงแล้ว`
-  })
-  toast(`${uname} → ${isPromoting ? 'รองหัวกิล (OFFICER)' : 'สมาชิก (MEMBER)'}`, 'success')
-  loadMembers()
-}
+// promoteOfficer ถูกแทนที่ด้วย setRole แล้ว (รองรับ 5 roles)
 
 // ============================================
 // LEAVE GUILD
@@ -1658,10 +1753,9 @@ window.confirmLeave = async () => {
     btnText: 'ออกจาก Guild'
   })
   if (!ok) return
-  const { error: leaveErr, data: leaveData } = await sb.from('guild_members')
-    .delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id).select()
+  const { error: leaveErr } = await sb.from('guild_members')
+    .delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id)
   if (leaveErr) { toast('เกิดข้อผิดพลาด: ' + leaveErr.message, 'error'); return }
-  if (!leaveData?.length) { toast('ออกจาก Guild ไม่สำเร็จ ลองใหม่อีกครั้ง', 'error'); return }
   toast('ออกจาก Guild แล้ว', 'info')
   setTimeout(() => location.reload(), 1000)
 }
