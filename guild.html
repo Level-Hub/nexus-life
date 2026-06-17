@@ -782,27 +782,30 @@ setInterval(updateGuildClock, 60000)
 // ============================================
 // CUSTOM CONFIRM DIALOG
 // ============================================
-let _cconfirmResolve = null
-function showConfirm({ icon='warning', title, titleClass='warn', msg, sub='', btnClass='confirm-red', btnText='ยืนยัน' }) {
-  document.getElementById('cconfirmIcon').innerHTML = getIcon(icon, 24)
+// _cconfirmResolve lives on window so both regular scripts and the module share one reference
+window._cconfirmResolve = null
+window.showConfirm = function({ icon='warning', title, titleClass='warn', msg, sub='', btnClass='confirm-red', btnText='ยืนยัน' }) {
+  // Use window.getIcon if available (set by module), fallback to empty string
+  const iconHtml = (typeof window.getIcon === 'function') ? window.getIcon(icon, 24) : ''
+  document.getElementById('cconfirmIcon').innerHTML = iconHtml
   const titleEl = document.getElementById('cconfirmTitle')
   titleEl.textContent = title
-  titleEl.className = `cconfirm-title ${titleClass}`
+  titleEl.className = 'cconfirm-title ' + titleClass
   document.getElementById('cconfirmMsg').textContent = msg
   document.getElementById('cconfirmSub').textContent = sub
   const okBtn = document.getElementById('cconfirmOkBtn')
-  okBtn.className = `cconfirm-btn ${btnClass}`
+  okBtn.className = 'cconfirm-btn ' + btnClass
   okBtn.textContent = btnText
   document.getElementById('cconfirmOverlay').classList.add('open')
-  return new Promise(resolve => { _cconfirmResolve = resolve })
+  return new Promise(function(resolve) { window._cconfirmResolve = resolve })
 }
-window.cconfirmOk = () => {
+window.cconfirmOk = function() {
   document.getElementById('cconfirmOverlay').classList.remove('open')
-  if (_cconfirmResolve) { _cconfirmResolve(true); _cconfirmResolve = null }
+  if (window._cconfirmResolve) { window._cconfirmResolve(true); window._cconfirmResolve = null }
 }
-window.cconfirmCancel = () => {
+window.cconfirmCancel = function() {
   document.getElementById('cconfirmOverlay').classList.remove('open')
-  if (_cconfirmResolve) { _cconfirmResolve(false); _cconfirmResolve = null }
+  if (window._cconfirmResolve) { window._cconfirmResolve(false); window._cconfirmResolve = null }
 }
 </script>
 
@@ -836,6 +839,12 @@ setTimeout(function() {
 import { supabase as sb } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { getIcon, getGuildIcon, GUILD_ICON_KEYS as GUILD_SVG_KEYS, injectGlobalDefs } from './icons.js'
+
+// Expose getIcon on window so window.showConfirm (regular script) can render icons
+window.getIcon = getIcon
+
+// Alias for convenience inside this module
+const showConfirm = window.showConfirm
 
 // ============================================
 // STATE
@@ -1391,15 +1400,14 @@ function renderManageList() {
       // สร้าง promote dropdown ถ้ามีตัวเลือก
       const promoteBtn = promoteOpts.length > 0 ? `
         <div style="position:relative;display:inline-block">
-          <button class="manage-btn promote" onclick="openRoleMenu(this,'${u.id}','${escHtml(u.username || u.display_name)}')">
+          <button class="manage-btn promote" onclick="openRoleMenu(event,this,'${u.id}','${escHtml(u.username || u.display_name)}')">
             ${getIcon('levelup',12)} ตำแหน่ง
           </button>
           <div class="role-menu" id="rmenu_${u.id}" style="display:none;position:fixed;
             background:linear-gradient(135deg,rgba(30,18,0,0.98),rgba(20,12,0,0.98));
             border:1px solid rgba(255,180,0,0.35);
             box-shadow:0 0 20px rgba(255,160,0,0.12),inset 0 0 30px rgba(0,0,0,0.4);
-            z-index:9999;min-width:160px;overflow:hidden;
-            clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)">
+            z-index:9999;min-width:160px;overflow:hidden">
             <div style="height:2px;background:linear-gradient(90deg,var(--g-rust),var(--g-gold),transparent)"></div>
             ${promoteOpts.map((r, ri) => {
               const rrd = ROLE_DISPLAY_MANAGE[r]
@@ -1445,21 +1453,28 @@ function renderManageList() {
 }
 
 // เปิด/ปิด role dropdown
-window.openRoleMenu = (btn, userId, uname) => {
+window.openRoleMenu = (evt, btn, userId, uname) => {
+  evt.stopPropagation()  // ป้องกัน click bubble ไปถึง document handler แล้วปิดทันที
   document.querySelectorAll('.role-menu').forEach(m => {
     if (m.id !== `rmenu_${userId}`) m.style.display = 'none'
   })
   const menu = document.getElementById(`rmenu_${userId}`)
   if (menu.style.display !== 'none') { menu.style.display = 'none'; return }
 
-  // คำนวณตำแหน่งจาก button
+  const promoteOptCount = menu.querySelectorAll('.role-menu-item').length
   const rect = btn.getBoundingClientRect()
   menu.style.display = 'block'
-  // วางใต้ปุ่ม, ชิดขวา
+  // วางใต้ปุ่ม, ชิดขวา — position:fixed ใช้ viewport coords, ไม่ต้อง + scrollY
   const menuW = 160
+  // clamp ไม่ให้เกินขอบขวาของ viewport
   let left = rect.right - menuW
   if (left < 8) left = 8
-  menu.style.top = (rect.bottom + 6) + 'px'
+  if (left + menuW > window.innerWidth - 8) left = window.innerWidth - menuW - 8
+  // ถ้า dropdown ล้นด้านล่าง ให้วางเหนือปุ่มแทน
+  const spaceBelow = window.innerHeight - rect.bottom - 6
+  const menuEstH = 44 * promoteOptCount  // ประมาณ 44px ต่อ item
+  const top = spaceBelow < 80 ? rect.top - 6 - Math.min(menuEstH, 200) : rect.bottom + 6
+  menu.style.top = top + 'px'
   menu.style.left = left + 'px'
   menu.style.width = menuW + 'px'
 
