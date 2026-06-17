@@ -146,7 +146,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .emoji-btn{font-size:22px;background:none;border:1px solid transparent;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all 0.15s}
 .emoji-btn:hover{background:rgba(255,110,176,0.08);border-color:var(--border)}
 /* STICKER PICKER */
-.sticker-picker{position:absolute;bottom:110px;left:24px;background:#150810;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px}
+.sticker-picker{position:absolute;bottom:110px;left:24px;background:#150810;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:280px;overflow-y:auto}
 .sticker-picker.open{display:block}
 .sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .sticker-btn{background:rgba(255,110,176,0.03);border:1px solid var(--border);cursor:pointer;padding:8px;font-size:32px;text-align:center;transition:all 0.2s;aspect-ratio:1}
@@ -160,6 +160,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .msg-image:hover{border-color:var(--cyan)}
 /* MSG STICKER */
 .msg-sticker{font-size:52px;display:block;line-height:1.2}
+.msg-sticker-icon{display:block;line-height:1}
 
 /* EMPTY CHAT */
 .chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-dim)}
@@ -379,7 +380,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
-import { CLASS_ICONS, CLASS_COLOR, getIcon, injectGlobalDefs } from './icons.js'
+import { CLASS_ICONS, CLASS_COLOR, getIcon, injectGlobalDefs, getStickerIcon, STICKER_ICON_KEYS } from './icons.js'
 injectGlobalDefs()
 
 function classIcon(cls, size=12) { return CLASS_ICONS[cls] ? `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:${CLASS_COLOR[cls]||'#00f5ff'}" stroke="${CLASS_COLOR[cls]||'#00f5ff'}" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : '' }
@@ -392,6 +393,14 @@ let activeChannel = null
 let realtimeSub   = null
 let allConversations = [] // cache inbox
 let lastDateLabel = ''
+let OWNED_STICKERS = new Map() // sticker_key -> { packId, label }
+
+// Label ไว้โชว์ tooltip + ใช้เป็น preview text ตอนส่ง (ต้องตรงกับ metadata.stickers ใน shop_items)
+const STICKER_LABELS = {
+  meme_laugh: 'หัวเราะลั่น', meme_fire: 'โดนใจ', meme_clap: 'ปรบมือ',
+  meme_cry: 'ร้องไห้หนักมาก', meme_mindblown: 'อึ้ง', meme_heartbreak: 'ใจสลาย',
+  meme_hi: 'สวัสดี', meme_ok: 'โอเค', meme_gg: 'GG', meme_win: 'เก่งมาก'
+}
 
 // ─── INIT ────────────────────────────────────────────────────
 async function init() {
@@ -445,6 +454,7 @@ async function init() {
   if (chatEmptyWave) chatEmptyWave.innerHTML = getIcon('chat', 36)
 
   await loadInbox()
+  await loadOwnedStickers()
 
   // ถ้า URL มี ?uid= → เปิด DM กับ user นั้นทันที
   const params = new URLSearchParams(window.location.search)
@@ -743,7 +753,9 @@ function appendMessage(msg, scroll=true) {
   // Content by type — ใช้ prefix แทน payload column
   let contentHtml = ''
   const rawContent = msg.content || ''
-  if (rawContent.startsWith('[img]')) {
+  if (msg.message_type === 'sticker' && msg.sticker_key) {
+    contentHtml = `<div class="msg-sticker-icon">${getStickerIcon(msg.sticker_key, 84)}</div>`
+  } else if (rawContent.startsWith('[img]')) {
     const imgUrl = esc(rawContent.slice(5))
     contentHtml = `<img class="msg-image" src="${imgUrl}" alt="รูปภาพ" onclick="window.open('${imgUrl}','_blank')">`
   } else if (rawContent.startsWith('[sticker]')) {
@@ -1142,6 +1154,22 @@ function initCursor() {
 }
 
 
+// ─── OWNED STICKERS ──────────────────────────────────────────
+async function loadOwnedStickers() {
+  OWNED_STICKERS = new Map()
+  const { data, error } = await supabase.from('user_purchases')
+    .select('item_id, shop_items(id, metadata, category)')
+    .eq('user_id', currentUser.id)
+    .eq('is_active', true)
+  if (error || !data) return
+  data.forEach(p => {
+    const item = p.shop_items
+    if (!item || item.category !== 'sticker') return
+    const stickers = item.metadata?.stickers || []
+    stickers.forEach(s => OWNED_STICKERS.set(s.key, { packId: item.id, label: s.label }))
+  })
+}
+
 // ─── EMOJI / STICKER / IMAGE ─────────────────────────────────
 const EMOJI_CATS = {
   faces: ['😀','😂','🥹','😊','😎','🤩','😍','🥰','😘','😜','🤔','😮','😢','😡','🥳','😴','🤯','🤗','😇','🫡'],
@@ -1149,7 +1177,9 @@ const EMOJI_CATS = {
   hands: ['👋','🤚','✋','🖐','👌','🤌','✌️','🤞','🤙','👍','👎','👏','🙌','🤲','🫂','💪','🦾','🤜','🤛','👊'],
   symbols: ['⭐','🌟','✨','💫','🔥','🎉','🎊','🎈','🏆','🥇','💎','👑','🎮','⚡','🌈','🌙','☀️','❄️','🌊','🎯']
 }
-const STICKERS = ['🐉','🦁','🦊','🐺','🐯','🦅','🔮','⚔️','🛡️','🗡️','💰','🗺️','🏰','🌋','🌌','🎭','🤖','👾','💥','🌀']
+
+// สติกเกอร์ฟรี (อิโมจิธรรมดา) — ใช้ได้ทุกคนไม่ต้องซื้อ
+const FREE_STICKERS = ['🐉','🦁','🦊','🐺','🐯','🦅','🔮','⚔️','🛡️','🗡️','💰','🗺️','🏰','🌋','🌌','🎭','🤖','👾','💥','🌀']
 
 let pendingImageUrl = null
 let emojiCatActive = 'faces'
@@ -1169,9 +1199,22 @@ function renderEmojiGrid() {
 }
 
 function renderStickerGrid() {
-  document.getElementById('stickerGrid').innerHTML = STICKERS.map(s =>
-    `<button class="sticker-btn" onclick="sendSticker('${s}')">${s}</button>`
+  const el = document.getElementById('stickerGrid')
+  const sectionLabel = (txt, color, divider) => `<div style="grid-column:1/-1;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:${color};margin:6px 0 4px;${divider?'border-top:1px solid var(--border);padding-top:8px':''}">${txt}</div>`
+
+  const freeHtml = FREE_STICKERS.map(e =>
+    `<button class="sticker-btn" onclick="sendStickerFree('${e}')">${e}</button>`
   ).join('')
+
+  const ownedKeys = STICKER_ICON_KEYS.filter(key => OWNED_STICKERS.has(key))
+  const premiumHtml = ownedKeys.length
+    ? ownedKeys.map(key => `<button class="sticker-btn" title="${esc(STICKER_LABELS[key]||key)}" onclick="sendSticker('${key}')">${getStickerIcon(key, 40)}</button>`).join('')
+    : `<div style="grid-column:1/-1;text-align:center;padding:10px 6px;font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px">
+        ยังไม่มีสติกเกอร์พรีเมียม<br><a href="./shop.html" style="color:var(--cyan)">ไปซื้อใน Shop →</a>
+      </div>`
+
+  el.innerHTML = sectionLabel('อิโมจิ (ฟรี)', 'var(--text-dim)', false) + freeHtml
+    + sectionLabel('พรีเมียม SVG', 'var(--gold)', true) + premiumHtml
 }
 
 window.toggleEmojiPicker = function() {
@@ -1199,7 +1242,7 @@ window.insertEmoji = function(emoji) {
   document.getElementById('emojiPicker').classList.remove('open')
 }
 
-window.sendSticker = async function(sticker) {
+window.sendStickerFree = async function(emoji) {
   document.getElementById('stickerPicker').classList.remove('open')
   if (!activeChannel) return
   const btn = document.getElementById('sendBtn')
@@ -1207,14 +1250,43 @@ window.sendSticker = async function(sticker) {
   const { error } = await supabase.from('messages').insert({
     sender_id: currentUser.id,
     channel: activeChannel,
-    content: '[sticker]' + sticker
+    content: '[sticker]' + emoji
   })
-  if (!error) {
+  if (error) {
+    showToast('ส่งสติกเกอร์ไม่สำเร็จ: ' + error.message, 'error')
+  } else {
     appendMessage({
       sender_id: currentUser.id, channel: activeChannel,
-      content: '[sticker]' + sticker,
+      content: '[sticker]' + emoji,
       created_at: new Date().toISOString(), users: myProfile
     })
+    await loadInbox()
+  }
+  btn.disabled = false
+}
+
+window.sendSticker = async function(key) {
+  document.getElementById('stickerPicker').classList.remove('open')
+  if (!activeChannel) return
+  const owned = OWNED_STICKERS.get(key)
+  if (!owned) { showToast('คุณยังไม่ได้ซื้อสติกเกอร์นี้', 'error'); return }
+
+  const btn = document.getElementById('sendBtn')
+  btn.disabled = true
+  const label = STICKER_LABELS[key] || key
+  const insertPayload = {
+    sender_id: currentUser.id,
+    channel: activeChannel,
+    content: `ส่งสติกเกอร์: ${label}`, // fallback text สำหรับ preview ใน inbox list / notification
+    message_type: 'sticker',
+    sticker_key: key,
+    sticker_pack_id: owned.packId
+  }
+  const { error } = await supabase.from('messages').insert(insertPayload)
+  if (error) {
+    showToast('ส่งสติกเกอร์ไม่สำเร็จ: ' + error.message, 'error')
+  } else {
+    appendMessage({ ...insertPayload, created_at: new Date().toISOString(), users: myProfile })
     await loadInbox()
   }
   btn.disabled = false

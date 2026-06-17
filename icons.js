@@ -1269,6 +1269,119 @@ export const GUILD_ICON_KEYS = Object.keys(GUILD_ICONS)
 
 
 // ============================================================
+// STICKER ICONS — chat stickers (sold in shop, category: 'sticker')
+// แยกอ็อบเจกต์ของตัวเองโดยสมบูรณ์ ไม่ไปรวมกับ ICONS/getIcon() เลย
+// เพื่อไม่ให้ key ชนกับไอคอนปุ่มทั่วไป (เช่น crown/fire/wave ที่มีอยู่แล้ว)
+// ทุกเส้นเป็นภาพวาดใหม่ทั้งหมด ไม่ได้นำ path จากไอคอนอื่นมาใช้ซ้ำ
+// viewBox ใหญ่กว่าไอคอนทั่วไป (32x32) เพราะโชว์ในแชทขนาดใหญ่กว่ามาก
+// ── PACK: Meme Sticker Pack (pack_id: meme_v1) ──
+// ============================================================
+export const STICKER_ICONS = {
+
+  // 1. หัวเราะลั่นจนน้ำตาไหล
+  meme_laugh: `
+    <circle cx="16" cy="16" r="13" fill="url(#goldGrad)" fill-opacity="0.1" stroke="url(#goldStroke)" stroke-width="1.6"/>
+    <path d="M9 13c1-2.2 3.2-2.2 4.2 0M18.8 13c1-2.2 3.2-2.2 4.2 0" stroke="url(#goldStroke)" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M8.5 19c2 3.4 5 5.2 7.5 5.2s5.5-1.8 7.5-5.2" fill="url(#fireGrad)" fill-opacity="0.22" stroke="url(#goldStroke)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12 22.5v2.5M16 23.5v3M20 22.5v2.5" stroke="#1a1200" stroke-width="1.1" opacity="0.4"/>
+    <path d="M5.5 10.5l2 3.5M26.5 10.5l-2 3.5" stroke="url(#cyanGrad)" stroke-width="1.4" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+  `,
+
+  // 2. ไฟลุก / โดนใจมาก
+  meme_fire: `
+    <path d="M16 28.5c-5.3 0-9.5-3.7-9.5-9 0-3.2 1.1-5.9 3.7-8.5-0.3 2 0.4 3.3 0.4 3.3s0.6-5.3 4.2-8.4c1 4.2 3.6 6.3 3.6 6.3s2.1-2.1 1.1-4.7c4.2 3.7 4.8 6.9 4.8 9.5 0 5.3-4.2 10-8.3 10z"
+      fill="url(#fireGrad)" fill-opacity="0.28" stroke="url(#fireGrad)" stroke-width="1.6" stroke-linejoin="round" filter="url(#glowWarm)"/>
+    <path d="M16 24.5c-2.1 0-3.7-1.6-3.7-3.7 0-1.1 0.4-2.1 1.2-3 0 1.4 0.7 2.2 0.7 2.2s0.3-1.7 1.2-2.7c0.3 1.4 1.2 2.2 1.2 2.2s1.1-0.8 0.6-1.9c1.9 1.4 2.4 2.6 2.4 4 0 2.1-1.6 3.9-3.6 3.9z"
+      fill="url(#goldGrad)" fill-opacity="0.55"/>
+  `,
+
+  // 3. ปรบมือ
+  meme_clap: `
+    <path d="M9 19l3.6-9.3c0.4-1.1 2.1-0.8 2 0.4l-0.7 6.4" stroke="url(#cyanGrad)" stroke-width="1.6" fill="url(#cyanGrad)" fill-opacity="0.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23 19l-3.6-9.3c-0.4-1.1-2.1-0.8-2 0.4l0.7 6.4" stroke="url(#cyanGrad)" stroke-width="1.6" fill="url(#cyanGrad)" fill-opacity="0.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M9 18.5c-0.4 4.3 2.8 7 7 7s7.4-2.7 7-7" stroke="url(#cyanGrad)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M16 5.5v-3M11 7.5l-2.3-2.3M21 7.5l2.3-2.3M9 11l-3-1M23 11l3-1" stroke="url(#lightningGrad)" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+  `,
+
+  // 4. ร้องไห้หนักมาก
+  meme_cry: `
+    <circle cx="16" cy="13.5" r="8.7" fill="url(#sapphireGrad)" fill-opacity="0.08" stroke="url(#cyanGrad)" stroke-width="1.5"/>
+    <path d="M11.3 11.5c0.5-1.1 2.2-1.1 2.7 0M18 11.5c0.5-1.1 2.2-1.1 2.7 0" stroke="url(#cyanGrad)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M12 17.5c1.3 1.4 2.7 2.1 4 2.1s2.7-0.7 4-2.1" stroke="url(#cyanGrad)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M11 15.5c-1.3 3.5-2 8-1.4 13.5M21 15.5c1.3 3.5 2 8 1.4 13.5" stroke="url(#sapphireGrad)" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+    <circle cx="9" cy="22" r="0.9" fill="url(#cyanGrad)" opacity="0.7"/>
+    <circle cx="23" cy="24.5" r="0.9" fill="url(#cyanGrad)" opacity="0.7"/>
+  `,
+
+  // 5. อึ้ง / มโนกระเจิง
+  meme_mindblown: `
+    <circle cx="16" cy="19" r="6.8" fill="url(#platinumGrad)" fill-opacity="0.1" stroke="url(#platinumGrad)" stroke-width="1.5"/>
+    <circle cx="13.6" cy="18" r="1.1" fill="url(#platinumGrad)"/>
+    <circle cx="18.4" cy="18" r="1.1" fill="url(#platinumGrad)"/>
+    <ellipse cx="16" cy="22.2" rx="2.1" ry="1.3" fill="url(#platinumGrad)" opacity="0.55"/>
+    <path d="M16 9.5v-4M10.8 10.7l-3-3.2M21.2 10.7l3-3.2M8.5 15l-4.3-1.1M23.5 15l4.3-1.1" stroke="url(#fireGrad)" stroke-width="1.7" stroke-linecap="round" filter="url(#glowWarm)"/>
+    <circle cx="16" cy="5" r="1.4" fill="url(#fireGrad)"/>
+    <circle cx="7" cy="13" r="1" fill="url(#goldGrad)"/>
+    <circle cx="25" cy="13" r="1" fill="url(#goldGrad)"/>
+  `,
+
+  // 6. ใจสลาย
+  meme_heartbreak: `
+    <path d="M16 26.5C6.8 19 4.6 12.4 8.8 8.2c2.6-2.6 6.3-1.5 7.2 1 0.9-2.5 4.6-3.6 7.2-1 4.2 4.2 2 10.8-7.2 18.3z"
+      fill="url(#rubyGrad)" fill-opacity="0.14" stroke="url(#rubyGrad)" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M16.5 8.5l-2.2 5.5 3.4 2.3-2.4 5.7" stroke="#0a0800" stroke-width="2.6" stroke-linejoin="round" fill="none"/>
+    <path d="M16.5 8.5l-2.2 5.5 3.4 2.3-2.4 5.7" stroke="url(#platinumGrad)" stroke-width="1.1" stroke-linejoin="round" fill="none"/>
+  `,
+
+  // 7. ทักทาย / สวัสดี (โบกมือ — ดีไซน์ใหม่ ไม่ใช้ path เดียวกับไอคอน wave เดิม)
+  meme_hi: `
+    <path d="M19.5 22.5v-7c0-1.1 0.9-2 2-2s2 0.9 2 2v6.5c0 3.3-2.2 6-5.9 6h-3.3c-2.2 0-4-1.1-5-2.8l-3.2-5c-0.7-1.1 0.2-2.5 1.5-2.2 0.9 0.2 1.6 0.9 2 1.7l1.4 2.3"
+      stroke="url(#cyanGrad)" stroke-width="1.5" fill="url(#cyanGrad)" fill-opacity="0.08" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M15.8 21v-9c0-1.1 0.9-2 2-2s2 0.9 2 2v8.5" stroke="url(#cyanGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M12 21v-7.5c0-1.1 0.9-2 2-2s2 0.9 2 2v7" stroke="url(#cyanGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M9.5 9c-1.8 1.7-1.8 4.6 0 6.3M24.5 9c1.8 1.7 1.8 4.6 0 6.3M8 4.7c-3 2.8-3 7.5 0 10.3M26 4.7c3 2.8 3 7.5 0 10.3"
+      stroke="url(#lightningGrad)" stroke-width="1.1" stroke-linecap="round" opacity="0.55"/>
+  `,
+
+  // 8. โอเค (สัญลักษณ์มือ OK)
+  meme_ok: `
+    <circle cx="12.5" cy="11" r="3.3" fill="none" stroke="url(#goldStroke)" stroke-width="1.6"/>
+    <path d="M15.6 8.7c1.6-1 3.2 0.1 3.1 1.7M16.1 12.4c1.6 1 3.5 0.2 3.7-1.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linecap="round" opacity="0.75"/>
+    <path d="M10.5 23v-6.3c0-1.1 0.9-2 2-2s2 0.9 2 2v0.3M14.5 23v-7.3c0-1.1 0.9-2 2-2s2 0.9 2 2v6.8M18.5 23v-6.3c0-1.1 0.9-2 2-2s2 0.9 2 2v7.3c0 3.3-2.2 6-5.9 6h-4.2c-2.2 0-4.1-1.3-5-3.2l-2.2-4.8c-0.6-1.3 0.7-2.6 2-2 0.9 0.4 1.5 1.1 1.9 2l1.3 2.3"
+      stroke="url(#goldGrad)" stroke-width="1.5" fill="url(#goldGrad)" fill-opacity="0.07" stroke-linecap="round" stroke-linejoin="round"/>
+  `,
+
+  // 9. GG (ถ้วยแชมป์)
+  meme_gg: `
+    <path d="M10.5 6h11v6.3c0 3.2-2.2 5.4-5.5 5.4s-5.5-2.2-5.5-5.4z" fill="url(#goldGrad)" fill-opacity="0.18" stroke="url(#goldStroke)" stroke-width="1.6"/>
+    <path d="M10.5 8.3H6.8c0 3.2 1.6 5.3 4.3 5.6M21.5 8.3h3.7c0 3.2-1.6 5.3-4.3 5.6" stroke="url(#goldStroke)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <rect x="14" y="17.7" width="4" height="4.3" fill="url(#goldGrad)" stroke="url(#goldStroke)" stroke-width="1.2"/>
+    <path d="M8.5 26.5l1.7-3.2h11.6l1.7 3.2z" fill="url(#goldGrad)" fill-opacity="0.22" stroke="url(#goldStroke)" stroke-width="1.4" stroke-linejoin="round"/>
+    <circle cx="16" cy="10" r="2.1" fill="url(#goldGrad)" filter="url(#glowGold)"/>
+  `,
+
+  // 10. ชนะ / เก่งมาก (เหรียญรางวัล)
+  meme_win: `
+    <circle cx="16" cy="12.5" r="6.8" fill="url(#goldGrad)" fill-opacity="0.18" stroke="url(#goldStroke)" stroke-width="1.6" filter="url(#glowGold)"/>
+    <polygon points="16,7.7 17.5,11.1 21.2,11.5 18.5,14 19.2,17.7 16,15.8 12.8,17.7 13.5,14 10.8,11.5 14.5,11.1"
+      fill="url(#goldGrad)" fill-opacity="0.5" stroke="url(#goldStroke)" stroke-width="1"/>
+    <path d="M12.3 18.3l-3 9.2 4.9-2 2 4 3-7.3M19.7 18.3l3 9.2-4.9-2-2 4-3-7.3"
+      stroke="url(#rubyGrad)" stroke-width="1.5" fill="url(#rubyGrad)" fill-opacity="0.13" stroke-linejoin="round"/>
+  `,
+}
+
+// Helper — render a sticker at given px size (default 80, used much bigger than UI icons)
+export function getStickerIcon(key, size = 80) {
+  const content = STICKER_ICONS[key]
+  if (!content) return ''
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0" aria-hidden="true" class="nx-sticker">${content}</svg>`
+}
+
+// Ordered list of all sticker keys (used to render the sticker picker grid)
+export const STICKER_ICON_KEYS = Object.keys(STICKER_ICONS)
+
+
+// ============================================================
 // COMBINED MAP
 // ============================================================
 export const ICONS = {
