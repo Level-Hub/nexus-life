@@ -47,9 +47,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .page-sub{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-top:4px}
 
 /* BOX */
-.box{background:var(--g-panel);border:1px solid var(--g-border);position:relative;overflow:hidden}
-.box::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--g-gold);border-left:2px solid var(--g-gold)}
-.box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--g-gold);border-right:2px solid var(--g-gold)}
+.box{background:var(--g-panel);border:1px solid var(--g-border);position:relative;overflow:visible}
+.box::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--g-gold);border-left:2px solid var(--g-gold);pointer-events:none}
+.box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--g-gold);border-right:2px solid var(--g-gold);pointer-events:none}
 .box-header{padding:14px 20px;border-bottom:1px solid var(--g-border);display:flex;align-items:center;justify-content:space-between}
 .box-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g-amber)}
 .box-tag{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--text-dim)}
@@ -1394,11 +1394,11 @@ function renderManageList() {
           <button class="manage-btn promote" onclick="openRoleMenu(this,'${u.id}','${escHtml(u.username || u.display_name)}')">
             ${getIcon('levelup',12)} ตำแหน่ง
           </button>
-          <div class="role-menu" id="rmenu_${u.id}" style="display:none;position:absolute;right:0;top:100%;margin-top:6px;
+          <div class="role-menu" id="rmenu_${u.id}" style="display:none;position:fixed;
             background:linear-gradient(135deg,rgba(30,18,0,0.98),rgba(20,12,0,0.98));
             border:1px solid rgba(255,180,0,0.35);
             box-shadow:0 0 20px rgba(255,160,0,0.12),inset 0 0 30px rgba(0,0,0,0.4);
-            z-index:50;min-width:160px;overflow:hidden;
+            z-index:9999;min-width:160px;overflow:hidden;
             clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)">
             <div style="height:2px;background:linear-gradient(90deg,var(--g-rust),var(--g-gold),transparent)"></div>
             ${promoteOpts.map((r, ri) => {
@@ -1450,7 +1450,19 @@ window.openRoleMenu = (btn, userId, uname) => {
     if (m.id !== `rmenu_${userId}`) m.style.display = 'none'
   })
   const menu = document.getElementById(`rmenu_${userId}`)
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none'
+  if (menu.style.display !== 'none') { menu.style.display = 'none'; return }
+
+  // คำนวณตำแหน่งจาก button
+  const rect = btn.getBoundingClientRect()
+  menu.style.display = 'block'
+  // วางใต้ปุ่ม, ชิดขวา
+  const menuW = 160
+  let left = rect.right - menuW
+  if (left < 8) left = 8
+  menu.style.top = (rect.bottom + 6) + 'px'
+  menu.style.left = left + 'px'
+  menu.style.width = menuW + 'px'
+
   // ปิดเมื่อคลิกที่อื่น
   setTimeout(() => {
     document.addEventListener('click', function handler(e) {
