@@ -160,7 +160,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   transition:border-color 0.3s;
 }
 .sum-card:hover { border-color:rgba(0,245,255,0.3); }
-.sum-card-icon { font-size:24px;margin-bottom:8px; }
+.sum-card-icon { display:flex;align-items:center;margin-bottom:8px;min-height:28px; }
 .sum-card-label { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px; }
 .sum-card-val { font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff; }
 .sum-card-sub { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px; }
@@ -228,7 +228,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 /* RECENT BADGES */
 .recent-badges { display:flex;gap:8px;flex-wrap:wrap; }
 .recent-badge { display:flex;flex-direction:column;align-items:center;gap:4px; }
-.rb-icon { font-size:24px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15); }
+.rb-icon { width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15); }
 .rb-name { font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);text-align:center;max-width:50px; }
 
 /* EMPTY */
@@ -247,6 +247,10 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   .summary-row { grid-template-columns:repeat(2,1fr); }
   .ach-grid { grid-template-columns:1fr; }
 }
+
+/* BURGER */
+.burger { background:transparent;border:1px solid rgba(255,85,0,0.3);padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;width:40px;height:40px; }
+.burger span { display:block;width:18px;height:1.5px;background:var(--accent); }
 </style>
 </head>
 <body>
@@ -306,6 +310,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 
 
+<div class="topbar" style="position:fixed;top:0;left:0;right:0;height:60px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(15,5,0,0.92);border-bottom:1px solid rgba(255,85,0,0.14);backdrop-filter:blur(8px);">
+  <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#ff5500;letter-spacing:4px;">NEXUS</div>
   <button class="burger" onclick="openSidebar()">
     <span></span><span></span><span></span>
   </button>
@@ -316,7 +322,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 <main class="main">
   <div class="page-header">
     <div>
-      <div class="page-title">// <span>ACHIEVEMENTS</span></div>
+      <div class="page-title" id="pageTitleEl"><span>ACHIEVEMENTS</span></div>
       <div class="page-date" id="pageDate">—</div>
     </div>
   </div>
@@ -483,6 +489,10 @@ async function init() {
   if (!user) return
   currentUser = user
 
+  // inject page title icon
+  const pageTitleEl = document.getElementById('pageTitleEl')
+  if (pageTitleEl) pageTitleEl.innerHTML = getIcon('star', 18, { prestige: true }) + ' <span>ACHIEVEMENTS</span>'
+
   // inject icons
   const sumIconTitles = document.getElementById('sumIconTitles')
   if (sumIconTitles) sumIconTitles.innerHTML = getIcon('crown', 22)
@@ -529,9 +539,10 @@ async function loadProfile() {
   const avatarUrl = getAvatarUrl(profile.avatar_seed)
 
 
-  // Equipped panel — fix รูปไม่ขึ้น + class color border
+  // Equipped panel — รูปโปรไฟล์: ใช้ avatar_url จาก DB ก่อน ถ้าไม่มีค่อย fallback dicebear
   const epAvatarEl = document.getElementById('epAvatar')
-  epAvatarEl.src = avatarUrl
+  const avatarSrc = profile.avatar_url || avatarUrl
+  epAvatarEl.src = avatarSrc
   epAvatarEl.onerror = () => {
     epAvatarEl.src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(profile.username||'nexus')}&backgroundColor=0a1628&size=80`
   }
@@ -645,12 +656,38 @@ async function loadAchievements() {
   // FIX 4: Recent badges — myBadges ถูก sort by unlocked_at desc แล้วจาก query
   const recentEl = document.getElementById('recentBadges')
   const recentBadges = myBadges.slice(0, 6)
+
+  // Map badge category/name → icon key ใน icons.js
+  function getBadgeSvgIcon(def) {
+    if (!def) return getIcon('medal', 24)
+    const name = (def.name || '').toLowerCase()
+    const cat  = (def.category || '').toLowerCase()
+    // name-based match ก่อน
+    if (name.includes('blood') || name.includes('first'))  return getIcon('target', 24)
+    if (name.includes('warrior') || name.includes('week')) return getIcon('fire', 24)
+    if (name.includes('monthly') || name.includes('crush')) return getIcon('lightning', 24)
+    if (name.includes('gold') || name.includes('walker'))  return getIcon('medal_gold', 24)
+    if (name.includes('globe') || name.includes('trot'))   return getIcon('globe', 24)
+    if (name.includes('social') || name.includes('butt'))  return getIcon('group', 24)
+    if (name.includes('streak'))  return getIcon('fire', 24)
+    if (name.includes('quest'))   return getIcon('check_circle', 24)
+    if (name.includes('level'))   return getIcon('star', 24)
+    if (name.includes('guild'))   return getIcon('guild', 24)
+    if (name.includes('pvp') || name.includes('duel')) return getIcon('duel', 24)
+    // category fallback
+    if (cat === 'streak') return getIcon('fire', 24)
+    if (cat === 'quest')  return getIcon('check_circle', 24)
+    if (cat === 'level')  return getIcon('star', 24)
+    if (cat === 'social') return getIcon('group', 24)
+    return getIcon('medal', 24)
+  }
+
   if (recentBadges.length) {
     recentEl.innerHTML = recentBadges.map(mb => {
       const def = allBadgesDB.find(b => b.id === mb.badge_id)
       if (!def) return ''
       return `<div class="recent-badge">
-        <div class="rb-icon">${def.icon || '<svg width="20" height="20" viewBox="0 0 16 16" fill="none"><polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>'}</div>
+        <div class="rb-icon">${getBadgeSvgIcon(def)}</div>
         <div class="rb-name">${def.name}</div>
       </div>`
     }).join('')
