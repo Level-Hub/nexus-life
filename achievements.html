@@ -215,6 +215,11 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
   display:inline-block;margin-bottom:12px;
 }
 .ep-class { font-family:'Orbitron',monospace;font-size:9px;color:var(--text-dim); }
+.ep-rank-badge {
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;
+  padding:3px 12px;border:1px solid var(--gold);color:var(--gold);
+  background:rgba(255,215,0,0.06);display:inline-block;margin-bottom:6px;
+}
 
 /* PROGRESS BOX */
 .progress-list { display:flex;flex-direction:column;gap:14px; }
@@ -406,6 +411,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
         <div class="ep-avatar" id="epAvatarWrap">
           <img id="epAvatar" src="" alt="">
         </div>
+        <div class="ep-rank-badge" id="epRankBadge" style="display:none"></div>
         <div class="ep-name" id="epName">—</div>
         <div class="ep-title-badge" id="epTitleBadge">— ไม่มีฉายา —</div>
         <div class="ep-class" id="epClass">—</div>
@@ -550,6 +556,14 @@ async function loadProfile() {
   document.getElementById('equippedPanel').className = 'equipped-panel cls-' + cls
   document.getElementById('epAvatarWrap').style.borderColor = CLASS_COLORS_MAP[cls] || '#ffd700'
   document.getElementById('epName').textContent = profile.display_name || profile.username
+
+  // rank badge
+  const epRankEl = document.getElementById('epRankBadge')
+  if (epRankEl && profile.rank) {
+    epRankEl.textContent = profile.rank.toUpperCase()
+    epRankEl.style.display = 'inline-block'
+  }
+
   document.getElementById('epClass').innerHTML = classIcon(cls,14) + ' ' + cls.toUpperCase()
 
   document.getElementById('sumStreak').textContent = profile.streak_current || 0

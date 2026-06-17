@@ -86,8 +86,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .hero-inner{padding:28px 32px;display:flex;align-items:flex-start;gap:28px;flex-wrap:wrap}
 
 /* AVATAR ZONE */
-.hero-avatar-zone{flex-shrink:0;position:relative}
-.hero-online-dot{position:absolute;bottom:4px;right:4px;width:12px;height:12px;border-radius:50%;background:#333;border:2px solid var(--bg);transition:background 0.3s}
+.hero-avatar-zone{flex-shrink:0;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px}
+.hero-online-dot{
+  position:absolute;bottom:38px;right:2px;
+  width:11px;height:11px;border-radius:50%;
+  background:#333;border:2px solid var(--bg);transition:background 0.3s;
+  z-index:2;
+}
 .hero-online-dot.online{background:#44ff88;box-shadow:0 0 8px rgba(68,255,136,0.7)}
 .hero-avatar-ring{
   width:110px;height:110px;border-radius:50%;
@@ -97,19 +102,33 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   position:relative;
 }
 .hero-avatar-ring img{width:100%;height:100%;object-fit:cover}
+
+/* RANK BADGE — below avatar, simple text */
 .hero-rank-badge{
-  position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
-  font-family:'Orbitron',monospace;font-size:8px;
-  padding:3px 10px;background:var(--bg);
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1.5px;
+  padding:3px 12px;background:rgba(0,0,0,0.3);
   border:1px solid var(--gold);color:var(--gold);
-  white-space:nowrap;letter-spacing:1px;
+  white-space:nowrap;position:relative;z-index:1;
 }
+.hero-rank-badge.rank-bronze   {border-color:rgba(205,127,50,0.5);color:#cd7f32}
+.hero-rank-badge.rank-silver   {border-color:rgba(192,192,192,0.45);color:#c0c0c0}
+.hero-rank-badge.rank-gold     {border-color:rgba(255,215,0,0.55);color:#ffd700}
+.hero-rank-badge.rank-platinum {border-color:rgba(200,232,255,0.45);color:#c8e8ff}
+.hero-rank-badge.rank-diamond  {border-color:rgba(68,170,255,0.55);color:#88ddff}
+.hero-rank-badge.rank-legendary{border-color:rgba(255,215,0,0.7);color:#ffd700;box-shadow:0 0 10px rgba(255,180,0,0.25);animation:rankLegGlow 1.8s ease-in-out infinite}
+@keyframes rankLegGlow{
+  0%,100%{box-shadow:0 0 8px rgba(255,180,0,0.2)}
+  50%{box-shadow:0 0 18px rgba(255,200,0,0.5)}
+}
+
 .hero-level-ring{
   position:absolute;top:-6px;right:-6px;
   width:34px;height:34px;border-radius:50%;
   background:var(--bg2);border:2px solid var(--cls,var(--cyan));
   display:flex;align-items:center;justify-content:center;
   font-family:'Orbitron',monospace;font-size:9px;font-weight:900;color:var(--cls,var(--cyan));
+  z-index:2;
 }
 
 /* HERO INFO */
@@ -681,12 +700,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="hero-inner">
       <!-- AVATAR -->
       <div class="hero-avatar-zone">
-        <div class="hero-avatar-ring" id="heroAvatarRing">
-          <img id="heroAvatar" src="" alt="avatar">
+        <div style="position:relative">
+          <div class="hero-avatar-ring" id="heroAvatarRing">
+            <img id="heroAvatar" src="" alt="avatar">
+          </div>
+          <div class="hero-online-dot" id="heroOnlineDot"></div>
+          <div class="hero-level-ring" id="heroLevelRing">1</div>
         </div>
-        <div class="hero-online-dot" id="heroOnlineDot"></div>
         <div class="hero-rank-badge" id="heroRankBadge">BRONZE</div>
-        <div class="hero-level-ring" id="heroLevelRing">1</div>
       </div>
 
       <!-- INFO -->
@@ -1366,9 +1387,11 @@ function renderHero(u) {
   document.getElementById('heroUsername').textContent  = '@' + (u.username || '—')
   document.getElementById('pageSub').textContent       = `// @${u.username || '—'}`
 
-  // rank badge
-  const rankLabels = { bronze:'BRONZE', silver:'SILVER', gold:'GOLD', platinum:'PLATINUM', diamond:'DIAMOND', legendary:'LEGENDARY' }
-  document.getElementById('heroRankBadge').textContent = rankLabels[u.rank] || u.rank?.toUpperCase() || 'BRONZE'
+  // rank badge — ชื่อตาม DB ตรงๆ ไม่มี icon
+  const rankKey = (u.rank || 'bronze').toLowerCase()
+  const rankBadgeEl = document.getElementById('heroRankBadge')
+  rankBadgeEl.className = `hero-rank-badge rank-${rankKey}`
+  rankBadgeEl.textContent = (u.rank || 'BRONZE').toUpperCase()
 
   // level
   document.getElementById('heroLevelRing').textContent = u.level || 1
