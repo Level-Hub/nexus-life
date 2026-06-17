@@ -119,6 +119,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .member-item:last-child{border-bottom:none}
 .member-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cls,var(--g-border));background:var(--g-panel);flex-shrink:0}
 .member-avatar img{width:100%;height:100%;object-fit:cover}
+.member-avatar-wrap{position:relative;flex-shrink:0}
+.member-online-dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg,#0a0800)}
+.member-online-dot.on{background:#44ff88;box-shadow:0 0 5px #44ff88}
+.member-online-dot.off{background:#3a4a50}
 .member-info{flex:1;min-width:0}
 .member-name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .member-name{font-family:'Orbitron',monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -361,7 +365,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="g-load-ring g-load-ring-1"></div>
     <div class="g-load-ring g-load-ring-2"></div>
     <div class="g-load-ring g-load-ring-3"></div>
-    <div class="g-load-core" id="gLoadCore"></div>
+    <div class="g-load-core" id="gLoadCore">
+      <svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <g class="g-blade g-blade-1">
+          <path d="M6 26L24 8" stroke="url(#goldGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M21 5l4 0 0 4" stroke="url(#goldStroke)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6.5" cy="25.5" r="1.6" fill="url(#goldGrad)"/>
+        </g>
+        <g class="g-blade g-blade-2">
+          <path d="M26 26L8 8" stroke="url(#goldGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M11 5l-4 0 0 4" stroke="url(#goldStroke)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25.5" cy="25.5" r="1.6" fill="url(#goldGrad)"/>
+        </g>
+        <circle cx="16" cy="16" r="1.8" fill="#fff6cf" class="g-clash-spark"/>
+      </svg>
+    </div>
   </div>
   <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;letter-spacing:8px;color:#ffd700;text-shadow:0 0 32px rgba(255,200,0,0.6);">GUILD</div>
   <div style="width:180px;height:2px;background:rgba(255,160,0,0.1);overflow:hidden;position:relative;border-radius:1px;">
@@ -386,6 +404,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .g-load-ring-2{width:58px;height:58px;animation:gAuraPulse 2s ease-in-out infinite 0.4s}
 .g-load-ring-3{width:36px;height:36px;animation:gAuraPulse 2s ease-in-out infinite 0.8s}
 .g-load-core{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;animation:gCoreGlow 2s ease-in-out infinite}
+.g-load-core svg{display:block;filter:drop-shadow(0 0 4px rgba(255,200,0,0.5))}
+.g-blade{transform-box:view-box;transform-origin:16px 16px}
+.g-blade-1{animation:gBladeSwing1 1.6s ease-in-out infinite}
+.g-blade-2{animation:gBladeSwing2 1.6s ease-in-out infinite}
+@keyframes gBladeSwing1{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-7deg)}}
+@keyframes gBladeSwing2{0%,100%{transform:rotate(0deg)}50%{transform:rotate(7deg)}}
+.g-clash-spark{animation:gClashPulse 1.6s ease-in-out infinite}
+@keyframes gClashPulse{0%,100%{opacity:0.35;r:1.4}50%{opacity:1;r:2.4}}
 </style>
 
 <!-- SVG gradient/filter defs shared by all guild icons -->
@@ -825,9 +851,8 @@ const GUILD_XP_PER_LEVEL = 1000
 async function init() {
   try {
     injectGlobalDefs()
-    // inject loading icon
-    const gLoadCore = document.getElementById('gLoadCore')
-    if (gLoadCore) gLoadCore.innerHTML = getIcon('sword', 20)
+    // หมายเหตุ: ไอคอนหน้าโหลด (gLoadCore) เป็น SVG ดาบไขว้สีทองที่ฝังไว้ใน HTML โดยตรงแล้ว
+    // ไม่ดึงจาก icons.js อีกต่อไป (ของเดิมดึง getIcon('sword') ซึ่งเป็นไอคอนลูกศรสีแดง ไม่ใช่ดาบ)
 
     const { user } = await initSidebar('guild')
     if (!user) return
@@ -1232,7 +1257,7 @@ async function showHasGuildView() {
 // ============================================
 async function loadMembers() {
   const { data } = await sb.from('guild_members')
-    .select('*, users(id,username,display_name,class,level,xp_this_month,avatar_seed,avatar_url)')
+    .select('*, users(id,username,display_name,class,level,xp_this_month,avatar_seed,avatar_url,last_seen)')
     .eq('guild_id', MY_GUILD.id)
     .order('role')
 
@@ -1250,9 +1275,13 @@ async function loadMembers() {
     const cls = u.class || 'warrior'
     const clsColors = { warrior:'#ff4444', mage:'#aa44ff', explorer:'#44ff88', merchant:'#ffaa00', artist:'#ff66aa', diplomat:'#00ccff' }
     const clsColor = clsColors[cls] || '#ffaa00'
+    const isOnline = u.last_seen && (Date.now() - new Date(u.last_seen).getTime()) < 5 * 60 * 1000
     return `
     <div class="member-item cls-${cls}">
-      <div class="member-avatar" style="border-color:${clsColor}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
+      <div class="member-avatar-wrap">
+        <div class="member-avatar" style="border-color:${clsColor}"><img src="${u.avatar_url || getAvatarUrl(u.avatar_seed || u.username || u.id)}" alt=""></div>
+        <div class="member-online-dot ${isOnline ? 'on' : 'off'}"></div>
+      </div>
       <div class="member-info">
         <div class="member-name-row">
           <span class="member-name">${escHtml(u.display_name || u.username)}</span>
@@ -1482,7 +1511,7 @@ function subscribeGuildChat() {
       async (payload) => {
         const msg = payload.new
         // ดึง user info
-        const { data: u } = await sb.from('users').select('username,display_name,avatar_seed,avatar_url,class').eq('id', msg.sender_id).single()
+        const { data: u } = await sb.from('users').select('username,display_name,avatar_seed,avatar_url,class,level').eq('id', msg.sender_id).single()
         appendChatMsg(msg, u)
       })
     .subscribe()
@@ -1490,7 +1519,7 @@ function subscribeGuildChat() {
 
 async function loadChatHistory(channel) {
   const { data } = await sb.from('messages')
-    .select('*, users(username,display_name,avatar_seed,avatar_url,class)')
+    .select('*, users(username,display_name,avatar_seed,avatar_url,class,level)')
     .eq('channel', channel)
     .order('created_at', { ascending: true })
     .limit(50)
@@ -1519,6 +1548,10 @@ function appendChatMsg(msg, u) {
     <div class="chat-avatar" style="border-color:${clsColor}"><img src="${avatarSrc}" alt=""></div>
     <div class="chat-bubble">
       <div class="chat-sender" style="color:#fff">${escHtml(u?.display_name||u?.username||'?')}</div>
+      <div class="chat-class-row" style="display:flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:7px;margin-bottom:4px;${isMe?'justify-content:flex-end':''}">
+        <span style="color:${clsColor}">${getIcon('class_'+cls,9)} ${cls.toUpperCase()}</span>
+        <span style="color:var(--text-dim)">· LV.${u?.level||1}</span>
+      </div>
       <div class="chat-text">${escHtml(msg.content)}</div>
       <div class="chat-time">${relTime(msg.created_at)}</div>
     </div>`
@@ -1544,7 +1577,8 @@ window.sendChat = async () => {
       display_name: ME.display_name,
       avatar_seed: ME.avatar_seed,
       avatar_url: ME.avatar_url,
-      class: ME.class
+      class: ME.class,
+      level: ME.level
     })
   }
 }
@@ -1624,7 +1658,10 @@ window.confirmLeave = async () => {
     btnText: 'ออกจาก Guild'
   })
   if (!ok) return
-  await sb.from('guild_members').delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id)
+  const { error: leaveErr, data: leaveData } = await sb.from('guild_members')
+    .delete().eq('user_id', ME.id).eq('guild_id', MY_GUILD.id).select()
+  if (leaveErr) { toast('เกิดข้อผิดพลาด: ' + leaveErr.message, 'error'); return }
+  if (!leaveData?.length) { toast('ออกจาก Guild ไม่สำเร็จ ลองใหม่อีกครั้ง', 'error'); return }
   toast('ออกจาก Guild แล้ว', 'info')
   setTimeout(() => location.reload(), 1000)
 }

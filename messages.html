@@ -546,6 +546,7 @@ async function loadInbox() {
   })
 
   renderInbox(allConversations, unreadMap)
+  refreshInboxOnlineDots()
 }
 
 // ─── RENDER INBOX ────────────────────────────────────────────
@@ -578,6 +579,9 @@ function renderInbox(convs, unreadMap = {}) {
       </div>
       <div class="conv-info">
         <div class="conv-name">${esc(p.display_name || p.username)}</div>
+        <div class="conv-class-row" style="display:flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;margin-top:1px">
+          ${classIcon(cls,9)}<span style="color:${CLASS_COLOR[cls]}">${cls.toUpperCase()}</span><span style="color:var(--text-dim)"> · LV.${p.level||1}</span>
+        </div>
         <div class="conv-preview">${esc(preview)}</div>
       </div>
       <div class="conv-time">${timeStr}</div>
@@ -877,7 +881,7 @@ window.searchDMTarget = function(q) {
   if (!q.trim()) { document.getElementById('dmSearchResults').innerHTML = ''; return }
   searchTimeout = setTimeout(async () => {
     const { data } = await supabase.from('users')
-      .select('id,username,display_name,class,level,avatar_seed')
+      .select('id,username,display_name,class,level,avatar_seed,avatar_url')
       .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
       .eq('profile_public', true).neq('id', currentUser.id).limit(6)
 
@@ -892,7 +896,7 @@ window.searchDMTarget = function(q) {
           <div class="sr-avatar cls-${cls}" style="border-color:${CLASS_COLOR[cls]}">
             <img src="${getAvatarSrc(u, 36)}" alt="">
           </div>
-          <div class="online-dot off" data-uid="${u.id}"></div>
+          <div class="online-dot off sr-online-dot" data-uid="${u.id}"></div>
         </div>
         <div class="sr-info">
           <div class="sr-name">${esc(u.display_name || u.username)}</div>
@@ -903,6 +907,7 @@ window.searchDMTarget = function(q) {
         </div>
       </div>`
     }).join('')
+    refreshSearchOnlineDots()
   }, 300)
 }
 
@@ -930,6 +935,18 @@ async function refreshInboxOnlineDots() {
       if (!data?.last_seen) return
       const isOnline = (Date.now() - new Date(data.last_seen).getTime()) < 5 * 60 * 1000
       dot.className = `online-dot ${isOnline ? 'on' : 'off'} conv-online-dot`
+    } catch(e) {}
+  })
+}
+
+async function refreshSearchOnlineDots() {
+  document.querySelectorAll('.sr-online-dot[data-uid]').forEach(async dot => {
+    const uid = dot.dataset.uid
+    try {
+      const { data } = await supabase.from('users').select('last_seen').eq('id', uid).single()
+      if (!data?.last_seen) return
+      const isOnline = (Date.now() - new Date(data.last_seen).getTime()) < 5 * 60 * 1000
+      dot.className = `online-dot ${isOnline ? 'on' : 'off'} sr-online-dot`
     } catch(e) {}
   })
 }
@@ -1270,6 +1287,7 @@ window.playVoice = function(url, btn) {
 // อัพเดต last_seen ของตัวเอง + refresh online dots ทุก 30 วิ
 setTimeout(async () => {
   await updateMyLastSeen()
+  await refreshInboxOnlineDots()
   setInterval(async () => {
     await updateMyLastSeen()
     await refreshInboxOnlineDots()
