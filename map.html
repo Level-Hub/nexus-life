@@ -942,7 +942,6 @@ async function loadPlayersOnMap() {
     .from('users')
     .select('id, display_name, username, class, level, rank, avatar_seed, avatar_url, last_lat, last_lng, equipped_title_id, city, last_seen')
     .eq('map_visible', true)
-    .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
     .limit(200)
@@ -1137,7 +1136,7 @@ async function loadTerritories() {
         <div class="territory-color" style="background:${color}"></div>
         <div class="territory-info">
           <div class="territory-city">${t.city}${t.province ? ' · ' + t.province : ''}</div>
-          <div class="territory-guild">[${guild?.tag || '???'}] ${guild?.name || 'Unknown Guild'}</div>
+          <div class="territory-guild" style="color:#ffd700;font-weight:700">[${guild?.tag || '???'}] ${guild?.name || 'Unknown Guild'}</div>
           <div class="territory-bonus">+10% XP Bonus · ${t.guild_xp_this_week || 0} XP/week</div>
         </div>
       </div>
@@ -1207,7 +1206,6 @@ async function loadNearbyPlayers() {
     .from('users')
     .select('id, display_name, username, class, level, avatar_seed, avatar_url, last_lat, last_lng, last_seen')
     .eq('map_visible', true)
-    .eq('location_public', true)
     .not('last_lat', 'is', null)
     .neq('id', currentUser.id)
     .limit(100)  // ดึงมากกว่าเดิม แล้วค่อย sort+slice ใน JS
