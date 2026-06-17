@@ -162,9 +162,154 @@ const TITLE_EFFECT_MAP = {
     effectClass: 'nx-fx-glow-blue',
     icon: `<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.3"/><circle cx="3" cy="12" r="2" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="13" cy="12" r="2" stroke="url(#amethystGrad)" stroke-width="1.3"/><path d="M8 6l-3.5 4.5M8 6l3.5 4.5M3.5 12h9" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.7"/>`,
   },
+
+  // ── PHYSICAL / STREAK category ──
+  'นักวิ่งผ่านร้อน': {
+    effectClass: 'nx-fx-fire',
+    icon: `<path d="M8 14c-3 0-5-2-5-5 0-1.5.5-3 2-4.5 0 2 1 3 1 3s.5-2.5 2-4.5c.5 2 2 3.5 2 3.5s1-1 .5-2.5c2 2 2.5 3.5 2.5 5 0 3-2 5-5 5z" stroke="url(#fireGrad)" stroke-width="1.4" fill="url(#fireGrad)" fill-opacity="0.22"/><path d="M6 10c0 1.1.9 2 2 2" stroke="url(#goldStroke)" stroke-width="1.2" stroke-linecap="round"/>`,
+  },
+  'ร่างกายเหล็ก': {
+    effectClass: 'nx-fx-shield',
+    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#sapphireGrad)" stroke-width="1.4" fill="url(#shieldGrad)" fill-opacity="0.35" stroke-linejoin="round"/><path d="M5.5 8.5l2 2 3-3" stroke="url(#cyanGrad)" stroke-width="1.4" stroke-linecap="round"/>`,
+  },
+  'นักกีฬาตัวจริง': {
+    effectClass: 'nx-fx-lightning',
+    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.5" fill="url(#lightningGrad)" fill-opacity="0.2" stroke-linejoin="round"/><circle cx="8" cy="8" r="1.2" fill="url(#goldGrad)" opacity="0.8"/>`,
+  },
+  'เจ้าแห่งความเจ็บปวด': {
+    effectClass: 'nx-fx-fire',
+    icon: `<path d="M8 2v12" stroke="url(#rubyGrad)" stroke-width="1.6" stroke-linecap="round"/><path d="M4 6l4-4 4 4M4 10l4 4 4-4" stroke="url(#rubyGrad)" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="8" cy="8" r="2" fill="url(#rubyGrad)" fill-opacity="0.2"/>`,
+  },
+  'Phoenix': {
+    effectClass: 'nx-fx-fire',
+    icon: `<path d="M8 3c-1 0-2.5 1-3 3 .5-.5 1-.8 2-.5C5.5 7 5 9 6 10.5c.3-1 .8-1.5 1.5-1.5-.5 1-.3 2.5.5 3.5.5-1.5 1-2 2-2-.5 1 0 2.5.5 3 .5-1.5 1-2.5 1.5-4C13 7.5 11.5 3 8 3z" stroke="url(#fireGrad)" stroke-width="1.3" fill="url(#fireGrad)" fill-opacity="0.18" stroke-linejoin="round"/>`,
+  },
+
+  // ── KNOWLEDGE / LEARNING category ──
+  'ราชาแห่งความรู้': {
+    effectClass: 'nx-fx-glow-purple',
+    icon: `<path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M8 4v9" stroke="url(#amethystGrad)" stroke-width="1.1"/><path d="M5.5 6.5h5M5.5 9h5M5.5 11.5h3" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.6"/>`,
+  },
+  'นักปราชญ์': {
+    effectClass: 'nx-fx-glow-purple',
+    icon: `<circle cx="8" cy="7" r="4.5" stroke="url(#amethystGrad)" stroke-width="1.3"/><path d="M5.5 5L6.5 7M10.5 5L9.5 7M7 7h2" stroke="url(#cyanGrad)" stroke-width="1.2" stroke-linecap="round"/><path d="M5.5 12h5l-1 2h-3z" stroke="url(#amethystGrad)" stroke-width="1.1" fill="none"/><path d="M6 12v1.5M10 12v1.5" stroke="url(#amethystGrad)" stroke-width="1.1"/>`,
+  },
+  'อัจฉริยะ': {
+    effectClass: 'nx-fx-glow-purple',
+    icon: `<path d="M5 10V8a3 3 0 016 0v2" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none"/><path d="M4 10h8v2a2 2 0 01-4 0 2 2 0 01-4 0v-2z" stroke="url(#amethystGrad)" stroke-width="1.3" fill="url(#amethystGrad)" fill-opacity="0.1"/><path d="M8 5V3M5.5 5.5L4 4M10.5 5.5L12 4" stroke="url(#amethystGrad)" stroke-width="1.1"/><circle cx="8" cy="5" r="0.8" fill="url(#amethystGrad)" opacity="0.9"/>`,
+  },
+
+  // ── EXPLORATION / TRAVEL category ──
+  'นักสำรวจตัวจริง': {
+    effectClass: 'nx-fx-spin-ring',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#emeraldGrad)" stroke-width="1.3"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2" stroke="url(#emeraldGrad)" stroke-width="1.1"/><polygon points="8,5 9.5,8 8,7.5 6.5,8" fill="url(#rubyGrad)"/><polygon points="8,11 6.5,8 8,8.5 9.5,8" fill="url(#cyanGrad)" opacity="0.5"/>`,
+  },
+  'เจ้าแห่งแผนที่': {
+    effectClass: 'nx-fx-spin-ring',
+    icon: `<path d="M2 3l4 1.5 4-1.5 4 1.5v9l-4-1.5-4 1.5-4-1.5z" stroke="url(#emeraldGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M6 4.5v9M10 3v9" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.5"/><circle cx="8" cy="9" r="1.8" fill="url(#rubyGrad)" fill-opacity="0.3" stroke="url(#rubyGrad)" stroke-width="1"/>`,
+  },
+  'World Wanderer': {
+    effectClass: 'nx-fx-spin-ring',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#sapphireGrad)" stroke-width="1.3"/><path d="M8 2c-1.6 2-1.6 8 0 12M8 2c1.6 2 1.6 8 0 12" stroke="url(#cyanGrad)" stroke-width="1" fill="none"/><path d="M2 8h12M3 5h10M3 11h10" stroke="url(#sapphireGrad)" stroke-width="0.9" opacity="0.55"/>`,
+  },
+
+  // ── SOCIAL / GUILD category ──
+  'หัวหน้ากลุ่ม': {
+    effectClass: 'nx-fx-glow-blue',
+    icon: `<circle cx="8" cy="5" r="2.5" stroke="url(#cyanGrad)" stroke-width="1.3"/><path d="M2 14c0-3.5 2.5-5 6-5s6 1.5 6 5" stroke="url(#cyanGrad)" stroke-width="1.3" fill="none"/><path d="M8 9v2l1.5 1.5" stroke="url(#goldStroke)" stroke-width="1.2" stroke-linecap="round"/>`,
+  },
+  'เจ้าพ่อเครือข่าย': {
+    effectClass: 'nx-fx-glow-blue',
+    icon: `<circle cx="8" cy="4" r="2" stroke="url(#cyanGrad)" stroke-width="1.3"/><circle cx="3" cy="13" r="1.8" stroke="url(#sapphireGrad)" stroke-width="1.2"/><circle cx="13" cy="13" r="1.8" stroke="url(#amethystGrad)" stroke-width="1.2"/><path d="M8 6l-4 5.5M8 6l4 5.5M4 13h8" stroke="url(#cyanGrad)" stroke-width="1.1" opacity="0.75"/>`,
+  },
+
+  // ── GENERAL / QUEST category ──
+  'ผู้แสวงหา': {
+    effectClass: 'nx-fx-glow',
+    icon: `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#cyanGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="5" r="1.6" fill="url(#cyanGrad)"/>`,
+  },
+  'นักล่าเป้าหมาย': {
+    effectClass: 'nx-fx-glow',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#rubyGrad)" stroke-width="1.2"/><circle cx="8" cy="8" r="3.5" stroke="url(#rubyGrad)" stroke-width="1.2"/><circle cx="8" cy="8" r="1.3" fill="url(#rubyGrad)" filter="url(#glowWarm)"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="url(#rubyGrad)" stroke-width="1.2"/>`,
+  },
+  'ราชาภารกิจ': {
+    effectClass: 'nx-fx-gold-pulse',
+    icon: `<path d="M4 6h8l1 8H3z" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/><path d="M2 6l2-3 2 1.5L8 2l2 1.5 2-1.5 2 3" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M6 10h4M6 12h3" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.7"/>`,
+  },
+  'ราชาแห่งควอสต์': {
+    effectClass: 'nx-fx-gold-pulse',
+    icon: `<path d="M4 6h8l1 8H3z" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/><path d="M2 6l2-3 2 1.5L8 2l2 1.5 2-1.5 2 3" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
+  },
+
+  // ── SPECIAL / LEGENDARY category ──
+  'ตำนาน': {
+    effectClass: 'nx-fx-legendary-star',
+    icon: `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" filter="url(#glowGold)" fill="none"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.55"/>`,
+  },
+  'Immortal': {
+    effectClass: 'nx-fx-legendary-star',
+    icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="url(#goldGrad)" fill-opacity="0.08" stroke-linejoin="round" filter="url(#glowGold)"/><polygon points="8,5 9.5,9 8,8 6.5,9" fill="url(#rubyGrad)"/>`,
+  },
 }
 
-const DEFAULT_TITLE_ICON_PATH = `<path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="url(#goldStroke)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`
+// ── Category-based fallback icon map ──
+// ถ้า title name ไม่อยู่ใน TITLE_EFFECT_MAP จะใช้ category แทน
+const CATEGORY_EFFECT_MAP = {
+  physical:    {
+    effectClass: 'nx-fx-fire',
+    icon: `<path d="M8 13c-2.5 0-4-1.5-4-4 0-1.2.4-2.4 1.6-3.5 0 1.5.8 2.3.8 2.3s.4-2 1.6-3.5c.4 1.5 1.6 2.7 1.6 2.7s.8-.7.4-2C11.6 6.5 12 7.7 12 9c0 2.5-1.6 4-4 4z" stroke="url(#fireGrad)" stroke-width="1.3" fill="url(#fireGrad)" fill-opacity="0.18"/><circle cx="8" cy="10" r="1.3" fill="url(#goldRadial)" opacity="0.7"/>`,
+  },
+  streak:      {
+    effectClass: 'nx-fx-fire',
+    icon: `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.4" fill="url(#lightningGrad)" fill-opacity="0.2" stroke-linejoin="round"/>`,
+  },
+  knowledge:   {
+    effectClass: 'nx-fx-glow-purple',
+    icon: `<path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M8 4v9" stroke="url(#amethystGrad)" stroke-width="1.1"/><path d="M5.5 7h5M5.5 10h3" stroke="url(#cyanGrad)" stroke-width="0.9" opacity="0.6"/>`,
+  },
+  learning:    {
+    effectClass: 'nx-fx-glow-purple',
+    icon: `<circle cx="8" cy="7" r="4" stroke="url(#amethystGrad)" stroke-width="1.3"/><path d="M8 3v1M5 5l.8.8M11 5l-.8.8" stroke="url(#amethystGrad)" stroke-width="1.1"/><circle cx="8" cy="7" r="1.5" fill="url(#amethystGrad)" opacity="0.6"/>`,
+  },
+  exploration: {
+    effectClass: 'nx-fx-spin-ring',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#emeraldGrad)" stroke-width="1.3"/><path d="M8 2.5v2M8 11.5v2M2.5 8h2M11.5 8h2" stroke="url(#emeraldGrad)" stroke-width="1"/><polygon points="8,5 9.5,9 8,7.5 6.5,9" fill="url(#rubyGrad)"/><polygon points="8,11 6.5,7 8,8.5 9.5,7" fill="url(#cyanGrad)" opacity="0.45"/>`,
+  },
+  social:      {
+    effectClass: 'nx-fx-glow-blue',
+    icon: `<circle cx="5" cy="5" r="2.2" stroke="url(#cyanGrad)" stroke-width="1.3"/><circle cx="11" cy="5" r="2.2" stroke="url(#sapphireGrad)" stroke-width="1.3"/><path d="M1.5 14c0-2.5 1.5-4 3.5-4M14.5 14c0-2.5-1.5-4-3.5-4M5 10c1 0 3 .5 3 2s2-2 3-2" stroke="url(#cyanGrad)" stroke-width="1.2"/>`,
+  },
+  guild:       {
+    effectClass: 'nx-fx-glow-blue',
+    icon: `<path d="M8 2l6 4v5a6 6 0 01-6 3 6 6 0 01-6-3V6z" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="url(#cyanGrad)" stroke-width="1.2"/>`,
+  },
+  quest:       {
+    effectClass: 'nx-fx-glow',
+    icon: `<rect x="3" y="3" width="10" height="12" stroke="url(#cyanGrad)" stroke-width="1.3"/><path d="M6 3V2h4v1" stroke="url(#cyanGrad)" stroke-width="1.2"/><path d="M5.5 7.5l1.5 1.5 3-3" stroke="url(#emeraldGrad)" stroke-width="1.4" stroke-linecap="round"/><path d="M5.5 11.5h5" stroke="url(#cyanGrad)" stroke-width="1" opacity="0.5"/>`,
+  },
+  general:     {
+    effectClass: 'nx-fx-glow',
+    icon: `<polygon points="8,2 10,6.5 15,6.5 11,9.5 13,14 8,11 3,14 5,9.5 1,6.5 6,6.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/>`,
+  },
+  finance:     {
+    effectClass: 'nx-fx-gold-pulse',
+    icon: `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M3.5 5v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/><path d="M3.5 8v3c0 .8 2 1.5 4.5 1.5s4.5-.7 4.5-1.5V8" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/>`,
+  },
+  special:     {
+    effectClass: 'nx-fx-legendary-star',
+    icon: `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none" filter="url(#glowGold)"/>`,
+  },
+}
+
+const DEFAULT_TITLE_ICON_PATH = `<polygon points="8,2 10,6.5 15,6.5 11,9.5 13,14 8,11 3,14 5,9.5 1,6.5 6,6.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="url(#goldGrad)" fill-opacity="0.1" stroke-linejoin="round"/>`
+
+// ── Resolve title effect (name → category → default) ──
+function resolveTitleEffect(titleName, category) {
+  if (TITLE_EFFECT_MAP[titleName]) return TITLE_EFFECT_MAP[titleName]
+  const cat = (category || '').toLowerCase()
+  if (CATEGORY_EFFECT_MAP[cat]) return CATEGORY_EFFECT_MAP[cat]
+  return { effectClass: 'nx-fx-glow', icon: DEFAULT_TITLE_ICON_PATH }
+}
 
 
 // ============================================================
@@ -837,7 +982,7 @@ export function renderTitleBadge(title, options = {}) {
   const r = title.rarity || 'common'
   const name = title.name || ''
 
-  const fx = TITLE_EFFECT_MAP[name] || null
+  const fx = resolveTitleEffect(name, title.category)
   const effectClass = fx ? ` ${fx.effectClass}` : ''
   const iconPath = fx ? fx.icon : DEFAULT_TITLE_ICON_PATH
 
@@ -878,8 +1023,8 @@ export function renderTitleCard(title, state = {}, options = {}) {
     statusHtml = `<span style="font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(90,138,144,0.3);color:#5a8a90">LOCKED</span>`
   }
 
-  const fx = TITLE_EFFECT_MAP[title.name] || null
-  const titleSvgPath = fx ? fx.icon : (TITLE_SVG_MAP[title.name] || DEFAULT_TITLE_ICON_PATH)
+  const fx = resolveTitleEffect(title.name, title.category)
+  const titleSvgPath = fx ? fx.icon : DEFAULT_TITLE_ICON_PATH
   const iconHtml = renderIconFrame(titleSvgPath, r, 52)
 
   const btnColorMap = {
@@ -975,19 +1120,9 @@ const BADGE_SVG_MAP = {
   'Founder':         `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none" filter="url(#glowGold)"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.5"/>`,
 }
 
-// Legacy fallback for title icons
-const TITLE_SVG_MAP = {
-  'The Unbreakable':       `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#sapphireGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
-  'นักวิ่งมือใหม่':        `<polygon points="10,1 4,9 8,9 6,15 12,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
-  'นักอ่านมือใหม่':        `<path d="M8 13V4" stroke="url(#orangeGrad)" stroke-width="1.3"/><path d="M3 4c0 0 2 0 5 1.5C11 4 13 4 13 4v9c0 0-2 0-5-1.5C5 13 3 13 3 13z" stroke="url(#orangeGrad)" stroke-width="1.3" fill="none" stroke-linejoin="round"/>`,
-  'จอมเวทแห่งการเรียนรู้': `<circle cx="8" cy="9" r="3.5" stroke="url(#amethystGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="9" r="1.3" fill="url(#amethystGrad)"/>`,
-  'นักสำรวจผู้กล้า':       `<circle cx="8" cy="8" r="6" stroke="url(#emeraldGrad)" stroke-width="1.3"/><polygon points="8,4 9.5,9 8,8 6.5,9" fill="url(#rubyGrad)"/>`,
-  'Pathfinder':             `<path d="M8 1a4 4 0 014 4c0 3-4 8-4 8S4 8 4 5a4 4 0 014-4z" stroke="url(#emeraldGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="5" r="1.6" fill="url(#emeraldGrad)"/>`,
-  'นักวางแผนการเงิน':      `<ellipse cx="8" cy="5" rx="4.5" ry="1.5" stroke="url(#goldStroke)" stroke-width="1.3" fill="none"/>`,
-  'เสน่ห์ล้นเหลือ':        `<circle cx="5" cy="5" r="2.3" stroke="url(#sapphireGrad)" stroke-width="1.3"/><circle cx="11" cy="5" r="2.3" stroke="url(#cyanGrad)" stroke-width="1.3"/>`,
-  'จ้าวแห่งเดือน':         `<path d="M2 12L4 5l4 4 4-4 2 7z" stroke="url(#goldStroke)" stroke-width="1.4" fill="none" stroke-linejoin="round"/>`,
-  'Founder':                `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="none"/>`,
-}
+// Legacy TITLE_SVG_MAP removed — all title icons now handled by
+// TITLE_EFFECT_MAP (name-based) and CATEGORY_EFFECT_MAP (category-based fallback)
+
 
 
 // ============================================================
