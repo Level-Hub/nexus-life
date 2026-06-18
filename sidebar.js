@@ -1,6 +1,8 @@
 // ============================================================
-// NEXUS LIFE — sidebar.js
-// Shared Sidebar Component v1.0
+// NEXUS LIFE — sidebar.js  v2.0
+// Shared Sidebar Component
+// + Bell Notification Dropdown (realtime, delete-safe)
+// + Auto Theme Color per page
 // ใช้งาน: import { initSidebar } from './sidebar.js'
 //          await initSidebar('dashboard')
 // ============================================================
@@ -17,7 +19,7 @@ const NAV_ITEMS = [
   { id: 'verify',       label: 'VERIFY',        href: './verify.html',       icon: 'check',  badge: 'navVerifyBadge' },
   { id: 'leaderboard',  label: 'LEADERBOARD',   href: './leaderboard.html',  icon: 'bar' },
   { id: 'social',       label: 'SOCIAL',        href: './social.html',       icon: 'users' },
-  { id: 'messages',     label: 'MESSAGES',      href: './messages.html',     icon: 'msg',    badge: 'navMsgBadge' },
+  { id: 'messages',     label: 'MESSAGES',      href: './messages.html',     icon: 'msg' },
   { section: 'WORLD' },
   { id: 'city',         label: 'CITY',          href: './city.html',         icon: 'building' },
   { id: 'map',          label: 'WORLD MAP',     href: './map.html',          icon: 'map' },
@@ -31,12 +33,17 @@ const NAV_ITEMS = [
   { id: 'wallet',       label: 'WALLET',        href: './wallet.html',       icon: 'wallet' },
 ]
 
-
+// ─── NOTIFICATION STATE ───────────────────────────────────────
+let _notifUserId   = null
+let _notifList     = []       // array ของ notification objects
+let _deletedIds    = new Set() // track ที่ลบแล้ว ป้องกัน realtime event ดึงกลับมา
+let _notifChannel  = null
+let _notifOpen     = false
 
 // ─── CSS ──────────────────────────────────────────────────────
 const SIDEBAR_CSS = `
 <style id="sidebar-css">
-/* ── GLOBAL TOKENS — ทับ :root ของทุกหน้า bg/text ให้นิ่ง ── */
+/* ── GLOBAL TOKENS — sidebar override ── */
 :root {
   --bg:       #010a0f;
   --bg2:      #020d14;
@@ -47,27 +54,80 @@ const SIDEBAR_CSS = `
   --t-fast:   0.15s;
   --t-base:   0.3s;
   --t-slow:   0.55s;
+  --sb-accent: #00f5ff;
 }
+/* ── SIDEBAR ── */
 .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid rgba(0,245,255,0.12);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
-.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(0,245,255,0.12)}
-.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:#00f5ff;text-shadow:0 0 16px #00f5ff;display:flex;align-items:center;gap:8px}
-.logo-dot{width:6px;height:6px;background:#00f5ff;border-radius:50%;animation:sb-pulse 2s infinite;flex-shrink:0}
-@keyframes sb-pulse{0%,100%{opacity:1;box-shadow:0 0 8px #00f5ff}50%{opacity:0.3;box-shadow:none}}
-.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:#5a8a90;margin-top:4px}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(0,245,255,0.12);display:flex;align-items:center;justify-content:space-between}
+.sidebar-logo-inner{display:flex;flex-direction:column;gap:4px}
+.sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--sb-accent);text-shadow:0 0 16px var(--sb-accent);display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;background:var(--sb-accent);border-radius:50%;animation:sb-pulse 2s infinite;flex-shrink:0}
+@keyframes sb-pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--sb-accent)}50%{opacity:0.3;box-shadow:none}}
+.sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:#5a8a90}
+
+/* ── BELL BUTTON (desktop — inside sidebar logo row) ── */
+.sb-bell-btn{position:relative;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(0,245,255,0.15);cursor:pointer;flex-shrink:0;transition:border-color 0.2s}
+.sb-bell-btn:hover{border-color:var(--sb-accent)}
+.sb-bell-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ff003c;border-radius:50%;display:none;box-shadow:0 0 6px #ff003c;animation:bell-dot-pulse 1.5s ease-in-out infinite}
+@keyframes bell-dot-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* ── NOTIFICATION DROPDOWN ── */
+.sb-notif-panel{
+  position:absolute;top:calc(100% + 8px);right:0;width:320px;
+  background:rgba(1,10,15,0.98);border:1px solid rgba(0,245,255,0.18);
+  backdrop-filter:blur(24px);z-index:9999;
+  max-height:420px;display:flex;flex-direction:column;
+  transform:translateY(-8px);opacity:0;pointer-events:none;
+  transition:all 0.22s cubic-bezier(0.2,0.9,0.4,1.1);
+  box-shadow:0 16px 48px rgba(0,0,0,0.7),0 0 32px rgba(0,245,255,0.04)
+}
+.sb-notif-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}
+
+.sb-notif-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid rgba(0,245,255,0.1);flex-shrink:0}
+.sb-notif-hdr-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--sb-accent)}
+.sb-notif-hdr-actions{display:flex;gap:8px}
+.sb-notif-action{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:4px 8px;background:transparent;border:1px solid rgba(0,245,255,0.15);color:#5a8a90;cursor:pointer;transition:all 0.2s}
+.sb-notif-action:hover{border-color:var(--sb-accent);color:var(--sb-accent)}
+.sb-notif-action.danger:hover{border-color:#ff003c;color:#ff003c}
+
+.sb-notif-list{overflow-y:auto;flex:1}
+.sb-notif-list::-webkit-scrollbar{width:2px}
+.sb-notif-list::-webkit-scrollbar-thumb{background:rgba(0,245,255,0.15)}
+
+.sb-notif-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(0,245,255,0.06);cursor:pointer;transition:background 0.15s;position:relative}
+.sb-notif-item:hover{background:rgba(0,245,255,0.04)}
+.sb-notif-item.unread{border-left:2px solid var(--sb-accent);background:rgba(0,245,255,0.03)}
+.sb-notif-item.unread::after{content:'';position:absolute;top:50%;right:10px;transform:translateY(-50%);width:5px;height:5px;background:var(--sb-accent);border-radius:50%;box-shadow:0 0 6px var(--sb-accent)}
+.sb-notif-icon{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.12);font-size:12px}
+.sb-notif-body{flex:1;min-width:0;padding-right:16px}
+.sb-notif-title{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;color:#fff;margin-bottom:2px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-notif-item.unread .sb-notif-title{color:var(--sb-accent)}
+.sb-notif-text{font-size:10px;color:#5a8a90;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sb-notif-time{font-family:'Orbitron',monospace;font-size:8px;color:#3a5a60;margin-top:3px}
+.sb-notif-del{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:#3a5a60;cursor:pointer;font-size:10px;margin-top:2px;opacity:0;transition:opacity 0.2s}
+.sb-notif-item:hover .sb-notif-del{opacity:1}
+.sb-notif-del:hover{color:#ff003c}
+
+.sb-notif-empty{text-align:center;padding:32px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:#3a5a60}
+.sb-notif-footer{padding:8px 14px;border-top:1px solid rgba(0,245,255,0.08);flex-shrink:0;text-align:center}
+.sb-notif-footer a{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:#5a8a90;text-decoration:none;transition:color 0.2s}
+.sb-notif-footer a:hover{color:var(--sb-accent)}
+
+/* ── REST OF SIDEBAR ── */
 .sidebar-user{padding:16px 20px;border-bottom:1px solid rgba(0,245,255,0.12);display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s}
 .sidebar-user:hover{background:rgba(0,245,255,0.04)}
-.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--sb-cls,#00f5ff);overflow:hidden;background:rgba(0,245,255,0.04);flex-shrink:0}
+.su-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--sb-cls,var(--sb-accent));overflow:hidden;background:rgba(0,245,255,0.04);flex-shrink:0}
 .su-avatar img{width:100%;height:100%;object-fit:cover}
 .su-info{overflow:hidden}
 .su-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--sb-cls,#00f5ff);letter-spacing:1px}
+.su-class{font-family:'Orbitron',monospace;font-size:9px;color:var(--sb-cls,var(--sb-accent));letter-spacing:1px}
 .su-lv{font-family:'Orbitron',monospace;font-size:8px;color:#5a8a90;margin-top:1px}
 .nav-menu{flex:1;padding:12px 0;overflow-y:auto}
 .nav-menu::-webkit-scrollbar{width:2px}
 .nav-menu::-webkit-scrollbar-thumb{background:rgba(0,245,255,0.15)}
 .nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:#5a8a90;text-decoration:none;border-left:2px solid transparent;transition:all 0.2s;position:relative}
-.nav-item:hover{color:#00f5ff;background:rgba(0,245,255,0.04)}
-.nav-item.active{color:#00f5ff;border-left-color:#00f5ff;background:rgba(0,245,255,0.06)}
+.nav-item:hover{color:var(--sb-accent);background:rgba(0,245,255,0.04)}
+.nav-item.active{color:var(--sb-accent);border-left-color:var(--sb-accent);background:rgba(0,245,255,0.06)}
 .nav-item svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
 .nav-item:hover svg,.nav-item.active svg{opacity:1}
 .nav-badge{margin-left:auto;background:#ff003c;color:#fff;font-size:8px;padding:2px 6px;border-radius:10px;font-family:'Orbitron',monospace;min-width:18px;text-align:center}
@@ -77,14 +137,39 @@ const SIDEBAR_CSS = `
 .signout-btn:hover{color:#ff003c;border-color:#ff003c;background:rgba(255,0,60,0.06)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190}
 .sidebar-overlay.open{display:block}
-.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:14px 20px;background:rgba(1,10,15,0.97);border-bottom:1px solid rgba(0,245,255,0.12);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
-.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:#00f5ff;text-shadow:0 0 12px #00f5ff}
-.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid rgba(0,245,255,0.12);cursor:pointer}
-.burger span{display:block;width:18px;height:1px;background:#00f5ff}
+
+/* ── TOPBAR (mobile) ── */
+.topbar{display:none;position:fixed;top:0;left:0;right:0;z-index:150;padding:12px 16px;background:rgba(1,10,15,0.97);border-bottom:1px solid rgba(0,245,255,0.12);backdrop-filter:blur(20px);align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:3px;color:var(--sb-accent);text-shadow:0 0 12px var(--sb-accent)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid rgba(0,245,255,0.15);cursor:pointer}
+.burger span{display:block;width:18px;height:1px;background:var(--sb-accent)}
+
+/* topbar bell (mobile) */
+.tb-bell-btn{position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(0,245,255,0.15);cursor:pointer}
+.tb-bell-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:#ff003c;border-radius:50%;display:none;box-shadow:0 0 6px #ff003c;animation:bell-dot-pulse 1.5s ease-in-out infinite}
+
+/* mobile notif panel — full width below topbar */
+.tb-notif-panel{
+  position:fixed;top:61px;left:0;right:0;
+  background:rgba(1,10,15,0.99);border-bottom:1px solid rgba(0,245,255,0.18);
+  backdrop-filter:blur(24px);z-index:9998;
+  max-height:70vh;display:flex;flex-direction:column;
+  transform:translateY(-12px);opacity:0;pointer-events:none;
+  transition:all 0.22s cubic-bezier(0.2,0.9,0.4,1.1)
+}
+.tb-notif-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}
+
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
+  .sb-notif-panel{display:none!important}
+}
+@media(min-width:769px){
+  .tb-notif-panel{display:none!important}
+  .tb-bell-btn{display:none!important}
 }
 </style>`
 
@@ -105,12 +190,37 @@ function buildSidebarHTML(activePage) {
     </a>`
   }).join('\n')
 
+  // Bell SVG
+  const bellSVG = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 2a4 4 0 014 4v3.5l1.5 2H2.5L4 9.5V6a4 4 0 014-4z" stroke="currentColor" stroke-width="1.3" fill="none"/>
+    <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" fill="none"/>
+  </svg>`
+
+  // Notification panel HTML (shared content, rendered dynamically)
+  const notifPanelInner = `
+    <div class="sb-notif-hdr">
+      <span class="sb-notif-hdr-title">// NOTIFICATIONS</span>
+      <div class="sb-notif-hdr-actions">
+        <button class="sb-notif-action" onclick="window._sbMarkAllRead()">MARK ALL</button>
+        <button class="sb-notif-action danger" onclick="window._sbDeleteAllRead()">CLEAR READ</button>
+      </div>
+    </div>
+    <div class="sb-notif-list" id="sbNotifList"><div class="sb-notif-empty">กำลังโหลด...</div></div>
+    <div class="sb-notif-footer"><a href="./notifications.html">ดูทั้งหมด →</a></div>`
+
   return `
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
-      <div class="sidebar-tagline">// REAL LIFE MMO</div>
+      <div class="sidebar-logo-inner">
+        <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
+        <div class="sidebar-tagline">// REAL LIFE MMO</div>
+      </div>
+      <!-- Desktop Bell -->
+      <div style="position:relative">
+        <button class="sb-bell-btn" id="sbBellBtn" title="การแจ้งเตือน">${bellSVG}<span class="sb-bell-dot" id="sbBellDot"></span></button>
+        <div class="sb-notif-panel" id="sbNotifPanel">${notifPanelInner}</div>
+      </div>
     </div>
     <div class="sidebar-user" id="sidebarUser" onclick="window.location.href='./profile.html'">
       <div class="su-avatar" id="suAvatarWrap">
@@ -132,9 +242,20 @@ function buildSidebarHTML(activePage) {
       </button>
     </div>
   </aside>
-  <div class="topbar">
-    <div class="topbar-logo">NEXUS</div>
-    <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
+  <!-- Mobile Topbar -->
+  <div class="topbar" id="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">NEXUS</div>
+    </div>
+    <div class="topbar-right">
+      <!-- Mobile Bell -->
+      <button class="tb-bell-btn" id="tbBellBtn" title="การแจ้งเตือน">${bellSVG}<span class="tb-bell-dot" id="tbBellDot"></span></button>
+      <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <!-- Mobile Notif Panel (full-width below topbar) -->
+  <div class="tb-notif-panel" id="tbNotifPanel">
+    ${notifPanelInner.replace('id="sbNotifList"','id="tbNotifList"')}
   </div>`
 }
 
@@ -142,7 +263,6 @@ function buildSidebarHTML(activePage) {
 async function loadBadges(userId, userCity) {
   const city = userCity || 'กรุงเทพมหานคร'
 
-  // Quest badge — นับเฉพาะ daily วันนี้ที่ยังไม่ได้ทำ
   const TZ = 'Asia/Bangkok'
   const todayStr    = new Date().toLocaleDateString('sv-SE', { timeZone: TZ })
   const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1)
@@ -157,72 +277,269 @@ async function loadBadges(userId, userCity) {
     return new Date(ts).toLocaleDateString('sv-SE', { timeZone: TZ })
   }
 
-  // ดึงเฉพาะ daily quests
+  // Quest badge
   const { data: quests } = await supabase.from('quests')
     .select('id, type').eq('is_active', true).eq('type', 'daily')
-
-  // ดึง user_quests ล่าสุด 100 รายการ
   const { data: uqAll } = await supabase.from('user_quests')
     .select('quest_id, status, submitted_at, created_at')
     .eq('user_id', userId)
     .order('submitted_at', { ascending: false })
-    .limit(100)
+    .limit(50)
 
-  // กรองเฉพาะ daily ที่ทำวันนี้ (ไม่รวม weekly ไม่งั้น daily เมื่อวานจะโชว์ข้ามวัน)
-  const uqMap = {}
-  ;(uqAll || []).forEach(uq => {
-    const d = toThaiDate(uq.submitted_at || uq.created_at)
-    if (d === todayStr) uqMap[uq.quest_id] = uq
-  })
-
-  // นับ daily quest ที่ยังไม่ได้ทำวันนี้
-  const notStarted = (quests || []).filter(q => {
-    const uq = uqMap[q.id]
-    return !uq || uq.status === 'in_progress'
-  }).length
-
+  const doneToday = new Set(
+    (uqAll || [])
+      .filter(uq => {
+        const d = toThaiDate(uq.submitted_at || uq.created_at)
+        return d === todayStr && (uq.status === 'approved' || uq.status === 'pending_review')
+      })
+      .map(uq => uq.quest_id)
+  )
+  const remaining = (quests || []).filter(q => !doneToday.has(q.id)).length
   const qBadge = document.getElementById('navQuestBadge')
   if (qBadge) {
-    if (notStarted > 0) {
-      qBadge.textContent = notStarted > 99 ? '99+' : notStarted
+    if (remaining > 0) {
+      qBadge.textContent = remaining > 99 ? '99+' : remaining
       qBadge.style.display = 'inline'
     } else {
       qBadge.style.display = 'none'
     }
   }
 
-  // Verify badge — pending in same city, not voted yet
-  const { data: pendingV } = await supabase.from('user_quests')
+  // Verify badge
+  const { data: pending } = await supabase
+    .from('user_quests')
     .select('id, users!inner(city)')
     .eq('status', 'pending_review')
     .eq('users.city', city)
     .neq('user_id', userId)
-  const { data: myVotes } = await supabase.from('quest_verifications')
-    .select('user_quest_id').eq('voter_id', userId)
+  const { data: myVotes } = await supabase
+    .from('quest_verifications')
+    .select('user_quest_id')
+    .eq('voter_id', userId)
   const votedIds = new Set((myVotes || []).map(v => v.user_quest_id))
-  const notVoted = (pendingV || []).filter(p => !votedIds.has(p.id)).length
+  const notVotedCount = (pending || []).filter(p => !votedIds.has(p.id)).length
   const vBadge = document.getElementById('navVerifyBadge')
-  if (vBadge && notVoted > 0) {
-    vBadge.textContent = notVoted > 99 ? '99+' : notVoted
-    vBadge.style.display = 'inline'
-  }
-
-  // Messages badge — นับข้อความที่คนอื่นส่งมาหลังจากที่เราเปิดอ่านครั้งล่าสุด
-  const lastRead = localStorage.getItem('nexus_msg_last_read') || '2000-01-01T00:00:00Z'
-  const { count: mc } = await supabase.from('messages')
-    .select('*', { count: 'exact', head: true })
-    .like('channel', `dm:%${userId}%`)
-    .neq('sender_id', userId)
-    .gt('created_at', lastRead)
-  const mBadge = document.getElementById('navMsgBadge')
-  if (mBadge) {
-    if (mc > 0) {
-      mBadge.textContent = '●'
-      mBadge.style.display = 'inline'
+  if (vBadge) {
+    if (notVotedCount > 0) {
+      vBadge.textContent = notVotedCount > 99 ? '99+' : notVotedCount
+      vBadge.style.display = 'inline'
     } else {
-      mBadge.style.display = 'none'
+      vBadge.style.display = 'none'
     }
   }
+
+  // Messages badge — ลบออกจาก nav แล้ว ไม่ต้องโหลด
+}
+
+// ─── NOTIFICATION SYSTEM ──────────────────────────────────────
+async function loadNotifications(userId) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  if (error) return
+  // กรอง deletedIds ออก
+  _notifList = (data || []).filter(n => !_deletedIds.has(n.id))
+  renderNotifDropdown()
+  updateBellDot()
+}
+
+function renderNotifDropdown() {
+  // render ทั้ง desktop (#sbNotifList) และ mobile (#tbNotifList)
+  const lists = [
+    document.getElementById('sbNotifList'),
+    document.getElementById('tbNotifList'),
+  ].filter(Boolean)
+
+  const html = _notifList.length === 0
+    ? `<div class="sb-notif-empty">ไม่มีการแจ้งเตือน</div>`
+    : _notifList.map(n => {
+        const icon = getNotifIcon(n)
+        const time = timeAgo(n.created_at)
+        return `
+          <div class="sb-notif-item ${n.is_read ? '' : 'unread'}" id="sbnotif-${n.id}" onclick="window._sbMarkRead(${n.id})">
+            <div class="sb-notif-icon">${icon}</div>
+            <div class="sb-notif-body">
+              <div class="sb-notif-title">${esc(n.title || 'แจ้งเตือน')}</div>
+              <div class="sb-notif-text">${esc(n.body || '')}</div>
+              <div class="sb-notif-time">${time}</div>
+            </div>
+            <button class="sb-notif-del" onclick="event.stopPropagation();window._sbDeleteNotif(${n.id})" title="ลบ">✕</button>
+          </div>`
+      }).join('')
+
+  lists.forEach(el => { el.innerHTML = html })
+}
+
+function updateBellDot() {
+  const unread = _notifList.filter(n => !n.is_read).length
+  const dots = [
+    document.getElementById('sbBellDot'),
+    document.getElementById('tbBellDot'),
+  ]
+  dots.forEach(d => {
+    if (!d) return
+    d.style.display = unread > 0 ? 'block' : 'none'
+  })
+}
+
+function getNotifIcon(n) {
+  const t = ((n.title || '') + (n.body || '')).toLowerCase()
+  if (t.includes('level') || t.includes('เลเวล')) return '⚡'
+  if (t.includes('quest') || t.includes('เควส') || t.includes('หลักฐาน')) return '📋'
+  if (t.includes('badge') || t.includes('แบดจ์')) return '🏅'
+  if (t.includes('ฉายา') || t.includes('title')) return '👑'
+  if (t.includes('guild') || t.includes('กิลด์')) return '🏰'
+  if (t.includes('crystal')) return '💎'
+  if (t.includes('streak')) return '🔥'
+  if (t.includes('message') || t.includes('ข้อความ')) return '💬'
+  return '🔔'
+}
+
+function esc(s) { return (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+function timeAgo(ts) {
+  if (!ts) return ''
+  const diff = Date.now() - new Date(ts).getTime()
+  const m = Math.floor(diff / 60000)
+  const h = Math.floor(diff / 3600000)
+  const d = Math.floor(diff / 86400000)
+  if (m < 1) return 'เมื่อกี้'
+  if (m < 60) return `${m} น.ที่แล้ว`
+  if (h < 24) return `${h} ชม.ที่แล้ว`
+  if (d < 7) return `${d} วันที่แล้ว`
+  return new Date(ts).toLocaleDateString('th-TH', { day:'numeric', month:'short' })
+}
+
+// ── Actions (window-exposed เพราะ onclick inline) ──
+window._sbMarkRead = async function(id) {
+  const notif = _notifList.find(n => n.id === id)
+  if (!notif || notif.is_read) return
+  await supabase.from('notifications').update({ is_read: true }).eq('id', id)
+  notif.is_read = true
+  renderNotifDropdown()
+  updateBellDot()
+}
+
+window._sbDeleteNotif = async function(id) {
+  _deletedIds.add(id)  // mark deleted ก่อนเลย ป้องกัน realtime event ดึงกลับ
+  _notifList = _notifList.filter(n => n.id !== id)
+  renderNotifDropdown()
+  updateBellDot()
+  await supabase.from('notifications').delete().eq('id', id).eq('user_id', _notifUserId)
+}
+
+window._sbMarkAllRead = async function() {
+  const unread = _notifList.filter(n => !n.is_read)
+  if (!unread.length) return
+  await supabase.from('notifications')
+    .update({ is_read: true })
+    .eq('user_id', _notifUserId)
+    .eq('is_read', false)
+  _notifList.forEach(n => n.is_read = true)
+  renderNotifDropdown()
+  updateBellDot()
+}
+
+window._sbDeleteAllRead = async function() {
+  const read = _notifList.filter(n => n.is_read)
+  if (!read.length) return
+  read.forEach(n => _deletedIds.add(n.id))
+  await supabase.from('notifications')
+    .delete()
+    .eq('user_id', _notifUserId)
+    .eq('is_read', true)
+  _notifList = _notifList.filter(n => !n.is_read)
+  renderNotifDropdown()
+  updateBellDot()
+}
+
+// ── Bell toggle ──
+function initBellToggle() {
+  // Desktop bell
+  const sbBtn   = document.getElementById('sbBellBtn')
+  const sbPanel = document.getElementById('sbNotifPanel')
+
+  if (sbBtn && sbPanel) {
+    sbBtn.addEventListener('click', e => {
+      e.stopPropagation()
+      _notifOpen = !_notifOpen
+      sbPanel.classList.toggle('open', _notifOpen)
+    })
+  }
+
+  // Mobile bell
+  const tbBtn   = document.getElementById('tbBellBtn')
+  const tbPanel = document.getElementById('tbNotifPanel')
+  if (tbBtn && tbPanel) {
+    tbBtn.addEventListener('click', e => {
+      e.stopPropagation()
+      _notifOpen = !_notifOpen
+      tbPanel.classList.toggle('open', _notifOpen)
+    })
+  }
+
+  // click outside → close
+  document.addEventListener('click', e => {
+    const inSbPanel = sbPanel?.contains(e.target) || sbBtn?.contains(e.target)
+    const inTbPanel = tbPanel?.contains(e.target) || tbBtn?.contains(e.target)
+    if (!inSbPanel && !inTbPanel && _notifOpen) {
+      _notifOpen = false
+      sbPanel?.classList.remove('open')
+      tbPanel?.classList.remove('open')
+    }
+  })
+}
+
+// ── Realtime subscribe ──
+function subscribeNotifRealtime(userId) {
+  if (_notifChannel) {
+    supabase.removeChannel(_notifChannel)
+  }
+  _notifChannel = supabase.channel(`sb_notif_${userId}`)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'notifications',
+      filter: `user_id=eq.${userId}`
+    }, payload => {
+      // ถ้า id อยู่ใน deletedIds แปลว่าเราลบไปแล้ว ignore
+      if (_deletedIds.has(payload.new.id)) return
+      // ถ้ามีอยู่แล้วก็ไม่เพิ่มซ้ำ
+      if (_notifList.find(n => n.id === payload.new.id)) return
+      _notifList.unshift(payload.new)
+      renderNotifDropdown()
+      updateBellDot()
+    })
+    .on('postgres_changes', {
+      event: 'DELETE', schema: 'public', table: 'notifications',
+      filter: `user_id=eq.${userId}`
+    }, payload => {
+      _notifList = _notifList.filter(n => n.id !== payload.old.id)
+      renderNotifDropdown()
+      updateBellDot()
+    })
+    .subscribe()
+}
+
+// ─── AUTO THEME COLOR ─────────────────────────────────────────
+// ดึง --accent หรือ --cyan จากหน้านั้น แล้ว set เป็น --sb-accent ให้ sidebar
+function applyThemeColor() {
+  const rootStyle = getComputedStyle(document.documentElement)
+  // ลำดับ priority: --accent → --cyan (ถ้าไม่ใช่ค่า default #00f5ff)
+  const accent = rootStyle.getPropertyValue('--accent').trim()
+  const cyan   = rootStyle.getPropertyValue('--cyan').trim()
+
+  let themeColor = '#00f5ff' // default
+  if (accent && accent !== '') {
+    themeColor = accent
+  } else if (cyan && cyan !== '' && cyan !== '#00f5ff') {
+    themeColor = cyan
+  }
+
+  // set ลงไปเป็น --sb-accent ทับ
+  document.documentElement.style.setProperty('--sb-accent', themeColor)
 }
 
 // ─── LOAD USER ───────────────────────────────────────────────
@@ -242,7 +559,6 @@ async function loadSidebarUser(userId, activePage = '') {
         })()
       : `https://api.dicebear.com/9.x/pixel-art/svg?seed=nexus&size=40`
 
-  // Set CSS var for class color
   const suUser = document.getElementById('sidebarUser')
   if (suUser) suUser.style.setProperty('--sb-cls', CLASS_COLOR[cls] || '#00f5ff')
 
@@ -257,9 +573,8 @@ async function loadSidebarUser(userId, activePage = '') {
     const iconSvg = CLASS_ICONS[cls] ? `<svg width="12" height="12" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px" aria-hidden="true">${CLASS_ICONS[cls]}</svg>` : ''
     suClass.innerHTML = `${iconSvg}${cls.toUpperCase()}`
   }
-  if (suLv)     suLv.textContent = `LV.${p.level || 1}`
+  if (suLv) suLv.textContent = `LV.${p.level || 1}`
 
-  // inject ADMIN link เฉพาะ is_admin = true
   if (p.is_admin) {
     const nav = document.querySelector('.nav-menu')
     if (nav) {
@@ -278,16 +593,14 @@ async function loadSidebarUser(userId, activePage = '') {
 
 // ─── INIT EVENTS ─────────────────────────────────────────────
 function initEvents() {
-  const overlay  = document.getElementById('sidebarOverlay')
-  const sidebar  = document.getElementById('sidebar')
-  const burger   = document.getElementById('burgerBtn')
-  const signout  = document.getElementById('signoutBtn')
+  const overlay = document.getElementById('sidebarOverlay')
+  const burger  = document.getElementById('burgerBtn')
+  const signout = document.getElementById('signoutBtn')
 
   if (overlay) overlay.addEventListener('click', closeSidebar)
   if (burger)  burger.addEventListener('click', openSidebar)
   if (signout) signout.addEventListener('click', handleSignOut)
 
-  // expose globals สำหรับ onclick inline ที่อาจยังมีใน HTML เก่า
   window.openSidebar  = openSidebar
   window.closeSidebar = closeSidebar
 }
@@ -306,22 +619,12 @@ async function handleSignOut() {
 }
 
 // ─── MAIN EXPORT ─────────────────────────────────────────────
-/**
- * initSidebar(activePage, options?)
- * @param {string} activePage  - nav id ปัจจุบัน เช่น 'dashboard', 'quests'
- * @param {object} options
- *   - skipAuth: boolean  (default false) — ถ้า true ไม่เรียก requireAuth
- *   - container: string  (default '#sidebar-root') — selector ที่จะ inject
- *
- * @returns {{ user, profile }} — session user และ profile data
- */
 export async function initSidebar(activePage = '', options = {}) {
   const {
     skipAuth  = false,
     container = '#sidebar-root'
   } = options
 
-  // 1. Auth check
   let session
   if (!skipAuth) {
     session = await requireAuth('./login.html')
@@ -334,41 +637,47 @@ export async function initSidebar(activePage = '', options = {}) {
   const userId = session?.user?.id
   if (!userId) return {}
 
-  // 2. Inject CSS
+  // Apply theme color ก่อน inject CSS (ดึง --accent จากหน้านั้น)
+  applyThemeColor()
+
   if (!document.getElementById('sidebar-css')) {
     document.head.insertAdjacentHTML('beforeend', SIDEBAR_CSS)
   }
 
-  // 3. Inject HTML
   const root = document.querySelector(container)
   if (root) {
     root.innerHTML = buildSidebarHTML(activePage)
   } else {
-    // fallback: inject ก่อน body content แรก
     document.body.insertAdjacentHTML('afterbegin', buildSidebarHTML(activePage))
   }
 
-  // 4. Init events
   initEvents()
+  initBellToggle()
 
-  // 5. Load user + badges พร้อมกัน
+  // Load user + badges + notifications พร้อมกัน
+  _notifUserId = userId
   const profile = await loadSidebarUser(userId, activePage)
-  if (profile) await loadBadges(userId, profile.city)
+  if (profile) {
+    await Promise.all([
+      loadBadges(userId, profile.city),
+      loadNotifications(userId),
+    ])
+  }
+
+  // Subscribe realtime notifications
+  subscribeNotifRealtime(userId)
 
   return { user: session.user, profile }
 }
 
 // ─── UTILITY EXPORTS ─────────────────────────────────────────
-/** อัพเดต badge ใหม่หลัง action (เรียกจากหน้าที่ต้องการ refresh badge) */
 export async function refreshSidebarBadges(userId, city) {
   await loadBadges(userId, city)
 }
 
-/** เปลี่ยน avatar ใน sidebar โดยไม่ต้อง reload — รับ avatarUrl (direct URL) หรือ avatarSeed (seed string) */
 export function updateSidebarAvatar(avatarSeedOrUrl) {
   const img = document.getElementById('suAvatar')
   if (!img || !avatarSeedOrUrl) return
-  // ถ้าเป็น URL โดยตรง (มี http หรือ /) ใช้เลย
   if (avatarSeedOrUrl.startsWith('http') || avatarSeedOrUrl.startsWith('/')) {
     img.src = avatarSeedOrUrl
     return
@@ -377,7 +686,6 @@ export function updateSidebarAvatar(avatarSeedOrUrl) {
   img.src = `https://api.dicebear.com/9.x/${style||'pixel-art'}/svg?seed=${encodeURIComponent(s||'nexus')}&backgroundColor=${bg||'0a1628'}&size=40`
 }
 
-/** อัพเดตชื่อใน sidebar */
 export function updateSidebarName(displayName) {
   const el = document.getElementById('suName')
   if (el) el.textContent = displayName
