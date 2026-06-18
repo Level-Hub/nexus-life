@@ -65,24 +65,7 @@ const SIDEBAR_CSS = `
 @keyframes sb-pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--sb-accent)}50%{opacity:0.3;box-shadow:none}}
 .sidebar-tagline{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:#5a8a90}
 
-/* ── BELL BUTTON (desktop — inside sidebar logo row) ── */
-.sb-bell-btn{position:relative;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(0,245,255,0.15);cursor:pointer;flex-shrink:0;transition:border-color 0.2s}
-.sb-bell-btn:hover{border-color:var(--sb-accent)}
-.sb-bell-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ff003c;border-radius:50%;display:none;box-shadow:0 0 6px #ff003c;animation:bell-dot-pulse 1.5s ease-in-out infinite}
-@keyframes bell-dot-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
-
 /* ── NOTIFICATION DROPDOWN ── */
-.sb-notif-panel{
-  position:absolute;top:calc(100% + 8px);right:0;width:320px;
-  background:rgba(1,10,15,0.98);border:1px solid rgba(0,245,255,0.18);
-  backdrop-filter:blur(24px);z-index:9999;
-  max-height:420px;display:flex;flex-direction:column;
-  transform:translateY(-8px);opacity:0;pointer-events:none;
-  transition:all 0.22s cubic-bezier(0.2,0.9,0.4,1.1);
-  box-shadow:0 16px 48px rgba(0,0,0,0.7),0 0 32px rgba(0,245,255,0.04)
-}
-.sb-notif-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}
-
 .sb-notif-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid rgba(0,245,255,0.1);flex-shrink:0}
 .sb-notif-hdr-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--sb-accent)}
 .sb-notif-hdr-actions{display:flex;gap:8px}
@@ -165,7 +148,6 @@ const SIDEBAR_CSS = `
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
-  .sb-notif-panel{display:none!important}
 }
 @media(min-width:769px){
   .tb-notif-panel{display:none!important}
@@ -190,11 +172,8 @@ function buildSidebarHTML(activePage) {
     </a>`
   }).join('\n')
 
-  // Bell SVG
-  const bellSVG = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 2a4 4 0 014 4v3.5l1.5 2H2.5L4 9.5V6a4 4 0 014-4z" stroke="currentColor" stroke-width="1.3" fill="none"/>
-    <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" fill="none"/>
-  </svg>`
+  // Bell icon from icons.js
+  const bellSVG = getIcon('bell')
 
   // Notification panel HTML (shared content, rendered dynamically)
   const notifPanelInner = `
@@ -215,11 +194,6 @@ function buildSidebarHTML(activePage) {
       <div class="sidebar-logo-inner">
         <div class="sidebar-logo-text"><div class="logo-dot"></div>NEXUS LIFE</div>
         <div class="sidebar-tagline">// REAL LIFE MMO</div>
-      </div>
-      <!-- Desktop Bell -->
-      <div style="position:relative">
-        <button class="sb-bell-btn" id="sbBellBtn" title="การแจ้งเตือน">${bellSVG}<span class="sb-bell-dot" id="sbBellDot"></span></button>
-        <div class="sb-notif-panel" id="sbNotifPanel">${notifPanelInner}</div>
       </div>
     </div>
     <div class="sidebar-user" id="sidebarUser" onclick="window.location.href='./profile.html'">
@@ -377,7 +351,6 @@ function renderNotifDropdown() {
 function updateBellDot() {
   const unread = _notifList.filter(n => !n.is_read).length
   const dots = [
-    document.getElementById('sbBellDot'),
     document.getElementById('tbBellDot'),
   ]
   dots.forEach(d => {
@@ -459,18 +432,6 @@ window._sbDeleteAllRead = async function() {
 
 // ── Bell toggle ──
 function initBellToggle() {
-  // Desktop bell
-  const sbBtn   = document.getElementById('sbBellBtn')
-  const sbPanel = document.getElementById('sbNotifPanel')
-
-  if (sbBtn && sbPanel) {
-    sbBtn.addEventListener('click', e => {
-      e.stopPropagation()
-      _notifOpen = !_notifOpen
-      sbPanel.classList.toggle('open', _notifOpen)
-    })
-  }
-
   // Mobile bell
   const tbBtn   = document.getElementById('tbBellBtn')
   const tbPanel = document.getElementById('tbNotifPanel')
@@ -484,11 +445,9 @@ function initBellToggle() {
 
   // click outside → close
   document.addEventListener('click', e => {
-    const inSbPanel = sbPanel?.contains(e.target) || sbBtn?.contains(e.target)
     const inTbPanel = tbPanel?.contains(e.target) || tbBtn?.contains(e.target)
-    if (!inSbPanel && !inTbPanel && _notifOpen) {
+    if (!inTbPanel && _notifOpen) {
       _notifOpen = false
-      sbPanel?.classList.remove('open')
       tbPanel?.classList.remove('open')
     }
   })
