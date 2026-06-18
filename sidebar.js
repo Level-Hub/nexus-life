@@ -398,36 +398,58 @@ window._sbMarkRead = async function(id) {
 }
 
 window._sbDeleteNotif = async function(id) {
-  _deletedIds.add(id)  // mark deleted ก่อนเลย ป้องกัน realtime event ดึงกลับ
+  // Optimistic UI — ลบออกก่อน
+  _deletedIds.add(id)
+  const backup = [..._notifList]
   _notifList = _notifList.filter(n => n.id !== id)
   renderNotifDropdown()
   updateBellDot()
-  await supabase.from('notifications').delete().eq('id', id).eq('user_id', _notifUserId)
+
+  // ลบ DB — ถ้า fail rollback กลับ
+  const { error } = await supabase.from('notifications').delete().eq('id', id).eq('user_id', _notifUserId)
+  if (error) {
+    console.error('[sidebar] delete notif failed:', error.message)
+    _deletedIds.delete(id)
+    _notifList = backup
+    renderNotifDropdown()
+    updateBellDot()
+  }
 }
 
 window._sbMarkAllRead = async function() {
   const unread = _notifList.filter(n => !n.is_read)
   if (!unread.length) return
-  await supabase.from('notifications')
+  const { error } = await supabase.from('notifications')
     .update({ is_read: true })
     .eq('user_id', _notifUserId)
     .eq('is_read', false)
-  _notifList.forEach(n => n.is_read = true)
-  renderNotifDropdown()
-  updateBellDot()
+  if (!error) {
+    _notifList.forEach(n => n.is_read = true)
+    renderNotifDropdown()
+    updateBellDot()
+  }
 }
 
 window._sbDeleteAllRead = async function() {
   const read = _notifList.filter(n => n.is_read)
   if (!read.length) return
   read.forEach(n => _deletedIds.add(n.id))
-  await supabase.from('notifications')
-    .delete()
-    .eq('user_id', _notifUserId)
-    .eq('is_read', true)
+  const backup = [..._notifList]
   _notifList = _notifList.filter(n => !n.is_read)
   renderNotifDropdown()
   updateBellDot()
+
+  const { error } = await supabase.from('notifications')
+    .delete()
+    .eq('user_id', _notifUserId)
+    .eq('is_read', true)
+  if (error) {
+    console.error('[sidebar] delete all read failed:', error.message)
+    read.forEach(n => _deletedIds.delete(n.id))
+    _notifList = backup
+    renderNotifDropdown()
+    updateBellDot()
+  }
 }
 
 // ── Bell toggle ──
