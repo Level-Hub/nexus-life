@@ -258,6 +258,34 @@ const GLOBAL_SVG_DEFS = `
       </feMerge>
     </filter>
 
+    <!-- ── SHOP EXCLUSIVE GRADIENTS ── -->
+    <linearGradient id="shadowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#330066"/>
+      <stop offset="50%"  stop-color="#9900ff"/>
+      <stop offset="100%" stop-color="#cc44ff"/>
+    </linearGradient>
+
+    <linearGradient id="frostGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#88ddff"/>
+      <stop offset="50%"  stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#44aaff"/>
+    </linearGradient>
+
+    <linearGradient id="voidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#000033"/>
+      <stop offset="50%"  stop-color="#8800ff"/>
+      <stop offset="100%" stop-color="#aa44ff"/>
+    </linearGradient>
+
+    <linearGradient id="rainbowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"    stop-color="#ff0080"/>
+      <stop offset="20%"   stop-color="#ff4400"/>
+      <stop offset="40%"   stop-color="#ffaa00"/>
+      <stop offset="60%"   stop-color="#44ff00"/>
+      <stop offset="80%"   stop-color="#00ddff"/>
+      <stop offset="100%"  stop-color="#8800ff"/>
+    </linearGradient>
+
   </defs>
 </svg>`
 

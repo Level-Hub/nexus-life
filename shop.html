@@ -120,6 +120,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .btn-buy.owned{border-color:var(--green);color:var(--green);background:rgba(68,255,136,0.06)}
 .btn-buy.owned:hover{background:rgba(68,255,136,0.12)}
 
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
 /* SEASON PASS CARD */
 .season-card{background:linear-gradient(135deg,rgba(176,68,255,0.1),rgba(255,170,0,0.06));border:1px solid rgba(176,68,255,0.4);padding:24px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden}
 .season-card::after{content:'SEASON PASS';position:absolute;top:14px;right:14px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--purple);opacity:0.7}
@@ -448,8 +450,25 @@ let currentUser = null
 let userProfile = null
 let allItems = []
 let myPurchases = []
+let myActivePasses = []
 let selectedItem = null
 let currentCat = 'all'
+
+// ─── PASS UTILITY (ใช้ได้จากหน้าอื่นผ่าน window.getActivePassInfo) ───────
+// คืน { tier, xpMultiplier, questSlots, daysLeft, expiresAt } หรือ null ถ้าไม่มี pass
+window.getActivePassInfo = function() {
+  if (!myActivePasses || !myActivePasses.length) return null
+  const now = new Date()
+  const active = myActivePasses.find(p => new Date(p.expires_at) > now)
+  if (!active) return null
+  const daysLeft = Math.max(0, Math.ceil((new Date(active.expires_at) - now) / 86400000))
+  const configs = {
+    premium:  { xpMultiplier: 2.0, questSlots: 3, dailyCrystal: 5 },
+    standard: { xpMultiplier: 1.5, questSlots: 1, dailyCrystal: 0 }
+  }
+  const cfg = configs[active.pass_type] || { xpMultiplier: 1.0, questSlots: 0, dailyCrystal: 0 }
+  return { tier: active.pass_type, daysLeft, expiresAt: active.expires_at, ...cfg }
+}
 
 // ─── AVATAR HELPER ───────────────────────────────────────
 function getAvatarUrl(avatarSeed, size = 80) {
@@ -536,7 +555,28 @@ function renderFeatured() {
   document.getElementById('featuredTitle').textContent = featured.name
   document.getElementById('featuredDesc').textContent = featured.description || ''
   document.getElementById('featuredPrice').innerHTML = `${getIcon('crystal',13)} ${featured.crystal_cost}`
-  document.getElementById('featuredBtn').onclick = () => openConfirm(featured.id)
+
+  const featBtn = document.getElementById('featuredBtn')
+  if (featured.category === 'season_pass') {
+    const tier = featured.metadata?.pass_type || featured.metadata?.tier || 'standard'
+    const activePass = myActivePasses.find(p => p.pass_type === tier)
+    if (activePass) {
+      const daysLeft = Math.max(0, Math.ceil((new Date(activePass.expires_at) - new Date()) / 86400000))
+      featBtn.textContent = `ACTIVE — ${daysLeft}d LEFT`
+      featBtn.disabled = true
+      featBtn.style.opacity = '0.5'
+      featBtn.style.cursor = 'not-allowed'
+    } else {
+      featBtn.innerHTML = 'GET NOW <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
+      featBtn.disabled = false
+      featBtn.style.opacity = ''
+      featBtn.style.cursor = ''
+      featBtn.onclick = () => openConfirm(featured.id)
+    }
+  } else {
+    featBtn.innerHTML = 'GET NOW <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'
+    featBtn.onclick = () => openConfirm(featured.id)
+  }
   banner.style.display = 'flex'
 }
 
@@ -558,12 +598,22 @@ function renderShop() {
     if (item.duration_hours) tags.push(`<span class="item-tag duration">${item.duration_hours}H</span>`)
 
     if (item.category === 'season_pass') {
-      const feats = item.description ? item.description.split('+').map(f => f.trim()) : []
+      const tier = item.metadata?.pass_type || item.metadata?.tier || 'standard'
+      const activePass = myActivePasses.find(p => p.pass_type === tier)
+      const daysLeft = activePass ? Math.max(0, Math.ceil((new Date(activePass.expires_at) - new Date()) / 86400000)) : 0
+      const feats = item.metadata?.perks || (item.description ? item.description.split('+').map(f => f.trim()) : [])
+      const xpMult = tier === 'premium' ? '2x' : tier === 'standard' ? '1.5x' : null
       return `
         <div class="item-card season-card rarity-${rarity}" data-cat="${item.category}">
           <div>
             <div class="item-category-tag">${catLabel[item.category] || item.category}</div>
             <div class="item-name">${item.name}</div>
+            ${activePass
+              ? `<div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--purple);margin-top:4px;letter-spacing:1px;display:flex;align-items:center;gap:6px">
+                  <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--purple);animation:pulse 1.5s ease-in-out infinite"></span>
+                  ใช้งานได้อีก ${daysLeft} วัน${xpMult ? ` · XP ${xpMult}` : ''}
+                </div>`
+              : ''}
           </div>
           <div class="season-features">
             ${feats.map(f => `<div class="season-feature">${f}</div>`).join('')}
@@ -572,8 +622,8 @@ function renderShop() {
             <div class="item-price">${getIcon('diamond',11)} ${item.crystal_cost}</div>
             <div style="display:flex;gap:6px">
               <button class="btn-detail" onclick="openDetail(${item.id})">INFO</button>
-              <button class="btn-buy${owned?' owned':''}" onclick="openConfirm(${item.id})" ${owned?'disabled':''}>
-                ${owned ? 'OWNED' : 'GET &#x2192;'}
+              <button class="btn-buy${activePass?' owned':''}" onclick="openConfirm(${item.id})" ${activePass?'disabled':''}>
+                ${activePass ? `OWNED (${daysLeft}d)` : 'GET &#x2192;'}
               </button>
             </div>
           </div>
@@ -675,10 +725,25 @@ window.openDetail = function(itemId) {
   document.getElementById('detailPrice').innerHTML = `${getIcon('diamond',13)} ${item.crystal_cost}`
 
   const buyBtn = document.getElementById('detailBuyBtn')
-  if (owned && !item.is_consumable) {
+  // season_pass: เช็คจาก myActivePasses (มี expires_at จริง) ไม่ใช่ myPurchases
+  let isBlockedFromBuy = false
+  if (item.category === 'season_pass') {
+    const tier = item.metadata?.pass_type || item.metadata?.tier || 'standard'
+    const activePass = myActivePasses.find(p => p.pass_type === tier)
+    if (activePass) {
+      const daysLeft = Math.max(0, Math.ceil((new Date(activePass.expires_at) - new Date()) / 86400000))
+      buyBtn.textContent = `ACTIVE — ${daysLeft}d LEFT`
+      buyBtn.disabled = true
+      isBlockedFromBuy = true
+    }
+  } else if (owned && !item.is_consumable) {
+    isBlockedFromBuy = true
+  }
+
+  if (isBlockedFromBuy && item.category !== 'season_pass') {
     buyBtn.textContent = 'OWNED'
     buyBtn.disabled = true
-  } else {
+  } else if (!isBlockedFromBuy) {
     buyBtn.textContent = 'BUY →'
     buyBtn.disabled = false
     buyBtn.onclick = () => { closeDetail(); openConfirm(itemId) }
@@ -751,8 +816,17 @@ window.doPurchase = async function() {
     }
   }
 
-  // FIX: เช็ค non-consumable ซื้อแล้วหรือยัง
-  if (!selectedItem.is_consumable) {
+  // FIX: เช็คว่ามี Season Pass แบบนี้ใช้งานอยู่หรือยัง (หมดอายุแล้วซื้อใหม่ได้)
+  if (selectedItem.category === 'season_pass') {
+    const tier = selectedItem.metadata?.pass_type || selectedItem.metadata?.tier || 'standard'
+    const activePass = myActivePasses.find(p => p.pass_type === tier)
+    if (activePass) {
+      const daysLeft = Math.max(0, Math.ceil((new Date(activePass.expires_at) - new Date()) / 86400000))
+      msgEl.className = 'modal-msg error'; msgEl.textContent = `คุณมี Season Pass นี้อยู่แล้ว ใช้งานได้อีก ${daysLeft} วัน`
+      btn.disabled = false; btn.innerHTML = 'CONFIRM <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline-block;vertical-align:middle"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>'; return
+    }
+  } else if (!selectedItem.is_consumable) {
+    // FIX: เช็ค non-consumable ซื้อแล้วหรือยัง
     const alreadyOwned = myPurchases.some(p => p.item_id === selectedItem.id)
     if (alreadyOwned) {
       msgEl.className = 'modal-msg error'; msgEl.textContent = 'คุณมีสินค้านี้แล้ว!'
@@ -788,14 +862,37 @@ window.doPurchase = async function() {
     ? new Date(Date.now() + selectedItem.duration_hours * 3600000).toISOString()
     : null
 
-  await supabase.from('user_purchases').insert({
+  const { data: purchaseRow } = await supabase.from('user_purchases').insert({
     user_id: currentUser.id,
     item_id: selectedItem.id,
     transaction_id: tx?.id || null,
     crystal_spent: selectedItem.crystal_cost,
     expires_at: expiresAt,
     is_active: true
-  })
+  }).select().single()
+
+  // 3.5 Season Pass: บันทึก record ใน user_passes แยกจาก user_purchases
+  // (started_at/expires_at ใช้ default ของ DB เอง = now() / now()+30 วัน)
+  if (selectedItem.category === 'season_pass') {
+    const tier = selectedItem.metadata?.pass_type || selectedItem.metadata?.tier || 'standard'
+    const passExpiresAt = new Date(Date.now() + 30 * 86400000).toISOString()
+
+    const { error: passErr } = await supabase.from('user_passes').insert({
+      user_id: currentUser.id,
+      pass_type: tier,
+      expires_at: passExpiresAt,
+      purchase_id: purchaseRow?.id ? Number(purchaseRow.id) : null
+    })
+    if (passErr) {
+      msgEl.className = 'modal-msg error'; msgEl.textContent = 'ซื้อสำเร็จแต่บันทึก Pass ไม่สำเร็จ: ' + passErr.message
+    } else {
+      // Sync users.pass_type + pass_expires_at (fallback กรณี trigger delay + ให้ userProfile อัปเดตทันที)
+      await supabase.from('users').update({
+        pass_type: tier,
+        pass_expires_at: passExpiresAt
+      }).eq('id', currentUser.id)
+    }
+  }
 
   // FIX: wallet update — บวกสะสม ไม่ overwrite, ลบ updated_at (ไม่มีใน schema)
   const { data: wData } = await supabase.from('wallet')
@@ -815,21 +912,38 @@ window.doPurchase = async function() {
 
 // ─── LOAD DATA ───────────────────────────────────────────
 async function loadData() {
-  const [itemsRes, profileRes, purchasesRes] = await Promise.all([
+  const [itemsRes, profileRes, purchasesRes, passesRes] = await Promise.all([
     supabase.from('shop_items').select('*').eq('is_active', true).order('crystal_cost'),
     supabase.from('users').select('*').eq('id', currentUser.id).single(),
-    supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).eq('is_active', true)
+    supabase.from('user_purchases').select('*').eq('user_id', currentUser.id).eq('is_active', true),
+    supabase.from('user_passes').select('*').eq('user_id', currentUser.id).gt('expires_at', new Date().toISOString())
   ])
 
   allItems = itemsRes.data || []
   userProfile = profileRes.data
   myPurchases = purchasesRes.data || []
+  myActivePasses = passesRes.data || []
 
   // อัปเดต wallet UI จาก users.gold / users.crystal
   const goldEl = document.getElementById('goldBalance')
   const crystalEl = document.getElementById('crystalBalance')
   if (goldEl) goldEl.textContent = (userProfile?.gold || 0).toLocaleString()
   if (crystalEl) crystalEl.textContent = (userProfile?.crystal || 0).toLocaleString()
+
+  // Auto-clear users.pass_type ถ้า pass หมดอายุแล้วแต่ยังค้างอยู่ใน users
+  // (กรณีที่ cron/trigger ยังไม่ได้ทำงาน ป้องกัน ghost pass แสดงผลผิดในหน้าอื่น)
+  if (userProfile?.pass_type && userProfile?.pass_expires_at) {
+    const passStillActive = myActivePasses.some(p => p.pass_type === userProfile.pass_type)
+    if (!passStillActive) {
+      // Pass หมดอายุแล้ว เคลียร์ field ใน users
+      await supabase.from('users').update({
+        pass_type: null,
+        pass_expires_at: null
+      }).eq('id', currentUser.id)
+      userProfile.pass_type = null
+      userProfile.pass_expires_at = null
+    }
+  }
 }
 
 // ─── INIT ────────────────────────────────────────────────

@@ -250,6 +250,48 @@ const TITLE_EFFECT_MAP = {
     effectClass: 'nx-fx-legendary-star',
     icon: `<path d="M8 2L2 5v4c0 3 2.5 5 6 6 3.5-1 6-3 6-6V5z" stroke="url(#goldStroke)" stroke-width="1.5" fill="url(#goldGrad)" fill-opacity="0.08" stroke-linejoin="round" filter="url(#glowGold)"/><polygon points="8,5 9.5,9 8,8 6.5,9" fill="url(#rubyGrad)"/>`,
   },
+
+  // ── SHOP EXCLUSIVE TITLES ──────────────────────────────────
+  'The Shadow': {
+    effectClass: 'nx-fx-shadow-pulse',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#shadowGrad)" stroke-width="1.3" fill="url(#shadowGrad)" fill-opacity="0.08"/><path d="M5 6c0-1.7 1.3-3 3-3s3 1.3 3 3c0 1.2-.7 2.2-1.7 2.7L8 14l-1.3-5.3C5.7 8.2 5 7.2 5 6z" stroke="url(#shadowGrad)" stroke-width="1.2" fill="none"/>`,
+  },
+  'Neon Ghost': {
+    effectClass: 'nx-fx-glow-blue',
+    icon: `<path d="M5 14V8a3 3 0 016 0v6l-1.5-1.5-1.5 1.5-1.5-1.5L5 14z" stroke="url(#cyanGrad)" stroke-width="1.3" fill="url(#cyanGrad)" fill-opacity="0.08"/><circle cx="6.5" cy="8.5" r="0.8" fill="url(#cyanGrad)"/><circle cx="9.5" cy="8.5" r="0.8" fill="url(#cyanGrad)"/>`,
+  },
+  'Thunder God': {
+    effectClass: 'nx-fx-lightning',
+    icon: `<polygon points="10,1 3,9 8,9 6,15 13,7 8,7" stroke="url(#lightningGrad)" stroke-width="1.6" fill="url(#lightningGrad)" fill-opacity="0.3" stroke-linejoin="round" filter="url(#glowWarm)"/><circle cx="8" cy="8" r="1.5" fill="url(#goldGrad)" opacity="0.9"/>`,
+  },
+  'Frost Queen': {
+    effectClass: 'nx-fx-frost',
+    icon: `<path d="M8 1v14M1 8h14M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="url(#frostGrad)" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="8" r="2.2" stroke="url(#frostGrad)" stroke-width="1.2" fill="url(#frostGrad)" fill-opacity="0.15"/><circle cx="8" cy="8" r="0.8" fill="url(#frostGrad)"/>`,
+  },
+  'Blood Moon': {
+    effectClass: 'nx-fx-fire',
+    icon: `<path d="M8 2a6 6 0 100 12A4 4 0 018 2z" stroke="url(#rubyGrad)" stroke-width="1.3" fill="url(#rubyGrad)" fill-opacity="0.15" filter="url(#glowWarm)"/><circle cx="8" cy="8" r="2.5" stroke="url(#rubyGrad)" stroke-width="1.2" fill="none"/><circle cx="8" cy="8" r="0.9" fill="url(#rubyGrad)" opacity="0.9"/>`,
+  },
+  'Solar Flare': {
+    effectClass: 'nx-fx-fire',
+    icon: `<circle cx="8" cy="8" r="3" stroke="url(#fireGrad)" stroke-width="1.4" fill="url(#goldGrad)" fill-opacity="0.25" filter="url(#glowGold)"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.5 1.5M11 11l1.5 1.5M12.5 3.5L11 5M5 11l-1.5 1.5" stroke="url(#fireGrad)" stroke-width="1.4" stroke-linecap="round"/>`,
+  },
+  'Chaos Bringer': {
+    effectClass: 'nx-fx-chaos',
+    icon: `<path d="M8 2l1.8 5.5H16l-4.9 3.5 1.8 5.5L8 13l-4.9 3.5 1.8-5.5L0 7.5h6.2z" stroke="url(#rubyGrad)" stroke-width="1.2" fill="url(#rubyGrad)" fill-opacity="0.12" stroke-linejoin="round"/><circle cx="8" cy="9" r="2" fill="url(#amethystGrad)" fill-opacity="0.5"/>`,
+  },
+  'Eternal Legend': {
+    effectClass: 'nx-fx-legendary-star',
+    icon: `<path d="M8 1l1.5 4.5L14 8l-4.5 1.5L8 14l-1.5-4.5L2 8l4.5-1.5z" stroke="url(#goldStroke)" stroke-width="1.5" filter="url(#glowGold)" fill="url(#goldGrad)" fill-opacity="0.15"/><path d="M8 4l.8 2.4L11 8l-2.2.8L8 11l-.8-2.2L5 8l2.2-.8z" fill="url(#goldGrad)" opacity="0.6"/><circle cx="8" cy="8" r="1" fill="url(#goldRadial)"/>`,
+  },
+  'Void Walker': {
+    effectClass: 'nx-fx-void',
+    icon: `<circle cx="8" cy="8" r="6" stroke="url(#voidGrad)" stroke-width="1.3" fill="none"/><circle cx="8" cy="8" r="3.5" stroke="url(#amethystGrad)" stroke-width="1.1" fill="url(#voidGrad)" fill-opacity="0.2"/><circle cx="8" cy="8" r="1.3" fill="url(#amethystGrad)" opacity="0.9"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1M4 4l.7.7M11.3 11.3l.7.7M4 12l.7-.7M11.3 4.7l.7-.7" stroke="url(#amethystGrad)" stroke-width="1" stroke-linecap="round"/>`,
+  },
+  'Rainbow Nexus': {
+    effectClass: 'nx-fx-rainbow',
+    icon: `<path d="M2 12c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="url(#rainbowGrad)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M4 12c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="url(#cyanGrad)" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M6 12c0-1.1.9-2 2-2s2 .9 2 2" stroke="url(#goldStroke)" stroke-width="1.2" fill="none" stroke-linecap="round"/>`,
+  },
 }
 
 // ── Category-based fallback icon map ──
@@ -677,6 +719,121 @@ export function injectTitleStyles() {
    SPECIAL FX CLASSES
 ═══════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════
+   EFFECT TEXT ANIMATIONS — ตัวหนังสือแต่ละฉายา
+   (override rarity color ด้วย effectClass)
+══════════════════════════════════════════════════ */
+
+/* LIGHTNING — ตัวหนังสือสีเหลืองไฟฟ้า วิ่งสายฟ้า */
+@keyframes lightningText {
+  0%,90%,100% { background-position: -300% center; opacity:1; }
+  92%          { opacity:0.3; }
+  94%          { opacity:1; background-position:300% center; }
+  96%          { opacity:0.5; }
+  98%          { opacity:1; }
+}
+.nx-title-badge.nx-fx-lightning .nx-title-text {
+  background: linear-gradient(90deg,#886600,#ffe566,#ffffff,#ffe566,#ffaa00,#886600) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: lightningText 2s linear infinite !important;
+}
+
+/* FIRE — ตัวหนังสือสีไฟ ส้ม-แดง-เหลือง ลุกไหม้ */
+@keyframes fireText {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.nx-title-badge.nx-fx-fire .nx-title-text {
+  background: linear-gradient(90deg,#cc2200,#ff4400,#ff8800,#ffcc00,#ff4400,#cc2200) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: fireText 1.5s ease-in-out infinite !important;
+}
+
+/* SHIELD — ตัวหนังสือสีฟ้าเหล็ก แข็งแกร่ง */
+@keyframes shieldText {
+  0%,100% { background-position: 0% center; }
+  50%     { background-position: 100% center; }
+}
+.nx-title-badge.nx-fx-shield .nx-title-text {
+  background: linear-gradient(90deg,#003366,#0066cc,#66ccff,#ffffff,#66ccff,#0066cc,#003366) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shieldText 3s ease-in-out infinite !important;
+}
+
+/* GLOW — ตัวหนังสือสีขาว/ฟ้า เรืองแสง */
+@keyframes glowText {
+  0%,100% { filter: brightness(1); opacity:1; }
+  50%      { filter: brightness(1.4); opacity:0.85; }
+}
+.nx-title-badge.nx-fx-glow .nx-title-text {
+  background: linear-gradient(90deg,#aaccff,#ffffff,#aaccff) !important;
+  background-size: 200% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 2.5s linear infinite, glowText 2s ease-in-out infinite !important;
+}
+
+/* GLOW-BLUE — ตัวหนังสือ cyan เรืองแสงฟ้า */
+.nx-title-badge.nx-fx-glow-blue .nx-title-text {
+  background: linear-gradient(90deg,#004488,#00aaff,#44ffff,#ffffff,#44ffff,#00aaff,#004488) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 2s linear infinite !important;
+}
+
+/* GLOW-PURPLE — ตัวหนังสือม่วง เวทย์มนตร์ */
+.nx-title-badge.nx-fx-glow-purple .nx-title-text {
+  background: linear-gradient(90deg,#440066,#9900ff,#dd66ff,#ffffff,#dd66ff,#9900ff,#440066) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 1.8s linear infinite !important;
+}
+
+/* GOLD-PULSE — ตัวหนังสือทอง เต้นเป็นจังหวะ */
+@keyframes goldText {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+.nx-title-badge.nx-fx-gold-pulse .nx-title-text {
+  background: linear-gradient(90deg,#664400,#cc8800,#ffd700,#fff8a0,#ffaa00,#ffd700,#cc8800,#664400) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: goldText 1.5s linear infinite !important;
+}
+
+/* SPIN-RING — ตัวหนังสือเขียว นักสำรวจ */
+@keyframes explorerText {
+  0%,100% { background-position: 0% center; }
+  50%      { background-position: 100% center; }
+}
+.nx-title-badge.nx-fx-spin-ring .nx-title-text {
+  background: linear-gradient(90deg,#004422,#00aa55,#44ff88,#ffffff,#44ff88,#00aa55,#004422) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 2.5s linear infinite !important;
+}
+
+/* LEGENDARY-STAR — ตัวหนังสือทองระยิบระยับ */
+.nx-title-badge.nx-fx-legendary-star .nx-title-text {
+  background: linear-gradient(90deg,#996600,#ffd700,#fff8a0,#ff9500,#ffd700,#fff8a0,#996600) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: goldText 0.9s linear infinite !important;
+  text-shadow: 0 0 20px rgba(255,215,0,0.5);
+}
+
 /* ── LIGHTNING ── */
 .nx-title-badge.nx-fx-lightning .nx-badge-icon-wrap {
   animation: nxShake 2.2s ease-in-out infinite;
@@ -928,6 +1085,124 @@ export function injectTitleStyles() {
 .nx-title-card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
 .nx-title-card-body { position: relative; z-index: 1; }
 .nx-title-text { display: inline; }
+
+/* ── SHOP EXCLUSIVE EFFECTS ── */
+
+/* Shadow Pulse — เงามืดเต้นช้าๆ */
+@keyframes shadowPulse {
+  0%,100% { text-shadow: 0 0 8px #6600aa, 0 0 20px #330066; opacity:1; }
+  50%      { text-shadow: 0 0 20px #9900ff, 0 0 40px #6600aa; opacity:0.8; }
+}
+@keyframes shadowFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
+.nx-title-badge.nx-fx-shadow-pulse .nx-title-text {
+  background: linear-gradient(135deg, #9900ff, #330066, #cc44ff);
+  background-size: 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: shadowPulse 3s ease-in-out infinite, shadowFloat 4s ease-in-out infinite;
+}
+.nx-title-badge.nx-fx-shadow-pulse .nx-badge-icon-wrap {
+  animation: shadowFloat 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px #9900ff);
+}
+
+/* Frost — น้ำแข็งกะพริบ */
+@keyframes frostGlow {
+  0%,100% { text-shadow: 0 0 6px #88ddff, 0 0 14px #44aaff; }
+  50%      { text-shadow: 0 0 16px #ccf0ff, 0 0 32px #88ddff; }
+}
+@keyframes frostShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.nx-title-badge.nx-fx-frost .nx-title-text {
+  background: linear-gradient(90deg, #88ddff, #ffffff, #44aaff, #ccf0ff, #88ddff);
+  background-size: 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: frostShimmer 3s linear infinite, frostGlow 2s ease-in-out infinite;
+}
+.nx-title-badge.nx-fx-frost .nx-badge-icon-wrap {
+  filter: drop-shadow(0 0 5px #88ddff) drop-shadow(0 0 10px #44aaff);
+  animation: frostGlow 2s ease-in-out infinite;
+}
+.nx-title-badge.nx-fx-frost::after {
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  background: linear-gradient(135deg, rgba(136,221,255,0.06), transparent);
+  animation: frostShimmer 4s linear infinite;
+}
+
+/* Chaos — สีสุ่มเปลี่ยนตลอด */
+@keyframes chaosColor {
+  0%   { background-position: 0% 50%; }
+  25%  { background-position: 100% 0%; }
+  50%  { background-position: 100% 100%; }
+  75%  { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes chaosShake {
+  0%,100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-1deg); }
+  40%      { transform: rotate(1deg); }
+  60%      { transform: rotate(-0.5deg); }
+  80%      { transform: rotate(0.5deg); }
+}
+.nx-title-badge.nx-fx-chaos .nx-title-text {
+  background: linear-gradient(45deg, #ff0000, #ff6600, #ff0066, #aa00ff, #ff0000);
+  background-size: 400% 400%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: chaosColor 2s ease infinite;
+}
+.nx-title-badge.nx-fx-chaos .nx-badge-icon-wrap {
+  animation: chaosShake 0.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px #ff0066);
+}
+.nx-title-badge.nx-fx-chaos { animation: chaosShake 4s ease-in-out infinite; }
+
+/* Void — หมุนวนดูดเข้าไป */
+@keyframes voidPulse {
+  0%,100% { text-shadow: 0 0 8px #8800ff, 0 0 20px #4400aa; opacity:1; }
+  50%      { text-shadow: 0 0 20px #aa44ff, 0 0 40px #8800ff; opacity:0.7; }
+}
+@keyframes voidSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.nx-title-badge.nx-fx-void .nx-title-text {
+  background: linear-gradient(135deg, #8800ff, #000033, #aa44ff, #330066);
+  background-size: 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: voidPulse 2.5s ease-in-out infinite, frostShimmer 5s linear infinite;
+}
+.nx-title-badge.nx-fx-void .nx-badge-icon-wrap {
+  animation: voidSpin 8s linear infinite;
+  filter: drop-shadow(0 0 8px #8800ff);
+}
+
+/* Rainbow — สีรุ้งวิ่งตลอด */
+@keyframes rainbowFlow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+@keyframes rainbowBounce {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-2px) scale(1.02); }
+}
+.nx-title-badge.nx-fx-rainbow .nx-title-text {
+  background: linear-gradient(90deg,
+    #ff0080, #ff4400, #ffaa00, #44ff00, #00ddff, #8800ff, #ff0080, #ff4400);
+  background-size: 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: rainbowFlow 3s linear infinite;
+}
+.nx-title-badge.nx-fx-rainbow .nx-badge-icon-wrap {
+  animation: rainbowBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px #ff0080) drop-shadow(0 0 8px #00ddff);
+}
+.nx-title-badge.nx-fx-rainbow {
+  animation: rainbowBounce 2s ease-in-out infinite;
+}
 `
 
   const style = document.createElement('style')

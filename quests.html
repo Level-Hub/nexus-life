@@ -1006,16 +1006,37 @@ window.submitProof = async function() {
         p_user_quest_id: parseInt(uqData.id)  // cast integer — ป้องกัน ambiguous function error
       })
 
+      // ดึง XP จริง + pass_bonus จาก activity_feed ที่ grant_quest_xp insert ไว้
+      const { data: feedRow } = await supabase
+        .from('activity_feed')
+        .select('data')
+        .eq('user_id', currentUser.id)
+        .eq('type', 'quest_complete')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      const realXP     = feedRow?.data?.xp ?? q.xp_reward ?? 0
+      const passBonus  = feedRow?.data?.pass_bonus ?? 1.0
+      const passType   = feedRow?.data?.pass_type ?? null
+
       await loadProfile()  // โหลด XP / level / gold ใหม่
 
       // เช็ค level up จาก userProfile ที่ loadProfile() อัปเดตแล้ว
       if (userProfile && userProfile.level > oldLevel) {
-        showToast(`LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')
+        showToast(`⚡ LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')
         // level_up feed ถูก insert โดย grant_quest_xp ใน DB แล้ว ไม่ต้อง insert ซ้ำ
       }
 
       await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
-      showToast('Quest สำเร็จ! XP และ Gold เข้าแล้ว', 'gold')
+
+      // สร้าง toast แสดง XP จริง + pass boost (ถ้ามี)
+      let toastMsg = `Quest สำเร็จ! +${realXP} XP เข้าแล้ว`
+      if (passBonus > 1.0 && passType) {
+        const passLabel = passType === 'premium' ? '⭐ Premium Pass 2.0×' : '✦ Standard Pass 1.5×'
+        toastMsg = `Quest สำเร็จ! +${realXP} XP  |  ${passLabel}`
+      }
+      showToast(toastMsg, 'gold')
     } else {
       showToast('ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')
     }
