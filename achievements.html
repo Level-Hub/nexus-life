@@ -19,7 +19,10 @@
   --panel: rgba(255,85,0,0.04);
   --border: rgba(255,85,0,0.14);
 }
-* { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
+* { margin:0; padding:0; box-sizing:border-box; }
+/* ลบ transition: all ออกจาก * เพราะทำให้ animation ทุกอย่าง lag
+   ใส่ transition เฉพาะ element ที่ต้องการแทน */
+button, a, .tab-btn, .sum-card, .nx-equip-btn { transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
 .no-transition, .no-transition * { transition: none !important; }
 .cls-warrior  { --cls:#ff4444; }
 .cls-mage     { --cls:#aa44ff; }

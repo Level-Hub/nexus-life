@@ -789,6 +789,43 @@ export function injectTitleStyles() {
   animation: shimmerSlide 2s linear infinite !important;
 }
 
+/* ══════════════════════════════════════════════
+   RARITY COLOR OVERRIDE — สีฉายาตรงกับ rarity card เสมอ
+   ต้องมาหลัง fx rules เพราะต้อง override
+══════════════════════════════════════════════ */
+/* common → สีเทา */
+.nx-title-badge.rarity-common .nx-title-text {
+  background: linear-gradient(90deg,#555,#aaa,#ddd,#aaa,#555) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 6s linear infinite !important;
+}
+/* rare → สีฟ้า */
+.nx-title-badge.rarity-rare .nx-title-text {
+  background: linear-gradient(90deg,#003366,#44aaff,#aaeeff,#44aaff,#003366) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 3.5s linear infinite !important;
+}
+/* epic → สีม่วง */
+.nx-title-badge.rarity-epic .nx-title-text {
+  background: linear-gradient(90deg,#440066,#cc66ff,#ffccff,#9933ff,#cc66ff,#440066) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: shimmerSlide 2.5s linear infinite !important;
+}
+/* legendary → สีทอง */
+.nx-title-badge.rarity-legendary .nx-title-text {
+  background: linear-gradient(90deg,#996600,#ffd700,#fff8a0,#ffaa00,#ff6600,#ffd700,#ffeeaa,#996600) !important;
+  background-size: 300% !important;
+  -webkit-background-clip: text !important; background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: goldText 1.2s linear infinite !important;
+}
+
 /* GLOW-PURPLE — ตัวหนังสือม่วง เวทย์มนตร์ */
 .nx-title-badge.nx-fx-glow-purple .nx-title-text {
   background: linear-gradient(90deg,#440066,#9900ff,#dd66ff,#ffffff,#dd66ff,#9900ff,#440066) !important;
@@ -960,9 +997,11 @@ export function injectTitleStyles() {
 /* Rarity card variants */
 .nx-title-card.rarity-common   { --card-shimmer-dur:7s;   border-color: rgba(170,170,170,0.2);  background: linear-gradient(135deg,rgba(170,170,170,0.04),rgba(170,170,170,0.01)); color: #aaa; }
 .nx-title-card.rarity-common:hover   { box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
-.nx-title-card.rarity-rare    { --card-shimmer-dur:3.5s;  border-color: rgba(68,170,255,0.4);  background: linear-gradient(135deg,rgba(68,170,255,0.07),rgba(0,240,255,0.04)); color: #44aaff; animation: rareTwinkle 3s ease-in-out infinite; }
+.nx-title-card.rarity-common .nx-card-shimmer { display:none; }
+.nx-title-card.rarity-rare    { --card-shimmer-dur:5s;  border-color: rgba(68,170,255,0.4);  background: linear-gradient(135deg,rgba(68,170,255,0.07),rgba(0,240,255,0.04)); color: #44aaff; }
 .nx-title-card.rarity-rare:hover    { box-shadow: 0 6px 24px rgba(68,170,255,0.22); border-color: rgba(68,170,255,0.6); }
-.nx-title-card.rarity-epic    { --card-shimmer-dur:2.5s;  border-color: rgba(204,102,255,0.5); background: linear-gradient(135deg,rgba(204,102,255,0.1),rgba(238,153,255,0.05)); color: #cc66ff; animation: epicFloat 2.5s ease-in-out infinite; }
+.nx-title-card.rarity-rare .nx-card-shimmer { display:none; }
+.nx-title-card.rarity-epic    { --card-shimmer-dur:3s;  border-color: rgba(204,102,255,0.5); background: linear-gradient(135deg,rgba(204,102,255,0.1),rgba(238,153,255,0.05)); color: #cc66ff; animation: epicFloat 2.5s ease-in-out infinite; }
 .nx-title-card.rarity-epic:hover    { box-shadow: 0 6px 30px rgba(204,102,255,0.35); border-color: rgba(204,102,255,0.75); }
 .nx-title-card.rarity-legendary { --card-shimmer-dur:1.5s; border-color: rgba(255,215,0,0.6); background: linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.06),rgba(255,215,0,0.08)); color: #ffd700; animation: legendaryPulse 1.6s ease-in-out infinite; }
 .nx-title-card.rarity-legendary:hover { box-shadow: 0 8px 40px rgba(255,215,0,0.4), 0 0 20px rgba(255,149,0,0.2); border-color: rgba(255,215,0,0.9); }
@@ -1233,17 +1272,10 @@ const LOCK_SVG = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xm
 // PARTICLE HTML helpers
 // ============================================================
 function getParticleHTML(rarity) {
+  // เฉพาะ legendary เท่านั้นที่มี particle เพื่อ performance
   if (rarity === 'legendary') {
     return `<span class="nx-particle-dot" aria-hidden="true"></span>
-            <span class="nx-particle-dot" aria-hidden="true"></span>
             <span class="nx-particle-dot" aria-hidden="true"></span>`
-  }
-  if (rarity === 'epic') {
-    return `<span class="nx-sparkle" aria-hidden="true"></span>
-            <span class="nx-sparkle" aria-hidden="true"></span>`
-  }
-  if (rarity === 'rare') {
-    return `<span class="nx-sparkle" aria-hidden="true"></span>`
   }
   return ''
 }
