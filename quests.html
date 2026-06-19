@@ -984,6 +984,34 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
+    // เช็คซ้ำ — ดึงวันที่ไทยจาก DB server โดยตรง ไม่ใช้เวลาเครื่อง user
+    // ป้องกัน user ต่างประเทศ หรือเครื่องตั้งเวลาผิด
+    const { data: serverDate } = await supabase.rpc('get_thai_date').maybeSingle().catch(() => ({ data: null }))
+    const _today = serverDate ?? new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Bangkok' })
+
+    const { data: existingUQ } = await supabase
+      .from('user_quests').select('id, status')
+      .eq('user_id', currentUser.id)
+      .eq('quest_id', q.id)
+      .eq('completed_date', _today)
+      .maybeSingle()
+
+    if (existingUQ?.status === 'approved') {
+      showModalMsg('error', 'Quest นี้สำเร็จแล้ววันนี้ — ทำใหม่ได้พรุ่งนี้หลังเที่ยงคืน')
+      btn.disabled = false
+      btn.textContent = 'ส่งหลักฐาน →'
+      return
+    }
+    if (existingUQ?.status === 'pending_review') {
+      showModalMsg('error', 'Quest นี้อยู่ในระหว่างรอตรวจสอบอยู่แล้ว')
+      btn.disabled = false
+      btn.textContent = 'ส่งหลักฐาน →'
+      return
+    }
+
+    // INSERT — ไม่ส่ง completed_date เลย ให้ DB คำนวณเองจาก default
+    // DEFAULT = (NOW() AT TIME ZONE 'Asia/Bangkok')::date
+    // ไม่ว่า user จะอยู่ประเทศไหน เวลาเครื่องจะเป็นอะไร DB ใช้เวลาไทยเสมอ
     const { data: uqData, error } = await supabase.from('user_quests').insert({
       user_id:      currentUser.id,
       quest_id:     q.id,
@@ -991,7 +1019,6 @@ window.submitProof = async function() {
       proof_url:    proofUrl,
       proof_text:   proofText,
       submitted_at: new Date().toISOString(),
-      completed_date: new Date().toISOString().split('T')[0],
       xp_granted:   false
     }).select().single()
 

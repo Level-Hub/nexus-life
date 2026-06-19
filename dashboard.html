@@ -1616,28 +1616,30 @@ window.submitProof = async function() {
       if (proofText.length < 3) { showModalMsg('error','กรุณากรอกข้อความอย่างน้อย 3 ตัวอักษร'); return }
     }
 
-    // ป้องกัน XP ซ้ำ — เช็คเฉพาะวันนี้ (timezone ไทย Asia/Bangkok)
-    const _TZ    = 'Asia/Bangkok'
-    const _tdStr = new Date().toLocaleDateString('sv-SE', { timeZone: _TZ })
-    const _tmDate = new Date(); _tmDate.setDate(_tmDate.getDate() + 1)
-    const _tmStr = _tmDate.toLocaleDateString('sv-SE', { timeZone: _TZ })
+    // เช็คซ้ำ — ดึงวันที่ไทยจาก DB server โดยตรง ไม่ใช้เวลาเครื่อง user
+    // ป้องกัน user ต่างประเทศ หรือเครื่องตั้งเวลาผิด
+    const { data: serverDate } = await supabase.rpc('get_thai_date').maybeSingle().catch(() => ({ data: null }))
+    const _tdStr = serverDate ?? new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Bangkok' })
 
+    // เช็คซ้ำด้วย completed_date (timezone ไทยจาก DB) แทน created_at
+    // unique constraint คือ (user_id, quest_id, completed_date)
     const { data: existingUQ } = await supabase
       .from('user_quests').select('id, status, xp_granted')
-      .eq('user_id', currentUser.id).eq('quest_id', activeQuestId)
-      .gte('created_at', _tdStr + 'T00:00:00')
-      .lt('created_at', _tmStr + 'T00:00:00')
+      .eq('user_id', currentUser.id)
+      .eq('quest_id', activeQuestId)
+      .eq('completed_date', _tdStr)
       .maybeSingle()
 
-    if (existingUQ?.status === 'approved' && existingUQ?.xp_granted === true) {
-      throw new Error('Quest นี้สำเร็จและได้รับ XP แล้ว — ไม่สามารถส่งซ้ำได้')
+    if (existingUQ?.status === 'approved') {
+      throw new Error('Quest นี้สำเร็จแล้ววันนี้ — ทำใหม่ได้พรุ่งนี้หลังเที่ยงคืน')
     }
     if (existingUQ?.status === 'pending_review') {
       throw new Error('Quest นี้อยู่ในระหว่างรอตรวจสอบอยู่แล้ว')
     }
 
-    // INSERT row ใหม่ทุกวัน (ไม่ใช้ upsert เพราะ upsert ไม่อัปเดต created_at
-    // ทำให้ filter วันนี้ไม่เจอ record เก่า quest จึงดูเหมือนรีเซ็ตแต่ส่งซ้ำไม่ได้)
+    // INSERT — ไม่ส่ง completed_date เลย ให้ DB คำนวณเองจาก default
+    // DEFAULT = (NOW() AT TIME ZONE 'Asia/Bangkok')::date
+    // ไม่ว่า user จะอยู่ประเทศไหน เวลาเครื่องจะเป็นอะไร DB ใช้เวลาไทยเสมอ
     const { data: uqData, error: uqErr } = await supabase
       .from('user_quests').insert({
         user_id:      currentUser.id,
@@ -1646,7 +1648,6 @@ window.submitProof = async function() {
         proof_url:    proofUrl,
         proof_text:   proofText,
         submitted_at: new Date().toISOString(),
-        completed_date: new Date().toISOString().split('T')[0],
         xp_granted:   false
       }).select().single()
 
