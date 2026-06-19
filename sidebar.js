@@ -181,11 +181,11 @@ function buildSidebarHTML(activePage) {
       <span class="sb-notif-hdr-title">// NOTIFICATIONS</span>
       <div class="sb-notif-hdr-actions">
         <button class="sb-notif-action" onclick="window._sbMarkAllRead()">MARK ALL</button>
-        <button class="sb-notif-action danger" onclick="window._sbDeleteAllRead()">CLEAR READ</button>
+        <button class="sb-notif-action danger" onclick="window._sbDeleteAllRead()">CLEAR ALL</button>
       </div>
     </div>
     <div class="sb-notif-list" id="sbNotifList"><div class="sb-notif-empty">กำลังโหลด...</div></div>
-    <div class="sb-notif-footer"><a href="./notifications.html">ดูทั้งหมด →</a></div>`
+    <div class="sb-notif-footer"></div>`
 
   return `
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -431,21 +431,19 @@ window._sbMarkAllRead = async function() {
 }
 
 window._sbDeleteAllRead = async function() {
-  const read = _notifList.filter(n => n.is_read)
-  if (!read.length) return
-  read.forEach(n => _deletedIds.add(n.id))
+  if (!_notifList.length) return
   const backup = [..._notifList]
-  _notifList = _notifList.filter(n => !n.is_read)
+  _notifList.forEach(n => _deletedIds.add(n.id))
+  _notifList = []
   renderNotifDropdown()
   updateBellDot()
 
   const { error } = await supabase.from('notifications')
     .delete()
     .eq('user_id', _notifUserId)
-    .eq('is_read', true)
   if (error) {
-    console.error('[sidebar] delete all read failed:', error.message)
-    read.forEach(n => _deletedIds.delete(n.id))
+    console.error('[sidebar] delete all failed:', error.message)
+    backup.forEach(n => _deletedIds.delete(n.id))
     _notifList = backup
     renderNotifDropdown()
     updateBellDot()

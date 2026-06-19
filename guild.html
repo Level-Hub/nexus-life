@@ -1580,48 +1580,28 @@ async function loadGuildQuests() {
       <div class="gquest-desc">${escHtml(q?.description || '')}</div>
       <div class="gquest-progress">
         <div class="gquest-prog-top">
-          <div class="gquest-prog-label">ความคืบหน้า</div>
-          <div class="gquest-prog-val">${cur} / ${target} สมาชิก</div>
+          <div class="gquest-prog-label">สมาชิกทำสำเร็จแล้ว</div>
+          <div class="gquest-prog-val">${cur} / ${target} คน</div>
         </div>
         <div class="gquest-track"><div class="gquest-fill" style="width:${pct}%"></div></div>
       </div>
       <div class="gquest-bottom">
         <div class="gquest-rewards">
-          <div class="gquest-reward xp">+${q?.xp_reward || 0} XP</div>
-          <div class="gquest-reward gold">+${q?.gold_reward || 0} Gold</div>
+          <div class="gquest-reward xp">+${target * 60} Guild XP</div>
+          <div class="gquest-reward gold">เควสเดี่ยว: +${q?.xp_reward || 0} XP</div>
         </div>
-        <button class="gquest-join-btn" onclick="joinGuildQuest(${gq.id},'${q?.id}',this)">เข้าร่วม Quest</button>
+        <button class="gquest-join-btn" onclick="goDoGuildQuest('${q?.id}')">ไปทำ Quest นี้</button>
       </div>
-      <div class="gquest-participants" style="margin-top:8px">// ต้องมีสมาชิกอย่างน้อย ${target} คน</div>
+      <div class="gquest-participants" style="margin-top:8px">// นับอัตโนมัติเมื่อสมาชิกทำเควสนี้สำเร็จและผ่านการตรวจแล้ว</div>
     </div>`
   }).join('')
 }
 
-window.joinGuildQuest = async (guildQuestId, questId, btn) => {
-  btn.disabled = true
-  btn.textContent = '...'
-
-  // upsert เข้า user_quests ด้วย quest_id (ตาราง quests) จริงๆ
-  const { error } = await sb.from('user_quests').upsert({
-    user_id: ME.id, quest_id: questId, status: 'in_progress',
-    xp_granted: false
-  }, { onConflict: 'user_id,quest_id', ignoreDuplicates: true })
-
-  if (error) {
-    btn.disabled = false; btn.textContent = 'เข้าร่วม Quest'
-    toast('เกิดข้อผิดพลาด', 'error'); return
-  }
-
-  // อัพเดต current_value ใน guild_quests
-  await sb.rpc('update_guild_quest_progress', {
-    p_guild_quest_id: guildQuestId,
-    p_amount: 1
-  }).catch(() => {})
-
-  btn.classList.add('joined')
-  btn.textContent = 'เข้าร่วมแล้ว'
-  toast('เข้าร่วม Guild Quest แล้ว! ไปทำ Quest ที่หน้า Quests', 'success')
-  await loadGuildQuests()
+window.goDoGuildQuest = (questId) => {
+  // ไม่ปลอม progress ที่นี่อีกต่อไป — ความคืบหน้าจะถูกนับอัตโนมัติฝั่ง backend
+  // ทันทีที่เควสนี้ของผู้เล่นถูก "approved" จริง (ผ่าน trigger ในฐานข้อมูล)
+  toast('ไปทำ Quest นี้ที่หน้า Quests — ระบบจะนับให้อัตโนมัติเมื่อผ่านการตรวจ', 'success')
+  window.location.href = `quests.html?highlight=${questId}`
 }
 
 // ============================================

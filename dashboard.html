@@ -1646,6 +1646,7 @@ window.submitProof = async function() {
         proof_url:    proofUrl,
         proof_text:   proofText,
         submitted_at: new Date().toISOString(),
+        completed_date: new Date().toISOString().split('T')[0],
         xp_granted:   false
       }).select().single()
 
