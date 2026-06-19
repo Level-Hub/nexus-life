@@ -986,7 +986,14 @@ window.submitProof = async function() {
 
     // เช็คซ้ำ — ดึงวันที่ไทยจาก DB server โดยตรง ไม่ใช้เวลาเครื่อง user
     // ป้องกัน user ต่างประเทศ หรือเครื่องตั้งเวลาผิด
-    const { data: serverDate } = await supabase.rpc('get_thai_date').maybeSingle().catch(() => ({ data: null }))
+    // get_thai_date() คืนค่า scalar (date เดียว) ไม่ใช่ table — ห้ามใช้ .maybeSingle()
+    let serverDate = null
+    try {
+      const res = await supabase.rpc('get_thai_date')
+      serverDate = res.data ?? null
+    } catch (e) {
+      serverDate = null
+    }
     const _today = serverDate ?? new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Bangkok' })
 
     const { data: existingUQ } = await supabase
