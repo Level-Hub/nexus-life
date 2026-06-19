@@ -1668,7 +1668,7 @@ window.submitProof = async function() {
       })
       if (grantErr) throw grantErr
 
-      await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
+      try { await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }) } catch (e) {}
       await loadProfile()
       if (userProfile && userProfile.level > oldLevel) {
         showToast(`LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')

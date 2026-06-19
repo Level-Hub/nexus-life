@@ -1063,7 +1063,7 @@ window.submitProof = async function() {
         // level_up feed ถูก insert โดย grant_quest_xp ใน DB แล้ว ไม่ต้อง insert ซ้ำ
       }
 
-      await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }).catch(()=>{})
+      try { await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }) } catch (e) {}
 
       // สร้าง toast แสดง XP จริง + pass boost (ถ้ามี)
       let toastMsg = `Quest สำเร็จ! +${realXP} XP เข้าแล้ว`
