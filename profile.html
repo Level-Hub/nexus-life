@@ -773,7 +773,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="hero-currency">
         <div class="hero-currency-icon" id="currIconCrystal"></div>
         <div>
-          <div class="hero-currency-val" id="heroCrystal" style="color:var(--cyan)">0</div>
+          <div class="hero-currency-val" id="heroCrystal" style="color:#4db8ff">0</div>
           <div class="hero-currency-label">CRYSTAL</div>
         </div>
       </div>
@@ -937,7 +937,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
               <div class="quest-stat-label">รอ REVIEW</div>
             </div>
             <div class="quest-stat-card">
-              <div class="quest-stat-val" style="color:var(--purple)" id="qsBadges">0</div>
+              <div class="quest-stat-val" style="color:#b044ff" id="qsBadges">0</div>
               <div class="quest-stat-label">BADGES</div>
             </div>
             <div class="quest-stat-card">
@@ -1157,7 +1157,7 @@ async function init() {
   const currIconXP = document.getElementById('currIconXP')
   if (currIconXP) currIconXP.innerHTML = getIcon('levelup', 18)
   const currIconCrystal = document.getElementById('currIconCrystal')
-  if (currIconCrystal) currIconCrystal.innerHTML = getIcon('diamond', 18)
+  if (currIconCrystal) currIconCrystal.innerHTML = getIcon('crystal', 18)
   const attrBoxTitle = document.getElementById('attrBoxTitle')
   if (attrBoxTitle) attrBoxTitle.innerHTML = getIcon('lightning', 12) + ' ATTRIBUTES'
   const statIcons = { statIconStr:'strength', statIconInt:'intel', statIconExp:'explore_stat', statIconBiz:'biz', statIconCre:'frame', statIconSoc:'diplo_stat' }
