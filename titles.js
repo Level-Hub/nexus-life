@@ -388,20 +388,20 @@ export function injectTitleStyles() {
 @keyframes legendaryPulse {
   0%,100% {
     border-color: rgba(255,215,0,0.6);
-    box-shadow: 0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,149,0,0.18);
+    box-shadow: 0 0 12px rgba(255,215,0,0.3);
   }
   50% {
     border-color: rgba(255,200,0,1);
-    box-shadow: 0 0 36px rgba(255,215,0,0.75), 0 0 70px rgba(255,107,0,0.35), inset 0 0 16px rgba(255,215,0,0.1);
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
   }
 }
 @keyframes epicFloat {
-  0%,100% { box-shadow: 0 0 12px rgba(204,102,255,0.3); }
-  50%     { box-shadow: 0 0 28px rgba(204,102,255,0.6), 0 0 50px rgba(238,153,255,0.2); }
+  0%,100% { box-shadow: 0 0 8px rgba(204,102,255,0.25); }
+  50%     { box-shadow: 0 0 16px rgba(204,102,255,0.45); }
 }
 @keyframes rareTwinkle {
-  0%,100% { opacity: 1; box-shadow: 0 0 6px rgba(68,170,255,0.2); }
-  50%     { opacity: 0.85; box-shadow: 0 0 14px rgba(68,170,255,0.4); }
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.92; }
 }
 
 /* ── Shimmer sweep ── */
@@ -558,22 +558,9 @@ export function injectTitleStyles() {
   filter: brightness(1.25);
 }
 
-/* ── Metallic light ray sweep ── */
-.nx-title-badge::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 20%,
-    rgba(255,255,255,0.22) 40%,
-    rgba(255,255,255,0.08) 50%,
-    transparent 70%
-  );
-  background-size: 300% 100%;
-  animation: shimmerSlide var(--shimmer-dur, 3s) linear infinite;
-  pointer-events: none;
-}
+/* เอฟเฟค sweep line (เส้นขีดวิ่งทแยง) ถูกลบออกแล้วตามคำขอ
+   ผู้ใช้ต้องการแค่ text-gradient shimmer เลื่อนในเนื้อตัวอักษรเท่านั้น
+   ไม่ต้องการเส้นขีด/แสงสะท้อนวิ่งทับ badge */
 
 /* Badge icon wrapper */
 .nx-badge-icon-wrap {
@@ -610,7 +597,7 @@ export function injectTitleStyles() {
   color: #44aaff;
   background: linear-gradient(90deg, rgba(68,170,255,0.1), rgba(0,240,255,0.07));
   border: 1px solid rgba(68,170,255,0.4);
-  animation: rareTwinkle 3s ease-in-out infinite;
+  animation: rareTwinkle 4.5s ease-in-out infinite;
 }
 .nx-title-badge.rarity-rare .nx-title-text {
   background: linear-gradient(90deg,#0060bb 0%,#44aaff 30%,#aaeeff 50%,#44aaff 70%,#0060bb 100%);
@@ -626,7 +613,7 @@ export function injectTitleStyles() {
   color: #cc66ff;
   background: linear-gradient(90deg, rgba(204,102,255,0.12), rgba(238,153,255,0.07));
   border: 1px solid rgba(204,102,255,0.5);
-  animation: epicFloat 2.5s ease-in-out infinite;
+  animation: epicFloat 3.5s ease-in-out infinite;
 }
 .nx-title-badge.rarity-epic .nx-title-text {
   background: linear-gradient(90deg,#660099 0%,#cc66ff 30%,#ffccff 50%,#cc66ff 70%,#660099 100%);
@@ -642,7 +629,7 @@ export function injectTitleStyles() {
   color: #ffd700;
   background: linear-gradient(90deg, rgba(255,215,0,0.14), rgba(255,107,0,0.09), rgba(255,215,0,0.14));
   border: 1px solid rgba(255,215,0,0.65);
-  animation: legendaryPulse 1.6s ease-in-out infinite;
+  animation: legendaryPulse 2.4s ease-in-out infinite;
 }
 .nx-title-badge.rarity-legendary .nx-title-text {
   background: linear-gradient(90deg,#996600 0%,#ffd700 20%,#fff8a0 40%,#ff9500 60%,#ffd700 80%,#996600 100%);
@@ -652,11 +639,7 @@ export function injectTitleStyles() {
   -webkit-text-fill-color: transparent;
   animation: nxTextRay 1.0s linear infinite;
 }
-.nx-title-badge.rarity-legendary::after {
-  background: linear-gradient(105deg, transparent 15%, rgba(255,240,80,0.4) 40%, rgba(255,255,200,0.15) 50%, transparent 75%);
-  background-size: 300% 100%;
-  animation: shimmerSlide 1.0s linear infinite;
-}
+/* legendary sweep ถูกลบออกแล้ว — เหลือแค่ text shimmer ด้านบน */
 
 /* ── PARTICLE dot — Legendary animated orbit ── */
 .nx-title-badge.rarity-legendary .nx-particle-dot {
@@ -672,8 +655,7 @@ export function injectTitleStyles() {
   box-shadow: 0 0 4px gold;
 }
 .nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(1) { --pr: 18px; animation: nxParticleOrbit 1.8s linear infinite; }
-.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(2) { --pr: 18px; animation: nxParticleOrbit 1.8s linear 0.6s infinite; background: #ff9500; box-shadow: 0 0 4px #ff9500; }
-.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(3) { --pr: 18px; animation: nxParticleOrbit 1.8s linear 1.2s infinite; background: #ffe566; box-shadow: 0 0 4px #ffe566; }
+.nx-title-badge.rarity-legendary .nx-particle-dot:nth-child(2) { --pr: 18px; animation: nxParticleOrbit 1.8s linear 0.9s infinite; background: #ff9500; box-shadow: 0 0 4px #ff9500; }
 
 /* ── SPARKLE dots — Epic ── */
 .nx-title-badge.rarity-epic .nx-sparkle {
@@ -1290,14 +1272,15 @@ export function renderTitleBadge(title, options = {}) {
   const name = title.name || ''
 
   const fx = resolveTitleEffect(name, title.category)
-  const effectClass = fx ? ` ${fx.effectClass}` : ''
+  // ไม่ใส่ effectClass ลงใน badge อีกต่อไป — สีต้องมาจาก rarity เท่านั้น
+  // เพื่อให้สีฉายาตรงกันทุกที่ที่แสดง (card, equipped, profile)
   const iconPath = fx ? fx.icon : DEFAULT_TITLE_ICON_PATH
 
   const iconSvg = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${iconPath}</svg>`
 
   const particles = getParticleHTML(r)
 
-  return `<span class="nx-title-badge rarity-${r}${effectClass}">${particles}<span class="nx-badge-icon-wrap">${iconSvg}</span><span class="nx-title-text">${name}</span></span>`
+  return `<span class="nx-title-badge rarity-${r}">${particles}<span class="nx-badge-icon-wrap">${iconSvg}</span><span class="nx-title-text">${name}</span></span>`
 }
 
 
@@ -1437,40 +1420,24 @@ const BADGE_SVG_MAP = {
 // ============================================================
 function renderIconFrame(svgPath, rarity = 'common', size = 48) {
   const cfg = RARITY_CONFIG[rarity] || RARITY_CONFIG.common
-  const hex = `polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)`
-  const innerSize = Math.round(size * 0.52)
+  const innerSize = Math.round(size * 0.62)
 
-  const borderOpacity = rarity === 'common' ? '0.28' : rarity === 'rare' ? '0.55' : '0.75'
-  const glowOpacity   = rarity === 'legendary' ? '55' : rarity === 'epic' ? '42' : rarity === 'rare' ? '30' : '1a'
-
-  const pulseAnim = rarity === 'legendary'
-    ? 'nxHexLegPulse 1.6s ease-in-out infinite'
-    : rarity === 'epic'
-      ? 'nxHexEpicPulse 2.5s ease-in-out infinite'
-      : rarity === 'rare'
-        ? 'nxHexRarePulse 3s ease-in-out infinite'
-        : 'none'
-
+  // ลบกรอบ hexagon + spinning ring ออกแล้ว — เพื่อให้เห็นไอคอนเฉพาะตัวชัดเจน
+  // ไม่ถูกบังด้วยกรอบเดียวกันหมดทุกฉายา และลด animation overhead (lag)
+  // คงไว้แค่ glow แบบ static ตาม rarity (ไม่ animate) เพื่อแยกระดับความหายาก
   const iconGlow = rarity === 'common'
-    ? `drop-shadow(0 0 2px ${cfg.color}55)`
-    : rarity === 'legendary'
-      ? `drop-shadow(0 0 7px ${cfg.color}ff) drop-shadow(0 0 14px ${cfg.colorAlt}99)`
-      : `drop-shadow(0 0 6px ${cfg.color}dd) drop-shadow(0 0 2px ${cfg.colorAlt||cfg.color}66)`
+    ? `drop-shadow(0 0 2px ${cfg.color}40)`
+    : rarity === 'rare'
+      ? `drop-shadow(0 0 4px ${cfg.color}99)`
+      : rarity === 'epic'
+        ? `drop-shadow(0 0 5px ${cfg.color}cc) drop-shadow(0 0 10px ${cfg.colorAlt||cfg.color}55)`
+        : `drop-shadow(0 0 6px ${cfg.color}ee) drop-shadow(0 0 12px ${cfg.colorAlt}88)`
 
-  // Outer spinning ring for legendary/epic
-  const outerRing = rarity === 'legendary'
-    ? `<div style="position:absolute;inset:-3px;border:1.5px dashed rgba(255,215,0,0.45);clip-path:${hex};animation:nxLegRing 4s linear infinite;pointer-events:none;"></div>`
-    : rarity === 'epic'
-      ? `<div style="position:absolute;inset:-3px;border:1.5px dashed rgba(204,102,255,0.4);clip-path:${hex};animation:nxEpicRing 5s linear infinite;pointer-events:none;"></div>`
-      : ''
-
-  const borderPulseLayer = `<div style="position:absolute;inset:0;clip-path:${hex};background:${cfg.color};opacity:${borderOpacity};animation:${pulseAnim};"></div>`
+  const bgGlow = rarity === 'common' ? '' :
+    `<div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 40% 30%,${cfg.color}22 0%,transparent 70%);pointer-events:none;"></div>`
 
   return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-    ${outerRing}
-    ${borderPulseLayer}
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:rgba(2,8,14,0.93);"></div>
-    <div style="position:absolute;inset:1.5px;clip-path:${hex};background:radial-gradient(ellipse at 40% 25%,${cfg.color}${glowOpacity} 0%,transparent 65%);"></div>
+    ${bgGlow}
     <svg width="${innerSize}" height="${innerSize}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
       style="position:relative;z-index:1;filter:${iconGlow}">
       ${svgPath}
