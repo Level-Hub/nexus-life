@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="quests">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Quests</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan:#ffee00; --cyan-dim:#b8b000; --gold:#ffd700; --red:#ff003c;
-  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
-  --bg:#0a0a00; --bg2:#0f0f00;
-  --panel:rgba(255,238,0,0.04); --border:rgba(255,238,0,0.15);
-  --accent:#ffee00;
   --amber:#ffee00; --amber-bright:#fff176; --amber-dim:#888800;
 }
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
@@ -24,9 +20,9 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;ove
 .cursor{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan)}
 .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,238,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,238,0,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(var(--panel) 1px,transparent 1px),linear-gradient(90deg,var(--panel) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(255,238,0,0.06);top:-150px;right:-100px}
+.orb-1{width:500px;height:500px;background:var(--panel);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(180,170,0,0.05);bottom:100px;left:-50px}
 
 
@@ -90,7 +86,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .qcard-type-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
 .qcard-type{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;padding:2px 8px;border:1px solid;opacity:0.8}
 .qcard-type.daily{color:var(--cyan);border-color:rgba(0,245,255,0.3)}
-.qcard-type.weekly{color:var(--orange);border-color:rgba(255,149,0,0.3)}
+.qcard-type.weekly{color:var(--orange);border-color:var(--cyan-glow)}
 .qcard-type.challenge{color:var(--purple);border-color:rgba(176,68,255,0.3)}
 .qcard-type.guild{color:var(--green);border-color:rgba(68,255,136,0.3)}
 .qcard-cls-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;color:var(--cls,var(--cyan))}
@@ -128,10 +124,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .qbtn.rejected-btn:hover{background:var(--red);color:#fff}
 
 /* WEEKLY QUEST SPECIAL */
-.qcard.weekly-card{background:rgba(255,149,0,0.03);border-color:rgba(255,149,0,0.2)}
-.qcard.weekly-card:hover{border-color:rgba(255,149,0,0.4)}
+.qcard.weekly-card{background:var(--panel);border-color:var(--cyan-glow)}
+.qcard.weekly-card:hover{border-color:var(--cyan-glow)}
 .weekly-progress{padding:0 16px 12px 20px}
-.weekly-track{height:3px;background:rgba(255,149,0,0.1);overflow:hidden}
+.weekly-track{height:3px;background:var(--border);overflow:hidden}
 .weekly-fill{height:100%;background:linear-gradient(90deg,#ff6600,var(--orange));transition:width 0.8s ease}
 .weekly-label{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px}
 
@@ -180,12 +176,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   background:linear-gradient(135deg,#3d2008 0%,#7a4a18 35%,#a06828 55%,#5c3410 100%);
   border:2px solid #c8860a;
   border-radius:2px 5px 5px 2px;
-  box-shadow:0 0 28px rgba(255,238,0,0.45),inset 0 0 24px rgba(0,0,0,0.6);
+  box-shadow:0 0 28px var(--cyan-glow),inset 0 0 24px rgba(0,0,0,0.6);
   overflow:hidden;
 }
 .book-cover::before{
   content:'';position:absolute;inset:7px;
-  border:1px solid rgba(255,238,0,0.35);
+  border:1px solid var(--cyan-glow);
   pointer-events:none;
 }
 .book-cover::after{
@@ -199,7 +195,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .book-spine{
   position:absolute;left:-9px;top:2px;bottom:2px;width:9px;
   background:linear-gradient(90deg,#281405,#5c3410);
-  border:1px solid rgba(255,238,0,0.25);
+  border:1px solid var(--cyan-glow);
   border-radius:2px 0 0 2px;
 }
 
@@ -216,7 +212,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .book-icon{
   position:absolute;top:16px;left:50%;transform:translateX(-50%);
   width:42px;height:42px;
-  border:1px solid rgba(255,238,0,0.5);
+  border:1px solid var(--cyan-glow);
   display:flex;align-items:center;justify-content:center;
   background:rgba(0,0,0,0.35);
 }
@@ -236,8 +232,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── scanline ── */
 .book-scanline{
   position:absolute;left:9px;right:5px;height:1.5px;
-  background:linear-gradient(90deg,transparent,rgba(255,238,0,0.9),rgba(245,166,35,0.7),transparent);
-  box-shadow:0 0 8px rgba(255,238,0,0.6);
+  background:linear-gradient(90deg,transparent,var(--cyan-glow),rgba(245,166,35,0.7),transparent);
+  box-shadow:0 0 8px var(--cyan-glow);
   animation:bookScan 2s ease-in-out infinite;
 }
 @keyframes bookScan{
@@ -247,7 +243,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── particle glow ── */
 .book-glow{
   position:absolute;inset:-20px;
-  background:radial-gradient(ellipse,rgba(255,238,0,0.12) 0%,transparent 70%);
+  background:radial-gradient(ellipse,var(--border) 0%,transparent 70%);
   animation:glowPulse 2.5s ease-in-out infinite;
   pointer-events:none;
 }
@@ -257,12 +253,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
   letter-spacing:6px;color:#f5a623;
-  text-shadow:0 0 24px rgba(255,238,0,0.8),0 0 48px rgba(255,238,0,0.3);
+  text-shadow:0 0 24px var(--cyan-glow),0 0 48px var(--cyan-glow);
 }
 .loading-bar-wrap{
   width:160px;height:2px;
-  background:rgba(255,238,0,0.1);
-  border:1px solid rgba(255,238,0,0.18);
+  background:var(--border);
+  border:1px solid var(--border);
 }
 .loading-bar{
   height:100%;
@@ -383,7 +379,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <div class="reset-badge" id="resetBadge"><span id="resetDailyIcon" style="vertical-align:middle;margin-right:5px"></span><span id="resetDailyText">Daily รีเซ็ตใน —</span></div>
-      <div class="reset-badge" id="weeklyResetBadge" style="border-color:rgba(255,149,0,0.3);color:var(--orange);display:inline-flex;align-items:center;gap:6px"><span id="weeklyResetIcon"></span><span id="weeklyResetText">Weekly รีเซ็ตใน —</span></div>
+      <div class="reset-badge" id="weeklyResetBadge" style="border-color:var(--cyan-glow);color:var(--orange);display:inline-flex;align-items:center;gap:6px"><span id="weeklyResetIcon"></span><span id="weeklyResetText">Weekly รีเซ็ตใน —</span></div>
     </div>
   </div>
 

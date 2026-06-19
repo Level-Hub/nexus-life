@@ -1,0 +1,220 @@
+/* ============================================================
+   NEXUS LIFE — theme.css  v1.0
+   Central Design Token System
+   
+   Zone colors (set per page via data-page attribute):
+   
+   CYAN  zone — dashboard, quests, map, profile, achievements
+   GOLD  zone — guild, leaderboard
+   RED   zone — pvp, verify
+   ============================================================ */
+
+/* ── GLOBAL BASE TOKENS ── */
+:root {
+  /* Typography */
+  --text:       #e8f0f2;
+  --text-dim:   #7a9099;
+  --text-muted: #3a5a65;
+
+  /* Timing */
+  --t-fast: 0.15s;
+  --t-base: 0.3s;
+  --t-slow: 0.55s;
+
+  /* Semantic colors — fixed across all pages */
+  --gold:   #ffd700;
+  --red:    #ff003c;
+  --green:  #44ff88;
+  --purple: #b044ff;
+  --orange: #ff9500;
+
+  /* Class colors — fixed, never change */
+  --cls-warrior:  #ff4444;
+  --cls-mage:     #aa44ff;
+  --cls-explorer: #44ff88;
+  --cls-merchant: #ffaa00;
+  --cls-artist:   #ff66aa;
+  --cls-diplomat: #00ccff;
+
+  /* Default zone = CYAN (dashboard, quests, map, profile, feed, social, messages, city) */
+  --accent:     #00f5ff;
+  --cyan:       #00f5ff;
+  --cyan-dim:   #00a8b5;
+  --cyan-glow:  rgba(0,245,255,0.25);
+  --cyan-border:rgba(0,245,255,0.18);
+  --bg:         #010a0f;
+  --bg2:        #020d14;
+  --panel:      rgba(0,245,255,0.04);
+  --border:     rgba(0,245,255,0.13);
+}
+
+/* ── CLASS COLOR ALIASES (keep backward compat) ── */
+.cls-warrior  { --cls: var(--cls-warrior);  }
+.cls-mage     { --cls: var(--cls-mage);     }
+.cls-explorer { --cls: var(--cls-explorer); }
+.cls-merchant { --cls: var(--cls-merchant); }
+.cls-artist   { --cls: var(--cls-artist);   }
+.cls-diplomat { --cls: var(--cls-diplomat); }
+
+/* ============================================================
+   ZONE: GOLD — guild, leaderboard, achievements, shop, wallet
+   ============================================================ */
+[data-page="guild"],
+[data-page="leaderboard"],
+[data-page="achievements"],
+[data-page="shop"],
+[data-page="wallet"] {
+  --accent:      #ffd700;
+  --cyan:        #ffd700;
+  --cyan-dim:    #cc8800;
+  --cyan-glow:   rgba(255,215,0,0.22);
+  --cyan-border: rgba(255,215,0,0.18);
+  --bg:          #0a0800;
+  --bg2:         #0f0c00;
+  --panel:       rgba(255,215,0,0.04);
+  --border:      rgba(255,215,0,0.13);
+}
+
+/* ============================================================
+   ZONE: PURPLE — login (กลับสู่โลก)
+   ============================================================ */
+[data-page="login"] {
+  --accent:      #7c3aed;
+  --cyan:        #7c3aed;
+  --cyan-dim:    #5b21b6;
+  --cyan-glow:   rgba(124,58,237,0.22);
+  --cyan-border: rgba(124,58,237,0.18);
+  --bg:          #04010f;
+  --bg2:         #07021a;
+  --panel:       rgba(124,58,237,0.04);
+  --border:      rgba(124,58,237,0.14);
+}
+
+/* ============================================================
+   ZONE: GOLD-ORANGE — index (หน้าแรก ยิ่งใหญ่)
+   ============================================================ */
+[data-page="index"] {
+  --accent:      #ff9500;
+  --cyan:        #ff9500;
+  --cyan-dim:    #cc7000;
+  --cyan-glow:   rgba(255,149,0,0.22);
+  --cyan-border: rgba(255,149,0,0.18);
+  --bg:          #0a0600;
+  --bg2:         #0f0800;
+  --panel:       rgba(255,149,0,0.04);
+  --border:      rgba(255,149,0,0.14);
+}
+
+/* ============================================================
+   ZONE: PINK — register (ก้าวแรก เริ่มต้น)
+   ============================================================ */
+[data-page="register"] {
+  --accent:      #ff006e;
+  --cyan:        #ff006e;
+  --cyan-dim:    #cc0055;
+  --cyan-glow:   rgba(255,0,110,0.22);
+  --cyan-border: rgba(255,0,110,0.18);
+  --bg:          #0f0008;
+  --bg2:         #14000c;
+  --panel:       rgba(255,0,110,0.04);
+  --border:      rgba(255,0,110,0.14);
+}
+
+/* ============================================================
+   ZONE: RED — pvp, verify
+   ============================================================ */
+[data-page="pvp"],
+[data-page="verify"] {
+  --accent:      #ff003c;
+  --cyan:        #ff003c;
+  --cyan-dim:    #cc0030;
+  --cyan-glow:   rgba(255,0,60,0.22);
+  --cyan-border: rgba(255,0,60,0.18);
+  --bg:          #0d0005;
+  --bg2:         #120007;
+  --panel:       rgba(255,0,60,0.04);
+  --border:      rgba(255,0,60,0.13);
+}
+
+/* ============================================================
+   TYPOGRAPHY — readable across all zones
+   ============================================================ */
+body {
+  color: var(--text);
+  font-family: 'Sarabun', sans-serif;
+}
+
+/* Main content text */
+p, li, .desc, .quest-desc, .card-desc,
+[class*="-desc"], [class*="-text"], [class*="-sub"] {
+  color: var(--text-dim);
+  line-height: 1.65;
+}
+
+/* Headings always white */
+h1, h2, h3, h4,
+.page-title, .box-title, .card-title,
+[class*="-title"]:not(.box-title):not(.nav-item) {
+  color: #fff;
+}
+
+/* Accent-colored labels */
+.box-title,
+.stat-card-label,
+[class*="-label"][class*="orbitron"],
+.tab-btn.active {
+  color: var(--accent);
+}
+
+/* Dimmed secondary info */
+.stat-card-sub, .xp-percent, .page-date,
+[class*="-tag"]:not(.quest-tag),
+.nav-section-label {
+  color: var(--text-muted);
+}
+
+/* Numbers / values — white + accent glow */
+.stat-card-val,
+[class*="-val"], [class*="-num"], [class*="-count"] {
+  color: #fff;
+  text-shadow: 0 0 14px rgba(0,245,255,0.35);
+}
+
+/* ============================================================
+   GRID BACKGROUND — adapts to zone color
+   ============================================================ */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.022) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+[data-page="guild"] .grid-bg,
+[data-page="leaderboard"] .grid-bg,
+[data-page="achievements"] .grid-bg,
+[data-page="shop"] .grid-bg,
+[data-page="wallet"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(255,215,0,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,215,0,0.018) 1px, transparent 1px);
+}
+
+[data-page="pvp"] .grid-bg,
+[data-page="verify"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(255,0,60,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,0,60,0.018) 1px, transparent 1px);
+}
+
+/* ============================================================
+   SCROLLBAR — global subtle style
+   ============================================================ */
+::-webkit-scrollbar       { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }

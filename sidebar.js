@@ -43,21 +43,24 @@ let _notifOpen     = false
 // ─── CSS ──────────────────────────────────────────────────────
 const SIDEBAR_CSS = `
 <style id="sidebar-css">
-/* ── GLOBAL TOKENS — sidebar override ── */
+/* ── GLOBAL TOKENS — shared across all pages ── */
 :root {
-  --bg:       #010a0f;
-  --bg2:      #020d14;
-  --border:   rgba(0,245,255,0.12);
-  --panel:    rgba(0,245,255,0.04);
   --text:     #e8f0f2;
   --text-dim: #7a9099;
   --t-fast:   0.15s;
   --t-base:   0.3s;
   --t-slow:   0.55s;
+  /* sidebar accent is ALWAYS cyan — never changes per page */
   --sb-accent: #00f5ff;
 }
+/* ── SIDEBAR-SCOPED TOKENS — only affect sidebar elements ── */
+.sidebar, .topbar, .sidebar-overlay, .tb-notif-panel {
+  --sb-bg:     #010a0f;
+  --sb-border: rgba(0,245,255,0.12);
+  --sb-panel:  rgba(0,245,255,0.04);
+}
 /* ── SIDEBAR ── */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.95);border-right:1px solid rgba(0,245,255,0.12);backdrop-filter:blur(20px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:rgba(1,10,15,0.97);border-right:1px solid rgba(0,245,255,0.14);backdrop-filter:blur(24px);z-index:200;display:flex;flex-direction:column;transition:transform 0.3s ease}
 .sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(0,245,255,0.12);display:flex;align-items:center;justify-content:space-between}
 .sidebar-logo-inner{display:flex;flex-direction:column;gap:4px}
 .sidebar-logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--sb-accent);text-shadow:0 0 16px var(--sb-accent);display:flex;align-items:center;gap:8px}
@@ -503,23 +506,8 @@ function subscribeNotifRealtime(userId) {
 }
 
 // ─── AUTO THEME COLOR ─────────────────────────────────────────
-// ดึง --accent หรือ --cyan จากหน้านั้น แล้ว set เป็น --sb-accent ให้ sidebar
-function applyThemeColor() {
-  const rootStyle = getComputedStyle(document.documentElement)
-  // ลำดับ priority: --accent → --cyan (ถ้าไม่ใช่ค่า default #00f5ff)
-  const accent = rootStyle.getPropertyValue('--accent').trim()
-  const cyan   = rootStyle.getPropertyValue('--cyan').trim()
-
-  let themeColor = '#00f5ff' // default
-  if (accent && accent !== '') {
-    themeColor = accent
-  } else if (cyan && cyan !== '' && cyan !== '#00f5ff') {
-    themeColor = cyan
-  }
-
-  // set ลงไปเป็น --sb-accent ทับ
-  document.documentElement.style.setProperty('--sb-accent', themeColor)
-}
+// sidebar ใช้ --sb-accent: #00f5ff ตายตัว ไม่เปลี่ยนตาม theme ของแต่ละหน้า
+// แต่ละหน้าคุม --accent / --cyan ของตัวเองแยกต่างหาก
 
 // ─── LOAD USER ───────────────────────────────────────────────
 async function loadSidebarUser(userId, activePage = '') {
@@ -616,9 +604,7 @@ export async function initSidebar(activePage = '', options = {}) {
   const userId = session?.user?.id
   if (!userId) return {}
 
-  // Apply theme color ก่อน inject CSS (ดึง --accent จากหน้านั้น)
-  applyThemeColor()
-
+  // Apply CSS once
   if (!document.getElementById('sidebar-css')) {
     document.head.insertAdjacentHTML('beforeend', SIDEBAR_CSS)
   }

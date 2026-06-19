@@ -1,23 +1,13 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="achievements">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Achievements</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent: #ff5500;
-  --cyan: #ff5500;
-  --cyan-dim: #cc3300;
-  --gold: #ffd700;
-  --red: #ff003c;
-  --green: #44ff88;
-  --purple: #b044ff;
-  --bg: #0f0500;
-  --bg2: #140800;
-  --panel: rgba(255,85,0,0.04);
-  --border: rgba(255,85,0,0.14);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 /* ลบ transition: all ออกจาก * เพราะทำให้ animation ทุกอย่าง lag
@@ -46,7 +36,7 @@ body {
 body::before { content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000; }
 .grid-bg { position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0; }
 .orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
-.orb-1 { width:500px;height:500px;background:rgba(255,85,0,0.06);top:-150px;right:-100px; }
+.orb-1 { width:500px;height:500px;background:var(--panel);top:-150px;right:-100px; }
 .orb-2 { width:300px;height:300px;background:rgba(150,20,200,0.05);bottom:100px;left:-50px; }
 
 /* MAIN */
@@ -79,7 +69,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .trophy-svg {
   animation:trophyFloat 2.4s ease-in-out infinite;
-  filter:drop-shadow(0 0 18px rgba(255,85,0,0.7));
+  filter:drop-shadow(0 0 18px var(--cyan-glow));
 }
 @keyframes trophyFloat {
   0%,100%{ transform:translateY(0) scale(1); }
@@ -87,7 +77,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 .trophy-glow {
   position:absolute;inset:-24px;
-  background:radial-gradient(ellipse,rgba(255,85,0,0.18) 0%,transparent 70%);
+  background:radial-gradient(ellipse,var(--border) 0%,transparent 70%);
   animation:trophyGlow 2.4s ease-in-out infinite;
   pointer-events:none;
 }
@@ -101,7 +91,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 @keyframes raysRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .trophy-ray {
   position:absolute;width:1px;height:36px;
-  background:linear-gradient(to top,rgba(255,85,0,0.5),transparent);
+  background:linear-gradient(to top,var(--cyan-glow),transparent);
   transform-origin:50% 100%;
   top:calc(50% - 36px);left:calc(50%);
 }
@@ -123,9 +113,9 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .loading-logo {
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
   letter-spacing:6px;color:#ff5500;
-  text-shadow:0 0 24px rgba(255,85,0,0.8),0 0 48px rgba(255,85,0,0.3);
+  text-shadow:0 0 24px var(--cyan-glow),0 0 48px var(--cyan-glow);
 }
-.loading-bar-wrap { width:160px;height:2px;background:rgba(255,85,0,0.1);border:1px solid rgba(255,85,0,0.2); }
+.loading-bar-wrap { width:160px;height:2px;background:var(--border);border:1px solid var(--cyan-glow); }
 .loading-bar {
   height:100%;
   background:linear-gradient(90deg,#9922cc,#ff5500,#ee88ff);
@@ -257,7 +247,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 }
 
 /* BURGER */
-.burger { background:transparent;border:1px solid rgba(255,85,0,0.3);padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;width:40px;height:40px; }
+.burger { background:transparent;border:1px solid var(--cyan-glow);padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;width:40px;height:40px; }
 .burger span { display:block;width:18px;height:1.5px;background:var(--accent); }
 </style>
 </head>
@@ -283,7 +273,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
     <svg class="trophy-svg" width="72" height="88" viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- ถ้วยรางวัล -->
       <path d="M22 8 H50 V38 C50 52 36 60 36 60 C36 60 22 52 22 38 Z"
-        stroke="#ff5500" stroke-width="2" fill="rgba(255,85,0,0.1)" stroke-linejoin="round"/>
+        stroke="#ff5500" stroke-width="2" fill="var(--border)" stroke-linejoin="round"/>
       <!-- หูจับ ซ้าย -->
       <path d="M22 16 C10 16 8 28 16 32 C18 33 22 33 22 33"
         stroke="#ff5500" stroke-width="1.8" fill="none" stroke-linecap="round"/>
@@ -294,15 +284,15 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <line x1="36" y1="60" x2="36" y2="72" stroke="#ff5500" stroke-width="2"/>
       <!-- ฐาน -->
       <rect x="24" y="72" width="24" height="6" rx="1"
-        stroke="#ff5500" stroke-width="1.8" fill="rgba(255,85,0,0.15)"/>
+        stroke="#ff5500" stroke-width="1.8" fill="var(--border)"/>
       <rect x="20" y="78" width="32" height="5" rx="1"
-        stroke="#ff5500" stroke-width="1.8" fill="rgba(255,85,0,0.2)"/>
+        stroke="#ff5500" stroke-width="1.8" fill="var(--cyan-glow)"/>
       <!-- ดาวกลางถ้วย -->
       <polygon points="36,20 38,26 44,26 39,30 41,36 36,32 31,36 33,30 28,26 34,26"
         stroke="#ee88ff" stroke-width="1" fill="rgba(238,136,255,0.25)" stroke-linejoin="round"/>
       <!-- เส้นประดับ -->
-      <line x1="28" y1="44" x2="44" y2="44" stroke="rgba(255,85,0,0.4)" stroke-width="1"/>
-      <line x1="30" y1="50" x2="42" y2="50" stroke="rgba(255,85,0,0.3)" stroke-width="1"/>
+      <line x1="28" y1="44" x2="44" y2="44" stroke="var(--cyan-glow)" stroke-width="1"/>
+      <line x1="30" y1="50" x2="42" y2="50" stroke="var(--cyan-glow)" stroke-width="1"/>
     </svg>
   </div>
   <div class="loading-logo">ACHIEVEMENTS</div>
@@ -318,7 +308,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 
 
-<div class="topbar" style="position:fixed;top:0;left:0;right:0;height:60px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(15,5,0,0.92);border-bottom:1px solid rgba(255,85,0,0.14);backdrop-filter:blur(8px);">
+<div class="topbar" style="position:fixed;top:0;left:0;right:0;height:60px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(15,5,0,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);">
   <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#ff5500;letter-spacing:4px;">NEXUS</div>
   <button class="burger" onclick="openSidebar()">
     <span></span><span></span><span></span>
@@ -352,7 +342,7 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
       <div class="sum-card-sub">ที่ได้รับแล้ว</div>
     </div>
     <div class="sum-card">
-      <div class="sum-glow" style="background:rgba(255,85,0,0.15)"></div>
+      <div class="sum-glow" style="background:var(--border)"></div>
       <div class="sum-card-icon" id="sumIconStreak"></div>
       <div class="sum-card-label">STREAK</div>
       <div class="sum-card-val" id="sumStreak">—</div>

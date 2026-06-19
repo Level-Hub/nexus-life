@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="profile">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Profile</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -11,12 +12,6 @@
   --blue:#0066ff; --blue-bright:#4db8ff; --blue-dim:#003eaa;
   --blue-glow:rgba(0,102,255,0.35); --blue-glow2:rgba(77,184,255,0.18);
   /* keep alias so existing code that uses --cyan still works */
-  --cyan:#4db8ff; --cyan-dim:#003eaa;
-  --gold:#ffd700; --red:#ff003c;
-  --green:#44ff88; --purple:#b044ff; --orange:#ff9500;
-  --accent:#0066ff;
-  --bg:#00020f; --bg2:#000818;
-  --panel:rgba(0,102,255,0.04); --border:rgba(0,102,255,0.18);
   /* profile palette */
   --p-blue:#0066ff; --p-bright:#4db8ff; --p-mid:#0044cc;
   --p-panel:rgba(0,80,255,0.05); --p-border:rgba(0,102,255,0.20);
@@ -339,7 +334,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;
   background:rgba(0,80,255,0.07);border:1px solid var(--border);color:var(--text-dim);
 }
-.streak-day.done{background:rgba(255,149,0,0.12);border-color:rgba(255,149,0,0.4);color:#ff9500}
+.streak-day.done{background:var(--border);border-color:var(--cyan-glow);color:#ff9500}
 .streak-day.today{border-color:var(--p-bright);color:var(--p-bright)}
 
 /* GUILD INFO */
@@ -464,7 +459,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .cooldown-badge{
   display:inline-block;font-family:'Orbitron',monospace;font-size:7px;
   letter-spacing:1px;color:#ff9500;padding:2px 6px;
-  border:1px solid rgba(255,149,0,0.3);background:rgba(255,149,0,0.06);
+  border:1px solid var(--cyan-glow);background:var(--panel);
   margin-left:8px;vertical-align:middle;
 }
 </style>

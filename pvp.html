@@ -1,24 +1,13 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="pvp">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — PvP Duel</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cyan: #ff003c;
-  --cyan-dim: #cc0030;
-  --gold: #ffd700;
-  --red: #ff003c;
-  --green: #44ff88;
-  --purple: #ff6666;
-  --orange: #ff9500;
-  --bg: #0f0003;
-  --bg2: #140005;
-  --panel: rgba(255,0,60,0.04);
-  --border: rgba(255,0,60,0.15);
-  --accent: #ff003c;
 }
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
 .no-transition, .no-transition * { transition: none !important; }
@@ -282,8 +271,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 
 /* ===================== TOURNAMENT BRACKET ===================== */
 .tournament-header {
-  background:linear-gradient(135deg,rgba(255,149,0,0.06),rgba(176,68,255,0.06));
-  border:1px solid rgba(255,149,0,0.2);
+  background:linear-gradient(135deg,var(--panel),rgba(176,68,255,0.06));
+  border:1px solid var(--cyan-glow);
   padding:20px;margin-bottom:20px;
   display:flex;align-items:center;justify-content:space-between;
   position:relative;
@@ -294,8 +283,8 @@ body::before { content:'';position:fixed;inset:0;background:repeating-linear-gra
 .tournament-status { text-align:right; }
 .tournament-status-badge {
   font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
-  padding:6px 14px;border:1px solid rgba(255,149,0,0.4);
-  background:rgba(255,149,0,0.08);color:var(--orange);
+  padding:6px 14px;border:1px solid var(--cyan-glow);
+  background:var(--border);color:var(--orange);
 }
 .tournament-countdown { font-family:'Orbitron',monospace;font-size:11px;color:#fff;margin-top:6px; }
 

@@ -1,22 +1,13 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="index">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Real Life MMO</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cyan: #ff9500;
-    --cyan-dim: #cc7000;
-    --gold: #ffd700;
-    --red: #ff003c;
-    --bg: #010a0f;
-    --bg2: #020d14;
-    --panel: rgba(255,149,0,0.04);
-    --border: rgba(255,149,0,0.15);
-    --text: #f5ead0;
-    --text-dim: #8a7a5a;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -46,7 +37,7 @@
   .cursor-ring {
     position: fixed;
     width: 36px; height: 36px;
-    border: 1px solid rgba(255,149,0,0.5);
+    border: 1px solid var(--cyan-glow);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
@@ -75,8 +66,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255,149,0,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,149,0,0.03) 1px, transparent 1px);
+      linear-gradient(var(--panel) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel) 1px, transparent 1px);
     background-size: 60px 60px;
     z-index: 0;
   }
@@ -89,7 +80,7 @@
     pointer-events: none;
     z-index: 0;
   }
-  .orb-1 { width:400px; height:400px; background:rgba(255,149,0,0.07); top:-100px; right:-100px; }
+  .orb-1 { width:400px; height:400px; background:var(--border); top:-100px; right:-100px; }
   .orb-2 { width:300px; height:300px; background:rgba(255,215,0,0.05); bottom:100px; left:-50px; }
   .orb-3 { width:200px; height:200px; background:rgba(255,100,0,0.04); top:50%; left:50%; }
 
@@ -180,8 +171,8 @@
     align-items: center;
     gap: 8px;
     padding: 6px 16px;
-    border: 1px solid rgba(255,149,0,0.3);
-    background: rgba(255,149,0,0.05);
+    border: 1px solid var(--cyan-glow);
+    background: var(--panel);
     font-family: 'Orbitron', monospace;
     font-size: 10px;
     letter-spacing: 3px;
@@ -253,7 +244,7 @@
   }
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(255,149,0,0.4);
+    box-shadow: 0 0 30px var(--cyan-glow);
   }
 
   .btn-secondary {
@@ -304,7 +295,7 @@
     font-weight: 900;
     color: var(--cyan);
     display: block;
-    text-shadow: 0 0 20px rgba(255,149,0,0.5);
+    text-shadow: 0 0 20px var(--cyan-glow);
   }
 
   .stat-label {
@@ -462,7 +453,7 @@
     position: relative;
     z-index: 1;
     padding: 80px 24px;
-    background: linear-gradient(180deg, transparent, rgba(255,149,0,0.02), transparent);
+    background: linear-gradient(180deg, transparent, var(--panel), transparent);
   }
 
   .rank-list {
@@ -487,7 +478,7 @@
 
   .rank-item:hover {
     border-color: var(--rank-color);
-    background: rgba(255,149,0,0.03);
+    background: var(--panel);
   }
 
   .rank-item::before {
@@ -554,7 +545,7 @@
   }
 
   .feature-card:hover {
-    border-color: rgba(255,149,0,0.3);
+    border-color: var(--cyan-glow);
     transform: translateY(-4px);
   }
 
@@ -611,7 +602,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 100%, rgba(255,149,0,0.06), transparent 70%);
+    background: radial-gradient(circle at 50% 100%, var(--panel), transparent 70%);
   }
 
   .cta-title {
@@ -651,7 +642,7 @@
 
   .form-input:focus {
     border-color: var(--cyan);
-    box-shadow: 0 0 0 1px var(--cyan), 0 0 20px rgba(255,149,0,0.1);
+    box-shadow: 0 0 0 1px var(--cyan), 0 0 20px var(--border);
   }
 
   .form-input::placeholder { color: var(--text-dim); }
@@ -729,8 +720,8 @@
     20% { clip-path: inset(0 0 100% 0); }
   }
   @keyframes pulse-glow {
-    0%,100% { box-shadow: 0 0 10px var(--cyan), 0 0 20px rgba(255,149,0,0.3); }
-    50% { box-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(255,149,0,0.5); }
+    0%,100% { box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan-glow); }
+    50% { box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan-glow); }
   }
   @keyframes scan {
     0% { transform: translateY(-100%); }
@@ -741,7 +732,7 @@
     position: fixed;
     left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,149,0,0.1), transparent);
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
     animation: scan 8s linear infinite;
     pointer-events: none;
     z-index: 999;
@@ -793,7 +784,7 @@
   <div class="nav-logo">
     <svg width="20" height="20" viewBox="0 0 20 20">
       <polygon points="10,1 19,6 19,14 10,19 1,14 1,6" fill="none" stroke="#ff9500" stroke-width="1.5"/>
-      <polygon points="10,5 15,8 15,13 10,16 5,13 5,8" fill="rgba(255,149,0,0.15)" stroke="#ff9500" stroke-width="0.5"/>
+      <polygon points="10,5 15,8 15,13 10,16 5,13 5,8" fill="var(--border)" stroke="#ff9500" stroke-width="0.5"/>
       <circle cx="10" cy="10" r="2" fill="#ff9500"/>
     </svg>
     NEXUS LIFE
@@ -977,7 +968,7 @@
     <div class="rank-item" style="--rank-color:#88ccff">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#ff9500" stroke-width="1.5" fill="rgba(255,149,0,0.1)"/>
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#ff9500" stroke-width="1.5" fill="var(--border)"/>
           <text x="18" y="22" text-anchor="middle" fill="#ff9500" font-size="10" font-family="Orbitron">PL</text>
         </svg>
       </div>
@@ -1009,8 +1000,8 @@
     <div class="rank-item" style="--rank-color:#ff9500">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,2 34,11 34,25 18,34 2,25 2,11" stroke="#ff9500" stroke-width="1.5" fill="rgba(255,149,0,0.1)"/>
-          <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" stroke="#ff9500" stroke-width="0.5" fill="rgba(255,149,0,0.05)"/>
+          <polygon points="18,2 34,11 34,25 18,34 2,25 2,11" stroke="#ff9500" stroke-width="1.5" fill="var(--border)"/>
+          <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" stroke="#ff9500" stroke-width="0.5" fill="var(--panel)"/>
           <circle cx="18" cy="18" r="3" fill="#ff9500"/>
         </svg>
       </div>
@@ -1041,7 +1032,7 @@
   <div class="feature-grid">
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="4" y="8" width="40" height="32" stroke="#ff9500" stroke-width="1.5" fill="rgba(255,149,0,0.05)" rx="2"/>
+        <rect x="4" y="8" width="40" height="32" stroke="#ff9500" stroke-width="1.5" fill="var(--panel)" rx="2"/>
         <line x1="4" y1="16" x2="44" y2="16" stroke="#ff9500" stroke-width="1" opacity="0.4"/>
         <rect x="10" y="22" width="12" height="2" fill="#ff9500" opacity="0.6"/>
         <rect x="10" y="28" width="20" height="2" fill="#ff9500" opacity="0.3"/>
@@ -1098,8 +1089,8 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="10" y="8" width="28" height="32" stroke="#ff9500" stroke-width="1.5" fill="rgba(255,149,0,0.05)" rx="1"/>
-        <circle cx="24" cy="20" r="7" stroke="#ff9500" stroke-width="1" fill="rgba(255,149,0,0.1)"/>
+        <rect x="10" y="8" width="28" height="32" stroke="#ff9500" stroke-width="1.5" fill="var(--panel)" rx="1"/>
+        <circle cx="24" cy="20" r="7" stroke="#ff9500" stroke-width="1" fill="var(--border)"/>
         <rect x="16" y="30" width="16" height="2" fill="#ff9500" opacity="0.4"/>
         <rect x="18" y="34" width="12" height="2" fill="#ff9500" opacity="0.2"/>
       </svg>
@@ -1202,12 +1193,12 @@
     el.addEventListener('mouseenter', () => {
       ring.style.width = '56px';
       ring.style.height = '56px';
-      ring.style.borderColor = 'rgba(255,149,0,0.8)';
+      ring.style.borderColor = 'var(--cyan-glow)';
     });
     el.addEventListener('mouseleave', () => {
       ring.style.width = '36px';
       ring.style.height = '36px';
-      ring.style.borderColor = 'rgba(255,149,0,0.5)';
+      ring.style.borderColor = 'var(--cyan-glow)';
     });
   });
 

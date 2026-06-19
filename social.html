@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="social">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Social</title>
+<link rel="stylesheet" href="./theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent:#7755ff;
-  --cyan:#7755ff; --cyan-dim:#4422cc; --gold:#ffd700; --red:#ff003c;
-  --green:#44ff88; --purple:#aa88ff; --orange:#ff9500;
-  --bg:#04010f; --bg2:#08021a;
-  --panel:rgba(119,85,255,0.04); --border:rgba(119,85,255,0.15);
 }
 * { transition: all var(--t-base, 0.35s) cubic-bezier(0.2,0.9,0.4,1.1); }
 .no-transition, .no-transition * { transition: none !important; }
@@ -25,7 +21,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;ove
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
 .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(119,85,255,0.07);top:-150px;right:-100px}
+.orb-1{width:500px;height:500px;background:var(--border);top:-150px;right:-100px}
 .orb-2{width:300px;height:300px;background:rgba(80,40,200,0.05);bottom:100px;left:-50px}
 
 /* MAIN */
@@ -47,14 +43,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 }
 .globe-glow{
   position:absolute;inset:-24px;
-  background:radial-gradient(ellipse,rgba(119,85,255,0.22) 0%,transparent 70%);
+  background:radial-gradient(ellipse,var(--cyan-glow) 0%,transparent 70%);
   animation:globeGlowPulse 2s ease-in-out infinite;pointer-events:none;
 }
 @keyframes globeGlowPulse{0%,100%{opacity:0.5}50%{opacity:1}}
 /* ── SVG โลก outer ring ── */
 .globe-ring{
   position:absolute;inset:-8px;border-radius:50%;
-  border:1px solid rgba(119,85,255,0.3);
+  border:1px solid var(--cyan-glow);
   animation:ringOrbit 4s linear infinite;
 }
 .globe-ring-dot{
@@ -66,8 +62,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── SVG โลกหมุน ── */
 .globe-svg-wrap{
   width:90px;height:90px;border-radius:50%;overflow:hidden;
-  border:2px solid rgba(119,85,255,0.5);
-  box-shadow:0 0 24px rgba(119,85,255,0.4),inset 0 0 20px rgba(0,0,0,0.6);
+  border:2px solid var(--cyan-glow);
+  box-shadow:0 0 24px var(--cyan-glow),inset 0 0 20px rgba(0,0,0,0.6);
   position:relative;
   background:radial-gradient(circle at 35% 35%, #0a0530 0%, #020110 100%);
 }
@@ -98,16 +94,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ── atmosphere glow ── */
 .globe-atm{
   position:absolute;inset:-4px;border-radius:50%;
-  background:radial-gradient(circle at 50% 50%,transparent 42%,rgba(119,85,255,0.12) 55%,rgba(119,85,255,0.06) 70%,transparent 80%);
+  background:radial-gradient(circle at 50% 50%,transparent 42%,var(--border) 55%,var(--panel) 70%,transparent 80%);
   pointer-events:none;
 }
 /* ── TEXT ── */
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
   letter-spacing:6px;color:#7755ff;
-  text-shadow:0 0 24px rgba(119,85,255,0.9),0 0 48px rgba(119,85,255,0.4);
+  text-shadow:0 0 24px var(--cyan-glow),0 0 48px var(--cyan-glow);
 }
-.loading-bar-wrap{width:160px;height:2px;background:rgba(119,85,255,0.1);border:1px solid rgba(119,85,255,0.2)}
+.loading-bar-wrap{width:160px;height:2px;background:var(--border);border:1px solid var(--cyan-glow)}
 .loading-bar{
   height:100%;
   background:linear-gradient(90deg,#4422cc,#7755ff,#aa88ff);
@@ -275,30 +271,30 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <svg class="globe-land" width="180" height="90" viewBox="0 0 180 90" xmlns="http://www.w3.org/2000/svg">
         <!-- ทวีปชุดที่ 1 -->
         <!-- เอเชีย -->
-        <path d="M95 18 L108 14 L118 18 L122 26 L116 32 L110 35 L104 30 L98 28 Z" fill="rgba(119,85,255,0.55)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
+        <path d="M95 18 L108 14 L118 18 L122 26 L116 32 L110 35 L104 30 L98 28 Z" fill="var(--cyan-glow)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
         <path d="M104 30 L112 32 L118 40 L112 45 L106 42 L102 36 Z" fill="rgba(100,70,220,0.5)" stroke="rgba(140,100,255,0.4)" stroke-width="0.5"/>
         <!-- ยุโรป -->
         <path d="M62 16 L70 13 L76 18 L74 24 L68 26 L62 22 Z" fill="rgba(130,95,255,0.5)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
         <!-- แอฟริกา -->
         <path d="M66 28 L76 25 L80 34 L78 46 L70 52 L62 46 L60 36 Z" fill="rgba(100,65,210,0.55)" stroke="rgba(140,100,255,0.4)" stroke-width="0.5"/>
         <!-- อเมริกาเหนือ -->
-        <path d="M18 12 L30 10 L36 16 L34 26 L26 30 L18 24 L14 18 Z" fill="rgba(119,85,255,0.5)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
+        <path d="M18 12 L30 10 L36 16 L34 26 L26 30 L18 24 L14 18 Z" fill="var(--cyan-glow)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
         <!-- อเมริกาใต้ -->
         <path d="M26 36 L34 32 L38 42 L36 54 L28 58 L22 50 L20 40 Z" fill="rgba(100,70,220,0.5)" stroke="rgba(140,100,255,0.4)" stroke-width="0.5"/>
         <!-- ออสเตรเลีย -->
         <path d="M120 48 L132 44 L138 50 L136 58 L126 60 L118 56 Z" fill="rgba(110,75,230,0.5)" stroke="rgba(150,110,255,0.4)" stroke-width="0.5"/>
         <!-- เส้นกริดละติจูด -->
-        <line x1="0" y1="22" x2="180" y2="22" stroke="rgba(119,85,255,0.15)" stroke-width="0.5"/>
-        <line x1="0" y1="45" x2="180" y2="45" stroke="rgba(119,85,255,0.2)" stroke-width="0.5"/>
-        <line x1="0" y1="68" x2="180" y2="68" stroke="rgba(119,85,255,0.15)" stroke-width="0.5"/>
+        <line x1="0" y1="22" x2="180" y2="22" stroke="var(--border)" stroke-width="0.5"/>
+        <line x1="0" y1="45" x2="180" y2="45" stroke="var(--cyan-glow)" stroke-width="0.5"/>
+        <line x1="0" y1="68" x2="180" y2="68" stroke="var(--border)" stroke-width="0.5"/>
         <!-- เส้นกริดลองจิจูด -->
-        <line x1="30"  y1="0" x2="30"  y2="90" stroke="rgba(119,85,255,0.1)" stroke-width="0.5"/>
-        <line x1="60"  y1="0" x2="60"  y2="90" stroke="rgba(119,85,255,0.1)" stroke-width="0.5"/>
-        <line x1="90"  y1="0" x2="90"  y2="90" stroke="rgba(119,85,255,0.1)" stroke-width="0.5"/>
-        <line x1="120" y1="0" x2="120" y2="90" stroke="rgba(119,85,255,0.1)" stroke-width="0.5"/>
-        <line x1="150" y1="0" x2="150" y2="90" stroke="rgba(119,85,255,0.1)" stroke-width="0.5"/>
+        <line x1="30"  y1="0" x2="30"  y2="90" stroke="var(--border)" stroke-width="0.5"/>
+        <line x1="60"  y1="0" x2="60"  y2="90" stroke="var(--border)" stroke-width="0.5"/>
+        <line x1="90"  y1="0" x2="90"  y2="90" stroke="var(--border)" stroke-width="0.5"/>
+        <line x1="120" y1="0" x2="120" y2="90" stroke="var(--border)" stroke-width="0.5"/>
+        <line x1="150" y1="0" x2="150" y2="90" stroke="var(--border)" stroke-width="0.5"/>
         <!-- ทวีปชุดที่ 2 (repeat ด้านขวา) -->
-        <path d="M185 18 L198 14 L208 18 L212 26 L206 32 L200 35 L194 30 L188 28 Z" fill="rgba(119,85,255,0.55)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
+        <path d="M185 18 L198 14 L208 18 L212 26 L206 32 L200 35 L194 30 L188 28 Z" fill="var(--cyan-glow)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
         <path d="M194 30 L202 32 L208 40 L202 45 L196 42 L192 36 Z" fill="rgba(100,70,220,0.5)" stroke="rgba(140,100,255,0.4)" stroke-width="0.5"/>
         <path d="M152 16 L160 13 L166 18 L164 24 L158 26 L152 22 Z" fill="rgba(130,95,255,0.5)" stroke="rgba(160,120,255,0.4)" stroke-width="0.5"/>
         <path d="M156 28 L166 25 L170 34 L168 46 L160 52 L152 46 L150 36 Z" fill="rgba(100,65,210,0.55)" stroke="rgba(140,100,255,0.4)" stroke-width="0.5"/>
