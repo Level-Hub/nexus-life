@@ -9,14 +9,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
-  --green:#44ff88; --purple:#b044ff; --orange:#ff9500; --pink:#ff66aa;
+  --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:var(--accent); --red:var(--accent);
+  --green:#44ff88; --purple:var(--accent); --orange:var(--accent); --pink:#ff66aa;
   --bg:#010a0f; --bg2:#020d14; --bg3:#030f18;
   --panel:rgba(0,245,255,0.04); --panel2:rgba(0,245,255,0.07);
   --border:rgba(0,245,255,0.12); --border2:rgba(0,245,255,0.22);
   --text:#c8f0f5; --text-dim:#5a8a90;
-  --admin-accent:#ff9500;
-  --admin-glow:rgba(255,149,0,0.15);
+  --admin-accent:var(--accent);
+  --admin-glow:rgba(0,245,255,0.15);
 }
 
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
@@ -24,25 +24,25 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;ove
 
 /* CUSTOM CURSOR */
 .cursor{position:fixed;width:10px;height:10px;background:var(--admin-accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--admin-accent)}
-.cursor-ring{position:fixed;width:34px;height:34px;border:1px solid rgba(255,149,0,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.1s ease}
+.cursor-ring{position:fixed;width:34px;height:34px;border:1px solid rgba(0,245,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.1s ease}
 
 /* SCANLINE */
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);pointer-events:none;z-index:1000}
 
 /* GRID BG */
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,149,0,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,149,0,0.018) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.018) 1px,transparent 1px);background-size:60px 60px;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
-.orb-1{width:600px;height:600px;background:rgba(255,149,0,0.04);top:-200px;right:-150px}
-.orb-2{width:400px;height:400px;background:rgba(176,68,255,0.035);bottom:50px;left:-100px}
-.orb-3{width:300px;height:300px;background:rgba(255,0,60,0.03);top:50%;left:40%}
+.orb-1{width:600px;height:600px;background:rgba(0,245,255,0.04);top:-200px;right:-150px}
+.orb-2{width:400px;height:400px;background:rgba(0,245,255,0.03);bottom:50px;left:-100px}
+.orb-3{width:300px;height:300px;background:rgba(0,245,255,0.02);top:50%;left:40%}
 
 /* ===== LOADING ===== */
 .loading-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.5s ease}
 .loading-screen.hidden{opacity:0;pointer-events:none}
 .loading-logo{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;letter-spacing:6px;color:var(--admin-accent);text-shadow:0 0 30px var(--admin-accent)}
 .loading-sub{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:var(--text-dim)}
-.loading-bar-wrap{width:240px;height:2px;background:rgba(255,149,0,0.1)}
-.loading-bar{height:100%;background:linear-gradient(90deg,var(--admin-accent),var(--gold));animation:loadAnim 1.4s ease-in-out forwards}
+.loading-bar-wrap{width:240px;height:2px;background:rgba(0,245,255,0.1)}
+.loading-bar{height:100%;background:var(--admin-accent);animation:loadAnim 1.4s ease-in-out forwards}
 @keyframes loadAnim{0%{width:0%}60%{width:75%}100%{width:100%}}
 .loading-denied{color:var(--red);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;display:none}
 
@@ -233,14 +233,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .quest-tag{display:inline-flex;align-items:center;padding:2px 8px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;border:1px solid}
 .quest-tag.type-daily{color:#00f5ff;border-color:rgba(0,245,255,0.3)}
 .quest-tag.type-weekly{color:#aa44ff;border-color:rgba(170,68,255,0.3)}
-.quest-tag.type-challenge{color:#ff9500;border-color:rgba(255,149,0,0.3)}
-.quest-tag.type-guild{color:#ffd700;border-color:rgba(255,215,0,0.3)}
+.quest-tag.type-challenge{color:var(--accent);border-color:rgba(var(--accent-rgb),0.3)}
+.quest-tag.type-guild{color:var(--accent);border-color:rgba(var(--accent-rgb),0.3)}
 .quest-tag.type-story{color:#ff66aa;border-color:rgba(255,102,170,0.3)}
 .quest-tag.class-all{color:#5a8a90;border-color:rgba(90,138,144,0.3)}
 .quest-tag.class-warrior{color:#ff4444;border-color:rgba(255,68,68,0.3)}
 .quest-tag.class-mage{color:#aa44ff;border-color:rgba(170,68,255,0.3)}
 .quest-tag.class-explorer{color:#44ff88;border-color:rgba(68,255,136,0.3)}
-.quest-tag.class-merchant{color:#ffaa00;border-color:rgba(255,170,0,0.3)}
+.quest-tag.class-merchant{color:var(--accent);border-color:rgba(var(--accent-rgb),0.3)}
 .quest-tag.class-artist{color:#ff66aa;border-color:rgba(255,102,170,0.3)}
 .quest-tag.class-diplomat{color:#00ccff;border-color:rgba(0,204,255,0.3)}
 .quest-xp-badge{font-family:'Orbitron',monospace;font-size:9px;color:var(--gold);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:2px 8px}
@@ -356,7 +356,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .empty-state-txt{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px}
 
 /* ===== SUBMIT BTN ===== */
-.submit-btn{width:100%;padding:14px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;background:rgba(255,149,0,0.15);border:1px solid rgba(255,149,0,0.5);color:var(--admin-accent);cursor:pointer;transition:all 0.3s}
+.submit-btn{width:100%;padding:14px;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;background:rgba(255,149,0,0.15);border:1px solid rgba(0,245,255,0.4);color:var(--admin-accent);cursor:pointer;transition:all 0.3s}
 .submit-btn:hover{background:rgba(255,149,0,0.28);box-shadow:0 0 20px rgba(255,149,0,0.15)}
 .submit-btn:disabled{opacity:0.4;cursor:not-allowed}
 
@@ -387,6 +387,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .admin-sidebar{transform:translateX(-100%)}
   .admin-sidebar.open{transform:translateX(0);z-index:9500}
 }
+/* ── RESPONSIVE LAYOUTS ── */
+.music-layout{display:grid;grid-template-columns:1fr 320px;gap:20px}
+.quest-mgmt-wrap{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
+.announce-wrap{display:grid;grid-template-columns:1fr 380px;gap:20px}
+@media(max-width:960px){
+  .music-layout,.quest-mgmt-wrap,.announce-wrap{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -549,11 +557,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="chart-grid">
       <div class="box">
         <div class="box-header"><div class="box-title" id="chartTitle">XP / REVENUE (7 วัน)</div><div class="box-tag">WEEKLY CHART</div></div>
-        <div class="box-body"><div class="chart-wrap"><canvas id="chartWeekly"></canvas></div></div>
+        <div class="box-body"><div class="chart-wrap" style="height:220px"><canvas id="chartWeekly" style="display:block"></canvas></div></div>
       </div>
       <div class="box">
         <div class="box-header"><div class="box-title" id="classDistTitle">CLASS DISTRIBUTION</div><div class="box-tag">ALL USERS</div></div>
-        <div class="box-body"><div class="chart-wrap"><canvas id="chartClass"></canvas></div></div>
+        <div class="box-body"><div class="chart-wrap" style="height:220px"><canvas id="chartClass" style="display:block"></canvas></div></div>
       </div>
     </div>
 
@@ -584,10 +592,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="filter-row">
       <input class="search-input" id="txSearch" type="text" placeholder="ค้นหา username หรือจำนวนเงิน..." oninput="filterTransactions()">
       <select class="filter-select" id="txFilter" onchange="filterTransactions()">
+        <option value="all">ทั้งหมด</option>
         <option value="pending">รอยืนยัน</option>
         <option value="completed">ยืนยันแล้ว</option>
         <option value="rejected">ปฏิเสธ</option>
-        <option value="all">ทั้งหมด</option>
       </select>
     </div>
     <div id="txList">
@@ -665,7 +673,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- ===================== TAB: ANNOUNCEMENTS ===================== -->
   <div class="tab-panel" id="tab-announcements">
-    <div style="display:grid;grid-template-columns:1fr 380px;gap:20px" class="announce-wrap">
+    <div class="announce-wrap">
 
       <div class="box">
         <div class="box-header"><div class="box-title" id="broadcastTitle">BROADCAST NOTIFICATION</div><div class="box-tag">ส่งถึงผู้เล่น</div></div>
@@ -747,7 +755,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- ===================== TAB: QUEST MANAGEMENT ===================== -->
   <div class="tab-panel" id="tab-quests">
 
-    <div style="display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start" class="quest-mgmt-wrap">
+    <div class="quest-mgmt-wrap">
 
       <!-- LEFT: QUEST LIST -->
       <div>
@@ -883,7 +891,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <!-- ===================== TAB: MUSIC ===================== -->
   <div class="tab-panel" id="tab-music">
-    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+    <div class="music-layout">
       <div>
         <div class="music-player box">
           <div class="box-header"><div class="box-title" id="musicTitle">MUSIC PLAYER</div><div class="box-tag">Admin Background Music</div></div>
@@ -1180,8 +1188,8 @@ function startCharts() {
     data: {
       labels,
       datasets: [
-        { label: 'Quest สำเร็จ', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(0,245,255,0.25)', borderColor: 'rgba(0,245,255,0.7)', borderWidth: 1 },
-        { label: 'Topup (฿ ×10)', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(255,215,0,0.25)', borderColor: 'rgba(255,215,0,0.7)', borderWidth: 1 }
+        { label: 'Quest สำเร็จ', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(0,245,255,0.3)', borderColor: '#00f5ff', borderWidth: 1 },
+        { label: 'Topup (฿ ×10)', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(0,245,255,0.15)', borderColor: 'rgba(0,245,255,0.5)', borderWidth: 1 }
       ]
     },
     options: { ...chartOpts, plugins: { ...chartOpts.plugins } }
@@ -1245,7 +1253,8 @@ window.filterTransactions = function() {
   const status = document.getElementById('txFilter').value
   let list = allTransactions.filter(t => {
     const uname = (t.users?.username || '').toLowerCase()
-    const matchQ = !q || uname.includes(q) || String(t.amount_thb).includes(q)
+    const dname = (t.users?.display_name || '').toLowerCase()
+    const matchQ = !q || uname.includes(q) || dname.includes(q) || String(t.amount_thb).includes(q)
     const matchS = status === 'all' || t.status === status
     return matchQ && matchS
   })
@@ -1352,7 +1361,7 @@ window.openSlip = (url) => { document.getElementById('slipModalImg').src = url; 
 // USERS
 // ============================================
 async function loadUsers() {
-  const { data } = await sb.from('users').select('*').order('created_at', { ascending: false }).limit(200)
+  const { data } = await sb.from('users').select('id,username,display_name,class,level,xp_total,gold,crystal,avatar_seed,avatar_url,is_admin,is_banned,created_at').order('created_at', { ascending: false }).limit(200)
   allUsers = data || []
   document.getElementById('userCountLabel').textContent = `${allUsers.length} USERS`
   filterUsers()
