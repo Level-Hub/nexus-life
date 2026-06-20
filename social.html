@@ -44,8 +44,8 @@
 }
 .globe-ring-dot{
   position:absolute;top:-3px;left:50%;transform:translateX(-50%);
-  width:6px;height:6px;border-radius:50%;background:#7755ff;
-  box-shadow:0 0 8px #7755ff;
+  width:6px;height:6px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 8px var(--accent-glow);
 }
 @keyframes ringOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* ── SVG โลกหมุน ── */
@@ -59,7 +59,7 @@
 /* ── พื้นน้ำ ── */
 .globe-ocean{
   position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%, #1a0a5a 0%, #0a0330 60%, #04011a 100%);
+  background:radial-gradient(circle at 35% 30%, #001a2a 0%, #00070f 60%, #010a0f 100%);
 }
 /* ── แผ่นดินหมุน ── */
 .globe-land{
@@ -89,13 +89,13 @@
 /* ── TEXT ── */
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#7755ff;
+  letter-spacing:6px;color:var(--accent);
   text-shadow:0 0 24px var(--accent-glow),0 0 48px var(--accent-glow);
 }
 .loading-bar-wrap{width:160px;height:2px;background:var(--border);border:1px solid var(--accent-glow)}
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#4422cc,#7755ff,#aa88ff);
+  background:linear-gradient(90deg,#4422cc,var(--accent),#aa88ff);
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%}}

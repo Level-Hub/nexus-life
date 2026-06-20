@@ -162,8 +162,8 @@ to{opacity:1;transform:translateY(0)}}
 /* ── ปก ── */
 .book-cover{
   position:absolute;inset:0;
-  background:linear-gradient(135deg,#3d2008 0%,#7a4a18 35%,#a06828 55%,#5c3410 100%);
-  border:2px solid #c8860a;
+  background:linear-gradient(135deg,#001a22 0%,#003a4a 35%,#005566 55%,#002535 100%);
+  border:2px solid var(--accent);
   border-radius:2px 5px 5px 2px;
   box-shadow:0 0 28px var(--accent-glow),inset 0 0 24px rgba(0,0,0,0.6);
   overflow:hidden;
@@ -177,13 +177,13 @@ to{opacity:1;transform:translateY(0)}}
   content:'* QUEST LOG *';
   position:absolute;bottom:16px;left:0;right:0;text-align:center;
   font-family:'Orbitron',monospace;font-size:6.5px;letter-spacing:2px;
-  color:rgba(245,166,35,0.65);
+  color:rgba(var(--accent-rgb),0.65);
 }
 
 /* ── สัน ── */
 .book-spine{
   position:absolute;left:-9px;top:2px;bottom:2px;width:9px;
-  background:linear-gradient(90deg,#281405,#5c3410);
+  background:linear-gradient(90deg,#281405,#002535);
   border:1px solid var(--accent-glow);
   border-radius:2px 0 0 2px;
 }
@@ -221,7 +221,7 @@ to{opacity:1;transform:translateY(0)}}
 /* ── scanline ── */
 .book-scanline{
   position:absolute;left:9px;right:5px;height:1.5px;
-  background:linear-gradient(90deg,transparent,var(--accent-glow),rgba(245,166,35,0.7),transparent);
+  background:linear-gradient(90deg,transparent,var(--accent-glow),rgba(var(--accent-rgb),0.7),transparent);
   box-shadow:0 0 8px var(--accent-glow);
   animation:bookScan 2s ease-in-out infinite;
 }
@@ -241,7 +241,7 @@ to{opacity:1;transform:translateY(0)}}
 /* ── ข้อความ ── */
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#f5a623;
+  letter-spacing:6px;color:var(--accent);
   text-shadow:0 0 24px var(--accent-glow),0 0 48px var(--accent-glow);
 }
 .loading-bar-wrap{
@@ -251,7 +251,7 @@ to{opacity:1;transform:translateY(0)}}
 }
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#6b4500,#c8860a,#f5a623);
+  background:linear-gradient(90deg,#6b4500,var(--accent),var(--accent));
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%}}

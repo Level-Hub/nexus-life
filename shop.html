@@ -291,7 +291,7 @@ to{opacity:1;transform:translateY(0)}}
         <line x1="18" y1="38" x2="14" y2="44" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
         <line x1="54" y1="38" x2="58" y2="44" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
         <!-- ก้านจับ -->
-        <path d="M2 4 L10 4 L8 8" stroke="#ffcc44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 4 L10 4 L8 8" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <!-- ซี่ตะกร้า -->
         <line x1="24" y1="8" x2="21" y2="38" stroke="rgba(255,170,0,0.4)" stroke-width="1"/>
         <line x1="36" y1="8" x2="36" y2="38" stroke="rgba(255,170,0,0.4)" stroke-width="1"/>
@@ -671,7 +671,7 @@ window.openDetail = function(itemId) {
   } else if (item.category === 'avatar' && meta.type === 'title_color') {
     // พรีวิวสีชื่อ
     const colorStyle = meta.value === 'rainbow'
-      ? 'background:linear-gradient(90deg,#ff0080,#ff8800,#ffff00,#00ff88,#0088ff,#8800ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text'
+      ? 'background:linear-gradient(90deg,var(--accent),var(--accent-dim),var(--accent),rgba(var(--accent-rgb),0.3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text'
       : `color:${meta.value}`
     previewHTML = `
       <div class="preview-name-color" style="${colorStyle}">

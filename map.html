@@ -333,12 +333,12 @@ to{opacity:1;transform:translateY(0);} }
 }
 .loading-radar-dot {
   width:8px;height:8px;border-radius:50%;
-  background:#00ff88;box-shadow:0 0 12px var(--accent-glow);
+  background:var(--accent);box-shadow:0 0 12px var(--accent-glow);
   position:relative;z-index:1;
 }
 .loading-logo {
   font-family:'Orbitron',monospace;font-size:22px;font-weight:900;
-  letter-spacing:8px;color:#00ff88;
+  letter-spacing:8px;color:var(--accent);
   text-shadow:0 0 32px var(--accent-glow);
 }
 .loading-bar-wrap {
@@ -347,7 +347,7 @@ to{opacity:1;transform:translateY(0);} }
 }
 .loading-bar {
   position:absolute;left:-60%;width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,#00b85c,#00ff88,transparent);
+  background:linear-gradient(90deg,transparent,var(--accent-dim),var(--accent),transparent);
   animation:mapLoadSlide 1.1s infinite linear;
 }
 .loading-txt { font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:#3a7a55; }
@@ -848,7 +848,7 @@ function getUserLocation() {
       iconSize: [32,32], iconAnchor: [16,16], className:''
     })
     L.marker([myLat, myLng], { icon: myIcon }).addTo(mapInstance)
-      .bindPopup(`<b style="font-family:Orbitron,monospace;color:#00ff88">ตำแหน่งของฉัน</b>`)
+      .bindPopup(`<b style="font-family:Orbitron,monospace;color:var(--accent)">ตำแหน่งของฉัน</b>`)
 
     mapInstance.setView([myLat, myLng], 10)
 
