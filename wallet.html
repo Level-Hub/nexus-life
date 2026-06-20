@@ -67,9 +67,9 @@
   animation:walletOpen 1.8s cubic-bezier(0.4,0,0.2,1) infinite;
 }
 .wallet-svg .w-flap.opening{animation:walletOpenFull 0.8s cubic-bezier(0.4,0,0.2,1) forwards}
-.wallet-svg .w-coin{fill:var(--gold);opacity:0;animation:coinPop 1.8s ease infinite}
-.wallet-svg .w-coin2{fill:var(--gold);opacity:0;animation:coinPop 1.8s 0.2s ease infinite}
-.wallet-svg .w-coin3{fill:var(--gold);opacity:0;animation:coinPop 1.8s 0.38s ease infinite}
+.wallet-svg .w-coin{fill:var(--accent);opacity:0;animation:coinPop 1.8s ease infinite}
+.wallet-svg .w-coin2{fill:var(--accent);opacity:0;animation:coinPop 1.8s 0.2s ease infinite}
+.wallet-svg .w-coin3{fill:var(--accent);opacity:0;animation:coinPop 1.8s 0.38s ease infinite}
 .wallet-svg .w-shine{stroke:var(--accent);stroke-width:1;opacity:0;animation:shineFlash 1.8s ease infinite}
 
 @keyframes walletOpen{
@@ -124,10 +124,10 @@ to{opacity:1;transform:translateY(0)}}
 .balance-card.gold{border-color:rgba(var(--accent-rgb),0.25);background:rgba(var(--accent-rgb),0.03)}
 .balance-card.crystal{border-color:rgba(57,255,20,0.25);background:rgba(57,255,20,0.03)}
 .balance-card.spent{border-color:rgba(var(--accent-rgb),0.2);background:rgba(var(--accent-rgb),0.02)}
-.balance-card.earned{border-color:rgba(68,255,136,0.2);background:rgba(68,255,136,0.02)}
+.balance-card.earned{border-color:rgba(var(--accent-rgb),0.2);background:rgba(var(--accent-rgb),0.02)}
 .balance-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);margin-bottom:10px}
 .balance-amount{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1}
-.balance-card.gold .balance-amount{color:var(--gold);text-shadow:0 0 20px rgba(var(--accent-rgb),0.3)}
+.balance-card.gold .balance-amount{color:var(--accent);text-shadow:0 0 20px rgba(var(--accent-rgb),0.3)}
 .balance-card.crystal .balance-amount{color:var(--accent);text-shadow:0 0 20px rgba(57,255,20,0.3)}
 .balance-card.spent .balance-amount{color:var(--red)}
 .balance-card.earned .balance-amount{color:var(--green)}
@@ -150,10 +150,10 @@ to{opacity:1;transform:translateY(0)}}
 .tx-row:last-child{border-bottom:none}
 .tx-row:hover{background:rgba(57,255,20,0.03)}
 .tx-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid var(--border);flex-shrink:0;background:var(--panel)}
-.tx-icon.topup{border-color:rgba(68,255,136,0.3);background:rgba(68,255,136,0.05)}
+.tx-icon.topup{border-color:rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
 .tx-icon.spend{border-color:rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
 .tx-icon.bonus{border-color:rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
-.tx-icon.refund{border-color:rgba(176,68,255,0.3);background:rgba(176,68,255,0.05)}
+.tx-icon.refund{border-color:rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
 .tx-info{flex:1;min-width:0}
 .tx-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-meta{font-size:11px;color:var(--text-dim)}
@@ -162,10 +162,10 @@ to{opacity:1;transform:translateY(0)}}
 .tx-amount.plus{color:var(--green)}
 .tx-amount.minus{color:var(--red)}
 .tx-status{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px;border:1px solid currentColor;margin-top:3px;display:inline-block}
-.tx-status.pending{color:#ffaa00;border-color:rgba(255,170,0,0.4)}
-.tx-status.completed{color:var(--green);border-color:rgba(68,255,136,0.4)}
-.tx-status.failed{color:var(--red);border-color:rgba(var(--accent-rgb),0.4)}
-.tx-status.refunded{color:var(--purple);border-color:rgba(176,68,255,0.4)}
+.tx-status.pending{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4)}
+.tx-status.completed{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4)}
+.tx-status.failed{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4)}
+.tx-status.refunded{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4)}
 /* PURCHASES */
 .purchase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
 .purchase-card{background:var(--panel);border:1px solid var(--border);padding:16px;display:flex;gap:12px;align-items:flex-start}
@@ -174,8 +174,8 @@ to{opacity:1;transform:translateY(0)}}
 .purchase-card-name{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3}
 .purchase-card-cost{font-family:'Orbitron',monospace;font-size:9px;color:var(--accent)}
 .purchase-card-date{font-size:10px;color:var(--text-dim);margin-top:2px}
-.purchase-card-exp{font-family:'Orbitron',monospace;font-size:8px;color:var(--gold);margin-top:4px}
-.purchase-card-expired{font-family:'Orbitron',monospace;font-size:8px;color:var(--red);margin-top:4px}
+.purchase-card-exp{font-family:'Orbitron',monospace;font-size:8px;color:var(--accent);margin-top:4px}
+.purchase-card-expired{font-family:'Orbitron',monospace;font-size:8px;color:var(--accent);margin-top:4px}
 /* SECTION */
 .section-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .section-hdr-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px}
@@ -188,7 +188,7 @@ to{opacity:1;transform:translateY(0)}}
 .daily-limit-bar{background:var(--panel);border:1px solid var(--border);padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .daily-limit-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);flex-shrink:0}
 .daily-limit-track{flex:1;min-width:120px;height:6px;background:rgba(57,255,20,0.08);position:relative}
-.daily-limit-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.daily-limit-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent))}
 .daily-limit-text{font-family:'Orbitron',monospace;font-size:9px;color:var(--accent);flex-shrink:0}
 @media(max-width:768px){
   .main{margin-left:0;padding:80px 16px 60px}
@@ -217,9 +217,9 @@ to{opacity:1;transform:translateY(0)}}
       <!-- flap -->
       <rect class="w-flap" id="walletFlap" x="4" y="4" width="72" height="22" rx="6" fill="#060f02" stroke="#39ff14" stroke-width="2"/>
       <!-- coins popping out -->
-      <circle class="w-coin"  cx="24" cy="18" r="6" fill="#ffd700"/>
-      <circle class="w-coin2" cx="38" cy="14" r="5" fill="#ffd700"/>
-      <circle class="w-coin3" cx="52" cy="18" r="4" fill="#ffd700"/>
+      <circle class="w-coin"  cx="24" cy="18" r="6" fill="var(--accent)"/>
+      <circle class="w-coin2" cx="38" cy="14" r="5" fill="var(--accent)"/>
+      <circle class="w-coin3" cx="52" cy="18" r="4" fill="var(--accent)"/>
       <!-- shine lines -->
       <line class="w-shine" x1="14" y1="28" x2="14" y2="52" stroke="#39ff14" stroke-width="1" opacity="0"/>
       <line class="w-shine" x1="20" y1="28" x2="20" y2="52" stroke="#39ff14" stroke-width="1" opacity="0" style="animation-delay:0.12s"/>

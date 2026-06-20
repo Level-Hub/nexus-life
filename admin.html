@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-page="admin">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Admin Control</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="./theme.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:#ffd700; --red:#ff003c;
@@ -129,7 +130,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* ===== CHART GRID ===== */
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;animation:fadeUp 0.5s 0.1s ease both}
 @media(max-width:900px){.chart-grid{grid-template-columns:1fr}}
-.chart-wrap{position:relative;height:220px}
+.chart-wrap{position:relative;height:220px;width:100%}
 
 /* ===== TABLE ===== */
 .data-table{width:100%;border-collapse:collapse}
@@ -379,15 +380,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .admin-burger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:transparent;border:1px solid rgba(255,149,0,0.3);cursor:pointer;position:relative;z-index:9001}
 .admin-burger span{display:block;width:18px;height:1px;background:var(--admin-accent)}
 
-/* Shared site sidebar (sidebar.js) — render as overlay-only on admin page */
-#sidebar-root .sidebar{transform:translateX(-100%)!important;z-index:9600!important;transition:transform 0.3s ease}
-#sidebar-root .sidebar.open{transform:translateX(0)!important}
-#sidebar-root .sidebar-overlay{z-index:9590!important}
-#sidebar-root .topbar{display:none!important}
-.main-nav-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:#00f5ff;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.25);cursor:pointer;transition:all 0.2s;margin-bottom:8px}
-.main-nav-btn:hover{background:rgba(0,245,255,0.12)}
-.admin-burger.main-nav{border-color:rgba(0,245,255,0.3)}
-.admin-burger.main-nav span{background:#00f5ff}
+
 @media(max-width:900px){
   .admin-topbar{display:flex}
   .main{margin-left:0;padding:70px 16px 60px}
@@ -397,8 +390,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </style>
 </head>
 <body>
-
-<div id="sidebar-root"></div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -417,7 +408,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <!-- TOPBAR MOBILE -->
 <div class="admin-topbar" id="adminTopbar">
-  <button class="admin-burger main-nav" onclick="window.openSidebar && window.openSidebar()" title="เมนูหลัก / กลับ Dashboard"><span></span><span></span><span></span></button>
   <div class="topbar-logo" id="topbarLogo">ADMIN</div>
   <button class="admin-burger" onclick="toggleAdminSidebar()"><span></span><span></span><span></span></button>
 </div>
@@ -475,10 +465,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
 
   <div class="sidebar-bottom">
-    <button class="main-nav-btn" onclick="window.openSidebar && window.openSidebar()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      เมนูหลัก / กลับ DASHBOARD
-    </button>
     <button class="back-btn" onclick="window.location.href='./dashboard.html'">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
       กลับหน้าหลัก
@@ -980,7 +966,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 import { getIcon, CLASS_COLOR } from './icons.js'
-import { initSidebar } from './sidebar.js'
+// ดึง Chart จาก global (load ผ่าน script tag umd)
+const Chart = window.Chart
 
 const SUPABASE_URL = 'https://rksqrdydlfimrpmyhfeg.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrc3FyZHlkbGZpbXJwbXloZmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODc1MzksImV4cCI6MjA5NTU2MzUzOX0.KEOLEfilTgVX5osmpfMutHq5TuPzvEeWN6ACZ8OKlnY'
@@ -1023,10 +1010,15 @@ async function init() {
 
   ME = profile
   // เมนูหลัก (สีฟ้า) — overlay เท่านั้น เปิดผ่านปุ่ม "เมนูหลัก / กลับ Dashboard"
-  initSidebar('admin', { skipAuth: true })
+  // sidebar.js ไม่ใช้ใน admin (มี admin-sidebar แยก)
   document.getElementById('adminName').textContent = profile.display_name || profile.username
   const avatarSeed = profile.avatar_seed || profile.username
-  document.getElementById('adminAvatar').src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=80`
+  const avatarEl = document.getElementById('adminAvatar')
+  if (profile.avatar_url) {
+    avatarEl.src = profile.avatar_url
+  } else {
+    avatarEl.src = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=0a1628&size=80`
+  }
 
   document.getElementById('loadingScreen').classList.add('hidden')
 
@@ -1173,8 +1165,8 @@ function startCharts() {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { labels: { color: '#5a8a90', font: { family: 'Orbitron', size: 9 } } } },
     scales: {
-      x: { ticks: { color: '#5a8a90', font: { family: 'Orbitron', size: 8 } }, grid: { color: 'rgba(0,245,255,0.04)' } },
-      y: { ticks: { color: '#5a8a90', font: { family: 'Orbitron', size: 8 } }, grid: { color: 'rgba(0,245,255,0.04)' } }
+      x: { ticks: { color: '#5a8a90', font: { family: 'Orbitron', size: 8 } }, grid: { color: 'rgba(0,245,255,0.06)' } },
+      y: { ticks: { color: '#5a8a90', font: { family: 'Orbitron', size: 8 } }, grid: { color: 'rgba(0,245,255,0.06)' } }
     }
   }
 

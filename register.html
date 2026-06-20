@@ -137,8 +137,8 @@
     font-family:'Orbitron',monospace; font-size:9px; letter-spacing:1px;
     margin-top:6px; display:none; padding-left:2px;
   }
-  .username-status.ok  { color:#44ff88; display:block; }
-  .username-status.err { color:var(--red); display:block; }
+  .username-status.ok  { color:var(--accent); display:block; }
+  .username-status.err { color:var(--accent); display:block; }
   .username-status.checking { color:var(--text-dim); display:block; }
 
   /* PW TOGGLE */
@@ -152,7 +152,7 @@
 
   /* MSG */
   .msg { font-size:12px;padding:12px 16px;margin-bottom:20px;border-left:3px solid;display:none;font-family:'Orbitron',monospace;letter-spacing:1px;line-height:1.5; }
-  .msg.error  { border-color:var(--red);color:#ff6680;background:rgba(var(--accent-rgb),0.08); }
+  .msg.error  { border-color:var(--accent);color:#ff6680;background:rgba(var(--accent-rgb),0.08); }
   .msg.success{ border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.06); }
   .msg.show   { display:block; }
 
@@ -208,8 +208,8 @@
 
   .class-card.warrior  { --cc:rgba(255,68,68,0.12);  --cc-solid:#ff4444; }
   .class-card.mage     { --cc:rgba(170,68,255,0.12); --cc-solid:#aa44ff; }
-  .class-card.explorer { --cc:rgba(68,255,136,0.12); --cc-solid:#44ff88; }
-  .class-card.merchant { --cc:rgba(255,170,0,0.12);  --cc-solid:#ffaa00; }
+  .class-card.explorer { --cc:rgba(var(--accent-rgb),0.12); --cc-solid:var(--accent); }
+  .class-card.merchant { --cc:rgba(var(--accent-rgb),0.12);  --cc-solid:var(--accent); }
   .class-card.artist   { --cc:rgba(255,102,170,0.12);--cc-solid:#ff66aa; }
   .class-card.diplomat { --cc:rgba(0,204,255,0.12);  --cc-solid:#00ccff; }
 
@@ -361,8 +361,8 @@
         <div class="field-wrap">
           <input type="email" class="field-input" id="s1-email" placeholder="nexus@example.com" autocomplete="email">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="3" width="14" height="10" rx="1" stroke="#ff006e" stroke-width="1.2"/>
-            <path d="M1 5L8 9L15 5" stroke="#ff006e" stroke-width="1.2"/>
+            <rect x="1" y="3" width="14" height="10" rx="1" stroke="var(--accent)" stroke-width="1.2"/>
+            <path d="M1 5L8 9L15 5" stroke="var(--accent)" stroke-width="1.2"/>
           </svg>
         </div>
       </div>
@@ -372,8 +372,8 @@
         <div class="field-wrap">
           <input type="text" class="field-input" id="s1-username" placeholder="ชื่อตัวละครของคุณ" autocomplete="username" maxlength="20">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="5" r="3" stroke="#ff006e" stroke-width="1.2"/>
-            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="#ff006e" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="8" cy="5" r="3" stroke="var(--accent)" stroke-width="1.2"/>
+            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
         </div>
         <div class="username-status" id="username-status"></div>
@@ -391,9 +391,9 @@
         <div class="field-wrap">
           <input type="password" class="field-input" id="s1-password" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password">
           <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="3" y="7" width="10" height="7" rx="1" stroke="#ff006e" stroke-width="1.2"/>
-            <path d="M5 7V5a3 3 0 016 0v2" stroke="#ff006e" stroke-width="1.2"/>
-            <circle cx="8" cy="10.5" r="1" fill="#ff006e"/>
+            <rect x="3" y="7" width="10" height="7" rx="1" stroke="var(--accent)" stroke-width="1.2"/>
+            <path d="M5 7V5a3 3 0 016 0v2" stroke="var(--accent)" stroke-width="1.2"/>
+            <circle cx="8" cy="10.5" r="1" fill="var(--accent)"/>
           </svg>
           <button class="toggle-pw" type="button" onclick="togglePw('s1-password',this)">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -681,7 +681,7 @@ document.getElementById('s1-password').addEventListener('input', function(){
   if(pw.length>=10) s++
   if(/[A-Z]/.test(pw)||/[0-9]/.test(pw)) s++
   if(/[^A-Za-z0-9]/.test(pw)) s++
-  const cols=['','#ff003c','#ffaa00','#ff006e','#44ff88']
+  const cols=['','var(--accent)','var(--accent)','var(--accent)','var(--accent)']
   const labs=['','WEAK','FAIR','GOOD','STRONG']
   for(let i=1;i<=4;i++) document.getElementById('pb'+i).style.background = i<=s ? cols[s] : 'var(--border)'
   const lbl=document.getElementById('pw-label')

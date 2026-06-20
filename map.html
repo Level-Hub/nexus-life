@@ -34,7 +34,7 @@ to{opacity:1;transform:translateY(0);} }
   background:var(--panel);border:1px solid var(--border);cursor:pointer;transition:all 0.3s;
 }
 .notif-btn:hover { border-color:var(--accent); }
-.notif-dot { position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.5s infinite; }
+.notif-dot { position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite; }
 
 /* ===================== MAP LAYOUT ===================== */
 .map-layout {
@@ -106,9 +106,9 @@ to{opacity:1;transform:translateY(0);} }
 .map-stat-item { display:flex;align-items:center;gap:8px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dim); }
 .map-stat-val { color:var(--accent);font-weight:700; }
 .map-stat-dot { width:6px;height:6px;border-radius:50%; }
-.map-stat-dot.online { background:var(--green);box-shadow:0 0 6px var(--green); }
-.map-stat-dot.hotspot { background:var(--gold); }
-.map-stat-dot.territory { background:var(--purple); }
+.map-stat-dot.online { background:var(--accent);box-shadow:0 0 6px var(--accent); }
+.map-stat-dot.hotspot { background:var(--accent); }
+.map-stat-dot.territory { background:var(--accent); }
 
 /* CHECKIN BTN */
 .checkin-fab {
@@ -182,7 +182,7 @@ to{opacity:1;transform:translateY(0);} }
   font-family:'Orbitron',monospace;font-size:10px;font-weight:900;
   width:22px;text-align:center;
 }
-.hotspot-rank.r1 { color:var(--gold); }
+.hotspot-rank.r1 { color:var(--accent); }
 .hotspot-rank.r2 { color:#c0c0c0; }
 .hotspot-rank.r3 { color:#cd7f32; }
 .hotspot-rank.rn { color:var(--text-dim); }
@@ -207,7 +207,7 @@ to{opacity:1;transform:translateY(0);} }
 .territory-info { flex:1; }
 .territory-city { font-family:'Orbitron',monospace;font-size:9px;font-weight:700;color:#fff; }
 .territory-guild { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:2px; }
-.territory-bonus { font-family:'Orbitron',monospace;font-size:8px;color:var(--green); }
+.territory-bonus { font-family:'Orbitron',monospace;font-size:8px;color:var(--accent); }
 
 /* NEARBY PLAYERS */
 .nearby-list { display:flex;flex-direction:column;gap:8px; }
@@ -228,7 +228,7 @@ to{opacity:1;transform:translateY(0);} }
 .nearby-name { font-family:'Orbitron',monospace;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .nearby-class { font-family:'Orbitron',monospace;font-size:8px;color:var(--cls,var(--accent));margin-top:1px; }
 .nearby-dist { font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim); }
-.nearby-online { width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0; }
+.nearby-online { width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);flex-shrink:0; }
 
 /* LEGEND */
 .legend-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
@@ -254,7 +254,7 @@ to{opacity:1;transform:translateY(0);} }
 .modal-header { padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
 .modal-title { font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--accent); }
 .modal-close { background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:20px;line-height:1;transition:color 0.2s; }
-.modal-close:hover { color:var(--red); }
+.modal-close:hover { color:var(--accent); }
 .modal-body { padding:24px; }
 
 .checkin-location-display {
@@ -277,9 +277,9 @@ to{opacity:1;transform:translateY(0);} }
 
 .checkin-pioneer-notice {
   padding:10px 14px;
-  background:rgba(68,255,136,0.06);border-left:3px solid var(--green);
+  background:rgba(var(--accent-rgb),0.06);border-left:3px solid var(--accent);
   margin-bottom:16px;
-  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--green);
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;color:var(--accent);
   display:none;
 }
 .checkin-pioneer-notice.show { display:block; }
@@ -291,7 +291,7 @@ to{opacity:1;transform:translateY(0);} }
   font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;
   padding:5px 12px;border:1px solid var(--accent-glow);color:var(--accent);background:var(--panel);
 }
-.xp-tag.bonus { border-color:rgba(68,255,136,0.3);color:var(--green);background:rgba(68,255,136,0.06); }
+.xp-tag.bonus { border-color:rgba(var(--accent-rgb),0.3);color:var(--accent);background:rgba(var(--accent-rgb),0.06); }
 
 .submit-btn {
   width:100%;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;
@@ -362,8 +362,8 @@ to{opacity:1;transform:translateY(0);} }
   max-width:280px;line-height:1.5;
 }
 .toast.show { transform:translateX(0); }
-.toast.success { border-left-color:var(--green);color:var(--green); }
-.toast.error { border-left-color:var(--red);color:#ff6680; }
+.toast.success { border-left-color:var(--accent);color:var(--accent); }
+.toast.error { border-left-color:var(--accent);color:#ff6680; }
 
 /* EMPTY */
 .empty-state { text-align:center;padding:24px;color:var(--text-dim); }
@@ -388,7 +388,7 @@ to{opacity:1;transform:translateY(0);} }
 
 .hotspot-marker {
   width:24px;height:24px;border-radius:50%;
-  background:rgba(var(--accent-rgb),0.15);border:2px solid var(--gold);
+  background:rgba(var(--accent-rgb),0.15);border:2px solid var(--accent);
   display:flex;align-items:center;justify-content:center;
   font-size:12px;
   box-shadow:0 0 10px rgba(var(--accent-rgb),0.3);
@@ -655,7 +655,7 @@ let territoryLayers = []
 
 const CLASS_COLORS = {
   warrior: '#ff4444', mage: '#aa44ff', explorer: '#44ff88',
-  merchant: '#ffaa00', artist: '#ff66aa', diplomat: '#00ccff'
+  merchant: '#00f5ff', artist: '#ff66aa', diplomat: '#00ccff'
 }
 
 function clsIcon(cls, size=16) { return getIcon(`class_${cls}`, size) || getIcon('sword', size) }
@@ -674,7 +674,7 @@ async function init() {
   const pageTitleIcon = document.getElementById('pageTitleIcon')
   if (pageTitleIcon) {
     pageTitleIcon.innerHTML = getIcon('pioneer', 26)
-    pageTitleIcon.style.filter = 'drop-shadow(0 0 8px #00f5ff) drop-shadow(0 0 3px #44ff88)'
+    pageTitleIcon.style.filter = 'drop-shadow(0 0 8px var(--accent))'
   }
 
   // inject static icons
@@ -967,7 +967,7 @@ async function loadPlayersOnMap() {
     const title   = p.equipped_title_id ? (titleMap[p.equipped_title_id] || '') : ''
     const guild   = guildMap[p.id]
     const rankStr = (p.rank || 'bronze').toUpperCase()
-    const RANK_COLORS = { BRONZE:'#cd7f32', SILVER:'#c0c0c0', GOLD:'#ffd700', PLATINUM:'#00f5ff', DIAMOND:'#b044ff', LEGENDARY:'#ff9500' }
+    const RANK_COLORS = { BRONZE:'#7a9099', SILVER:'#c0c0c0', GOLD:'#00f5ff', PLATINUM:'#00f5ff', DIAMOND:'#00f5ff', LEGENDARY:'#ff9500' }
     const rankColor = RANK_COLORS[rankStr] || '#c0c0c0'
 
     const marker = L.marker([jLat, jLng], { icon })
@@ -979,7 +979,7 @@ async function loadPlayersOnMap() {
             </div>
             <div>
               <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3">${name}</div>
-              ${title ? `<div style="color:#ffd700;font-size:8px;margin-top:1px">${title}</div>` : ''}
+              ${title ? `<div style="color:var(--accent);font-size:8px;margin-top:1px">${title}</div>` : ''}
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;font-size:8px;color:#5a8a90;margin-bottom:4px">
@@ -1051,7 +1051,7 @@ async function loadHotspots() {
     const marker = L.marker([h.latitude, h.longitude], { icon })
       .bindPopup(`
         <div style="font-family:Orbitron,monospace">
-          <div style="color:#ffd700;font-size:11px;font-weight:700">${h.place_name || 'Hotspot'}</div>
+          <div style="color:var(--accent);font-size:11px;font-weight:700">${h.place_name || 'Hotspot'}</div>
           <div style="color:#5a8a90;font-size:9px;margin-top:4px">${h.count} check-ins · ${h.city || '—'}</div>
         </div>
       `)
@@ -1083,7 +1083,7 @@ async function loadTerritories() {
     return
   }
 
-  const colors = ['#b044ff','#00f5ff','#ffd700','#ff4444','#44ff88','#ff66aa','#ffaa00']
+  const colors = ['var(--accent)','var(--accent)','var(--accent)','var(--accent)','var(--accent)','var(--accent)','var(--accent)']
   list.innerHTML = data.map((t, i) => {
     const guild = t.guilds
     const color = colors[i % colors.length]
@@ -1092,7 +1092,7 @@ async function loadTerritories() {
         <div class="territory-color" style="background:${color}"></div>
         <div class="territory-info">
           <div class="territory-city">${t.city}${t.province ? ' · ' + t.province : ''}</div>
-          <div class="territory-guild" style="color:#ffd700;font-weight:700">[${guild?.tag || '???'}] ${guild?.name || 'Unknown Guild'}</div>
+          <div class="territory-guild" style="color:var(--accent);font-weight:700">[${guild?.tag || '???'}] ${guild?.name || 'Unknown Guild'}</div>
           <div class="territory-bonus">+10% XP Bonus · ${t.guild_xp_this_week || 0} XP/week</div>
         </div>
       </div>
@@ -1131,7 +1131,7 @@ async function loadTerritories() {
       <div style="font-family:Orbitron,monospace;min-width:150px">
         <div style="color:${color};font-size:11px;font-weight:700">${t.city}</div>
         <div style="color:#5a8a90;font-size:9px;margin-top:4px">[${guild?.tag||'???'}] ${guild?.name||'Unknown'}</div>
-        <div style="color:#ffd700;font-size:9px;margin-top:2px">+10% XP · ${t.guild_xp_this_week||0} XP/week</div>
+        <div style="color:var(--accent);font-size:9px;margin-top:2px">+10% XP · ${t.guild_xp_this_week||0} XP/week</div>
       </div>
     `, { className: 'nexus-popup' })
     territoryMarkers.push(circle)

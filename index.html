@@ -336,11 +336,11 @@
   .class-card.mage::before { background: radial-gradient(circle at 50% 0%, rgba(170,68,255,0.08), transparent 70%); }
 
   /* Explorer */
-  .class-card.explorer { --class-color: #44ff88; }
-  .class-card.explorer::before { background: radial-gradient(circle at 50% 0%, rgba(68,255,136,0.08), transparent 70%); }
+  .class-card.explorer { --class-color: var(--accent); }
+  .class-card.explorer::before { background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb),0.08), transparent 70%); }
 
   /* Merchant */
-  .class-card.merchant { --class-color: #ffaa00; }
+  .class-card.merchant { --class-color: var(--accent); }
   .class-card.merchant::before { background: radial-gradient(circle at 50% 0%, rgba(255,170,0,0.08), transparent 70%); }
 
   /* Artist */
@@ -694,7 +694,7 @@
     width: 100%;
   }
   .glitch::before {
-    color: var(--red);
+    color: var(--accent);
     animation: glitch 4s infinite;
     clip-path: inset(0 0 100% 0);
   }
@@ -728,9 +728,9 @@
 <nav>
   <div class="nav-logo">
     <svg width="20" height="20" viewBox="0 0 20 20">
-      <polygon points="10,1 19,6 19,14 10,19 1,14 1,6" fill="none" stroke="#ff9500" stroke-width="1.5"/>
-      <polygon points="10,5 15,8 15,13 10,16 5,13 5,8" fill="var(--border)" stroke="#ff9500" stroke-width="0.5"/>
-      <circle cx="10" cy="10" r="2" fill="#ff9500"/>
+      <polygon points="10,1 19,6 19,14 10,19 1,14 1,6" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+      <polygon points="10,5 15,8 15,13 10,16 5,13 5,8" fill="var(--border)" stroke="var(--accent)" stroke-width="0.5"/>
+      <circle cx="10" cy="10" r="2" fill="var(--accent)"/>
     </svg>
     NEXUS LIFE
   </div>
@@ -745,7 +745,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">
-    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="#ff9500"/></svg>
+    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="var(--accent)"/></svg>
     REAL LIFE MMO — VERSION 0.1 ALPHA
   </div>
   <h1 class="hero-title">
@@ -894,11 +894,11 @@
       </div>
     </div>
 
-    <div class="rank-item" style="--rank-color:#ffd700">
+    <div class="rank-item" style="--rank-color:var(--accent)">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#ffd700" stroke-width="1.5" fill="rgba(255,215,0,0.1)"/>
-          <text x="18" y="22" text-anchor="middle" fill="#ffd700" font-size="12" font-family="Orbitron">G</text>
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="12" font-family="Orbitron">G</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -913,8 +913,8 @@
     <div class="rank-item" style="--rank-color:#88ccff">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#ff9500" stroke-width="1.5" fill="var(--border)"/>
-          <text x="18" y="22" text-anchor="middle" fill="#ff9500" font-size="10" font-family="Orbitron">PL</text>
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="var(--border)"/>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Orbitron">PL</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -926,11 +926,11 @@
       </div>
     </div>
 
-    <div class="rank-item" style="--rank-color:#b044ff">
+    <div class="rank-item" style="--rank-color:var(--accent)">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#b044ff" stroke-width="1.5" fill="rgba(176,68,255,0.15)"/>
-          <text x="18" y="22" text-anchor="middle" fill="#b044ff" font-size="10" font-family="Orbitron">DM</text>
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),0.15)"/>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Orbitron">DM</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -942,12 +942,12 @@
       </div>
     </div>
 
-    <div class="rank-item" style="--rank-color:#ff9500">
+    <div class="rank-item" style="--rank-color:var(--accent)">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,2 34,11 34,25 18,34 2,25 2,11" stroke="#ff9500" stroke-width="1.5" fill="var(--border)"/>
-          <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" stroke="#ff9500" stroke-width="0.5" fill="var(--panel)"/>
-          <circle cx="18" cy="18" r="3" fill="#ff9500"/>
+          <polygon points="18,2 34,11 34,25 18,34 2,25 2,11" stroke="var(--accent)" stroke-width="1.5" fill="var(--border)"/>
+          <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" stroke="var(--accent)" stroke-width="0.5" fill="var(--panel)"/>
+          <circle cx="18" cy="18" r="3" fill="var(--accent)"/>
         </svg>
       </div>
       <div class="rank-info">
@@ -955,7 +955,7 @@
         <div class="rank-xp">Top 100 ของประเทศ</div>
       </div>
       <div class="rank-bar-wrap">
-        <div class="rank-bar" style="width:100%; box-shadow:0 0 12px #ff9500;"></div>
+        <div class="rank-bar" style="width:100%; box-shadow:0 0 12px var(--accent);"></div>
       </div>
     </div>
   </div>
@@ -977,12 +977,12 @@
   <div class="feature-grid">
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="4" y="8" width="40" height="32" stroke="#ff9500" stroke-width="1.5" fill="var(--panel)" rx="2"/>
-        <line x1="4" y1="16" x2="44" y2="16" stroke="#ff9500" stroke-width="1" opacity="0.4"/>
-        <rect x="10" y="22" width="12" height="2" fill="#ff9500" opacity="0.6"/>
-        <rect x="10" y="28" width="20" height="2" fill="#ff9500" opacity="0.3"/>
-        <rect x="10" y="34" width="8" height="2" fill="#ff9500" opacity="0.2"/>
-        <circle cx="38" cy="12" r="3" fill="#ff9500" opacity="0.8"/>
+        <rect x="4" y="8" width="40" height="32" stroke="var(--accent)" stroke-width="1.5" fill="var(--panel)" rx="2"/>
+        <line x1="4" y1="16" x2="44" y2="16" stroke="var(--accent)" stroke-width="1" opacity="0.4"/>
+        <rect x="10" y="22" width="12" height="2" fill="var(--accent)" opacity="0.6"/>
+        <rect x="10" y="28" width="20" height="2" fill="var(--accent)" opacity="0.3"/>
+        <rect x="10" y="34" width="8" height="2" fill="var(--accent)" opacity="0.2"/>
+        <circle cx="38" cy="12" r="3" fill="var(--accent)" opacity="0.8"/>
       </svg>
       <div class="feature-title">QUEST SYSTEM</div>
       <div class="feature-desc">Daily, Weekly, Challenge และ Guild Quest — ทำในชีวิตจริง อัพรูปเป็นหลักฐาน รับ XP</div>
@@ -1003,9 +1003,9 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <circle cx="16" cy="18" r="7" stroke="#ffaa00" stroke-width="1.5" fill="rgba(255,170,0,0.05)"/>
-        <circle cx="32" cy="18" r="7" stroke="#ffaa00" stroke-width="1.5" fill="rgba(255,170,0,0.05)"/>
-        <path d="M8 40 C8 32 20 28 24 28 C28 28 40 32 40 40" stroke="#ffaa00" stroke-width="1.5" fill="none"/>
+        <circle cx="16" cy="18" r="7" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),170,0,0.05)"/>
+        <circle cx="32" cy="18" r="7" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),170,0,0.05)"/>
+        <path d="M8 40 C8 32 20 28 24 28 C28 28 40 32 40 40" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
       </svg>
       <div class="feature-title">GUILD SYSTEM</div>
       <div class="feature-desc">สร้างหรือเข้าร่วม Guild — ทำ Quest ร่วมกัน แข่งชิง Territory ของเมือง</div>
@@ -1013,8 +1013,8 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="8" y="12" width="24" height="16" stroke="#ff66aa" stroke-width="1.5" fill="rgba(255,102,170,0.05)" rx="2"/>
-        <path d="M32 20 L40 16 L40 32 L32 28" stroke="#ff66aa" stroke-width="1.5" fill="rgba(255,102,170,0.05)"/>
+        <rect x="8" y="12" width="24" height="16" stroke="#ff66aa" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)" rx="2"/>
+        <path d="M32 20 L40 16 L40 32 L32 28" stroke="#ff66aa" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)"/>
         <rect x="14" y="18" width="6" height="4" fill="#ff66aa" opacity="0.3"/>
         <line x1="8" y1="36" x2="32" y2="36" stroke="#ff66aa" stroke-width="1" opacity="0.3"/>
       </svg>
@@ -1024,9 +1024,9 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <polygon points="24,6 44,18 44,30 24,42 4,30 4,18" stroke="#b044ff" stroke-width="1.5" fill="rgba(176,68,255,0.05)"/>
-        <polygon points="24,14 36,21 36,27 24,34 12,27 12,21" stroke="#b044ff" stroke-width="0.5" fill="rgba(176,68,255,0.05)"/>
-        <circle cx="24" cy="24" r="4" fill="#b044ff" opacity="0.6"/>
+        <polygon points="24,6 44,18 44,30 24,42 4,30 4,18" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),0.15)"/>
+        <polygon points="24,14 36,21 36,27 24,34 12,27 12,21" stroke="var(--accent)" stroke-width="0.5" fill="rgba(var(--accent-rgb),0.15)"/>
+        <circle cx="24" cy="24" r="4" fill="var(--accent)" opacity="0.6"/>
       </svg>
       <div class="feature-title">RANK & LEADERBOARD</div>
       <div class="feature-desc">อันดับระดับเมือง, ประเทศ และโลก — แข่งกับทุกคนบนโลกใบเดียวกัน</div>
@@ -1034,10 +1034,10 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="10" y="8" width="28" height="32" stroke="#ff9500" stroke-width="1.5" fill="var(--panel)" rx="1"/>
-        <circle cx="24" cy="20" r="7" stroke="#ff9500" stroke-width="1" fill="var(--border)"/>
-        <rect x="16" y="30" width="16" height="2" fill="#ff9500" opacity="0.4"/>
-        <rect x="18" y="34" width="12" height="2" fill="#ff9500" opacity="0.2"/>
+        <rect x="10" y="8" width="28" height="32" stroke="var(--accent)" stroke-width="1.5" fill="var(--panel)" rx="1"/>
+        <circle cx="24" cy="20" r="7" stroke="var(--accent)" stroke-width="1" fill="var(--border)"/>
+        <rect x="16" y="30" width="16" height="2" fill="var(--accent)" opacity="0.4"/>
+        <rect x="18" y="34" width="12" height="2" fill="var(--accent)" opacity="0.2"/>
       </svg>
       <div class="feature-title">PIXEL AVATAR</div>
       <div class="feature-desc">สร้างตัวละครของนายเอง — ปลดล็อค avatar พิเศษและกรอบ rank เมื่อ level สูงขึ้น</div>

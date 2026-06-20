@@ -174,7 +174,7 @@
 
   .mini-class.warrior  { --cc: rgba(255,68,68,0.15); }
   .mini-class.mage     { --cc: rgba(170,68,255,0.15); }
-  .mini-class.explorer { --cc: rgba(68,255,136,0.15); }
+  .mini-class.explorer { --cc: rgba(var(--accent-rgb),0.15); }
   .mini-class.merchant { --cc: rgba(255,170,0,0.15); }
   .mini-class.artist   { --cc: rgba(255,102,170,0.15); }
   .mini-class.diplomat { --cc: rgba(0,204,255,0.15); }
@@ -398,7 +398,7 @@
     letter-spacing: 1px;
     line-height: 1.5;
   }
-  .msg.error { border-color: var(--red); color: #ff6680; background: rgba(var(--accent-rgb),0.08); }
+  .msg.error { border-color: var(--accent); color: #ff6680; background: rgba(var(--accent-rgb),0.08); }
   .msg.success { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.06); }
   .msg.show { display: block; }
 
@@ -516,8 +516,8 @@
   /* GLITCH effect on title */
   @keyframes glitch {
     0%,100% { text-shadow: 0 0 20px var(--accent); }
-    20% { text-shadow: -2px 0 var(--red), 2px 0 var(--accent); }
-    40% { text-shadow: 2px 0 var(--red), -2px 0 var(--accent); }
+    20% { text-shadow: -2px 0 var(--accent), 2px 0 var(--accent); }
+    40% { text-shadow: 2px 0 var(--accent), -2px 0 var(--accent); }
     60% { text-shadow: 0 0 20px var(--accent); }
   }
   .box-title { animation: glitch 6s ease-in-out infinite; }
@@ -640,8 +640,8 @@
           <div class="field-wrap">
             <input type="text" class="field-input" id="login-email" placeholder="nexus@example.com หรือ username" autocomplete="username">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="1" y="3" width="14" height="10" rx="1" stroke="#7c3aed" stroke-width="1.2"/>
-              <path d="M1 5L8 9L15 5" stroke="#7c3aed" stroke-width="1.2"/>
+              <rect x="1" y="3" width="14" height="10" rx="1" stroke="var(--accent)" stroke-width="1.2"/>
+              <path d="M1 5L8 9L15 5" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
         </div>
@@ -651,9 +651,9 @@
           <div class="field-wrap">
             <input type="password" class="field-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;">
-              <rect x="3" y="7" width="10" height="7" rx="1" stroke="#7c3aed" stroke-width="1.2"/>
-              <path d="M5 7V5a3 3 0 016 0v2" stroke="#7c3aed" stroke-width="1.2"/>
-              <circle cx="8" cy="10.5" r="1" fill="#7c3aed"/>
+              <rect x="3" y="7" width="10" height="7" rx="1" stroke="var(--accent)" stroke-width="1.2"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="var(--accent)" stroke-width="1.2"/>
+              <circle cx="8" cy="10.5" r="1" fill="var(--accent)"/>
             </svg>
             <button class="toggle-pw" type="button" onclick="togglePw('login-password', this)">
               <svg id="eye-login" width="16" height="16" viewBox="0 0 16 16" fill="none">

@@ -64,18 +64,11 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
-   2. ZONES — กำหนดสีตาม data-page
+   2. ALL PAGES — CYAN UNIFIED (ทุกหน้าใช้ CYAN เหมือน Dashboard)
    ══════════════════════════════════════════════════════════════ */
 
-/* CYAN ZONE */
-[data-page="dashboard"],
-[data-page="quests"],
-[data-page="map"],
-[data-page="profile"],
-[data-page="feed"],
-[data-page="social"],
-[data-page="messages"],
-[data-page="city"] {
+/* CYAN = single accent for entire app */
+[data-page] {
   --accent:      #00f5ff;
   --accent-dim:  #00a8b5;
   --accent-rgb:  0, 245, 255;
@@ -84,86 +77,12 @@
   --bg2:         #020d14;
   --panel:       rgba(0, 245, 255, 0.04);
   --border:      rgba(0, 245, 255, 0.13);
+  --cyan:        #00f5ff;
+  --cyan-dim:    #00a8b5;
+  --cyan-glow:   rgba(0, 245, 255, 0.22);
+  --cyan-border: rgba(0, 245, 255, 0.13);
 }
 
-/* GOLD ZONE */
-[data-page="guild"],
-[data-page="leaderboard"],
-[data-page="achievements"],
-[data-page="shop"],
-[data-page="wallet"] {
-  --accent:      #ffd700;
-  --accent-dim:  #cc8800;
-  --accent-rgb:  255, 215, 0;
-  --accent-glow: rgba(255, 215, 0, 0.22);
-  --bg:          #0a0800;
-  --bg2:         #0f0c00;
-  --panel:       rgba(255, 215, 0, 0.04);
-  --border:      rgba(255, 215, 0, 0.13);
-}
-
-/* RED ZONE */
-[data-page="pvp"],
-[data-page="verify"] {
-  --accent:      #ff003c;
-  --accent-dim:  #cc0030;
-  --accent-rgb:  255, 0, 60;
-  --accent-glow: rgba(255, 0, 60, 0.22);
-  --bg:          #0d0005;
-  --bg2:         #120007;
-  --panel:       rgba(255, 0, 60, 0.04);
-  --border:      rgba(255, 0, 60, 0.13);
-}
-
-/* PURPLE ZONE */
-[data-page="login"] {
-  --accent:      #7c3aed;
-  --accent-dim:  #5b21b6;
-  --accent-rgb:  124, 58, 237;
-  --accent-glow: rgba(124, 58, 237, 0.22);
-  --bg:          #04010f;
-  --bg2:         #07021a;
-  --panel:       rgba(124, 58, 237, 0.04);
-  --border:      rgba(124, 58, 237, 0.14);
-}
-
-/* PINK ZONE */
-[data-page="register"] {
-  --accent:      #ff006e;
-  --accent-dim:  #cc0055;
-  --accent-rgb:  255, 0, 110;
-  --accent-glow: rgba(255, 0, 110, 0.22);
-  --bg:          #0f0008;
-  --bg2:         #14000c;
-  --panel:       rgba(255, 0, 110, 0.04);
-  --border:      rgba(255, 0, 110, 0.14);
-}
-
-/* ORANGE ZONE */
-[data-page="index"] {
-  --accent:      #ff9500;
-  --accent-dim:  #cc7000;
-  --accent-rgb:  255, 149, 0;
-  --accent-glow: rgba(255, 149, 0, 0.22);
-  --bg:          #0a0600;
-  --bg2:         #0f0800;
-  --panel:       rgba(255, 149, 0, 0.04);
-  --border:      rgba(255, 149, 0, 0.14);
-}
-
-/* Legacy aliases per zone */
-[data-page="dashboard"], [data-page="quests"], [data-page="map"],
-[data-page="profile"],   [data-page="feed"],   [data-page="social"],
-[data-page="messages"],  [data-page="city"],
-[data-page="guild"],     [data-page="leaderboard"], [data-page="achievements"],
-[data-page="shop"],      [data-page="wallet"],
-[data-page="pvp"],       [data-page="verify"],
-[data-page="login"],     [data-page="register"],    [data-page="index"] {
-  --cyan:        var(--accent);
-  --cyan-dim:    var(--accent-dim);
-  --cyan-glow:   var(--accent-glow);
-  --cyan-border: var(--border);
-}
 
 /* ══════════════════════════════════════════════════════════════
    3. GLOBAL RESET
