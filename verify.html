@@ -178,7 +178,7 @@ to{opacity:1}}
 /* sparkles */
 .check-spark{
   position:absolute;width:4px;height:4px;border-radius:50%;
-  background:#7fff00;animation:sparkPop 1.6s ease-in-out infinite;opacity:0;
+  background:#00f5ff;animation:sparkPop 1.6s ease-in-out infinite;opacity:0;
 }
 .check-spark:nth-child(1){top:8px;left:18px;animation-delay:0.2s}
 .check-spark:nth-child(2){top:12px;right:14px;animation-delay:0.5s}
@@ -193,13 +193,13 @@ to{opacity:1}}
 
 .loading-logo{
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#88ee00;
+  letter-spacing:6px;color:#00f5ff;
   text-shadow:0 0 24px var(--accent-glow),0 0 48px var(--accent-glow);
 }
 .loading-bar-wrap{width:160px;height:2px;background:var(--border);border:1px solid var(--accent-glow)}
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#66cc00,#7fff00,#99ff33);
+  background:linear-gradient(90deg,#00a8b5,#00f5ff,#00f5ff);
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%}}
@@ -216,7 +216,7 @@ to{opacity:1}}
 .toast{position:fixed;bottom:24px;right:24px;z-index:3000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--accent);background:rgba(1,10,15,0.97);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--accent);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:300px;line-height:1.5}
 .toast.show{transform:translateX(0)}
 .toast.success{border-left-color:var(--accent);color:var(--green)}
-.toast.error{border-left-color:var(--accent);color:#ff6680}
+.toast.error{border-left-color:var(--accent);color:#00f5ff}
 .toast.gold{border-left-color:var(--accent);color:var(--gold)}
 
 @media(max-width:768px){
@@ -246,17 +246,17 @@ to{opacity:1}}
         stroke-dasharray="80 196" stroke-linecap="round"/>
       <defs>
         <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#7fff00"/>
+          <stop offset="0%" stop-color="#00f5ff"/>
           <stop offset="100%" stop-color="transparent"/>
         </linearGradient>
       </defs>
     </svg>
     <!-- ติ๊กถูก -->
     <svg class="check-svg" width="52" height="52" viewBox="0 0 52 52" fill="none">
-      <circle cx="26" cy="26" r="22" stroke="#7fff00" stroke-width="1.8" fill="var(--border)"/>
+      <circle cx="26" cy="26" r="22" stroke="#00f5ff" stroke-width="1.8" fill="var(--border)"/>
       <polyline class="check-path"
         points="14,27 22,35 38,18"
-        stroke="#99ff33" stroke-width="3.5"
+        stroke="#00f5ff" stroke-width="3.5"
         stroke-linecap="round" stroke-linejoin="round"
         fill="none"/>
     </svg>

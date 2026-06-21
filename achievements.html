@@ -71,7 +71,7 @@ to{opacity:1;transform:translateY(0);} }
 /* ── sparkles ── */
 .ach-spark {
   position:absolute;width:4px;height:4px;border-radius:50%;
-  background:#ff5500;animation:sparkPop 1.8s ease-in-out infinite;opacity:0;
+  background:#00f5ff;animation:sparkPop 1.8s ease-in-out infinite;opacity:0;
 }
 .ach-spark:nth-child(1){top:10px;left:20px;animation-delay:0s}
 .ach-spark:nth-child(2){top:20px;right:15px;animation-delay:0.4s}
@@ -85,13 +85,13 @@ to{opacity:1;transform:translateY(0);} }
 }
 .loading-logo {
   font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
-  letter-spacing:6px;color:#ff5500;
+  letter-spacing:6px;color:#00f5ff;
   text-shadow:0 0 24px var(--accent-glow),0 0 48px var(--accent-glow);
 }
 .loading-bar-wrap { width:160px;height:2px;background:var(--border);border:1px solid var(--accent-glow); }
 .loading-bar {
   height:100%;
-  background:linear-gradient(90deg,#9922cc,#ff5500,#ee88ff);
+  background:linear-gradient(90deg,#00a8b5,#00f5ff,#00f5ff);
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%} }
@@ -101,7 +101,7 @@ to{opacity:1;transform:translateY(0);} }
 .toast { position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--accent);background:rgba(1,10,15,0.95);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--accent);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px;line-height:1.5; }
 .toast.show { transform:translateX(0); }
 .toast.success { border-left-color:var(--accent);color:var(--accent); }
-.toast.error { border-left-color:var(--accent);color:#ff6680; }
+.toast.error { border-left-color:var(--accent);color:#00f5ff; }
 
 /* BOX */
 .box { background:rgba(var(--accent-rgb),0.02);border:1px solid var(--border);position:relative; }
@@ -246,23 +246,23 @@ to{opacity:1;transform:translateY(0);} }
     <svg class="trophy-svg" width="72" height="88" viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- ถ้วยรางวัล -->
       <path d="M22 8 H50 V38 C50 52 36 60 36 60 C36 60 22 52 22 38 Z"
-        stroke="#ff5500" stroke-width="2" fill="var(--border)" stroke-linejoin="round"/>
+        stroke="#00f5ff" stroke-width="2" fill="var(--border)" stroke-linejoin="round"/>
       <!-- หูจับ ซ้าย -->
       <path d="M22 16 C10 16 8 28 16 32 C18 33 22 33 22 33"
-        stroke="#ff5500" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        stroke="#00f5ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
       <!-- หูจับ ขวา -->
       <path d="M50 16 C62 16 64 28 56 32 C54 33 50 33 50 33"
-        stroke="#ff5500" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        stroke="#00f5ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
       <!-- ก้าน -->
-      <line x1="36" y1="60" x2="36" y2="72" stroke="#ff5500" stroke-width="2"/>
+      <line x1="36" y1="60" x2="36" y2="72" stroke="#00f5ff" stroke-width="2"/>
       <!-- ฐาน -->
       <rect x="24" y="72" width="24" height="6" rx="1"
-        stroke="#ff5500" stroke-width="1.8" fill="var(--border)"/>
+        stroke="#00f5ff" stroke-width="1.8" fill="var(--border)"/>
       <rect x="20" y="78" width="32" height="5" rx="1"
-        stroke="#ff5500" stroke-width="1.8" fill="var(--cyan-glow)"/>
+        stroke="#00f5ff" stroke-width="1.8" fill="var(--cyan-glow)"/>
       <!-- ดาวกลางถ้วย -->
       <polygon points="36,20 38,26 44,26 39,30 41,36 36,32 31,36 33,30 28,26 34,26"
-        stroke="#ee88ff" stroke-width="1" fill="rgba(238,136,255,0.25)" stroke-linejoin="round"/>
+        stroke="#00f5ff" stroke-width="1" fill="rgba(238,136,255,0.25)" stroke-linejoin="round"/>
       <!-- เส้นประดับ -->
       <line x1="28" y1="44" x2="44" y2="44" stroke="var(--cyan-glow)" stroke-width="1"/>
       <line x1="30" y1="50" x2="42" y2="50" stroke="var(--cyan-glow)" stroke-width="1"/>
@@ -282,7 +282,7 @@ to{opacity:1;transform:translateY(0);} }
 
 
 <div class="topbar" style="position:fixed;top:0;left:0;right:0;height:60px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(15,5,0,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);">
-  <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#ff5500;letter-spacing:4px;">NEXUS</div>
+  <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#00f5ff;letter-spacing:4px;">NEXUS</div>
   <button class="burger" onclick="openSidebar()">
     <span></span><span></span><span></span>
   </button>

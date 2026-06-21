@@ -152,7 +152,7 @@ to{opacity:1;transform:translateY(0);} }
 .duel-xp-track { height:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);position:relative;overflow:hidden; }
 .duel-xp-fill { height:100%;transition:width 1s ease; }
 .duel-xp-fill.me { background:linear-gradient(90deg,var(--accent-dim),var(--accent)); }
-.duel-xp-fill.them { background:linear-gradient(90deg,#cc2222,var(--accent)); }
+.duel-xp-fill.them { background:linear-gradient(90deg,#00a8b5,var(--accent)); }
 .duel-xp-num { font-family:'Orbitron',monospace;font-size:11px;font-weight:700;white-space:nowrap; }
 .duel-xp-num.me { color:var(--accent); }
 .duel-xp-num.them { color:var(--accent); }
@@ -294,7 +294,7 @@ to{opacity:1;transform:translateY(0);} }
 .gw-bar-label { display:flex;justify-content:space-between;font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim);margin-bottom:4px; }
 .gw-bar-track { height:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex; }
 .gw-bar-us { background:linear-gradient(90deg,var(--accent-dim),var(--accent));transition:width 1s ease; }
-.gw-bar-them { background:linear-gradient(90deg,#8800cc,var(--accent));transition:width 1s ease; }
+.gw-bar-them { background:linear-gradient(90deg,#00a8b5,var(--accent));transition:width 1s ease; }
 
 /* ===================== RIGHT SIDEBAR ===================== */
 .right-col { display:flex;flex-direction:column;gap:16px; }
@@ -1458,7 +1458,7 @@ window.searchPlayers = async function() {
   }
 
   const myLv = myProfile?.level || 1
-  const RANK_COLORS = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#00f5ff', platinum:'#88ccff', diamond:'#88ffff', legendary:'#ff88ff' }
+  const RANK_COLORS = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#00f5ff', platinum:'#00f5ff', diamond:'#00f5ff', legendary:'#00f5ff' }
   results.innerHTML = players.map(p => {
     const cls = p.class || 'warrior'
     const clsColor = CLASS_COLOR[cls] || '#ff4444'

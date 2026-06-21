@@ -36,7 +36,7 @@
 .toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--accent);background:rgba(15,6,11,0.96);border:1px solid var(--border);border-left:3px solid var(--accent);color:var(--accent);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px}
 .toast.show{transform:translateX(0)}
 .toast.success{border-left-color:var(--accent);color:var(--green)}
-.toast.error{border-left-color:var(--accent);color:#ff6680}
+.toast.error{border-left-color:var(--accent);color:#00f5ff}
 
 /* LAYOUT — 3 คอลัมน์: sidebar | inbox | chat */
 .app-layout{position:fixed;top:0;left:220px;right:0;bottom:0;display:grid;grid-template-columns:280px 1fr;z-index:1}
@@ -125,7 +125,7 @@
 .send-btn:disabled{opacity:0.4;cursor:not-allowed}
 .chat-hint{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:6px;letter-spacing:1px}
 /* EMOJI PICKER */
-.emoji-picker{position:absolute;bottom:110px;left:24px;background:#150810;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:220px;overflow-y:auto}
+.emoji-picker{position:absolute;bottom:110px;left:24px;background:#010a0f;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:220px;overflow-y:auto}
 .emoji-picker.open{display:block}
 .emoji-picker-tabs{display:flex;gap:4px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px}
 .emoji-tab{font-size:18px;background:none;border:none;cursor:pointer;padding:3px 6px;opacity:0.5;transition:opacity 0.2s}
@@ -134,7 +134,7 @@
 .emoji-btn{font-size:22px;background:none;border:1px solid transparent;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all 0.15s}
 .emoji-btn:hover{background:var(--border);border-color:var(--border)}
 /* STICKER PICKER */
-.sticker-picker{position:absolute;bottom:110px;left:24px;background:#150810;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:280px;overflow-y:auto}
+.sticker-picker{position:absolute;bottom:110px;left:24px;background:#010a0f;border:1px solid var(--border);padding:12px;display:none;z-index:300;width:300px;max-height:280px;overflow-y:auto}
 .sticker-picker.open{display:block}
 .sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .sticker-btn{background:var(--panel);border:1px solid var(--border);cursor:pointer;padding:8px;font-size:32px;text-align:center;transition:all 0.2s;aspect-ratio:1}
@@ -159,7 +159,7 @@
 /* NEW DM MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:none;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#150810;border:1px solid var(--border);width:420px;max-width:92vw;padding:28px;position:relative}
+.modal{background:#010a0f;border:1px solid var(--border);width:420px;max-width:92vw;padding:28px;position:relative}
 .modal::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
 .modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
 .modal-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--accent);margin-bottom:20px}
@@ -182,7 +182,7 @@
 .online-wrap{position:relative;flex-shrink:0}
 .online-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);z-index:2}
 .online-dot.on{background:var(--accent);box-shadow:0 0 5px var(--accent);animation:livePulse 1.4s ease-in-out infinite}
-.online-dot.off{background:#3a4a50}
+.online-dot.off{background:#3a5a65}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* READ RECEIPT */

@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --amber:#ffee00; --amber-bright:#fff176; --amber-dim:#888800;
+  --amber:#00f5ff; --amber-bright:#00f5ff; --amber-dim:#00a8b5;
 }
 
   
@@ -117,7 +117,7 @@ to{opacity:1;transform:translateY(0)}}
 .qcard.weekly-card:hover{border-color:var(--accent-glow)}
 .weekly-progress{padding:0 16px 12px 20px}
 .weekly-track{height:3px;background:var(--border);overflow:hidden}
-.weekly-fill{height:100%;background:linear-gradient(90deg,#ff6600,var(--accent));transition:width 0.8s ease}
+.weekly-fill{height:100%;background:linear-gradient(90deg,#00f5ff,var(--accent));transition:width 0.8s ease}
 .weekly-label{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:4px}
 
 /* EMPTY */
@@ -162,7 +162,7 @@ to{opacity:1;transform:translateY(0)}}
 /* ── ปก ── */
 .book-cover{
   position:absolute;inset:0;
-  background:linear-gradient(135deg,#001a22 0%,#003a4a 35%,#005566 55%,#002535 100%);
+  background:linear-gradient(135deg,#010a0f 0%,#010a0f 35%,#01151a 55%,#010a0f 100%);
   border:2px solid var(--accent);
   border-radius:2px 5px 5px 2px;
   box-shadow:0 0 28px var(--accent-glow),inset 0 0 24px rgba(0,0,0,0.6);
@@ -183,7 +183,7 @@ to{opacity:1;transform:translateY(0)}}
 /* ── สัน ── */
 .book-spine{
   position:absolute;left:-9px;top:2px;bottom:2px;width:9px;
-  background:linear-gradient(90deg,#281405,#002535);
+  background:linear-gradient(90deg,#010a0f,#010a0f);
   border:1px solid var(--accent-glow);
   border-radius:2px 0 0 2px;
 }
@@ -192,7 +192,7 @@ to{opacity:1;transform:translateY(0)}}
 .book-pages{
   position:absolute;right:-4px;top:4px;bottom:4px;width:7px;
   background:repeating-linear-gradient(
-    90deg,#edd98a 0px,#c9a840 1px,#edd98a 2.5px,#c08a28 3px,#edd98a 4.5px
+    90deg,#00f5ff 0px,#00f5ff 1px,#00f5ff 2.5px,#00a8b5 3px,#00f5ff 4.5px
   );
   border-radius:0 2px 2px 0;
 }
@@ -209,7 +209,7 @@ to{opacity:1;transform:translateY(0)}}
 /* ── กระดาษด้านในที่ปรากฏตอนเปิด ── */
 .book-inner-page{
   position:absolute;inset:3px;
-  background:linear-gradient(135deg,#f5e6b8,#e8d090,#f0daa0);
+  background:linear-gradient(135deg,rgba(0,245,255,0.3),rgba(0,245,255,0.2),rgba(0,245,255,0.25));
   opacity:0;border-radius:1px 3px 3px 1px;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:4px;
@@ -251,7 +251,7 @@ to{opacity:1;transform:translateY(0)}}
 }
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#6b4500,var(--accent),var(--accent));
+  background:linear-gradient(90deg,#010a0f,var(--accent),var(--accent));
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%}}
@@ -296,19 +296,19 @@ to{opacity:1;transform:translateY(0)}}
 .text-area-count{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);text-align:right;margin-top:4px;margin-bottom:16px}
 
 .modal-msg{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;margin-bottom:14px;border-left:3px solid;display:none;line-height:1.5}
-.modal-msg.error{border-color:var(--accent);color:#ff6680;background:rgba(var(--accent-rgb),0.08)}
+.modal-msg.error{border-color:var(--accent);color:#00f5ff;background:rgba(var(--accent-rgb),0.08)}
 .modal-msg.success{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.06)}
 .modal-msg.show{display:block}
 
 .submit-btn{width:100%;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;padding:14px;background:var(--accent);color:var(--bg);border:none;cursor:pointer;font-weight:700;transition:all 0.3s}
-.submit-btn:hover{background:#00d4e0}
+.submit-btn:hover{background:#00f5ff}
 .submit-btn:disabled{opacity:0.5;cursor:not-allowed}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--accent);background:rgba(1,10,15,0.97);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);color:var(--accent);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:300px;line-height:1.5}
 .toast.show{transform:translateX(0)}
 .toast.success{border-left-color:var(--accent);color:var(--green)}
-.toast.error{border-left-color:var(--accent);color:#ff6680}
+.toast.error{border-left-color:var(--accent);color:#00f5ff}
 .toast.gold{border-left-color:var(--accent);color:var(--gold)}
 
 /* BOX */

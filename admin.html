@@ -11,10 +11,10 @@
 :root {
   --cyan:#00f5ff; --cyan-dim:#00a8b5; --gold:var(--accent); --red:var(--accent);
   --green:#44ff88; --purple:var(--accent); --orange:var(--accent); --pink:#ff66aa;
-  --bg:#010a0f; --bg2:#020d14; --bg3:#030f18;
+  --bg:#010a0f; --bg2:#020d14; --bg3:#020d14;
   --panel:rgba(0,245,255,0.04); --panel2:rgba(0,245,255,0.07);
   --border:rgba(0,245,255,0.12); --border2:rgba(0,245,255,0.22);
-  --text:#c8f0f5; --text-dim:#5a8a90;
+  --text:#e8f0f2; --text-dim:#5a8a90;
   --admin-accent:var(--accent);
   --admin-glow:rgba(0,245,255,0.15);
 }
@@ -557,11 +557,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="chart-grid">
       <div class="box">
         <div class="box-header"><div class="box-title" id="chartTitle">XP / REVENUE (7 วัน)</div><div class="box-tag">WEEKLY CHART</div></div>
-        <div class="box-body"><div class="chart-wrap" style="height:220px"><canvas id="chartWeekly" style="display:block"></canvas></div></div>
+        <div class="box-body"><div class="chart-wrap" style="height:220px;position:relative"><canvas id="chartWeekly"></canvas></div></div>
       </div>
       <div class="box">
         <div class="box-header"><div class="box-title" id="classDistTitle">CLASS DISTRIBUTION</div><div class="box-tag">ALL USERS</div></div>
-        <div class="box-body"><div class="chart-wrap" style="height:220px"><canvas id="chartClass" style="display:block"></canvas></div></div>
+        <div class="box-body"><div class="chart-wrap" style="height:220px;position:relative"><canvas id="chartClass"></canvas></div></div>
       </div>
     </div>
 
@@ -1067,7 +1067,7 @@ async function init() {
   if (broadcastEmptyIconHtml) broadcastEmptyIconHtml.innerHTML = getIcon('announce',24)
 
   await Promise.all([loadOverview(), loadTransactions(), loadUsers(), loadTickets(), loadAnnounceHistory(), loadQuests()])
-  startCharts()
+  requestAnimationFrame(() => startCharts())
   startClock()
   setupTargetListeners()
 }
@@ -1183,7 +1183,9 @@ function startCharts() {
   const todayDay = new Date().getDay()
   const labels = Array.from({ length: 7 }, (_, i) => days[(todayDay - 6 + i + 7) % 7])
 
-  weeklyChart = new Chart(document.getElementById('chartWeekly'), {
+  const chartWeeklyEl = document.getElementById('chartWeekly')
+  if (!chartWeeklyEl) return
+  weeklyChart = new Chart(chartWeeklyEl, {
     type: 'bar',
     data: {
       labels,
@@ -1221,7 +1223,9 @@ function startCharts() {
   })
 
   // Class chart
-  classChart = new Chart(document.getElementById('chartClass'), {
+  const chartClassEl = document.getElementById('chartClass')
+  if (!chartClassEl) return
+  classChart = new Chart(chartClassEl, {
     type: 'doughnut',
     data: {
       labels: ['Warrior', 'Mage', 'Explorer', 'Merchant', 'Artist', 'Diplomat'],
@@ -1244,7 +1248,7 @@ function startCharts() {
 // TRANSACTIONS
 // ============================================
 async function loadTransactions() {
-  const { data } = await sb.from('transactions').select('*, users(username, display_name, avatar_seed)').order('created_at', { ascending: false }).limit(100)
+  const { data } = await sb.from('transactions').select('*, users(username, display_name, avatar_seed, avatar_url)').order('created_at', { ascending: false }).limit(100)
   allTransactions = data || []
   filterTransactions()
 }
@@ -1331,7 +1335,10 @@ window.approveTransaction = async (id) => {
       // atomic increment — ไม่ต้อง read crystal ก่อน กัน double-credit
       await sb.rpc('increment_stat', { p_user_id: tx.user_id, p_col: 'crystal', p_amount: crystal }).catch(async () => {
         // ถ้า increment_stat ไม่รองรับ crystal ใช้ raw SQL แทน
-        await sb.from('users').update({ crystal: sb.raw(`crystal + ${crystal}`) }).eq('id', tx.user_id).catch(() => {})
+        // atomic increment via postgres function
+      const { data: userData } = await sb.from('users').select('crystal').eq('id', tx.user_id).single()
+      const newCrystal = (userData?.crystal || 0) + crystal
+      await sb.from('users').update({ crystal: newCrystal }).eq('id', tx.user_id).catch(() => {})
       })
       await sb.from('notifications').insert({
         user_id: tx.user_id,
@@ -1471,7 +1478,7 @@ function renderTickets(list) {
         <span class="status ${stCls[t.status] || 'pending'}">${stTxt[t.status] || t.status}</span>
       </div>
       <div class="ticket-body">${escHtml(t.body || '')}</div>
-      ${t.admin_reply ? `<div style="background:rgba(255,149,0,0.05);border:1px solid rgba(255,149,0,0.2);padding:12px;margin-bottom:12px;font-size:12px;color:var(--text)"><strong style="color:var(--admin-accent)">Admin ตอบ:</strong><br>${escHtml(t.admin_reply)}</div>` : ''}
+      ${t.admin_reply ? `<div style="background:rgba(255,149,0,0.05);border:1px solid var(--border);padding:12px;margin-bottom:12px;font-size:12px;color:var(--text)"><strong style="color:var(--admin-accent)">Admin ตอบ:</strong><br>${escHtml(t.admin_reply)}</div>` : ''}
       ${t.status !== 'closed' ? `
       <textarea class="ticket-reply-box" id="ticketReply-${t.id}" placeholder="ตอบกลับ ticket นี้..."></textarea>
       <div class="act-btn-row">
@@ -1484,7 +1491,7 @@ function renderTickets(list) {
 window.replyTicket = async (id, newStatus) => {
   const reply = document.getElementById(`ticketReply-${id}`)?.value?.trim()
   if (!reply && newStatus !== 'closed') { toast('กรุณาพิมพ์ข้อความตอบกลับ', 'warn'); return }
-  const update = { status: newStatus, admin_id: ME.id, replied_at: new Date().toISOString() }
+  const update = { status: newStatus, replied_at: new Date().toISOString() }
   if (reply) update.admin_reply = reply
   await sb.from('support_tickets').update(update).eq('id', id)
   const { data: tk } = await sb.from('support_tickets').select('user_id, subject').eq('id', id).single()
@@ -1509,7 +1516,7 @@ async function loadAnnounceHistory() {
     return
   }
   el.innerHTML = data.map(a => `
-    <div style="padding:10px 0;border-bottom:1px solid rgba(255,149,0,0.08)">
+    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
       <div style="font-family:Orbitron,monospace;font-size:9px;color:var(--admin-accent);margin-bottom:3px">${escHtml(a.title)}</div>
       <div style="font-size:11px;color:var(--text-dim);line-height:1.5">${escHtml((a.body||'').slice(0, 80))}...</div>
       <div style="font-family:Orbitron,monospace;font-size:7px;color:var(--text-dim);margin-top:4px">${relTime(a.created_at)} · ${a.target || 'ทุกคน'}</div>
@@ -1622,7 +1629,7 @@ function renderQuestList(list) {
             <span class="quest-tag ${typeColors[q.type] || ''}">${typeLabel[q.type] || q.type}</span>
             <span class="quest-tag ${q.class_target ? 'class-' + q.class_target : 'class-all'}">${q.class_target ? classLabel[q.class_target] : 'ทุกอาชีพ'}</span>
             <span class="quest-xp-badge">${(q.xp_reward || 0).toLocaleString()} XP</span>
-            ${q.gold_reward ? `<span class="quest-xp-badge" style="color:var(--gold);border-color:rgba(255,215,0,0.2)">${q.gold_reward} 🪙</span>` : ''}
+            ${q.gold_reward ? `<span class="quest-xp-badge" style="color:var(--accent);border-color:rgba(var(--accent-rgb),0.2)">${q.gold_reward} 🪙</span>` : ''}
             <span style="font-size:10px;color:var(--text-dim)">${proofLabel[q.proof_type] || q.proof_type}</span>
           </div>
           ${q.description ? `<div style="font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5">${escHtml(q.description.slice(0, 100))}${q.description.length > 100 ? '...' : ''}</div>` : ''}

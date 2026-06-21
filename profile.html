@@ -93,8 +93,8 @@ to{opacity:1;transform:translateY(0)}}
 .hero-rank-badge.rank-bronze   {border-color:rgba(205,127,50,0.5);color:#cd7f32}
 .hero-rank-badge.rank-silver   {border-color:rgba(192,192,192,0.45);color:#c0c0c0}
 .hero-rank-badge.rank-gold     {border-color:rgba(var(--accent-rgb),0.55);color:var(--gold)}
-.hero-rank-badge.rank-platinum {border-color:rgba(200,232,255,0.45);color:#c8e8ff}
-.hero-rank-badge.rank-diamond  {border-color:rgba(68,170,255,0.55);color:#88ddff}
+.hero-rank-badge.rank-platinum {border-color:rgba(200,232,255,0.45);color:#e8f0f2}
+.hero-rank-badge.rank-diamond  {border-color:rgba(68,170,255,0.55);color:#e8f0f2}
 .hero-rank-badge.rank-legendary{border-color:rgba(var(--accent-rgb),0.7);color:var(--accent);box-shadow:0 0 10px rgba(255,180,0,0.25);animation:rankLegGlow 1.8s ease-in-out infinite}
 @keyframes rankLegGlow{
   0%,100%{box-shadow:0 0 8px rgba(255,180,0,0.2)}
@@ -188,22 +188,22 @@ to{opacity:1;transform:translateY(0)}}
 .stat-item-glow{position:absolute;bottom:0;right:0;width:50px;height:50px;border-radius:50%;filter:blur(20px);pointer-events:none;opacity:0.6}
 
 /* STAT COLORS */
-.stat-str .stat-item-fill{background:linear-gradient(90deg,#ff2244,#ff6644)}
+.stat-str .stat-item-fill{background:linear-gradient(90deg,#00f5ff,#00f5ff)}
 .stat-str .stat-item-icon,.stat-str .stat-item-val{color:#ff4444}
 .stat-str .stat-item-glow{background:#ff4444}
-.stat-int .stat-item-fill{background:linear-gradient(90deg,#8822ee,#aa44ff)}
+.stat-int .stat-item-fill{background:linear-gradient(90deg,#00a8b5,#aa44ff)}
 .stat-int .stat-item-icon,.stat-int .stat-item-val{color:#aa44ff}
 .stat-int .stat-item-glow{background:#aa44ff}
-.stat-exp .stat-item-fill{background:linear-gradient(90deg,#22cc66,var(--accent))}
+.stat-exp .stat-item-fill{background:linear-gradient(90deg,#00f5ff,var(--accent))}
 .stat-exp .stat-item-icon,.stat-exp .stat-item-val{color:var(--accent)}
 .stat-exp .stat-item-glow{background:var(--accent)}
 .stat-biz .stat-item-fill{background:linear-gradient(90deg,var(--accent-dim),var(--accent))}
 .stat-biz .stat-item-icon,.stat-biz .stat-item-val{color:var(--accent)}
 .stat-biz .stat-item-glow{background:var(--accent)}
-.stat-cre .stat-item-fill{background:linear-gradient(90deg,#cc2266,#ff66aa)}
+.stat-cre .stat-item-fill{background:linear-gradient(90deg,#00a8b5,#ff66aa)}
 .stat-cre .stat-item-icon,.stat-cre .stat-item-val{color:#ff66aa}
 .stat-cre .stat-item-glow{background:#ff66aa}
-.stat-soc .stat-item-fill{background:linear-gradient(90deg,#0099cc,#00ccff)}
+.stat-soc .stat-item-fill{background:linear-gradient(90deg,#00a8b5,#00ccff)}
 .stat-soc .stat-item-icon,.stat-soc .stat-item-val{color:#00ccff}
 .stat-soc .stat-item-glow{background:#00ccff}
 
@@ -236,7 +236,7 @@ to{opacity:1;transform:translateY(0)}}
   padding:1px 5px;
 }
 .badge-rarity.common{color:var(--text-dim);border:1px solid var(--border)}
-.badge-rarity.rare{color:#44aaff;border:1px solid rgba(68,170,255,0.3)}
+.badge-rarity.rare{color:#00f5ff;border:1px solid rgba(68,170,255,0.3)}
 .badge-rarity.epic{color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.3)}
 .badge-rarity.legendary{color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.4);animation:legendaryGlow 2s ease-in-out infinite}
 @keyframes legendaryGlow{0%,100%{box-shadow:0 0 4px rgba(var(--accent-rgb),0.3)}50%{box-shadow:0 0 10px rgba(var(--accent-rgb),0.6)}}
@@ -308,7 +308,7 @@ to{opacity:1;transform:translateY(0)}}
 
 /* STREAK DISPLAY */
 .streak-section{padding:16px 20px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border)}
-.streak-fire{font-size:32px;filter:drop-shadow(0 0 8px #ff6600)}
+.streak-fire{font-size:32px;filter:drop-shadow(0 0 8px #00f5ff)}
 .streak-val{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--accent);line-height:1}
 .streak-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-top:2px}
 .streak-max{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim);margin-top:1px}
@@ -337,7 +337,7 @@ to{opacity:1;transform:translateY(0)}}
 .toast{position:fixed;bottom:24px;right:24px;z-index:2000;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:14px 20px;border-left:3px solid var(--accent);background:rgba(0,2,15,0.97);border-top:1px solid rgba(var(--accent-rgb),0.2);border-right:1px solid rgba(var(--accent-rgb),0.2);border-bottom:1px solid rgba(var(--accent-rgb),0.2);color:var(--accent);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:280px;line-height:1.5}
 .toast.show{transform:translateX(0)}
 .toast.success{border-left-color:var(--accent);color:var(--green)}
-.toast.error{border-left-color:var(--accent);color:#ff6680}
+.toast.error{border-left-color:var(--accent);color:#00f5ff}
 
 /* EDIT MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -377,7 +377,7 @@ to{opacity:1;transform:translateY(0)}}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
 
 .modal-msg{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;margin-bottom:12px;border-left:3px solid;display:none}
-.modal-msg.error{border-color:var(--accent);color:#ff6680;background:rgba(var(--accent-rgb),0.08)}
+.modal-msg.error{border-color:var(--accent);color:#00f5ff;background:rgba(var(--accent-rgb),0.08)}
 .modal-msg.success{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.06)}
 .modal-msg.show{display:block}
 
@@ -425,7 +425,7 @@ to{opacity:1;transform:translateY(0)}}
 .custom-select-btn.open .custom-select-arrow{transform:rotate(180deg)}
 .custom-select-dropdown{
   display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
-  background:#000d2e;border:1px solid rgba(var(--accent-rgb),0.30);
+  background:#010a0f;border:1px solid rgba(var(--accent-rgb),0.30);
   z-index:6000;max-height:260px;overflow-y:auto;
   box-shadow:0 8px 32px rgba(0,20,100,0.6);
   animation:fadeInUp 0.18s ease both;
@@ -451,7 +451,7 @@ to{opacity:1;transform:translateY(0)}}
 <body>
 
 <!-- LOADING SCREEN -->
-<div id="profileLoadingScreen" style="position:fixed;inset:0;background:#00020f;z-index:9990;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;transition:opacity 0.6s ease;">
+<div id="profileLoadingScreen" style="position:fixed;inset:0;background:#010a0f;z-index:9990;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;transition:opacity 0.6s ease;">
 
   <!-- IDENTITY CARD -->
   <div class="id-card-wrap">

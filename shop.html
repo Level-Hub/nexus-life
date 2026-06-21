@@ -59,7 +59,7 @@ to{opacity:1;transform:translateY(0)}}
 .item-card.rarity-legendary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(var(--accent-rgb),0.04),transparent);pointer-events:none}
 .item-rarity{position:absolute;top:10px;right:10px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;padding:3px 8px;border:1px solid currentColor}
 .item-rarity.common{color:var(--text-dim)}
-.item-rarity.rare{color:#4488ff}
+.item-rarity.rare{color:#00f5ff}
 .item-rarity.epic{color:var(--purple)}
 .item-rarity.legendary{color:var(--gold)}
 .item-owned-badge{position:absolute;top:10px;left:10px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;padding:3px 8px;background:rgba(var(--accent-rgb),0.15);border:1px solid var(--accent);color:var(--green)}
@@ -692,7 +692,7 @@ window.openDetail = function(itemId) {
 
   } else {
     // default — แสดง rarity badge ใหญ่
-    const rarityColors = {common:'var(--text-dim)',rare:'#4488ff',epic:'var(--purple)',legendary:'var(--gold)'}
+    const rarityColors = {common:'var(--text-dim)',rare:'#00f5ff',epic:'var(--purple)',legendary:'var(--gold)'}
     previewHTML = `
       <div style="text-align:center;padding:24px 0">
         <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:${rarityColors[rarity] || '#fff'};letter-spacing:4px">${rarityMap[rarity] || rarity.toUpperCase()}</div>
