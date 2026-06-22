@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Social Feed</title>
 <link rel="stylesheet" href="./theme.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 :root {
-  --teal:#00f5ff; --teal-bright:#00f5ff; --teal-dim:#00a8b5;
+  --teal:var(--accent); --teal-bright:var(--accent); --teal-dim:var(--accent-dim);
 }
 
   
@@ -81,7 +81,7 @@
 
 /* ── ข้อความ ── */
 .loading-logo{
-  font-family:'Orbitron',monospace;font-size:24px;font-weight:900;
+  font-family:var(--font-display);font-size:24px;font-weight:900;
   letter-spacing:6px;color:var(--teal-bright);
   text-shadow:0 0 24px var(--accent-glow),0 0 48px var(--accent-glow);
 }
@@ -91,12 +91,12 @@
 }
 .loading-bar{
   height:100%;
-  background:linear-gradient(90deg,#00a8b5,#00f5ff,#00f5ff);
+  background:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent));
   animation:loadAnim 1.4s ease-in-out infinite;
 }
 55%{width:70%}100%{width:100%}}
 .loading-txt{
-  font-family:'Orbitron',monospace;font-size:9px;
+  font-family:var(--font-display);font-size:9px;
   letter-spacing:3px;color:var(--text-dim);
 }
 
@@ -105,19 +105,19 @@
 @media(max-width:768px){.main{margin-left:0;padding:72px 16px 24px}}
 
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-title{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:2px;color:var(--text)}
+.page-title{font-family:var(--font-display);font-size:20px;font-weight:900;letter-spacing:2px;color:var(--text)}
 .page-title span{color:var(--accent);text-shadow:0 0 20px var(--accent)}
-.page-sub{font-size:12px;color:var(--text-dim);margin-top:4px;font-family:'Orbitron',monospace;letter-spacing:1px}
+.page-sub{font-size:12px;color:var(--text-dim);margin-top:4px;font-family:var(--font-display);letter-spacing:1px}
 
 /* ===== CITY BUFF BANNER ===== */
 .city-buff{background:linear-gradient(135deg,rgba(var(--accent-rgb),0.06),rgba(var(--accent-rgb),0.04));border:1px solid rgba(var(--accent-rgb),0.15);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .city-buff-left{display:flex;align-items:center;gap:12px}
 .city-buff-icon{font-size:22px}
-.city-buff-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.city-buff-name{font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px}
 .city-buff-sub{font-size:11px;color:var(--text-dim);margin-top:2px}
 .city-buff-xp{text-align:right}
-.city-buff-bonus{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--green)}
-.city-buff-label{font-size:10px;color:var(--text-dim);font-family:'Orbitron',monospace;letter-spacing:1px}
+.city-buff-bonus{font-family:var(--font-display);font-size:16px;font-weight:900;color:var(--green)}
+.city-buff-label{font-size:10px;color:var(--text-dim);font-family:var(--font-display);letter-spacing:1px}
 .city-buff-bar-wrap{flex:1;min-width:120px}
 .city-buff-bar-track{height:4px;background:rgba(var(--accent-rgb),0.1);position:relative;overflow:hidden}
 .city-buff-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent));transition:width 1s ease;box-shadow:0 0 8px var(--accent)}
@@ -129,7 +129,7 @@
 
 /* ===== FILTER TABS ===== */
 .filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.filter-btn{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
+.filter-btn{font-family:var(--font-display);font-size:9px;letter-spacing:2px;padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s}
 .filter-btn:hover{border-color:var(--accent);color:var(--accent)}
 .filter-btn.active{background:rgba(var(--accent-rgb),0.08);border-color:var(--accent);color:var(--accent)}
 
@@ -143,17 +143,17 @@
 .feed-avatar img{width:100%;height:100%;object-fit:cover}
 .feed-body{flex:1;min-width:0}
 .feed-user-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-.feed-username{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--text);letter-spacing:1px}
-.feed-class-badge{font-family:'Orbitron',monospace;font-size:8px;padding:2px 6px;border:1px solid var(--cls,var(--accent));color:var(--cls,var(--accent));letter-spacing:1px}
-.feed-rank{font-family:'Orbitron',monospace;font-size:8px;color:var(--text-dim)}
+.feed-username{font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--text);letter-spacing:1px}
+.feed-class-badge{font-family:var(--font-display);font-size:8px;padding:2px 6px;border:1px solid var(--cls,var(--accent));color:var(--cls,var(--accent));letter-spacing:1px}
+.feed-rank{font-family:var(--font-display);font-size:8px;color:var(--text-dim)}
 .feed-time{font-size:10px;color:var(--text-dim);margin-left:auto}
 .feed-content{font-size:13px;color:var(--text);line-height:1.6}
 .feed-content .highlight{color:var(--accent);font-weight:600}
-.feed-content .xp-gain{font-family:'Orbitron',monospace;font-size:11px;color:var(--accent);font-weight:700}
+.feed-content .xp-gain{font-family:var(--font-display);font-size:11px;color:var(--accent);font-weight:700}
 .feed-proof{margin-top:10px;border-radius:2px;overflow:hidden;max-height:160px}
 .feed-proof img{width:100%;height:160px;object-fit:cover;display:block;filter:brightness(0.85)}
 .feed-actions{display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:color 0.2s;font-family:'Sarabun',sans-serif;padding:0}
+.feed-action-btn{display:flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:color 0.2s;font-family:var(--font-ui);padding:0}
 .feed-action-btn:hover{color:var(--accent)}
 .feed-action-btn.liked{color:var(--red)}
 .feed-action-btn.cheered{color:var(--gold) !important}
@@ -163,16 +163,16 @@
   border:1px solid rgba(var(--accent-rgb),0.25);
   color:var(--text-dim);
   border-radius:0;
-  font-family:'Orbitron',monospace;
+  font-family:var(--font-display);
   font-size:9px;
   letter-spacing:1px;
   transition:all 0.2s;
 }
 .feed-action-btn.cheer-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.06)}
 .feed-action-btn.cheer-btn.cheered{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.08)}
-.cheer-count{font-family:'Orbitron',monospace;font-size:9px;margin-left:4px;opacity:0.8}
+.cheer-count{font-family:var(--font-display);font-size:9px;margin-left:4px;opacity:0.8}
 .feed-action-btn svg{flex-shrink:0}
-.feed-tag{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',monospace;font-size:8px;padding:2px 7px;border-radius:0;margin-right:6px;margin-top:4px}
+.feed-tag{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-display);font-size:8px;padding:2px 7px;border-radius:0;margin-right:6px;margin-top:4px}
 .feed-tag.quest{background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.2);color:var(--accent)}
 .feed-tag.levelup{background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.3);color:var(--gold)}
 .feed-tag.badge{background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.3);color:var(--purple)}
@@ -183,17 +183,17 @@
 /* level up special card */
 .feed-card.levelup-card{background:linear-gradient(135deg,rgba(var(--accent-rgb),0.06),rgba(var(--accent-rgb),0.04))}
 .feed-card.levelup-card::before{background:var(--gold)}
-.levelup-num{font-family:'Orbitron',monospace;font-size:24px;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(var(--accent-rgb),0.5)}
+.levelup-num{font-family:var(--font-display);font-size:24px;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(var(--accent-rgb),0.5)}
 
 /* ===== LOAD MORE ===== */
-.load-more-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);background:transparent;color:var(--text-dim);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;width:100%;margin-top:8px;transition:all 0.2s}
+.load-more-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);background:transparent;color:var(--text-dim);font-family:var(--font-display);font-size:9px;letter-spacing:2px;cursor:pointer;width:100%;margin-top:8px;transition:all 0.2s}
 .load-more-btn:hover{border-color:var(--accent);color:var(--accent)}
 .loading-spinner{width:14px;height:14px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;display:none}
 }
 
 /* ===== RIGHT SIDEBAR WIDGETS ===== */
 .widget{background:var(--panel);border:1px solid var(--border);padding:16px;margin-bottom:16px}
-.widget-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.widget-title{font-family:var(--font-display);font-size:10px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .widget-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
 /* City Project Widget */
@@ -201,9 +201,9 @@
 .project-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
 .project-track{height:8px;background:rgba(var(--accent-rgb),0.08);position:relative;overflow:hidden}
 .project-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent));transition:width 1s ease;box-shadow:0 0 8px var(--accent)}
-.project-stats{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--text-dim);font-family:'Orbitron',monospace}
+.project-stats{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--text-dim);font-family:var(--font-display)}
 .project-reward{display:flex;align-items:center;gap:8px;padding:8px;background:rgba(var(--accent-rgb),0.04);border:1px solid rgba(var(--accent-rgb),0.1);font-size:11px;color:var(--gold)}
-.project-ends{font-size:10px;color:var(--text-dim);margin-top:8px;text-align:center;font-family:'Orbitron',monospace;letter-spacing:1px}
+.project-ends{font-size:10px;color:var(--text-dim);margin-top:8px;text-align:center;font-family:var(--font-display);letter-spacing:1px}
 
 /* Active Players Widget */
 .active-list{display:flex;flex-direction:column;gap:8px}
@@ -211,26 +211,26 @@
 .active-avatar{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--cls,var(--accent));background:rgba(var(--accent-rgb),0.1);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
 .active-avatar img{width:100%;height:100%;object-fit:cover}
 .active-name{font-size:12px;font-weight:600;color:var(--text);flex:1}
-.active-xp{font-family:'Orbitron',monospace;font-size:10px;color:var(--green)}
+.active-xp{font-family:var(--font-display);font-size:10px;color:var(--green)}
 .active-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);flex-shrink:0}
 
 /* City Stats Widget */
 .city-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .city-stat-box{background:rgba(var(--accent-rgb),0.03);border:1px solid var(--border);padding:10px;text-align:center}
-.city-stat-val{font-family:'Orbitron',monospace;font-size:16px;font-weight:900;color:var(--accent)}
-.city-stat-lbl{font-size:10px;color:var(--text-dim);margin-top:2px;font-family:'Orbitron',monospace;letter-spacing:1px}
+.city-stat-val{font-family:var(--font-display);font-size:16px;font-weight:900;color:var(--accent)}
+.city-stat-lbl{font-size:10px;color:var(--text-dim);margin-top:2px;font-family:var(--font-display);letter-spacing:1px}
 
 /* Trending Hashtags */
 .tag-list{display:flex;flex-direction:column;gap:6px}
 .tag-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(var(--accent-rgb),0.06)}
 .tag-item:last-child{border-bottom:none}
 .tag-name{font-size:12px;color:var(--accent);font-weight:600}
-.tag-count{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim)}
+.tag-count{font-family:var(--font-display);font-size:10px;color:var(--text-dim)}
 
 /* ===== EMPTY / LOADING STATES ===== */
 .empty-state{text-align:center;padding:40px 20px}
 .empty-icon{font-size:32px;margin-bottom:12px}
-.empty-txt{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim)}
+.empty-txt{font-family:var(--font-display);font-size:10px;letter-spacing:2px;color:var(--text-dim)}
 .skeleton{background:linear-gradient(90deg,rgba(var(--accent-rgb),0.04) 25%,rgba(var(--accent-rgb),0.08) 50%,rgba(var(--accent-rgb),0.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
 @keyframes shimmer{to{background-position:-200% 0}}
 .skel-card{height:100px;border:1px solid var(--border);margin-bottom:10px}
@@ -239,9 +239,9 @@
 .comment-area{margin-top:10px;display:none}
 .comment-area.open{display:block}
 .comment-input-wrap{display:flex;gap:8px;margin-top:8px}
-.comment-input{flex:1;background:rgba(var(--accent-rgb),0.04);border:1px solid var(--border);color:var(--text);font-family:'Sarabun',sans-serif;font-size:12px;padding:8px 12px;outline:none;transition:border-color 0.2s}
+.comment-input{flex:1;background:rgba(var(--accent-rgb),0.04);border:1px solid var(--border);color:var(--text);font-family:var(--font-ui);font-size:12px;padding:8px 12px;outline:none;transition:border-color 0.2s}
 .comment-input:focus{border-color:var(--accent)}
-.comment-send{background:var(--accent);border:none;color:var(--bg);padding:8px 14px;cursor:pointer;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;transition:opacity 0.2s}
+.comment-send{background:var(--accent);border:none;color:var(--bg);padding:8px 14px;cursor:pointer;font-family:var(--font-display);font-size:9px;letter-spacing:1px;transition:opacity 0.2s}
 .comment-send:hover{opacity:0.85}
 .comment-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .comment-item{display:flex;gap:8px;font-size:12px}
@@ -249,7 +249,7 @@
 .comment-text{color:var(--text-dim)}
 
 /* ===== REALTIME BADGE ===== */
-.live-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1.5px;color:var(--accent);padding:3px 8px;border:1px solid rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-display);font-size:8px;letter-spacing:1.5px;color:var(--accent);padding:3px 8px;border:1px solid rgba(var(--accent-rgb),0.3);background:rgba(var(--accent-rgb),0.05)}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
 
 to{opacity:1;transform:translateY(0)}}
@@ -272,9 +272,9 @@ to{opacity:1;transform:translateY(0)}}
     <svg class="stream-icon" width="36" height="36" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#00f5ff"/>
-          <stop offset="40%" stop-color="#00f5ff"/>
-          <stop offset="100%" stop-color="#00a8b5"/>
+          <stop offset="0%" stop-color="var(--accent)"/>
+          <stop offset="40%" stop-color="var(--accent)"/>
+          <stop offset="100%" stop-color="var(--accent-dim)"/>
         </linearGradient>
       </defs>
       <path d="M1 2h14v10H9l-3 3v-3H1z" stroke="url(#sGrad)" stroke-width="1.3" stroke-linejoin="round" fill="url(#sGrad)" fill-opacity="0.08"/>
@@ -398,7 +398,7 @@ to{opacity:1;transform:translateY(0)}}
             <div class="city-stat-lbl">STREAK</div>
           </div>
         </div>
-        <a href="./city.html" id="cityDashLink" style="display:block;text-align:center;margin-top:12px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);text-decoration:none;border:1px solid rgba(var(--accent-rgb),0.2);padding:8px;transition:background 0.2s" onmouseover="this.style.background='rgba(var(--accent-rgb),0.06)'" onmouseout="this.style.background='transparent'">CITY DASHBOARD <span id="cityDashArrow"></span></a>
+        <a href="./city.html" id="cityDashLink" style="display:block;text-align:center;margin-top:12px;font-family:var(--font-display);font-size:9px;letter-spacing:2px;color:var(--cyan);text-decoration:none;border:1px solid rgba(var(--accent-rgb),0.2);padding:8px;transition:background 0.2s" onmouseover="this.style.background='rgba(var(--accent-rgb),0.06)'" onmouseout="this.style.background='transparent'">CITY DASHBOARD <span id="cityDashArrow"></span></a>
       </div>
 
       <!-- TRENDING -->
@@ -602,7 +602,7 @@ async function loadActivePlayers() {
 
   list.innerHTML = onlinePlayers.map(p => `
     <div class="active-item cls-${p.class || 'warrior'}">
-      <div class="active-dot" style="background:#44ff88;box-shadow:0 0 6px #44ff88"></div>
+      <div class="active-dot" style="background:var(--stat-exp);box-shadow:0 0 6px var(--stat-exp)"></div>
       <div class="active-avatar">
         <img src="${p.avatar_url || getAvatarUrl(p.avatar_seed || p.username, 28)}" alt="">
       </div>
@@ -1004,11 +1004,11 @@ async function loadComments(feedId) {
     const u = c.users || {}
     const av = u.avatar_url || getAvatarUrl(u.avatar_seed || u.username, 24)
     const indent = isReply ? 'margin-left:32px;padding-left:8px;border-left:1px solid var(--border);' : ''
-    const replyBtn = !isReply ? `<button onclick="toggleReply('${feedId}','${c.id}')" style="background:none;border:none;color:var(--text-dim);font-size:9px;font-family:'Orbitron',monospace;cursor:pointer;padding:2px 0;letter-spacing:1px">↩ ตอบ</button>` : ''
+    const replyBtn = !isReply ? `<button onclick="toggleReply('${feedId}','${c.id}')" style="background:none;border:none;color:var(--text-dim);font-size:9px;font-family:var(--font-display);cursor:pointer;padding:2px 0;letter-spacing:1px">↩ ตอบ</button>` : ''
     const sub = !isReply && replyMap[c.id] ? replyMap[c.id].map(r => cHTML(r, true)).join('') : ''
     const replyInput = !isReply ? `<div id="ri-${c.id}" style="display:none;margin-left:32px;margin-top:4px;display:none;gap:6px">
-      <input id="rinput-${c.id}" placeholder="ตอบกลับ..." style="flex:1;background:rgba(var(--accent-rgb),0.04);border:1px solid var(--border);color:var(--text);font-size:11px;padding:5px 8px;font-family:'Sarabun',sans-serif">
-      <button onclick="sendReply('${feedId}','${c.id}')" style="background:rgba(var(--accent-rgb),0.15);border:1px solid var(--cyan);color:var(--cyan);padding:5px 10px;font-size:8px;font-family:'Orbitron',monospace;cursor:pointer">ส่ง</button>
+      <input id="rinput-${c.id}" placeholder="ตอบกลับ..." style="flex:1;background:rgba(var(--accent-rgb),0.04);border:1px solid var(--border);color:var(--text);font-size:11px;padding:5px 8px;font-family:var(--font-ui)">
+      <button onclick="sendReply('${feedId}','${c.id}')" style="background:rgba(var(--accent-rgb),0.15);border:1px solid var(--cyan);color:var(--cyan);padding:5px 10px;font-size:8px;font-family:var(--font-display);cursor:pointer">ส่ง</button>
     </div>` : ''
     return `<div style="${indent}display:flex;gap:8px;font-size:12px;margin-bottom:6px">
       <img src="${av}" style="width:${isReply?'20':'26'}px;height:${isReply?'20':'26'}px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0">

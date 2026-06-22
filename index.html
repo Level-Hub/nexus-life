@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — Real Life MMO</title>
 <link rel="stylesheet" href="./theme.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
   
 
@@ -46,7 +46,7 @@
   }
 
   .nav-logo {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-weight: 900;
     font-size: 18px;
     letter-spacing: 4px;
@@ -64,7 +64,7 @@
   }
 
   .nav-links a {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 11px;
     letter-spacing: 2px;
     color: var(--text-dim);
@@ -76,7 +76,7 @@
   .nav-btn {
     display: inline-block;
     text-decoration: none;
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 11px;
     letter-spacing: 2px;
     padding: 10px 24px;
@@ -120,7 +120,7 @@
     padding: 6px 16px;
     border: 1px solid var(--accent-glow);
     background: var(--panel);
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 3px;
     color: var(--accent);
@@ -129,7 +129,7 @@
   }
 
   .hero-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-weight: 900;
     font-size: clamp(36px, 8vw, 88px);
     line-height: 1;
@@ -175,7 +175,7 @@
   }
 
   .btn-primary {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 12px;
     letter-spacing: 3px;
     padding: 16px 40px;
@@ -195,7 +195,7 @@
   }
 
   .btn-secondary {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 12px;
     letter-spacing: 3px;
     padding: 16px 40px;
@@ -237,7 +237,7 @@
   .stat-item:last-child { border-right: none; }
 
   .stat-num {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 28px;
     font-weight: 900;
     color: var(--accent);
@@ -269,7 +269,7 @@
   }
 
   .section-tag {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 4px;
     color: var(--accent);
@@ -278,7 +278,7 @@
   }
 
   .section-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: clamp(24px, 4vw, 40px);
     font-weight: 900;
     color: #fff;
@@ -328,11 +328,11 @@
   .class-card:hover .class-icon-wrap { box-shadow: 0 0 30px var(--class-color); }
 
   /* Warrior */
-  .class-card.warrior { --class-color: #ff4444; }
-  .class-card.warrior::before { background: radial-gradient(circle at 50% 0%, rgba(255,68,68,0.08), transparent 70%); }
+  .class-card.warrior { --class-color: var(--stat-str); }
+  .class-card.warrior::before { background: radial-gradient(circle at 50% 0%, rgba(var(--danger-rgb),0.08), transparent 70%); }
 
   /* Mage */
-  .class-card.mage { --class-color: #aa44ff; }
+  .class-card.mage { --class-color: var(--stat-int); }
   .class-card.mage::before { background: radial-gradient(circle at 50% 0%, rgba(170,68,255,0.08), transparent 70%); }
 
   /* Explorer */
@@ -344,11 +344,11 @@
   .class-card.merchant::before { background: radial-gradient(circle at 50% 0%, rgba(255,170,0,0.08), transparent 70%); }
 
   /* Artist */
-  .class-card.artist { --class-color: #ff66aa; }
+  .class-card.artist { --class-color: var(--stat-cre); }
   .class-card.artist::before { background: radial-gradient(circle at 50% 0%, rgba(255,102,170,0.08), transparent 70%); }
 
   /* Diplomat */
-  .class-card.diplomat { --class-color: #00ccff; }
+  .class-card.diplomat { --class-color: var(--stat-soc); }
   .class-card.diplomat::before { background: radial-gradient(circle at 50% 0%, rgba(0,204,255,0.08), transparent 70%); }
 
   .class-icon-wrap {
@@ -363,7 +363,7 @@
   }
 
   .class-name {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -386,7 +386,7 @@
   }
 
   .class-bonus {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 1px;
     color: var(--class-color);
@@ -447,7 +447,7 @@
   .rank-info { flex: 1; }
 
   .rank-name {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -513,7 +513,7 @@
   }
 
   .feature-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -553,7 +553,7 @@
   }
 
   .cta-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: clamp(22px, 4vw, 36px);
     font-weight: 900;
     color: #fff;
@@ -580,7 +580,7 @@
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'Sarabun', sans-serif;
+    font-family: var(--font-ui);
     font-size: 14px;
     outline: none;
     transition: all 0.3s;
@@ -616,7 +616,7 @@
   }
 
   .footer-logo {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 14px;
     letter-spacing: 4px;
     color: var(--accent);
@@ -644,7 +644,7 @@
   }
   .divider-line { flex: 1; height: 1px; background: var(--border); }
   .divider-text {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 9px;
     letter-spacing: 3px;
     color: var(--text-dim);
@@ -862,11 +862,11 @@
   </div>
 
   <div class="rank-list">
-    <div class="rank-item" style="--rank-color:#cd7f32">
+    <div class="rank-item" style="--rank-color:var(--prank-bronze)">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#cd7f32" stroke-width="1.5" fill="rgba(205,127,50,0.1)"/>
-          <text x="18" y="22" text-anchor="middle" fill="#cd7f32" font-size="12" font-family="Orbitron">B</text>
+          <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--prank-bronze)" stroke-width="1.5" fill="rgba(205,127,50,0.1)"/>
+          <text x="18" y="22" text-anchor="middle" fill="var(--prank-bronze)" font-size="12" font-family="Cinzel, Georgia, serif">B</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -882,7 +882,7 @@
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="#aaa" stroke-width="1.5" fill="rgba(170,170,170,0.1)"/>
-          <text x="18" y="22" text-anchor="middle" fill="#aaa" font-size="12" font-family="Orbitron">S</text>
+          <text x="18" y="22" text-anchor="middle" fill="#aaa" font-size="12" font-family="Cinzel, Georgia, serif">S</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -898,7 +898,7 @@
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),0.1)"/>
-          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="12" font-family="Orbitron">G</text>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="12" font-family="Cinzel, Georgia, serif">G</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -910,11 +910,11 @@
       </div>
     </div>
 
-    <div class="rank-item" style="--rank-color:#00f5ff">
+    <div class="rank-item" style="--rank-color:var(--accent)">
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="var(--border)"/>
-          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Orbitron">PL</text>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Cinzel, Georgia, serif">PL</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -930,7 +930,7 @@
       <div class="rank-icon">
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
           <polygon points="18,4 32,12 32,24 18,32 4,24 4,12" stroke="var(--accent)" stroke-width="1.5" fill="rgba(var(--accent-rgb),0.15)"/>
-          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Orbitron">DM</text>
+          <text x="18" y="22" text-anchor="middle" fill="var(--accent)" font-size="10" font-family="Cinzel, Georgia, serif">DM</text>
         </svg>
       </div>
       <div class="rank-info">
@@ -990,12 +990,12 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="18" stroke="#44ff88" stroke-width="1.5" fill="rgba(68,255,136,0.05)"/>
-        <circle cx="24" cy="24" r="2" fill="#44ff88"/>
-        <line x1="24" y1="6" x2="24" y2="14" stroke="#44ff88" stroke-width="1.5"/>
-        <circle cx="30" cy="15" r="2" fill="#44ff88" opacity="0.6"/>
-        <circle cx="18" cy="32" r="2" fill="#44ff88" opacity="0.4"/>
-        <circle cx="36" cy="28" r="2" fill="#44ff88" opacity="0.5"/>
+        <circle cx="24" cy="24" r="18" stroke="var(--stat-exp)" stroke-width="1.5" fill="rgba(68,255,136,0.05)"/>
+        <circle cx="24" cy="24" r="2" fill="var(--stat-exp)"/>
+        <line x1="24" y1="6" x2="24" y2="14" stroke="var(--stat-exp)" stroke-width="1.5"/>
+        <circle cx="30" cy="15" r="2" fill="var(--stat-exp)" opacity="0.6"/>
+        <circle cx="18" cy="32" r="2" fill="var(--stat-exp)" opacity="0.4"/>
+        <circle cx="36" cy="28" r="2" fill="var(--stat-exp)" opacity="0.5"/>
       </svg>
       <div class="feature-title">WORLD MAP</div>
       <div class="feature-desc">แผนที่ live แสดงผู้เล่นในเมืองเดียวกัน — เห็นว่าใครอยู่ใกล้ อยู่ Guild ไหน</div>
@@ -1013,10 +1013,10 @@
 
     <div class="feature-card">
       <svg class="feature-icon" viewBox="0 0 48 48" fill="none">
-        <rect x="8" y="12" width="24" height="16" stroke="#ff66aa" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)" rx="2"/>
-        <path d="M32 20 L40 16 L40 32 L32 28" stroke="#ff66aa" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)"/>
-        <rect x="14" y="18" width="6" height="4" fill="#ff66aa" opacity="0.3"/>
-        <line x1="8" y1="36" x2="32" y2="36" stroke="#ff66aa" stroke-width="1" opacity="0.3"/>
+        <rect x="8" y="12" width="24" height="16" stroke="var(--stat-cre)" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)" rx="2"/>
+        <path d="M32 20 L40 16 L40 32 L32 28" stroke="var(--stat-cre)" stroke-width="1.5" fill="rgba(var(--accent-rgb),102,170,0.05)"/>
+        <rect x="14" y="18" width="6" height="4" fill="var(--stat-cre)" opacity="0.3"/>
+        <line x1="8" y1="36" x2="32" y2="36" stroke="var(--stat-cre)" stroke-width="1" opacity="0.3"/>
       </svg>
       <div class="feature-title">LIVE CHAT</div>
       <div class="feature-desc">Global, City, Guild และ DM — คุยกับผู้เล่นคนอื่น แบบ realtime</div>

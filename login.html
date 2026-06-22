@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NEXUS LIFE — เข้าสู่ระบบ</title>
 <link rel="stylesheet" href="./theme.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
   
 
@@ -50,7 +50,7 @@
   }
 
   .nav-logo {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-weight: 900;
     font-size: 18px;
     letter-spacing: 4px;
@@ -74,7 +74,7 @@
   }
 
   .nav-back {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 2px;
     color: var(--text-dim);
@@ -116,7 +116,7 @@
   }
 
   .left-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-weight: 900;
     font-size: clamp(28px, 4vw, 48px);
     line-height: 1.1;
@@ -172,7 +172,7 @@
   .mini-class:hover { border-color: var(--cc); transform: translateY(-2px); }
   .mini-class:hover::before { opacity: 1; }
 
-  .mini-class.warrior  { --cc: rgba(255,68,68,0.15); }
+  .mini-class.warrior  { --cc: rgba(var(--danger-rgb),0.15); }
   .mini-class.mage     { --cc: rgba(170,68,255,0.15); }
   .mini-class.explorer { --cc: rgba(var(--accent-rgb),0.15); }
   .mini-class.merchant { --cc: rgba(255,170,0,0.15); }
@@ -181,7 +181,7 @@
 
   .mini-class-icon { display:flex; align-items:center; justify-content:center; height:28px; margin-bottom:6px; }
   .mini-class-name {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 8px;
     letter-spacing: 1px;
     color: var(--text-dim);
@@ -202,7 +202,7 @@
   }
   .left-stat:last-child { border-right: none; }
   .left-stat-num {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 20px;
     font-weight: 900;
     color: var(--accent);
@@ -262,7 +262,7 @@
   .corner-bl { bottom:-1px; left:-1px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent); }
 
   .box-tag {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 4px;
     color: var(--accent);
@@ -270,7 +270,7 @@
     margin-bottom: 8px;
   }
   .box-title {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 24px;
     font-weight: 900;
     color: #fff;
@@ -297,7 +297,7 @@
     border-bottom: 1px solid var(--border);
   }
   .tab {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 10px;
     letter-spacing: 2px;
     padding: 12px 20px;
@@ -327,7 +327,7 @@
   }
 
   .field-label {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 9px;
     letter-spacing: 2px;
     color: var(--text-dim);
@@ -355,7 +355,7 @@
     background: rgba(var(--accent-rgb),0.03);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'Sarabun', sans-serif;
+    font-family: var(--font-ui);
     font-size: 14px;
     padding: 14px 14px 14px 44px;
     outline: none;
@@ -394,18 +394,18 @@
     margin-bottom: 20px;
     border-left: 3px solid;
     display: none;
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     letter-spacing: 1px;
     line-height: 1.5;
   }
-  .msg.error { border-color: var(--accent); color: #00f5ff; background: rgba(var(--accent-rgb),0.08); }
+  .msg.error { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.08); }
   .msg.success { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.06); }
   .msg.show { display: block; }
 
   /* SUBMIT BTN */
   .btn-submit {
     width: 100%;
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 12px;
     letter-spacing: 3px;
     padding: 16px;
@@ -459,7 +459,7 @@
   }
   .divider-or-line { flex: 1; height: 1px; background: var(--border); }
   .divider-or-text {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 9px;
     letter-spacing: 2px;
     color: var(--text-dim);
@@ -467,7 +467,7 @@
 
   .btn-register {
     width: 100%;
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 11px;
     letter-spacing: 2px;
     padding: 14px;
@@ -502,7 +502,7 @@
     border-top: 1px solid var(--border);
   }
   .footer-text {
-    font-family: 'Orbitron', monospace;
+    font-family: var(--font-display);
     font-size: 9px;
     letter-spacing: 3px;
     color: var(--text-dim);
@@ -559,7 +559,7 @@
   <!-- LEFT PANEL -->
   <div class="left-panel">
     <div>
-      <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;color:var(--cyan);margin-bottom:16px;">// WELCOME BACK</div>
+      <div style="font-family:var(--font-display);font-size:10px;letter-spacing:4px;color:var(--cyan);margin-bottom:16px;">// WELCOME BACK</div>
       <h1 class="left-title">
         ENTER THE<br>
         <span>NEXUS LIFE</span>
