@@ -433,6 +433,7 @@ import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleCard, renderBadgeItem, renderTitleBadge, injectTitleStyles } from './titles.js'
+import { showTitleUnlock } from './nexus-effects.js'
 
 let currentUser = null
 let userProfile = null
@@ -916,6 +917,7 @@ async function checkAndUnlockAchievements() {
       if (!error) {
         myTitleIds.add(title.id)
         showToast(`[TITLE] ปลดล็อคฉายา: ${title.name}!`, 'gold')
+        showTitleUnlock({ titleName: title.name, titleDesc: title.description || '' })
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'title_unlock',

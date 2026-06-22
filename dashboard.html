@@ -798,6 +798,7 @@ import { supabase } from './supabase.js'
 import { initSidebar } from './sidebar.js'
 import { CLASS_ICONS, CLASS_COLOR, SYSTEM_ICONS, QUEST_ICONS, getIcon, injectGlobalDefs } from './icons.js'
 import { renderTitleBadge, injectTitleStyles } from './titles.js'
+import { showLevelUp, showTitleUnlock, showQuestComplete, stampCanvasWithGPS } from './nexus-effects.js'
 
 // ============================================================
 // STATE
@@ -1455,6 +1456,7 @@ window.openQuestModal = function(questId) {
 
   activeQuestId   = questId
   activeProofType = q.proof_type
+  window._activeQuestData = q  // ★ เก็บไว้ให้ showQuestComplete ใช้
 
   document.getElementById('modalQuestName').textContent = q.title
   document.getElementById('modalQuestDesc').textContent = q.description || ''
@@ -1511,26 +1513,15 @@ window.handleFileChange = function(input) {
   const reader = new FileReader()
   reader.onload = e => {
     const image = new Image()
-    image.onload = () => {
+    image.onload = async () => {
       const canvas = document.createElement('canvas')
       canvas.width  = image.width
       canvas.height = image.height
       const ctx = canvas.getContext('2d')
       ctx.drawImage(image, 0, 0)
-      const now = new Date()
-      const dateStr = now.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' })
-      const timeStr = now.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' })
       const username = userProfile?.username || userProfile?.display_name || 'NEXUS'
-      const stamp = `NEXUS LIFE · ${username.toUpperCase()} · ${dateStr} ${timeStr}`
-      const fontSize = Math.max(16, Math.round(canvas.width * 0.028))
-      const padY = fontSize * 1.8
-      ctx.fillStyle = 'rgba(0,0,0,0.55)'
-      ctx.fillRect(0, canvas.height - padY, canvas.width, padY)
-      ctx.fillStyle = '#00f5ff'
-      ctx.font = `bold ${fontSize}px monospace`
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(stamp, fontSize * 0.6, canvas.height - padY / 2)
+      // ★ GPS stamp
+      await stampCanvasWithGPS(canvas, username)
       const img = document.getElementById('previewImg')
       img.src = canvas.toDataURL('image/jpeg', 0.92)
       img.style.display = 'block'
@@ -1624,25 +1615,58 @@ window.submitProof = async function() {
       const oldLevel = userProfile?.level || 1
       const { error: grantErr } = await supabase.rpc('grant_quest_xp', {
         p_user_id:       currentUser.id,
-        p_user_quest_id: parseInt(uqData.id)  // cast เป็น integer — ป้องกัน ambiguous function error
+        p_user_quest_id: parseInt(uqData.id)
       })
       if (grantErr) throw grantErr
 
       try { await supabase.rpc('update_user_rank', { p_user_id: currentUser.id }) } catch (e) {}
+
+      // ดึง XP จริง + pass_bonus จาก activity_feed
+      const { data: feedRow } = await supabase
+        .from('activity_feed').select('data')
+        .eq('user_id', currentUser.id).eq('type', 'quest_complete')
+        .order('created_at', { ascending: false }).limit(1).single()
+
+      const realXP    = feedRow?.data?.xp ?? 0
+      const passBonus = feedRow?.data?.pass_bonus ?? 1.0
+      const passType  = feedRow?.data?.pass_type ?? null
+
       await loadProfile()
-      if (userProfile && userProfile.level > oldLevel) {
-        showToast(`LEVEL UP! LV.${oldLevel} → LV.${userProfile.level}!`, 'gold')
-        // level_up feed ถูก insert โดย grant_quest_xp ใน DB แล้ว ไม่ต้อง insert ซ้ำ
-      }
-      showToast('Quest สำเร็จ! XP และ Gold เข้าแล้ว', 'gold')
+      const didLevelUp = userProfile && userProfile.level > oldLevel
+
+      // ★ Quest Complete screen
+      window.closeModal()
+      showQuestComplete({
+        questTitle: window._activeQuestData?.title || 'QUEST COMPLETE',
+        xp:         realXP,
+        gold:       window._activeQuestData?.gold_reward || 0,
+        statType:   window._activeQuestData?.stat_type   || null,
+        statPoints: window._activeQuestData?.stat_points || 0,
+        passBonus, passType,
+        xpCurrent:  userProfile?.xp_current || 0,
+        xpMax:      userProfile?.xp_max     || 100,
+        onClose: async () => {
+          if (didLevelUp) {
+            showLevelUp({
+              oldLevel,
+              newLevel:  userProfile.level,
+              newTitle:  userProfile.rank_title || '',
+              onClose: async () => {
+                await loadQuests(); await loadProfile(); await checkAndUnlockAchievements()
+              }
+            })
+          } else {
+            await loadQuests(); await loadProfile(); await checkAndUnlockAchievements()
+          }
+        }
+      })
     } else {
       showToast('ส่งหลักฐานแล้ว — รอชุมชน 3 votes ยืนยัน', 'success')
+      window.closeModal()
+      await loadQuests()
+      await loadProfile()
+      await checkAndUnlockAchievements()
     }
-
-    window.closeModal()
-    await loadQuests()
-    await loadProfile()
-    await checkAndUnlockAchievements()
 
   } catch(e) {
     showModalMsg('error', e.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
@@ -1884,6 +1908,7 @@ async function checkAndUnlockAchievements() {
       if (!error) {
         myTitleIds.add(title.id)
         showToast(`👑 ปลดล็อคฉายา: ${title.name}!`, 'gold')
+        showTitleUnlock({ titleName: title.name, titleDesc: title.description || '' })
         await supabase.from('activity_feed').insert({
           user_id: currentUser.id,
           type: 'title_unlock',
