@@ -350,7 +350,7 @@ to{opacity:1;transform:translateY(0);} }
   background:linear-gradient(90deg,transparent,var(--accent-dim),var(--accent),transparent);
   animation:mapLoadSlide 1.1s infinite linear;
 }
-.loading-txt { font-family:var(--font-display);font-size:8px;letter-spacing:4px;color:#003040; }
+.loading-txt { font-family:var(--font-display);font-size:8px;letter-spacing:4px;color:var(--text-dim); }
 
 /* TOAST */
 .toast {
@@ -982,7 +982,7 @@ async function loadPlayersOnMap() {
               ${title ? `<div style="color:var(--accent);font-size:8px;margin-top:1px">${title}</div>` : ''}
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:8px;color:#5a8a90;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:8px;color:var(--text-dim);margin-bottom:4px">
             <svg width="10" height="10" viewBox="0 0 20 20" fill="none">${CLASS_ICONS[cls]||''}</svg>
             <span style="color:${color}">${cls.toUpperCase()}</span>
             <span>·</span>
@@ -990,7 +990,7 @@ async function loadPlayersOnMap() {
             <span>·</span>
             <span style="color:${rankColor}">${rankStr}</span>
           </div>
-          ${guild ? `<div style="font-size:8px;color:#5a8a90;border-top:1px solid rgba(var(--accent-rgb),0.1);padding-top:4px;margin-top:4px">[${guild.tag||'???'}] ${guild.name||''}</div>` : ''}
+          ${guild ? `<div style="font-size:8px;color:var(--text-dim);border-top:1px solid rgba(var(--accent-rgb),0.1);padding-top:4px;margin-top:4px">[${guild.tag||'???'}] ${guild.name||''}</div>` : ''}
         </div>
       `, { className:'nexus-popup' })
     playerMarkers.push(marker)
@@ -1052,7 +1052,7 @@ async function loadHotspots() {
       .bindPopup(`
         <div style="font-family:var(--font-display)">
           <div style="color:var(--accent);font-size:11px;font-weight:700">${h.place_name || 'Hotspot'}</div>
-          <div style="color:#5a8a90;font-size:9px;margin-top:4px">${h.count} check-ins · ${h.city || '—'}</div>
+          <div style="color:var(--text-dim);font-size:9px;margin-top:4px">${h.count} check-ins · ${h.city || '—'}</div>
         </div>
       `)
     hotspotMarkers.push(marker)
@@ -1130,7 +1130,7 @@ async function loadTerritories() {
     }).bindPopup(`
       <div style="font-family:var(--font-display);min-width:150px">
         <div style="color:${color};font-size:11px;font-weight:700">${t.city}</div>
-        <div style="color:#5a8a90;font-size:9px;margin-top:4px">[${guild?.tag||'???'}] ${guild?.name||'Unknown'}</div>
+        <div style="color:var(--text-dim);font-size:9px;margin-top:4px">[${guild?.tag||'???'}] ${guild?.name||'Unknown'}</div>
         <div style="color:var(--accent);font-size:9px;margin-top:2px">+10% XP · ${t.guild_xp_this_week||0} XP/week</div>
       </div>
     `, { className: 'nexus-popup' })
@@ -1204,7 +1204,7 @@ async function loadNearbyPlayers() {
           ${!isOnline && lastSeenTxt ? `<div style="font-family:var(--font-display);font-size:7px;color:var(--text-dim);margin-top:1px">${lastSeenTxt}</div>` : ''}
         </div>
         ${dist !== null ? `<div class="nearby-dist">${dist < 1 ? Math.round(dist*1000)+'m' : dist.toFixed(1)+'km'}</div>` : ''}
-        <div class="nearby-online" style="${isOnline ? '' : 'background:#5a8a90;box-shadow:none'}"></div>
+        <div class="nearby-online" style="${isOnline ? '' : 'background:var(--text-dim);box-shadow:none'}"></div>
       </div>
     `
   }).join('')

@@ -44,9 +44,9 @@ let _notifOpen     = false
 const SIDEBAR_CSS = `
 <style id="sidebar-css">
 /* ── GLOBAL TOKENS — shared across all pages ── */
+/* หมายเหตุ: --text และ --text-dim ถูกลบออกจากที่นี่แล้ว
+   เพื่อไม่ให้ override theme.css — ค่าถูกกำหนดใน theme.css เท่านั้น */
 :root {
-  --text:     #e8f0f2;
-  --text-dim: #7a9099;
   --t-fast:   0.15s;
   --t-base:   0.3s;
   --t-slow:   0.55s;

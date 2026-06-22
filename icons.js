@@ -1560,12 +1560,12 @@ export function getIcon(name, size = 16, options = {}) {
 // CLASS_COLOR — single source of truth
 // ============================================================
 export const CLASS_COLOR = {
-  warrior:  '#ff4444',
-  mage:     '#cc66ff',
-  explorer: '#44ff88',
-  merchant: '#ffcc44',
-  artist:   '#cc66ff',
-  diplomat: '#44aaff',
+  warrior:  '#D46A5A',   /* sync กับ --cls-warrior ใน theme.css */
+  mage:     '#9B72D0',   /* sync กับ --cls-mage */
+  explorer: '#5BAA7E',   /* sync กับ --cls-explorer */
+  merchant: '#C8A96E',   /* sync กับ --cls-merchant = accent */
+  artist:   '#C46E9E',   /* sync กับ --cls-artist (ต่างจาก mage) */
+  diplomat: '#5B9BD5',   /* sync กับ --cls-diplomat */
 }
 
 
